@@ -1,15 +1,14 @@
-\i Database/modules/roles.sql
-\i Database/modules/usuarios.sql
-\i Database/modules/usuarios_roles.sql
-\i Database/modules/auditoria.sql
---\i modules/catalogos.sql
---\i modules/sistemas.sql
---\i modules/integraciones.sql
+\i DataBase/modules/roles.sql
+\i DataBase/modules/usuarios.sql
+\i DataBase/modules/usuarios_roles.sql
+\i DataBase/modules/auditoria.sql
 
-\i Database/modules/arquitectura.sql
-\i Database/modules/infraestructura.sql
-\i Database/modules/seguridad.sql
+-- Tu Módulo: Inventario de Sistemas (¡Activados!)
+\i DataBase/modules/catalogos.sql
+\i DataBase/modules/sistemas.sql
+\i DataBase/modules/integraciones.sql
 
---\i modules/evidencias.sql
---\i modules/validaciones.sql
---\i modules/observaciones.sql
+-- Módulos de tus compañeros dependientes de tu tabla sistemas
+\i DataBase/modules/arquitectura.sql
+\i DataBase/modules/infraestructura.sql
+\i DataBase/modules/seguridad.sql

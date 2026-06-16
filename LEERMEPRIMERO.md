@@ -4,7 +4,7 @@
 
 ## 📌 Descripción
 
-El Sistema de Gestión de Inventario (SGI) es una aplicación basada en arquitectura moderna utilizando:
+El Sistema de Gestión de Inventario (DIAGTI) es una aplicación basada en arquitectura moderna utilizando:
 
 - Spring Boot (Backend)
 - PostgreSQL 17 (Base de datos)
@@ -61,7 +61,7 @@ SGI_FIIS
 # 🚀 Clonar el Proyecto
 
 git clone https://github.com/MakeinGon/SGI_FIIS.git
-cd SGI_FIIS
+cd DIAGTI_FIIS
 
 ---
 
@@ -104,7 +104,7 @@ docker ps
 
 Debe aparecer:
 
-sgi-postgres
+diagti-postgres
 
 ---
 
@@ -140,7 +140,7 @@ Este ejecuta todos los módulos en orden:
 
 # 🔌 Conexión a PostgreSQL
 
-docker exec -it sgi-postgres psql -U postgres -d sgi_db
+docker exec -it diagti_postgres psql -U postgres -d diagti_db
 
 ---
 
