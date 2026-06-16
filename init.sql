@@ -6,9 +6,9 @@
 --\i modules/sistemas.sql
 --\i modules/integraciones.sql
 
---\i modules/arquitectura.sql
---\i modules/infraestructura.sql
---\i modules/seguridad.sql
+\i Database/modules/arquitectura.sql
+\i Database/modules/infraestructura.sql
+\i Database/modules/seguridad.sql
 
 --\i modules/evidencias.sql
 --\i modules/validaciones.sql
