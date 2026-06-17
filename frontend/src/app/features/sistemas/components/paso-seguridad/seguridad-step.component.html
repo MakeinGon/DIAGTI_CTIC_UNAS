@@ -1,0 +1,108 @@
+<section
+  class="seguridad-step"
+  aria-labelledby="seguridad-step-title"
+  [formGroup]="seguridadForm"
+>
+  <header class="seguridad-step__header">
+    <h2 id="seguridad-step-title">Seguridad y evidencias</h2>
+    <p class="seguridad-step__description">
+      Paso 4: registre los controles de seguridad y adjunte evidencias de respaldo.
+    </p>
+  </header>
+
+  <div class="seguridad-step__field">
+    <label for="tipoControl">Tipo de control</label>
+    <input
+      id="tipoControl"
+      type="text"
+      formControlName="tipoControl"
+      aria-required="true"
+      [attr.aria-invalid]="
+        seguridadForm.controls['tipoControl'].invalid && seguridadForm.controls['tipoControl'].touched
+      "
+      [attr.aria-describedby]="
+        seguridadForm.controls['tipoControl'].invalid && seguridadForm.controls['tipoControl'].touched
+          ? 'tipoControl-error'
+          : null
+      "
+      placeholder="Ej.: control de acceso, cifrado, auditoría..."
+    />
+    @if (seguridadForm.controls['tipoControl'].invalid && seguridadForm.controls['tipoControl'].touched) {
+      <p id="tipoControl-error" class="seguridad-step__error" role="alert">
+        El tipo de control es obligatorio.
+      </p>
+    }
+  </div>
+
+  <div class="seguridad-step__field">
+    <label for="mecanismoAutenticacion">Mecanismo de autenticación</label>
+    <input
+      id="mecanismoAutenticacion"
+      type="text"
+      formControlName="mecanismoAutenticacion"
+      aria-required="true"
+      [attr.aria-invalid]="
+        seguridadForm.controls['mecanismoAutenticacion'].invalid &&
+        seguridadForm.controls['mecanismoAutenticacion'].touched
+      "
+      [attr.aria-describedby]="
+        seguridadForm.controls['mecanismoAutenticacion'].invalid &&
+        seguridadForm.controls['mecanismoAutenticacion'].touched
+          ? 'mecanismoAutenticacion-error'
+          : null
+      "
+      placeholder="Ej.: LDAP, OAuth 2.0, MFA..."
+    />
+    @if (
+      seguridadForm.controls['mecanismoAutenticacion'].invalid &&
+      seguridadForm.controls['mecanismoAutenticacion'].touched
+    ) {
+      <p id="mecanismoAutenticacion-error" class="seguridad-step__error" role="alert">
+        El mecanismo de autenticación es obligatorio.
+      </p>
+    }
+  </div>
+
+  <section class="seguridad-step__upload" aria-labelledby="evidencias-title">
+    <h3 id="evidencias-title">Carga de evidencias</h3>
+    <p class="seguridad-step__hint">
+      Arrastre archivos o selecciónelos desde su equipo. Por ahora solo se registrará el nombre del
+      archivo.
+    </p>
+
+    <div
+      class="seguridad-step__dropzone"
+      [class.seguridad-step__dropzone--active]="isDragOver()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <p>Arrastre y suelte archivos aquí</p>
+      <label class="seguridad-step__file-label">
+        Seleccionar archivos
+        <input
+          type="file"
+          class="seguridad-step__file-input"
+          multiple
+          (change)="onFileSelected($event)"
+          aria-label="Seleccionar archivos de evidencia"
+        />
+      </label>
+    </div>
+
+    @if (state().evidencias.length > 0) {
+      <ul class="seguridad-step__file-list" aria-label="Archivos de evidencia cargados">
+        @for (evidencia of state().evidencias; track evidencia.nombreArchivo) {
+          <li class="seguridad-step__file-item">
+            <span>{{ evidencia.nombreArchivo }}</span>
+            <button type="button" (click)="removeEvidencia(evidencia.nombreArchivo)">
+              Eliminar
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="seguridad-step__empty">No hay evidencias cargadas.</p>
+    }
+  </section>
+</section>

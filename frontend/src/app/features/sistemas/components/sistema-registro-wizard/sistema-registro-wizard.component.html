@@ -1,0 +1,33 @@
+<section class="registro-wizard" aria-label="Registro de sistemas">
+  <header class="registro-wizard__header">
+    <h1>Registro de sistemas</h1>
+    <p>Complete la información requerida en cada paso del formulario.</p>
+  </header>
+
+  <nav class="registro-wizard__steps" aria-label="Pasos del registro">
+    <span [class.registro-wizard__step--active]="currentStep() === 'infraestructura'">
+      Paso 3: Infraestructura
+    </span>
+    <span [class.registro-wizard__step--active]="currentStep() === 'seguridad'">
+      Paso 4: Seguridad
+    </span>
+  </nav>
+
+  @if (mensajeExito()) {
+    <div class="registro-wizard__alert registro-wizard__alert--success" role="status" aria-live="polite">
+      <p>{{ mensajeExito() }}</p>
+      <button type="button" (click)="cerrarMensaje()" aria-label="Cerrar mensaje de confirmación">
+        Cerrar
+      </button>
+    </div>
+  }
+
+  <router-outlet />
+
+  <footer class="registro-wizard__actions">
+    <button type="button" [disabled]="esPrimerPaso()" (click)="irAnterior()">Anterior</button>
+    <button type="button" [disabled]="!pasoActualValido()" (click)="irSiguiente()">
+      {{ etiquetaSiguiente() }}
+    </button>
+  </footer>
+</section>

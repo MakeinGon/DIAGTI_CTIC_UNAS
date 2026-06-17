@@ -1,0 +1,113 @@
+.registro-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.registro-wizard__header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.3;
+}
+
+.registro-wizard__header p {
+  margin: 0.5rem 0 0;
+  color: #4b5563;
+}
+
+.registro-wizard__steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.registro-wizard__steps span {
+  padding: 0.5rem 0.875rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.registro-wizard__step--active {
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.registro-wizard__alert {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+}
+
+.registro-wizard__alert p {
+  margin: 0;
+}
+
+.registro-wizard__alert button {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.registro-wizard__alert--success {
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+  color: #065f46;
+}
+
+.registro-wizard__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.registro-wizard__actions button {
+  min-width: 8rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.registro-wizard__actions button:first-child {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.registro-wizard__actions button:first-child:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.registro-wizard__actions button:last-child {
+  margin-left: auto;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.registro-wizard__actions button:last-child:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background: #93c5fd;
+}
+
+.registro-wizard__actions button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}

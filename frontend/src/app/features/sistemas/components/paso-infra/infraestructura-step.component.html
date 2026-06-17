@@ -1,0 +1,44 @@
+<section
+  class="infraestructura-step"
+  aria-labelledby="infraestructura-step-title"
+  [formGroup]="infraestructuraForm"
+>
+  <header class="infraestructura-step__header">
+    <h2 id="infraestructura-step-title">Infraestructura tecnológica</h2>
+    <p class="infraestructura-step__description">
+      Paso 3: describe la capacidad y recursos de infraestructura del sistema.
+    </p>
+  </header>
+
+  <div class="infraestructura-step__field">
+    <label for="capacidadRecursos">Capacidad de recursos</label>
+    <textarea
+      id="capacidadRecursos"
+      rows="6"
+      formControlName="capacidadRecursos"
+      aria-required="true"
+      [attr.aria-invalid]="
+        infraestructuraForm.controls['capacidadRecursos'].invalid &&
+        infraestructuraForm.controls['capacidadRecursos'].touched
+      "
+      [attr.aria-describedby]="
+        infraestructuraForm.controls['capacidadRecursos'].invalid &&
+        infraestructuraForm.controls['capacidadRecursos'].touched
+          ? 'capacidadRecursos-error'
+          : 'capacidadRecursos-hint'
+      "
+      placeholder="Ej.: servidores, almacenamiento, red, escalabilidad..."
+    ></textarea>
+    <p id="capacidadRecursos-hint" class="infraestructura-step__hint">
+      Incluye detalle sobre servidores, almacenamiento, red y escalabilidad disponible.
+    </p>
+    @if (
+      infraestructuraForm.controls['capacidadRecursos'].invalid &&
+      infraestructuraForm.controls['capacidadRecursos'].touched
+    ) {
+      <p id="capacidadRecursos-error" class="infraestructura-step__error" role="alert">
+        La capacidad de recursos es obligatoria.
+      </p>
+    }
+  </div>
+</section>

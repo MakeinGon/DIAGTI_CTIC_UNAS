@@ -1,0 +1,144 @@
+.seguridad-step {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 42rem;
+}
+
+.seguridad-step__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.seguridad-step__header h2,
+.seguridad-step__upload h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.seguridad-step__upload h3 {
+  font-size: 1.125rem;
+}
+
+.seguridad-step__description,
+.seguridad-step__hint,
+.seguridad-step__empty {
+  margin: 0;
+  color: #4b5563;
+}
+
+.seguridad-step__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.seguridad-step__field label {
+  font-weight: 600;
+}
+
+.seguridad-step__field input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+.seguridad-step__field input:focus-visible,
+.seguridad-step__file-label:focus-within,
+.seguridad-step__file-item button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.seguridad-step__error {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #b91c1c;
+}
+
+.seguridad-step__upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.seguridad-step__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  border: 2px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.seguridad-step__dropzone--active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.seguridad-step__dropzone p {
+  margin: 0;
+  color: #475569;
+}
+
+.seguridad-step__file-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.seguridad-step__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.seguridad-step__file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.seguridad-step__file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #ffffff;
+}
+
+.seguridad-step__file-item button {
+  border: 0;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: #fee2e2;
+  color: #991b1b;
+  font: inherit;
+  cursor: pointer;
+}
