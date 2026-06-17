@@ -12,3 +12,9 @@
 \i DataBase/modules/arquitectura.sql
 \i DataBase/modules/infraestructura.sql
 \i DataBase/modules/seguridad.sql
+
+
+-- Módulo: Evidencias, Validaciones y Observaciones
+\i DataBase/modules/evidencias.sql
+\i DataBase/modules/validaciones.sql
+\i DataBase/modules/observaciones.sql
