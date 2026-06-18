@@ -33,6 +33,12 @@ export class ValidacionService {
 
   private validations: any[] = [];
 
+  getValidations(id: number) {
+  return this.validations.filter(
+    v => v.id === id
+  );
+  }
+
   getHistorial(id: number) {
   return this.validations.filter(v => v.id === id);
   } 
@@ -47,9 +53,21 @@ export class ValidacionService {
   }
 
   registerValidation(id: number, resultado: Estado, observacion?: string) {
-    const item = this.getById(id);
-    if (!item) throw new Error('No encontrado');
-    item.estado = resultado;
-    this.validations.push({ id, resultado, observacion, fecha: new Date().toISOString() });
+
+  const item = this.getById(id);
+
+  if (!item) {
+    throw new Error('No encontrado');
+  }
+
+  item.estado = resultado;
+
+  this.validations.push({
+    id,
+    resultado,
+    observacion,
+    fecha: new Date().toLocaleString()
+  });
+
   }
 }

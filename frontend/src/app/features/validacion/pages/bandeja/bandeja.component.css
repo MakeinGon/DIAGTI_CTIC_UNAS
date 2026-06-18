@@ -1,305 +1,171 @@
-/* ==========================
-   CONTENEDOR GENERAL
-========================== */
-
-.page-container {
-  padding: 24px;
-  background: #f4f7fb;
-  min-height: 100vh;
+*{
+    box-sizing:border-box;
 }
 
-.page-header {
-  margin-bottom: 24px;
+.page{
+    background:#f4f6f8;
+    min-height:100vh;
+    padding:30px;
 }
 
-.page-header h1 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 28px;
-  font-weight: 700;
+.page-header{
+    margin-bottom:20px;
 }
 
-.page-header p {
-  margin-top: 6px;
-  color: #64748b;
+.page-header h1{
+    margin:0;
+    font-size:32px;
+    color:#1f2937;
 }
 
-/* ==========================
-   KPI CARDS
-========================== */
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 18px;
-  margin-bottom: 25px;
+.page-header p{
+    margin-top:8px;
+    color:#6b7280;
 }
 
-.kpi-card {
-  background: white;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 4px 14px rgba(0,0,0,.08);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  transition: .25s;
+.card{
+    background:#ffffff;
+    border-radius:12px;
+    border:1px solid #e5e7eb;
+    padding:20px;
 }
 
-.kpi-card:hover {
-  transform: translateY(-3px);
+.filters{
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
 }
 
-.kpi-number {
-  font-size: 34px;
-  font-weight: bold;
+.filters input{
+    flex:1;
 }
 
-.kpi-label {
-  margin-top: 8px;
-  color: #475569;
-  font-size: 14px;
+.filters input,
+.filters select{
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:14px;
 }
 
-/* COLORES KPI */
-
-.total {
-  border-left: 6px solid #2563eb;
+.tabla{
+    width:100%;
+    border-collapse:collapse;
 }
 
-.enviado {
-  border-left: 6px solid #0d6efd;
+.tabla thead{
+    background:#f8fafc;
 }
 
-.aprobado {
-  border-left: 6px solid #198754;
+.tabla th{
+    padding:14px;
+    text-align:left;
+    font-size:14px;
+    color:#374151;
+    border-bottom:1px solid #e5e7eb;
+    cursor:pointer;
 }
 
-.observado {
-  border-left: 6px solid #fd7e14;
+.tabla td{
+    padding:14px;
+    border-bottom:1px solid #eef2f7;
 }
 
-.rechazado {
-  border-left: 6px solid #dc3545;
+.tabla tr:hover{
+    background:#fafafa;
 }
 
-/* ==========================
-   CARDS
-========================== */
-
-.card {
-  background: white;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0,0,0,.08);
-  margin-bottom: 24px;
+.badge{
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
 }
 
-.card-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f8fafc;
+.estado-ENVIADO{
+    background:#dbeafe;
+    color:#1d4ed8;
 }
 
-.card-header h3 {
-  margin: 0;
-  color: #0f172a;
+.estado-APROBADO{
+    background:#dcfce7;
+    color:#166534;
 }
 
-.card-body {
-  padding: 20px;
+.estado-OBSERVADO{
+    background:#fef3c7;
+    color:#92400e;
 }
 
-/* ==========================
-   FILTROS
-========================== */
-
-.controls {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+.estado-RECHAZADO{
+    background:#fee2e2;
+    color:#991b1b;
 }
 
-.controls input {
-  flex: 1;
-  min-width: 250px;
-
-  padding: 10px 12px;
-
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-
-  outline: none;
+.riesgo-BAJO{
+    background:#dcfce7;
+    color:#166534;
 }
 
-.controls input:focus {
-  border-color: #2563eb;
+.riesgo-MEDIO{
+    background:#fef3c7;
+    color:#92400e;
 }
 
-.controls select {
-  min-width: 220px;
-
-  padding: 10px 12px;
-
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+.riesgo-ALTO{
+    background:#fed7aa;
+    color:#9a3412;
 }
 
-/* ==========================
-   TABLA
-========================== */
-
-.tabla {
-  width: 100%;
-  border-collapse: collapse;
+.riesgo-CRITICO{
+    background:#fee2e2;
+    color:#991b1b;
 }
 
-.tabla thead {
-  background: #f1f5f9;
+.btn-review{
+    background:#166534;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:8px 16px;
+    cursor:pointer;
+    font-weight:600;
 }
 
-.tabla th {
-  padding: 14px;
-  text-align: left;
-  cursor: pointer;
-  color: #334155;
-  font-weight: 600;
+.btn-review:hover{
+    background:#14532d;
 }
 
-.tabla td {
-  padding: 14px;
-  border-top: 1px solid #e2e8f0;
+.pagination{
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
-.tabla tbody tr:hover {
-  background: #f8fafc;
+.pagination button{
+    background:#166534;
+    color:white;
+    border:none;
+    padding:10px 14px;
+    border-radius:8px;
+    cursor:pointer;
 }
 
-/* ==========================
-   BADGES
-========================== */
-
-.badge {
-  display: inline-block;
-  padding: 6px 12px;
-
-  border-radius: 50px;
-
-  font-size: 12px;
-  font-weight: 600;
-
-  color: white;
+.pagination button:disabled{
+    background:#cbd5e1;
+    cursor:not-allowed;
 }
 
-/* ESTADOS */
+@media(max-width:768px){
 
-.estado-ENVIADO {
-  background: #0d6efd;
-}
+    .filters{
+        flex-direction:column;
+    }
 
-.estado-APROBADO {
-  background: #198754;
-}
-
-.estado-OBSERVADO {
-  background: #fd7e14;
-}
-
-.estado-RECHAZADO {
-  background: #dc3545;
-}
-
-/* RIESGOS */
-
-.riesgo-BAJO {
-  background: #198754;
-}
-
-.riesgo-MEDIO {
-  background: #ffc107;
-  color: #1f2937;
-}
-
-.riesgo-ALTO {
-  background: #fd7e14;
-}
-
-.riesgo-CRITICO {
-  background: #dc3545;
-}
-
-/* ==========================
-   BOTONES
-========================== */
-
-.btn-primary {
-  background: #2563eb;
-  color: white;
-
-  border: none;
-  border-radius: 8px;
-
-  padding: 10px 16px;
-
-  cursor: pointer;
-  transition: .25s;
-}
-
-.btn-primary:hover {
-  background: #1d4ed8;
-}
-
-/* ==========================
-   PAGINACIÓN
-========================== */
-
-.pager {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  gap: 15px;
-
-  margin-top: 25px;
-}
-
-.pager button {
-  padding: 8px 14px;
-
-  border: none;
-  border-radius: 8px;
-
-  background: #2563eb;
-  color: white;
-
-  cursor: pointer;
-}
-
-.pager button:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-}
-
-/* ==========================
-   RESPONSIVE
-========================== */
-
-@media (max-width: 900px) {
-
-  .tabla {
-    display: block;
-    overflow-x: auto;
-  }
-
-  .controls {
-    flex-direction: column;
-  }
-
-  .controls input,
-  .controls select {
-    width: 100%;
-  }
+    .tabla{
+        display:block;
+        overflow-x:auto;
+    }
 
 }

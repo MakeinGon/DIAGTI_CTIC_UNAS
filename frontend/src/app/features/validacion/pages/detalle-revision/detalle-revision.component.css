@@ -1,288 +1,140 @@
-/* ==========================
-   CONTENEDOR GENERAL
-========================== */
-
-.detail-container {
-  padding: 24px;
-  background: #f4f7fb;
-  min-height: 100vh;
+.page{
+    background:#f4f6f8;
+    min-height:100vh;
+    padding:30px;
 }
 
-/* ==========================
-   CABECERA
-========================== */
-
-.hero-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  margin-bottom: 24px;
-
-  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+.page-header{
+    margin-bottom:20px;
 }
 
-.hero-card h1 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 28px;
+.page-header h1{
+    margin:0;
+    color:#1f2937;
+    font-size:32px;
 }
 
-.hero-card p {
-  margin-top: 5px;
-  color: #64748b;
+.page-header p{
+    color:#6b7280;
+    margin-top:6px;
 }
 
-.hero-badges {
-  display: flex;
-  gap: 10px;
+.content{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
 }
 
-/* ==========================
-   GRID
-========================== */
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
-  gap: 20px;
-  margin-bottom: 24px;
+.card{
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:20px;
 }
 
-/* ==========================
-   PANEL
-========================== */
-
-.panel {
-  background: white;
-  border-radius: 14px;
-  padding: 20px;
-
-  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+.card-title{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:20px;
+    color:#166534;
 }
 
-.panel h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-
-  color: #0f172a;
-  border-bottom: 1px solid #e5e7eb;
-
-  padding-bottom: 10px;
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
 }
 
-/* ==========================
-   INFO
-========================== */
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-
-  padding: 10px 0;
-
-  border-bottom: 1px solid #f1f5f9;
+.info-item{
+    display:flex;
+    flex-direction:column;
 }
 
-.info-row span {
-  color: #64748b;
+.info-item label{
+    font-size:13px;
+    color:#6b7280;
+    margin-bottom:4px;
 }
 
-.info-row strong {
-  color: #0f172a;
+.info-item span{
+    font-weight:600;
+    color:#1f2937;
 }
 
-/* ==========================
-   EVIDENCIAS
-========================== */
-
-.files {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.evidencias{
+    padding-left:20px;
 }
 
-.files li {
-  background: #f8fafc;
-
-  margin-bottom: 8px;
-  padding: 12px;
-
-  border-radius: 8px;
+.evidencias li{
+    margin-bottom:10px;
 }
 
-/* ==========================
-   AUDITORIA
-========================== */
-
-.audit-card {
-  background: white;
-
-  border-radius: 16px;
-  padding: 24px;
-
-  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+.form-group{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:20px;
 }
 
-.audit-card h2 {
-  margin-top: 0;
-  margin-bottom: 20px;
+.form-group label{
+    margin-bottom:8px;
+    font-weight:600;
 }
 
-/* ==========================
-   RADIO BUTTONS
-========================== */
-
-.radio-group {
-  display: flex;
-  gap: 25px;
-  margin-bottom: 20px;
+.form-group select,
+.form-group textarea{
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    padding:12px;
+    font-size:14px;
 }
 
-.radio-group label {
-  font-weight: 600;
+.actions{
+    display:flex;
+    gap:10px;
 }
 
-/* ==========================
-   TEXTAREA
-========================== */
-
-textarea {
-  width: 100%;
-  resize: vertical;
-
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-
-  padding: 12px;
-
-  font-size: 14px;
+.btn-success{
+    background:#166534;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
 }
 
-/* ==========================
-   BOTONES
-========================== */
-
-.actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
+.btn-success:hover{
+    background:#14532d;
 }
 
-.btn-success {
-  background: #198754;
-  color: white;
-
-  border: none;
-  border-radius: 8px;
-
-  padding: 12px 18px;
-
-  cursor: pointer;
+.btn-secondary{
+    background:#6b7280;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
 }
 
-.btn-success:hover {
-  background: #157347;
+.error{
+    color:#dc2626;
+    margin-top:6px;
 }
 
-.btn-secondary {
-  background: #6c757d;
-  color: white;
+.audit-item{
 
-  border: none;
-  border-radius: 8px;
+    border:1px solid #e5e7eb;
 
-  padding: 12px 18px;
+    padding:15px;
 
-  cursor: pointer;
+    margin-bottom:10px;
+
+    border-radius:8px;
+
+    background:#f9fafb;
+
 }
 
-.btn-secondary:hover {
-  background: #5c636a;
-}
 
-/* ==========================
-   BADGES
-========================== */
-
-.badge {
-  padding: 8px 14px;
-  border-radius: 50px;
-
-  color: white;
-  font-weight: 600;
-}
-
-/* ESTADOS */
-
-.estado-ENVIADO {
-  background: #0d6efd;
-}
-
-.estado-APROBADO {
-  background: #198754;
-}
-
-.estado-OBSERVADO {
-  background: #fd7e14;
-}
-
-.estado-RECHAZADO {
-  background: #dc3545;
-}
-
-/* RIESGOS */
-
-.riesgo-BAJO {
-  background: #198754;
-}
-
-.riesgo-MEDIO {
-  background: #ffc107;
-  color: #1f2937;
-}
-
-.riesgo-ALTO {
-  background: #fd7e14;
-}
-
-.riesgo-CRITICO {
-  background: #dc3545;
-}
-
-/* ==========================
-   ERRORES
-========================== */
-
-.error {
-  color: #dc3545;
-  margin-top: 8px;
-  font-size: 13px;
-}
-
-/* ==========================
-   RESPONSIVE
-========================== */
-
-@media(max-width:768px){
-
-  .hero-card{
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .radio-group{
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .actions{
-    flex-direction: column;
-  }
-
+.audit-item strong{
+    color:#166534;
 }
