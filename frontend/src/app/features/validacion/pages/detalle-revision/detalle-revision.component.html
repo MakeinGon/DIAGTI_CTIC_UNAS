@@ -195,7 +195,40 @@
       </form>
 
     </div>
+    <div class="card">
 
+  <div class="card-title">
+    Historial de Auditoría
+  </div>
+
+  <div *ngIf="historial.length === 0">
+
+    No existen validaciones registradas.
+
+  </div>
+
+  <div
+    class="audit-item"
+    *ngFor="let h of historial">
+
+    <div>
+      <strong>Fecha:</strong>
+      {{h.fecha}}
+    </div>
+
+    <div>
+      <strong>Resultado:</strong>
+      {{h.resultado}}
+    </div>
+
+    <div>
+      <strong>Observación:</strong>
+      {{h.observacion || '-'}}
+    </div>
+
+  </div>
+
+</div>
   </div>
 
 </div>
