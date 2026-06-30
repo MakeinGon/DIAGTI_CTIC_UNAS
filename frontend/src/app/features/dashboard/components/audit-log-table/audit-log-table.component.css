@@ -1,0 +1,154 @@
+.audit-log {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.audit-log__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.audit-log__header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.audit-log__header p {
+  margin: 0.35rem 0 0;
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+.audit-log__clear {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.audit-log__clear:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.audit-log__filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.audit-log__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.audit-log__field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.audit-log__field select,
+.audit-log__field input {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+.audit-log__field select:focus-visible,
+.audit-log__field input:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.audit-log__status {
+  margin: 0;
+  color: #2563eb;
+  font-size: 0.875rem;
+}
+
+.audit-log__error {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 0.875rem;
+}
+
+.audit-log__pagination {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.audit-log__table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+}
+
+.audit-log__caption {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.audit-log__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 56rem;
+}
+
+.audit-log__table th,
+.audit-log__table td {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+  font-size: 0.875rem;
+}
+
+.audit-log__table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.audit-log__table tbody tr:nth-child(even) {
+  background: #fcfcfd;
+}
+
+.audit-log__action {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.audit-log__empty {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem 1rem;
+}
+
+@media (max-width: 900px) {
+  .audit-log__filters {
+    grid-template-columns: 1fr;
+  }
+
+  .audit-log__header {
+    flex-direction: column;
+  }
+}

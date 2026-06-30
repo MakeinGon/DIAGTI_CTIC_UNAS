@@ -1,0 +1,95 @@
+<section class="audit-log" aria-labelledby="audit-log-title">
+  <header class="audit-log__header">
+    <div>
+      <h2 id="audit-log-title">Bitácora de auditoría</h2>
+      <p>Consulta de solo lectura del historial de acciones registradas en el sistema.</p>
+    </div>
+    <button type="button" class="audit-log__clear" (click)="limpiarFiltros()">Limpiar filtros</button>
+  </header>
+
+  <form class="audit-log__filters" [formGroup]="filtrosForm" aria-label="Filtros de bitácora">
+    <div class="audit-log__field">
+      <label for="filtro-modulo">Módulo</label>
+      <select id="filtro-modulo" formControlName="modulo">
+        <option value="">Todos</option>
+        @for (modulo of modulos(); track modulo) {
+          <option [value]="modulo">{{ modulo }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="audit-log__field">
+      <label for="filtro-accion">Acción</label>
+      <select id="filtro-accion" formControlName="accion">
+        <option value="">Todas</option>
+        @for (accion of acciones(); track accion) {
+          <option [value]="accion">{{ accion }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="audit-log__field audit-log__field--wide">
+      <label for="filtro-busqueda">Buscar</label>
+      <input
+        id="filtro-busqueda"
+        type="search"
+        formControlName="busqueda"
+        placeholder="Usuario, módulo o descripción..."
+      />
+    </div>
+  </form>
+
+  @if (error()) {
+    <p class="audit-log__error" role="alert">{{ error() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="audit-log__status" role="status">Cargando bitácora...</p>
+  }
+
+  <div class="audit-log__table-wrapper" [attr.aria-busy]="cargando()">
+    <table class="audit-log__table">
+      <caption class="audit-log__caption">
+        Registros de auditoría del sistema DIAGTI (solo lectura)
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Fecha</th>
+          <th scope="col">Usuario</th>
+          <th scope="col">Módulo</th>
+          <th scope="col">Acción</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (registros()?.length === 0 && !cargando()) {
+          <tr>
+            <td colspan="7" class="audit-log__empty">No se encontraron registros con los filtros aplicados.</td>
+          </tr>
+        } @else {
+          @for (registro of registros(); track registro.idAuditoria) {
+            <tr>
+              <td>{{ registro.idAuditoria }}</td>
+              <td>
+                <time [dateTime]="registro.fechaEvento">
+                  {{ registro.fechaEvento | date: 'dd/MM/yyyy HH:mm' }}
+                </time>
+              </td>
+              <td>{{ registro.nombreUsuario }}</td>
+              <td>{{ registro.modulo }}</td>
+              <td><span class="audit-log__action">{{ registro.accion }}</span></td>
+              <td>{{ registro.descripcion }}</td>
+              <td>{{ registro.direccionIp ?? '—' }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="audit-log__pagination" aria-live="polite">
+    Mostrando {{ registros()?.length ?? 0 }} de {{ totalElementos() }} registros
+  </p>
+</section>

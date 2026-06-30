@@ -1,0 +1,127 @@
+.overview {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.overview__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.overview__header h1 {
+  margin: 0;
+  font-size: 1.875rem;
+  line-height: 1.2;
+}
+
+.overview__header p {
+  margin: 0.5rem 0 0;
+  color: #6b7280;
+}
+
+.overview__risk-index {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  min-width: 12rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+}
+
+.overview__risk-index-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+.overview__risk-index strong {
+  font-size: 2rem;
+  line-height: 1;
+  color: #7f1d1d;
+}
+
+.overview__risk-index-hint {
+  font-size: 0.75rem;
+  color: #b91c1c;
+  text-align: right;
+}
+
+.overview__loading {
+  margin: 0;
+  color: #2563eb;
+}
+
+.overview__error {
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.overview__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.overview__charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.overview__chart-card {
+  padding: 1rem 1rem 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+}
+
+.overview__chart-card h2 {
+  margin: 0 0 0.5rem;
+  padding: 0 0.25rem;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.overview__chart-card--wide {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1100px) {
+  .overview__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .overview__header {
+    flex-direction: column;
+  }
+
+  .overview__risk-index {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .overview__risk-index-hint {
+    text-align: left;
+  }
+
+  .overview__metrics,
+  .overview__charts {
+    grid-template-columns: 1fr;
+  }
+}

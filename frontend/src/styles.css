@@ -1,1 +1,26 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles */
+:root {
+  --riesgo-alto: #dc2626;
+  --riesgo-medio: #d97706;
+  --riesgo-bajo: #16a34a;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: #111827;
+  background: #f3f4f6;
+}

@@ -1,0 +1,83 @@
+<div class="overview" aria-labelledby="overview-title">
+  <header class="overview__header">
+    <div>
+      <h1 id="overview-title">Panel ejecutivo DIAGTI</h1>
+      <p>Indicadores de riesgo, métricas institucionales y bitácora de auditoría.</p>
+    </div>
+    <aside class="overview__risk-index" aria-label="Índice global de riesgo">
+      <span class="overview__risk-index-label">Índice de riesgo global</span>
+      <strong>{{ indiceRiesgoGlobal() }}%</strong>
+      <span class="overview__risk-index-hint">Calculado automáticamente (sistemas ALTO / total)</span>
+    </aside>
+  </header>
+
+  @if (error()) {
+    <p class="overview__error" role="alert">{{ error() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="overview__loading" role="status">Cargando panel ejecutivo...</p>
+  } @else {
+    <section class="overview__metrics" aria-label="Métricas rápidas">
+      @for (metrica of metricas(); track metrica.id) {
+        <app-stats-card
+          [titulo]="metrica.titulo"
+          [valor]="metrica.valor"
+          [descripcion]="metrica.descripcion"
+          [nivelRiesgo]="metrica.nivelRiesgo ?? null"
+          [variacionPorcentual]="metrica.variacionPorcentual ?? null"
+        />
+      }
+    </section>
+
+    <section class="overview__charts" aria-label="Gráficos ejecutivos">
+      @if (riesgoChart(); as chart) {
+        <article class="overview__chart-card">
+          <h2>Distribución por nivel de riesgo</h2>
+          <apx-chart
+            [series]="chart.series"
+            [chart]="chart.chart"
+            [labels]="chart.labels ?? []"
+            [colors]="chart.colors ?? []"
+            [legend]="chart.legend ?? {}"
+            [dataLabels]="chart.dataLabels ?? {}"
+            [plotOptions]="chart.plotOptions ?? {}"
+          />
+        </article>
+      }
+
+      @if (criticidadChart(); as chart) {
+        <article class="overview__chart-card">
+          <h2>Sistemas por criticidad</h2>
+          <apx-chart
+            [series]="chart.series"
+            [chart]="chart.chart"
+            [colors]="chart.colors ?? []"
+            [plotOptions]="chart.plotOptions ?? {}"
+            [dataLabels]="chart.dataLabels ?? {}"
+            [xaxis]="chart.xaxis ?? {}"
+            [yaxis]="chart.yaxis ?? {}"
+          />
+        </article>
+      }
+
+      @if (actividadChart(); as chart) {
+        <article class="overview__chart-card overview__chart-card--wide">
+          <h2>Actividad de auditoría (últimos 7 días)</h2>
+          <apx-chart
+            [series]="chart.series"
+            [chart]="chart.chart"
+            [colors]="chart.colors ?? []"
+            [stroke]="chart.stroke ?? {}"
+            [fill]="chart.fill ?? {}"
+            [dataLabels]="chart.dataLabels ?? {}"
+            [xaxis]="chart.xaxis ?? {}"
+            [yaxis]="chart.yaxis ?? {}"
+          />
+        </article>
+      }
+    </section>
+  }
+
+  <app-audit-log-table />
+</div>

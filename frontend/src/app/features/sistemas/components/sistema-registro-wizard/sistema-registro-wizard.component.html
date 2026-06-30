@@ -1,9 +1,12 @@
+<!-- Contenedor principal del wizard de registro. -->
 <section class="registro-wizard" aria-label="Registro de sistemas">
+  <!-- Encabezado del proceso. -->
   <header class="registro-wizard__header">
     <h1>Registro de sistemas</h1>
     <p>Complete la información requerida en cada paso del formulario.</p>
   </header>
 
+  <!-- Indicador visual del paso actual. -->
   <nav class="registro-wizard__steps" aria-label="Pasos del registro">
     <span [class.registro-wizard__step--active]="currentStep() === 'infraestructura'">
       Paso 3: Infraestructura
@@ -13,6 +16,7 @@
     </span>
   </nav>
 
+  <!-- Mensaje de confirmación cuando la validación termina. -->
   @if (mensajeExito()) {
     <div class="registro-wizard__alert registro-wizard__alert--success" role="status" aria-live="polite">
       <p>{{ mensajeExito() }}</p>
@@ -22,8 +26,10 @@
     </div>
   }
 
+  <!-- Contenido dinámico del paso actual. -->
   <router-outlet />
 
+  <!-- Acciones de navegación del wizard. -->
   <footer class="registro-wizard__actions">
     <button type="button" [disabled]="esPrimerPaso()" (click)="irAnterior()">Anterior</button>
     <button type="button" [disabled]="!pasoActualValido()" (click)="irSiguiente()">

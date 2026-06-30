@@ -10,24 +10,33 @@ import { SistemasFormService } from '../../../../core/services/sistemas-form.ser
   styleUrl: './seguridad-step.component.css',
 })
 export class SeguridadStepComponent {
+  // Servicio compartido para manejar el estado y datos del wizard.
   private readonly sistemasFormService = inject(SistemasFormService);
 
+  // Formulario reactivo de la etapa de seguridad.
   protected readonly seguridadForm = this.sistemasFormService.seguridadForm;
+
+  // Estado actual del proceso para actualizar la UI.
   protected readonly state = toSignal(this.sistemasFormService.state$, {
     initialValue: this.sistemasFormService.currentState,
   });
+
+  // Indica si el área de carga está resaltada.
   protected readonly isDragOver = signal(false);
 
+  // Marca el área como activa al arrastrar archivos.
   protected onDragOver(event: DragEvent): void {
     event.preventDefault();
     this.isDragOver.set(true);
   }
 
+  // Quita el resaltado cuando el arrastre sale del área.
   protected onDragLeave(event: DragEvent): void {
     event.preventDefault();
     this.isDragOver.set(false);
   }
 
+  // Agrega los archivos soltados al formulario.
   protected onDrop(event: DragEvent): void {
     event.preventDefault();
     this.isDragOver.set(false);
@@ -38,6 +47,7 @@ export class SeguridadStepComponent {
     }
   }
 
+  // Añade archivos seleccionados desde el input.
   protected onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files?.length) {
@@ -46,6 +56,7 @@ export class SeguridadStepComponent {
     }
   }
 
+  // Elimina una evidencia de la lista.
   protected removeEvidencia(nombreArchivo: string): void {
     this.sistemasFormService.removeEvidencia(nombreArchivo);
   }

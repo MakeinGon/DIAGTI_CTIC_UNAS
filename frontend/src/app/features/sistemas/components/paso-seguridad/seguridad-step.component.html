@@ -1,8 +1,10 @@
+<!-- Paso del wizard para registrar controles de seguridad y evidencias. -->
 <section
   class="seguridad-step"
   aria-labelledby="seguridad-step-title"
   [formGroup]="seguridadForm"
 >
+  <!-- Encabezado del paso. -->
   <header class="seguridad-step__header">
     <h2 id="seguridad-step-title">Seguridad y evidencias</h2>
     <p class="seguridad-step__description">
@@ -10,6 +12,7 @@
     </p>
   </header>
 
+  <!-- Campo para definir el tipo de control. -->
   <div class="seguridad-step__field">
     <label for="tipoControl">Tipo de control</label>
     <input
@@ -34,6 +37,7 @@
     }
   </div>
 
+  <!-- Campo para indicar el mecanismo de autenticación. -->
   <div class="seguridad-step__field">
     <label for="mecanismoAutenticacion">Mecanismo de autenticación</label>
     <input
@@ -63,6 +67,7 @@
     }
   </div>
 
+  <!-- Sección para subir y listar evidencias. -->
   <section class="seguridad-step__upload" aria-labelledby="evidencias-title">
     <h3 id="evidencias-title">Carga de evidencias</h3>
     <p class="seguridad-step__hint">
@@ -70,6 +75,7 @@
       archivo.
     </p>
 
+    <!-- Área de arrastrar y soltar archivos. -->
     <div
       class="seguridad-step__dropzone"
       [class.seguridad-step__dropzone--active]="isDragOver()"
@@ -90,6 +96,7 @@
       </label>
     </div>
 
+    <!-- Lista de evidencias cargadas. -->
     @if (state().evidencias.length > 0) {
       <ul class="seguridad-step__file-list" aria-label="Archivos de evidencia cargados">
         @for (evidencia of state().evidencias; track evidencia.nombreArchivo) {

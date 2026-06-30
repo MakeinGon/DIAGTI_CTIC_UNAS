@@ -1,8 +1,10 @@
+<!-- Paso del wizard para describir la infraestructura del sistema. -->
 <section
   class="infraestructura-step"
   aria-labelledby="infraestructura-step-title"
   [formGroup]="infraestructuraForm"
 >
+  <!-- Encabezado del paso. -->
   <header class="infraestructura-step__header">
     <h2 id="infraestructura-step-title">Infraestructura tecnológica</h2>
     <p class="infraestructura-step__description">
@@ -10,6 +12,7 @@
     </p>
   </header>
 
+  <!-- Campo principal para detallar recursos y capacidad. -->
   <div class="infraestructura-step__field">
     <label for="capacidadRecursos">Capacidad de recursos</label>
     <textarea
@@ -29,9 +32,13 @@
       "
       placeholder="Ej.: servidores, almacenamiento, red, escalabilidad..."
     ></textarea>
+
+    <!-- Ayuda para orientar qué información debe incluirse. -->
     <p id="capacidadRecursos-hint" class="infraestructura-step__hint">
       Incluye detalle sobre servidores, almacenamiento, red y escalabilidad disponible.
     </p>
+
+    <!-- Mensaje de validación si el campo está incompleto. -->
     @if (
       infraestructuraForm.controls['capacidadRecursos'].invalid &&
       infraestructuraForm.controls['capacidadRecursos'].touched

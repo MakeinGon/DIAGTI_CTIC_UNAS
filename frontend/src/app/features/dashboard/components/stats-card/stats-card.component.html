@@ -1,0 +1,24 @@
+<article class="stats-card" [class]="nivelRiesgo() ? (nivelRiesgo()! | riesgoColor) : 'riesgo-neutral'">
+  <header class="stats-card__header">
+    <h3 class="stats-card__title">{{ titulo() }}</h3>
+    @if (nivelRiesgo()) {
+      <span class="stats-card__badge">{{ nivelRiesgo() }}</span>
+    }
+  </header>
+
+  <p class="stats-card__value" aria-live="polite">{{ valor() }}</p>
+
+  @if (descripcion()) {
+    <p class="stats-card__description">{{ descripcion() }}</p>
+  }
+
+  @if (variacionTexto()) {
+    <p
+      class="stats-card__trend"
+      [class.stats-card__trend--up]="variacionPositiva()"
+      [class.stats-card__trend--down]="!variacionPositiva()"
+    >
+      {{ variacionTexto() }}
+    </p>
+  }
+</article>
