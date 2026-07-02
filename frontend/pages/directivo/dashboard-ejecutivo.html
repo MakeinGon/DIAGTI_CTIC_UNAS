@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Ejecutivo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="sidebar-container"></div>
+
+    <main class="content">
+
+        <section class="page-header">
+            <h1>Dashboard Ejecutivo</h1>
+            <p>Estado general del inventario de sistemas TI para la toma de decisiones directivas.</p>
+        </section>
+
+        <section class="info-grid">
+            <div class="info-card">
+                <h3>Total de Sistemas</h3>
+                <strong>48</strong>
+                <p>Sistemas registrados en el inventario institucional.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Sistemas Validados</h3>
+                <strong>31</strong>
+                <p>Sistemas revisados por las áreas responsables.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Pendientes</h3>
+                <strong>17</strong>
+                <p>Sistemas pendientes de diagnóstico o validación.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Criticidad Alta</h3>
+                <strong>12</strong>
+                <p>Sistemas con impacto alto en la institución.</p>
+            </div>
+        </section>
+
+        <section class="table-box">
+            <h2>Top 5 sistemas estratégicos</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sistema</th>
+                        <th>Área Usuaria</th>
+                        <th>Criticidad</th>
+                        <th>Estado</th>
+                        <th>Responsable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sistema Académico</td>
+                        <td>Dirección Académica</td>
+                        <td><span class="badge badge-alto">Alta</span></td>
+                        <td>En producción</td>
+                        <td>Responsable Funcional</td>
+                    </tr>
+                    <tr>
+                        <td>Sistema de Matrícula</td>
+                        <td>Registros Académicos</td>
+                        <td><span class="badge badge-alto">Alta</span></td>
+                        <td>En producción</td>
+                        <td>Coordinador TI</td>
+                    </tr>
+                    <tr>
+                        <td>Sistema de Biblioteca</td>
+                        <td>Biblioteca Central</td>
+                        <td><span class="badge badge-medio">Media</span></td>
+                        <td>Requiere actualización</td>
+                        <td>Administrador Biblioteca</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

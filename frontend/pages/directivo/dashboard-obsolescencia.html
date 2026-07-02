@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Obsolescencia</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="sidebar-container"></div>
+
+    <main class="content">
+
+        <section class="page-header">
+            <h1>Dashboard Obsolescencia</h1>
+            <p>Control de sistemas legacy, soporte vencido y tecnologías que requieren modernización.</p>
+        </section>
+
+        <section class="info-grid">
+            <div class="info-card">
+                <h3>Sistemas Legacy</h3>
+                <strong>12</strong>
+                <p>Sistemas antiguos o difíciles de mantener.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Soporte Vencido</h3>
+                <strong>8</strong>
+                <p>Sistemas sin soporte vigente.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Tecnología Antigua</h3>
+                <strong>15</strong>
+                <p>Sistemas que usan tecnologías desactualizadas.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Requieren Migración</h3>
+                <strong>10</strong>
+                <p>Sistemas candidatos a modernización o reemplazo.</p>
+            </div>
+        </section>
+
+        <section class="table-box">
+            <h2>Sistemas con obsolescencia tecnológica</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sistema</th>
+                        <th>Tecnología</th>
+                        <th>Año</th>
+                        <th>Soporte</th>
+                        <th>Recomendación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sistema Biblioteca</td>
+                        <td>PHP / MySQL antiguo</td>
+                        <td>2016</td>
+                        <td><span class="badge badge-alto">Vencido</span></td>
+                        <td>Modernizar plataforma.</td>
+                    </tr>
+                    <tr>
+                        <td>Sistema Inventario</td>
+                        <td>Java antiguo</td>
+                        <td>2018</td>
+                        <td><span class="badge badge-medio">Limitado</span></td>
+                        <td>Evaluar actualización.</td>
+                    </tr>
+                    <tr>
+                        <td>Sistema Reportes</td>
+                        <td>Servidor local</td>
+                        <td>2017</td>
+                        <td><span class="badge badge-alto">Sin soporte</span></td>
+                        <td>Planificar migración.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

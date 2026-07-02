@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Directivo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="sidebar-container"></div>
+
+    <main class="content">
+
+        <section class="page-header">
+            <h1>Panel Directivo</h1>
+            <p>Vista ejecutiva para la toma de decisiones sobre el inventario de sistemas TI institucionales.</p>
+        </section>
+
+        <section class="info-grid">
+            <div class="info-card">
+                <h3>Sistemas Inventariados</h3>
+                <strong>48</strong>
+                <p>Total de sistemas registrados en el inventario TI.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Sistemas Críticos</h3>
+                <strong>12</strong>
+                <p>Sistemas con alto impacto institucional.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Riesgo Alto</h3>
+                <strong>9</strong>
+                <p>Sistemas que requieren atención prioritaria.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Avance Diagnóstico</h3>
+                <strong>65%</strong>
+                <p>Porcentaje de sistemas evaluados.</p>
+            </div>
+        </section>
+
+        <section class="cards" style="margin-top: 28px;">
+
+            <a href="dashboard-ejecutivo.html" class="card">
+                <h3>Dashboard Ejecutivo</h3>
+                <p>Resumen general del inventario TI, avance del diagnóstico, sistemas críticos y pendientes de validación.</p>
+            </a>
+
+            <a href="dashboard-riesgos.html" class="card">
+                <h3>Dashboard Riesgos</h3>
+                <p>Identificación de sistemas con riesgo alto por seguridad, continuidad, soporte o dependencia tecnológica.</p>
+            </a>
+
+            <a href="dashboard-obsolescencia.html" class="card">
+                <h3>Dashboard Obsolescencia</h3>
+                <p>Control de sistemas legacy, tecnologías vencidas, soporte caducado y necesidad de modernización.</p>
+            </a>
+
+            <a href="reportes-ejecutivos.html" class="card">
+                <h3>Reportes Ejecutivos</h3>
+                <p>Consulta de reportes resumidos para dirección: inventario, riesgos, obsolescencia y validaciones.</p>
+            </a>
+
+            <a href="roadmap-migracion.html" class="card">
+                <h3>Roadmap Migración</h3>
+                <p>Priorización de sistemas que deben migrarse, modernizarse, mantenerse o retirarse.</p>
+            </a>
+
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
