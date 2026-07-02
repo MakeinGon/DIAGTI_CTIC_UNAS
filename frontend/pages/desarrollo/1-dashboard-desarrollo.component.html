@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paso 1 - Dashboard Desarrollo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root { --color-verde-ctic: #1abb9c; --color-azul-ctic: #0f75bc; }
+    body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f8f9fa; }
+    .container-dashboard { max-width: 1200px; margin: 2rem auto; animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .card-custom { border: none; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+    .card-header-main { background: linear-gradient(135deg, var(--color-azul-ctic), #0a5a9c); color: white; padding: 1.25rem 1.75rem; border-radius: 16px 16px 0 0; }
+    .metric-card { border-radius: 12px; border: none; color: white; transition: transform 0.3s; }
+    .metric-card:hover { transform: translateY(-4px); }
+    .btn-verde { background-color: var(--color-verde-ctic); border: none; padding: 10px 24px; font-weight: 600; border-radius: 8px; color: white; }
+    .btn-verde:hover { background-color: #16a589; color: white; }
+  </style>
+</head>
+<body>
+<div class="container-dashboard">
+  <div class="card card-custom">
+    <div class="card-header-main d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-speedometer2 me-3 fs-3"></i>
+        <h5 class="mb-0 fw-bold">1. Dashboard de Control - Área de Desarrollo</h5>
+      </div>
+      <span class="badge bg-light text-dark fw-bold px-3 py-2">Rol: Desarrollador</span>
+    </div>
+    <div class="card-body p-4 p-md-5">
+      <p class="text-muted mb-4">Bienvenido al panel central de diagnóstico. Supervise el estado de validación y la obsolescencia técnica de los aplicativos asignados a su cargo.</p>
+      
+      <!-- Métricas -->
+      <div class="row g-4 mb-5">
+        <div class="col-md-4">
+          <div class="card metric-card p-4 shadow-sm" style="background: linear-gradient(135deg, #2c3e50, #34495e);">
+            <div class="d-flex justify-content-between align-items-center">
+              <div><span class="fs-6 opacity-75 d-block">Mis Sistemas</span><strong class="fs-2">5 Registrados</strong></div>
+              <i class="bi bi-pc-display fs-1 opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card metric-card p-4 shadow-sm" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+            <div class="d-flex justify-content-between align-items-center">
+              <div><span class="fs-6 opacity-75 d-block">Sistemas Observados</span><strong class="fs-2">1 Pendiente</strong></div>
+              <i class="bi bi-exclamation-octagon fs-1 opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card metric-card p-4 shadow-sm" style="background: linear-gradient(135deg, var(--color-verde-ctic), #16a589);">
+            <div class="d-flex justify-content-between align-items-center">
+              <div><span class="fs-6 opacity-75 d-block">Sistemas Validados</span><strong class="fs-2">4 Conformes</strong></div>
+              <i class="bi bi-check-circle fs-1 opacity-50"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de Alertas de Obsolescencia Recientes -->
+      <h6 class="fw-bold text-dark mb-3"><i class="bi bi-shield-alert me-2 text-warning"></i>Monitoreo de Alertas de Riesgo Recientes</h6>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Código</th>
+              <th>Aplicativo</th>
+              <th>Tecnología Identificada</th>
+              <th>Nivel de Riesgo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="fw-bold">SIS-SGI-01</span></td>
+              <td>Sistema SGI Inventario</td>
+              <td>Java 8 / Spring Boot 1.5</td>
+              <td><span class="badge bg-danger">Alto (Obsoleto)</span></td>
+              <td><span class="badge bg-warning text-dark">Observado</span></td>
+            </tr>
+            <tr>
+              <td><span class="fw-bold">SIS-SGA-02</span></td>
+              <td>Sistema de Gestión Académica</td>
+              <td>PostgreSQL 12</td>
+              <td><span class="badge bg-success">Bajo</span></td>
+              <td><span class="badge bg-success">Validado</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer bg-light d-flex justify-content-end py-4 px-5">
+      <button type="button" class="btn btn-verde px-5">Ir a Mis Sistemas <i class="bi bi-arrow-right ms-2"></i></button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
