@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Historial</title>
+
+<style>
+
+:root{
+--color-verde-ctic:#1abb9c;
+--color-azul-ctic:#0f75bc;
+--fondo:#f4f6f9;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+display:flex;
+background:var(--fondo);
+}
+
+/******** MENU ********/
+
+.sidebar{
+width:250px;
+height:100vh;
+background:var(--color-azul-ctic);
+position:fixed;
+color:white;
+}
+
+.logo{
+padding:25px;
+text-align:center;
+font-size:28px;
+font-weight:bold;
+border-bottom:1px solid rgba(255,255,255,.2);
+}
+
+.sidebar ul{
+list-style:none;
+}
+
+.sidebar li a{
+display:block;
+padding:15px 20px;
+color:white;
+text-decoration:none;
+}
+
+.sidebar li a:hover{
+background:#0b5d96;
+}
+
+.active{
+background:#0b5d96;
+}
+
+/******** CONTENIDO ********/
+
+.main{
+margin-left:250px;
+width:calc(100% - 250px);
+padding:25px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+h2{
+color:#0f75bc;
+margin-bottom:20px;
+}
+
+input{
+
+width:350px;
+padding:10px;
+border:1px solid #ccc;
+border-radius:5px;
+margin-bottom:20px;
+
+}
+
+button{
+
+padding:10px 18px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+margin-right:10px;
+margin-bottom:20px;
+
+}
+
+.btn{
+
+background:#1abb9c;
+color:white;
+
+}
+
+.btn2{
+
+background:#0f75bc;
+color:white;
+
+}
+
+table{
+
+width:100%;
+border-collapse:collapse;
+
+}
+
+th{
+
+background:#0f75bc;
+color:white;
+padding:10px;
+
+}
+
+td{
+
+padding:10px;
+border:1px solid #ddd;
+
+}
+
+tr:nth-child(even){
+
+background:#f8f8f8;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<div class="logo">
+
+CTIC
+
+</div>
+
+<ul>
+
+<li><a href="dashboard.html"> Dashboard</a></li>
+
+<li><a href="mis-sistemas.html"> Mis Sistemas</a></li>
+
+<li><a href="infraestructura.html"> Infraestructura</a></li>
+
+<li><a href="despliegue.html"> Despliegue</a></li>
+
+<li><a href="seguridad.html"> Seguridad</a></li>
+
+<li><a href="evidencias.html"> Evidencias</a></li>
+
+<li><a href="validacion.html"> Enviar Validación</a></li>
+
+<li><a href="subsanaciones.html"> Subsanaciones</a></li>
+
+<li class="active"><a href="historial.html"> Historial</a></li>
+
+</ul>
+
+</div>
+
+<div class="main">
+
+<div class="card">
+
+<h2>Historial de Acciones</h2>
+
+<input
+type="text"
+id="buscar"
+placeholder="Buscar..."
+onkeyup="buscar()">
+
+<button class="btn" onclick="imprimir()">
+
+🖨 Imprimir
+
+</button>
+
+<button class="btn2" onclick="exportar()">
+
+📄 Exportar
+
+</button>
+
+<table id="tabla">
+
+<thead>
+
+<tr>
+
+<th>Fecha</th>
+
+<th>Usuario</th>
+
+<th>Módulo</th>
+
+<th>Acción</th>
+
+<th>Detalle</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>15/07/2026</td>
+
+<td>Administrador</td>
+
+<td>Infraestructura</td>
+
+<td>Agregar</td>
+
+<td>Servidor srv-biblioteca registrado.</td>
+
+</tr>
+
+<tr>
+
+<td>16/07/2026</td>
+
+<td>Administrador</td>
+
+<td>Seguridad</td>
+
+<td>Editar</td>
+
+<td>Se actualizó SSL/TLS.</td>
+
+</tr>
+
+<tr>
+
+<td>17/07/2026</td>
+
+<td>Administrador</td>
+
+<td>Validación</td>
+
+<td>Aprobar</td>
+
+<td>Sistema Biblioteca aprobado.</td>
+
+</tr>
+
+<tr>
+
+<td>18/07/2026</td>
+
+<td>Administrador</td>
+
+<td>Subsanaciones</td>
+
+<td>Corregido</td>
+
+<td>SSL actualizado correctamente.</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+//===================== BUSCAR =====================//
+
+function buscar(){
+
+    let texto=document.getElementById("buscar").value.toLowerCase();
+
+    let filas=document.querySelectorAll("#tabla tbody tr");
+
+    filas.forEach(function(fila){
+
+        let contenido=fila.innerText.toLowerCase();
+
+        if(contenido.indexOf(texto)>-1){
+
+            fila.style.display="";
+
+        }else{
+
+            fila.style.display="none";
+
+        }
+
+    });
+
+}
+
+//===================== IMPRIMIR =====================//
+
+function imprimir(){
+
+    window.print();
+
+}
+
+//===================== EXPORTAR =====================//
+
+function exportar(){
+
+    let tabla=document.getElementById("tabla");
+
+    let contenido="HISTORIAL DEL SISTEMA\n\n";
+
+    for(let i=0;i<tabla.rows.length;i++){
+
+        let fila=tabla.rows[i];
+
+        let linea="";
+
+        for(let j=0;j<fila.cells.length;j++){
+
+            linea+=fila.cells[j].innerText+"    ";
+
+        }
+
+        contenido+=linea+"\n";
+
+    }
+
+    let archivo=new Blob([contenido],{type:"text/plain"});
+
+    let enlace=document.createElement("a");
+
+    enlace.href=URL.createObjectURL(archivo);
+
+    enlace.download="Historial.txt";
+
+    enlace.click();
+
+    URL.revokeObjectURL(enlace.href);
+
+}
+
+//===================== AGREGAR REGISTRO =====================//
+
+function agregarRegistro(){
+
+    let fecha=prompt("Fecha (dd/mm/aaaa)");
+
+    if(fecha==null) return;
+
+    let usuario=prompt("Usuario");
+
+    if(usuario==null) return;
+
+    let modulo=prompt("Módulo");
+
+    if(modulo==null) return;
+
+    let accion=prompt("Acción");
+
+    if(accion==null) return;
+
+    let detalle=prompt("Detalle");
+
+    if(detalle==null) return;
+
+    let tbody=document.querySelector("#tabla tbody");
+
+    let fila=tbody.insertRow();
+
+    fila.insertCell(0).innerHTML=fecha;
+    fila.insertCell(1).innerHTML=usuario;
+    fila.insertCell(2).innerHTML=modulo;
+    fila.insertCell(3).innerHTML=accion;
+    fila.insertCell(4).innerHTML=detalle;
+
+}
+
+</script>
+
+</body>
+
+</html>
