@@ -12,41 +12,396 @@
 
     <main class="content">
 
-        <section class="page-header">
-            <h1>Reportes Ejecutivos</h1>
-            <p>Consulta de reportes consolidados para dirección sobre el inventario de sistemas TI.</p>
+        <section class="reports-header">
+            <div>
+                <span class="section-label">Módulo Directivo</span>
+                <h1>Reportes Ejecutivos</h1>
+                <p>
+                    Reportes consolidados del inventario de sistemas TI para revisar estado institucional,
+                    riesgos, obsolescencia, validación y distribución por áreas usuarias.
+                </p>
+            </div>
+
+            <div class="reports-header-status">
+                <span class="badge badge-verde">Datos consolidados</span>
+                <small>Periodo: 2026</small>
+            </div>
         </section>
 
-        <section class="cards">
-            <div class="card">
+        <section class="reports-summary-grid">
+
+            <a href="#reporte-inventario" class="report-card">
+                <div class="report-icon">📦</div>
                 <h3>Reporte General de Inventario</h3>
-                <p>Resumen de todos los sistemas registrados, áreas responsables, criticidad y estado actual.</p>
-                <button class="btn-verde">Ver reporte</button>
-            </div>
+                <p>Resumen de sistemas registrados, criticidad, estado operativo y responsables.</p>
+                <span>Ver reporte →</span>
+            </a>
 
-            <div class="card">
+            <a href="#reporte-riesgos" class="report-card">
+                <div class="report-icon danger">⚠️</div>
                 <h3>Reporte de Riesgos</h3>
-                <p>Sistemas clasificados por nivel de riesgo técnico, operativo, seguridad y continuidad.</p>
-                <button class="btn-verde">Ver reporte</button>
-            </div>
+                <p>Sistemas clasificados por riesgo técnico, operativo, seguridad y continuidad.</p>
+                <span>Ver reporte →</span>
+            </a>
 
-            <div class="card">
+            <a href="#reporte-obsolescencia" class="report-card">
+                <div class="report-icon warning">🧩</div>
                 <h3>Reporte de Obsolescencia</h3>
-                <p>Sistemas con soporte vencido, tecnologías antiguas o necesidad de modernización.</p>
-                <button class="btn-verde">Ver reporte</button>
-            </div>
+                <p>Sistemas con soporte vencido, tecnología antigua o necesidad de modernización.</p>
+                <span>Ver reporte →</span>
+            </a>
 
-            <div class="card">
+            <a href="#reporte-area" class="report-card">
+                <div class="report-icon info">🏢</div>
                 <h3>Reporte por Área Usuaria</h3>
                 <p>Inventario agrupado por dependencia institucional y responsable funcional.</p>
-                <button class="btn-verde">Ver reporte</button>
+                <span>Ver reporte →</span>
+            </a>
+
+            <a href="#reporte-validacion" class="report-card">
+                <div class="report-icon success">✅</div>
+                <h3>Reporte de Validación</h3>
+                <p>Estado de sistemas aprobados, observados, rechazados o pendientes.</p>
+                <span>Ver reporte →</span>
+            </a>
+
+        </section>
+
+        <section class="reports-kpis">
+            <div class="info-card">
+                <h3>Total de Sistemas</h3>
+                <strong>48</strong>
+                <p>Sistemas registrados en el inventario TI.</p>
             </div>
 
-            <div class="card">
-                <h3>Reporte de Validación</h3>
-                <p>Estado de sistemas aprobados, observados, rechazados o pendientes de revisión.</p>
-                <button class="btn-verde">Ver reporte</button>
+            <div class="info-card">
+                <h3>Riesgo Alto</h3>
+                <strong>9</strong>
+                <p>Sistemas que requieren atención prioritaria.</p>
             </div>
+
+            <div class="info-card">
+                <h3>Soporte Vencido</h3>
+                <strong>8</strong>
+                <p>Sistemas con riesgo de obsolescencia.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>Validados</h3>
+                <strong>31</strong>
+                <p>Sistemas con revisión completada.</p>
+            </div>
+        </section>
+
+        <section class="table-box report-section" id="reporte-inventario">
+            <div class="section-title-row">
+                <div>
+                    <span class="section-label">Reporte 01</span>
+                    <h2>Reporte General de Inventario TI</h2>
+                    <p class="report-description">
+                        Muestra el estado general de los sistemas inventariados, su criticidad,
+                        estado operativo y responsable institucional.
+                    </p>
+                </div>
+
+                <button class="btn-verde">Exportar PDF</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sistema</th>
+                        <th>Área Usuaria</th>
+                        <th>Criticidad</th>
+                        <th>Estado</th>
+                        <th>Responsable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sistema Académico</td>
+                        <td>Dirección Académica</td>
+                        <td><span class="badge badge-alto">Alta</span></td>
+                        <td>En producción</td>
+                        <td>Responsable Funcional</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema de Matrícula</td>
+                        <td>Registros Académicos</td>
+                        <td><span class="badge badge-alto">Alta</span></td>
+                        <td>En producción</td>
+                        <td>Coordinador TI</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema Biblioteca</td>
+                        <td>Biblioteca Central</td>
+                        <td><span class="badge badge-medio">Media</span></td>
+                        <td>Requiere actualización</td>
+                        <td>Administrador Biblioteca</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema Documentario</td>
+                        <td>Secretaría General</td>
+                        <td><span class="badge badge-medio">Media</span></td>
+                        <td>Operativo</td>
+                        <td>Secretaría General</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema de Pagos</td>
+                        <td>Administración</td>
+                        <td><span class="badge badge-alto">Alta</span></td>
+                        <td>Observado</td>
+                        <td>Área Administrativa</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="table-box report-section" id="reporte-riesgos">
+            <div class="section-title-row">
+                <div>
+                    <span class="section-label">Reporte 02</span>
+                    <h2>Reporte de Riesgos TI</h2>
+                    <p class="report-description">
+                        Identifica sistemas con riesgo técnico, operativo, seguridad, continuidad
+                        o falta de documentación.
+                    </p>
+                </div>
+
+                <button class="btn-verde">Exportar PDF</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sistema</th>
+                        <th>Tipo de Riesgo</th>
+                        <th>Nivel</th>
+                        <th>Impacto</th>
+                        <th>Acción Recomendada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sistema de Matrícula</td>
+                        <td>Continuidad operativa</td>
+                        <td><span class="badge badge-alto">Alto</span></td>
+                        <td>Interrupción de procesos académicos</td>
+                        <td>Revisar respaldo y plan de continuidad.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema de Pagos</td>
+                        <td>Backup no documentado</td>
+                        <td><span class="badge badge-alto">Alto</span></td>
+                        <td>Riesgo financiero y operativo</td>
+                        <td>Formalizar política de respaldo.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema Biblioteca</td>
+                        <td>Tecnología antigua</td>
+                        <td><span class="badge badge-medio">Medio</span></td>
+                        <td>Dificultad de mantenimiento</td>
+                        <td>Planificar modernización.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema Documentario</td>
+                        <td>Documentación incompleta</td>
+                        <td><span class="badge badge-medio">Medio</span></td>
+                        <td>Falta de trazabilidad técnica</td>
+                        <td>Completar diagnóstico técnico.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="table-box report-section" id="reporte-obsolescencia">
+            <div class="section-title-row">
+                <div>
+                    <span class="section-label">Reporte 03</span>
+                    <h2>Reporte de Obsolescencia</h2>
+                    <p class="report-description">
+                        Consolida sistemas con soporte vencido, tecnologías antiguas,
+                        plataformas legacy y necesidad de migración.
+                    </p>
+                </div>
+
+                <button class="btn-verde">Exportar PDF</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sistema</th>
+                        <th>Tecnología</th>
+                        <th>Año</th>
+                        <th>Estado de Soporte</th>
+                        <th>Recomendación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sistema Biblioteca</td>
+                        <td>PHP / MySQL antiguo</td>
+                        <td>2016</td>
+                        <td><span class="badge badge-alto">Vencido</span></td>
+                        <td>Modernizar plataforma.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema Reportes</td>
+                        <td>Servidor local</td>
+                        <td>2017</td>
+                        <td><span class="badge badge-alto">Sin soporte</span></td>
+                        <td>Planificar migración.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema Inventario</td>
+                        <td>Java antiguo</td>
+                        <td>2018</td>
+                        <td><span class="badge badge-medio">Limitado</span></td>
+                        <td>Evaluar actualización.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sistema Documentario</td>
+                        <td>Base de datos local</td>
+                        <td>2019</td>
+                        <td><span class="badge badge-medio">Revisar</span></td>
+                        <td>Documentar infraestructura.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="table-box report-section" id="reporte-area">
+            <div class="section-title-row">
+                <div>
+                    <span class="section-label">Reporte 04</span>
+                    <h2>Reporte por Área Usuaria</h2>
+                    <p class="report-description">
+                        Permite identificar qué dependencias concentran más sistemas,
+                        más criticidad o mayor carga de mantenimiento.
+                    </p>
+                </div>
+
+                <button class="btn-verde">Exportar PDF</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Área Usuaria</th>
+                        <th>Sistemas</th>
+                        <th>Críticos</th>
+                        <th>Pendientes</th>
+                        <th>Responsable Funcional</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dirección Académica</td>
+                        <td>14</td>
+                        <td>5</td>
+                        <td>3</td>
+                        <td>Coordinación Académica</td>
+                    </tr>
+
+                    <tr>
+                        <td>Administración</td>
+                        <td>11</td>
+                        <td>4</td>
+                        <td>2</td>
+                        <td>Jefatura Administrativa</td>
+                    </tr>
+
+                    <tr>
+                        <td>Biblioteca Central</td>
+                        <td>6</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>Administrador Biblioteca</td>
+                    </tr>
+
+                    <tr>
+                        <td>Investigación</td>
+                        <td>5</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>Unidad de Investigación</td>
+                    </tr>
+
+                    <tr>
+                        <td>Otros</td>
+                        <td>12</td>
+                        <td>1</td>
+                        <td>9</td>
+                        <td>Dependencias varias</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="table-box report-section" id="reporte-validacion">
+            <div class="section-title-row">
+                <div>
+                    <span class="section-label">Reporte 05</span>
+                    <h2>Reporte de Validación</h2>
+                    <p class="report-description">
+                        Resume el avance de revisión técnica y funcional de los sistemas
+                        registrados en el inventario TI.
+                    </p>
+                </div>
+
+                <button class="btn-verde">Exportar PDF</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Estado de Validación</th>
+                        <th>Cantidad</th>
+                        <th>Porcentaje</th>
+                        <th>Interpretación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge badge-verde">Aprobados</span></td>
+                        <td>24</td>
+                        <td>50%</td>
+                        <td>Sistemas revisados sin observaciones críticas.</td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="badge badge-medio">Observados</span></td>
+                        <td>7</td>
+                        <td>15%</td>
+                        <td>Requieren corrección o información adicional.</td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="badge badge-alto">Rechazados</span></td>
+                        <td>0</td>
+                        <td>0%</td>
+                        <td>No se registran rechazos definitivos.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Pendientes</td>
+                        <td>17</td>
+                        <td>35%</td>
+                        <td>Aún falta completar diagnóstico o revisión.</td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
 
     </main>

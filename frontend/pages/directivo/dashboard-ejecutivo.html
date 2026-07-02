@@ -12,77 +12,226 @@
 
     <main class="content">
 
-        <section class="page-header">
+    <section class="page-header executive-header">
+        <div>
             <h1>Dashboard Ejecutivo</h1>
-            <p>Estado general del inventario de sistemas TI para la toma de decisiones directivas.</p>
-        </section>
+            <p>Vista estratégica del inventario de sistemas TI para priorizar riesgos, validación y modernización.</p>
+        </div>
 
-        <section class="info-grid">
-            <div class="info-card">
-                <h3>Total de Sistemas</h3>
-                <strong>48</strong>
-                <p>Sistemas registrados en el inventario institucional.</p>
+        <div class="header-status">
+            <span class="badge badge-verde">Inventario en progreso</span>
+            <small>Última actualización: hoy</small>
+        </div>
+    </section>
+
+    <section class="executive-summary">
+
+        <div class="summary-main-card">
+            <h2>Salud General del Inventario TI</h2>
+            <strong>72%</strong>
+            <p>
+                Nivel estimado de control sobre los sistemas institucionales considerando validación,
+                criticidad, obsolescencia y riesgos identificados.
+            </p>
+
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 72%;"></div>
+            </div>
+        </div>
+
+        <div class="alert-panel">
+            <h2>Alertas para Dirección</h2>
+
+            <div class="alert-item alert-danger">
+                <strong>9 sistemas en riesgo alto</strong>
+                <span>Requieren atención prioritaria por continuidad, seguridad o soporte.</span>
             </div>
 
-            <div class="info-card">
-                <h3>Sistemas Validados</h3>
-                <strong>31</strong>
-                <p>Sistemas revisados por las áreas responsables.</p>
+            <div class="alert-item alert-warning">
+                <strong>8 sistemas con soporte vencido</strong>
+                <span>Podrían generar problemas operativos o dependencia tecnológica.</span>
             </div>
 
-            <div class="info-card">
-                <h3>Pendientes</h3>
-                <strong>17</strong>
-                <p>Sistemas pendientes de diagnóstico o validación.</p>
+            <div class="alert-item alert-info">
+                <strong>17 sistemas pendientes</strong>
+                <span>Aún falta completar diagnóstico o validación institucional.</span>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="info-grid">
+        <div class="info-card">
+            <h3>Total de Sistemas</h3>
+            <strong>48</strong>
+            <p>Sistemas registrados en el inventario institucional.</p>
+        </div>
+
+        <div class="info-card">
+            <h3>Validados</h3>
+            <strong>31</strong>
+            <p>Sistemas revisados por las áreas responsables.</p>
+        </div>
+
+        <div class="info-card">
+            <h3>Críticos</h3>
+            <strong>12</strong>
+            <p>Sistemas con alto impacto institucional.</p>
+        </div>
+
+        <div class="info-card">
+            <h3>Sin Responsable</h3>
+            <strong>4</strong>
+            <p>Sistemas sin responsable técnico o funcional claro.</p>
+        </div>
+    </section>
+
+    <section class="table-box">
+        <h2>Avance del diagnóstico institucional</h2>
+
+        <div class="diagnosis-grid">
+
+            <div class="diagnosis-item">
+                <div class="diagnosis-label">
+                    <span>Sistemas validados</span>
+                    <strong>65%</strong>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%;"></div>
+                </div>
             </div>
 
-            <div class="info-card">
-                <h3>Criticidad Alta</h3>
-                <strong>12</strong>
-                <p>Sistemas con impacto alto en la institución.</p>
+            <div class="diagnosis-item">
+                <div class="diagnosis-label">
+                    <span>Sistemas pendientes</span>
+                    <strong>35%</strong>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-warning" style="width: 35%;"></div>
+                </div>
             </div>
-        </section>
 
-        <section class="table-box">
-            <h2>Top 5 sistemas estratégicos</h2>
+            <div class="diagnosis-item">
+                <div class="diagnosis-label">
+                    <span>Sistemas con riesgo alto</span>
+                    <strong>19%</strong>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-danger" style="width: 19%;"></div>
+                </div>
+            </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sistema</th>
-                        <th>Área Usuaria</th>
-                        <th>Criticidad</th>
-                        <th>Estado</th>
-                        <th>Responsable</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Sistema Académico</td>
-                        <td>Dirección Académica</td>
-                        <td><span class="badge badge-alto">Alta</span></td>
-                        <td>En producción</td>
-                        <td>Responsable Funcional</td>
-                    </tr>
-                    <tr>
-                        <td>Sistema de Matrícula</td>
-                        <td>Registros Académicos</td>
-                        <td><span class="badge badge-alto">Alta</span></td>
-                        <td>En producción</td>
-                        <td>Coordinador TI</td>
-                    </tr>
-                    <tr>
-                        <td>Sistema de Biblioteca</td>
-                        <td>Biblioteca Central</td>
-                        <td><span class="badge badge-medio">Media</span></td>
-                        <td>Requiere actualización</td>
-                        <td>Administrador Biblioteca</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+        </div>
+    </section>
 
-    </main>
+    <section class="table-box">
+        <h2>Decisiones recomendadas para dirección</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Prioridad</th>
+                    <th>Situación Detectada</th>
+                    <th>Impacto</th>
+                    <th>Decisión Recomendada</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge badge-alto">Alta</span></td>
+                    <td>Sistemas críticos con soporte vencido</td>
+                    <td>Riesgo de interrupción del servicio</td>
+                    <td>Incluir en roadmap de migración urgente.</td>
+                </tr>
+
+                <tr>
+                    <td><span class="badge badge-alto">Alta</span></td>
+                    <td>Sistemas sin responsable asignado</td>
+                    <td>Falta de control y trazabilidad</td>
+                    <td>Asignar responsable funcional y técnico.</td>
+                </tr>
+
+                <tr>
+                    <td><span class="badge badge-medio">Media</span></td>
+                    <td>Sistemas pendientes de validación</td>
+                    <td>Inventario incompleto para toma de decisiones</td>
+                    <td>Solicitar cierre de diagnóstico por área.</td>
+                </tr>
+
+                <tr>
+                    <td><span class="badge badge-bajo">Baja</span></td>
+                    <td>Sistemas estables con bajo riesgo</td>
+                    <td>Operación controlada</td>
+                    <td>Mantener monitoreo periódico.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="table-box">
+        <h2>Top sistemas estratégicos del inventario TI</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Sistema</th>
+                    <th>Área Usuaria</th>
+                    <th>Criticidad</th>
+                    <th>Riesgo</th>
+                    <th>Estado Directivo</th>
+                    <th>Acción Sugerida</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Sistema Académico</td>
+                    <td>Dirección Académica</td>
+                    <td><span class="badge badge-alto">Alta</span></td>
+                    <td><span class="badge badge-medio">Medio</span></td>
+                    <td>En producción</td>
+                    <td>Monitorear continuidad.</td>
+                </tr>
+
+                <tr>
+                    <td>Sistema de Matrícula</td>
+                    <td>Registros Académicos</td>
+                    <td><span class="badge badge-alto">Alta</span></td>
+                    <td><span class="badge badge-alto">Alto</span></td>
+                    <td>Requiere revisión prioritaria</td>
+                    <td>Evaluar respaldo y soporte.</td>
+                </tr>
+
+                <tr>
+                    <td>Sistema de Biblioteca</td>
+                    <td>Biblioteca Central</td>
+                    <td><span class="badge badge-medio">Media</span></td>
+                    <td><span class="badge badge-medio">Medio</span></td>
+                    <td>Requiere actualización</td>
+                    <td>Planificar modernización.</td>
+                </tr>
+
+                <tr>
+                    <td>Sistema de Pagos</td>
+                    <td>Administración</td>
+                    <td><span class="badge badge-alto">Alta</span></td>
+                    <td><span class="badge badge-alto">Alto</span></td>
+                    <td>Observado</td>
+                    <td>Revisar seguridad y respaldo.</td>
+                </tr>
+
+                <tr>
+                    <td>Sistema Documentario</td>
+                    <td>Secretaría General</td>
+                    <td><span class="badge badge-medio">Media</span></td>
+                    <td><span class="badge badge-bajo">Bajo</span></td>
+                    <td>Operativo</td>
+                    <td>Mantener seguimiento.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+</main>
 
     <script src="script.js"></script>
 </body>
