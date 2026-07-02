@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paso 8 - Matriz de Integraciones y APIs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    :root {
+      --color-verde-ctic: #1abb9c;
+      --color-azul-ctic: #0f75bc;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .container-integraciones {
+      max-width: 1100px;
+      margin: 2rem auto;
+      animation: fadeInIntegraciones 0.5s ease-in-out;
+    }
+
+    @keyframes fadeInIntegraciones {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-integraciones {
+      border: none;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--color-azul-ctic), #0a5a9c);
+      color: white;
+      padding: 1.25rem 1.75rem;
+    }
+
+    .table-integraciones th {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      color: #5c6873;
+      background-color: #f1f3f5;
+      padding: 1.1rem 1rem;
+    }
+
+    .table-integraciones td {
+      padding: 1.25rem 1rem;
+      vertical-align: middle;
+    }
+
+    .form-control-sm, .form-select-sm {
+      border-radius: 8px;
+    }
+
+    .badge-metodo {
+      font-size: 0.75rem;
+      padding: 0.4em 0.6em;
+      font-weight: 700;
+    }
+
+    .btn-eliminar-fila {
+      color: #dc3545;
+      transition: all 0.2s ease;
+    }
+
+    .btn-eliminar-fila:hover {
+      color: #a71d2a;
+      transform: scale(1.2);
+    }
+
+    .btn-verde {
+      background-color: var(--color-verde-ctic);
+      border: none;
+      padding: 10px 24px;
+      font-weight: 600;
+      border-radius: 8px;
+    }
+
+    .btn-verde:hover {
+      background-color: #16a589;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-integraciones">
+  <div class="card card-integraciones">
+
+    <!-- Header -->
+    <div class="card-header d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-journal-code me-3 fs-3"></i>
+        <h5 class="mb-0 fw-bold">Paso 8: Matriz de Integraciones y APIs</h5>
+      </div>
+      <button type="button" class="btn btn-light btn-sm fw-bold px-3 shadow-sm" onclick="agregarFilaIntegracion()">
+        <i class="bi bi-plus-circle me-1"></i> + Nueva Integración
+      </button>
+    </div>
+    
+    <div class="card-body p-4 p-md-5">
+
+      <p class="text-muted mb-4">
+        Registre los sistemas externos o bases de datos con los que este aplicativo intercambia información, detallando los protocolos y métodos de comunicación utilizados.
+      </p>
+
+      <div class="table-responsive">
+        <table class="table table-hover table-integraciones align-middle" id="tablaIntegraciones">
+          <thead>
+            <tr>
+              <th style="width: 30%;">Sistema / API Destino</th>
+              <th style="width: 25%;">Tipo / Protocolo</th>
+              <th style="width: 20%;">Método / Formato</th>
+              <th style="width: 20%;">Frecuencia</th>
+              <th style="width: 5%;" class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <!-- Fila 1 -->
+            <tr>
+              <td>
+                <input type="text" class="form-control form-control-sm fw-bold" value="SGA (Sistema de Gestión Académica)">
+              </td>
+              <td>
+                <select class="form-select form-select-sm">
+                  <option selected>REST API (HTTP)</option>
+                  <option>SOAP / Web Service</option>
+                  <option>Conexión directa a BD</option>
+                  <option>FTP / Archivo Plano</option>
+                </select>
+              </td>
+              <td>
+                <select class="form-select form-select-sm">
+                  <option selected>GET (JSON)</option>
+                  <option>POST (JSON)</option>
+                  <option>PUT / PATCH (JSON)</option>
+                  <option>XML Payload</option>
+                </select>
+              </td>
+              <td>
+                <select class="form-select form-select-sm">
+                  <option selected>Tiempo Real (Síncrono)</option>
+                  <option>Asíncrono (Batch Diario)</option>
+                  <option>A Demanda</option>
+                </select>
+              </td>
+              <td class="text-center">
+                <button type="button" class="btn btn-link btn-eliminar-fila p-0" onclick="eliminarFilaIntegracion(this)">
+                  <i class="bi bi-trash3-fill fs-5"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Fila 2 -->
+            <tr>
+              <td>
+                <input type="text" class="form-control form-control-sm fw-bold" value="Plataforma de Pagos (Banca Móvil / Yape)">
+              </td>
+              <td>
+                <select class="form-select form-select-sm">
+                  <option selected>REST API (HTTP)</option>
+                  <option>SOAP / Web Service</option>
+                  <option>Conexión directa a BD</option>
+                  <option>FTP / Archivo Plano</option>
+                </select>
+              </td>
+              <td>
+                <select class="form-select form-select-sm">
+                  <option>GET (JSON)</option>
+                  <option selected>POST (JSON)</option>
+                  <option>PUT / PATCH (JSON)</option>
+                  <option>XML Payload</option>
+                </select>
+              </td>
+              <td>
+                <select class="form-select form-select-sm">
+                  <option selected>Tiempo Real (Síncrono)</option>
+                  <option>Asíncrono (Batch Diario)</option>
+                  <option>A Demanda</option>
+                </select>
+              </td>
+              <td class="text-center">
+                <button type="button" class="btn btn-link btn-eliminar-fila p-0" onclick="eliminarFilaIntegracion(this)">
+                  <i class="bi bi-trash3-fill fs-5"></i>
+                </button>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    
+    <!-- Footer -->
+    <div class="card-footer bg-light d-flex justify-content-between py-4 px-5">
+      <button type="button" class="btn btn-outline-secondary px-4">
+        <i class="bi bi-arrow-left me-2"></i>Atrás
+      </button>
+      <button type="button" class="btn btn-verde text-white px-5" 
+              onclick="alert('✅ Matriz de integraciones guardada correctamente')">
+        Guardar y Continuar
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function agregarFilaIntegracion() {
+    const table = document.getElementById("tablaIntegraciones").getElementsByTagName('tbody')[0];
+    const newRow = table.insertRow();
+
+    newRow.innerHTML = `
+      <td>
+        <input type="text" class="form-control form-control-sm fw-bold" placeholder="Nombre del sistema o API...">
+      </td>
+      <td>
+        <select class="form-select form-select-sm">
+          <option selected>REST API (HTTP)</option>
+          <option>SOAP / Web Service</option>
+          <option>Conexión directa a BD</option>
+          <option>FTP / Archivo Plano</option>
+        </select>
+      </td>
+      <td>
+        <select class="form-select form-select-sm">
+          <option selected>GET (JSON)</option>
+          <option>POST (JSON)</option>
+          <option>PUT / PATCH (JSON)</option>
+          <option>XML Payload</option>
+        </select>
+      </td>
+      <td>
+        <select class="form-select form-select-sm">
+          <option selected>Tiempo Real (Síncrono)</option>
+          <option>Asíncrono (Batch Diario)</option>
+          <option>A Demanda</option>
+        </select>
+      </td>
+      <td class="text-center">
+        <button type="button" class="btn btn-link btn-eliminar-fila p-0" onclick="eliminarFilaIntegracion(this)">
+          <i class="bi bi-trash3-fill fs-5"></i>
+        </button>
+      </td>
+    `;
+  }
+
+  function eliminarFilaIntegracion(button) {
+    if (confirm("¿Eliminar esta fila?")) {
+      const row = button.parentNode.parentNode;
+      row.parentNode.removeChild(row);
+    }
+  }
+</script>
+
+</body>
+</html>
