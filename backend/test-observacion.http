@@ -1,0 +1,18 @@
+### Enviar una observación de prueba al endpoint POST /api/observaciones
+POST http://localhost:8080/api/observaciones
+Content-Type: application/json
+
+{
+  "titulo": "Prueba de endpoint observaciones",
+  "descripcion": "Observación enviada desde test-observacion.http para validar que el registro se persiste en PostgreSQL.",
+  "sistemaNombre": "Sistema de prueba",
+  "fechaRegistro": "2026-07-01T00:00:00"
+}
+
+###
+### Verificar en PostgreSQL
+# Desde la raíz del proyecto, si usas Docker Compose:
+# docker compose exec postgres psql -U postgres -d diagti_db -c "SELECT id, titulo, descripcion, sistema_nombre, fecha_registro FROM observaciones ORDER BY id DESC LIMIT 5;"
+#
+# O con curl, si prefieres:
+# curl -X POST http://localhost:8080/api/observaciones -H "Content-Type: application/json" -d "{\"titulo\":\"Prueba\",\"descripcion\":\"Prueba\",\"sistemaNombre\":\"Sistema\",\"fechaRegistro\":\"2026-07-01T00:00:00\"}"
