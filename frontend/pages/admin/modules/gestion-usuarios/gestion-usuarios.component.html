@@ -1,0 +1,153 @@
+<div class="topbar">
+  <div>
+    <h2>Gestión de Usuarios</h2>
+    <div class="hint">Cuentas sincronizadas desde LDAP/OpenLDAP y cuentas locales de autorización.</div>
+  </div>
+  <div class="chip-user">
+    <div class="av">A</div>
+    <div>
+      <div><b>ADMINISTRADOR</b></div>
+      <div class="role">Administrador CTIC</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid g4">
+  <div class="card">
+    <div class="stat-label">Total usuarios</div>
+    <div class="stat-num">{{ totalUsuarios }}</div>
+    <span class="badge brand">+3 este mes</span>
+  </div>
+  <div class="card">
+    <div class="stat-label">Activos</div>
+    <div class="stat-num accent">{{ usuariosActivos }}</div>
+    <span class="badge low">Operativos</span>
+  </div>
+  <div class="card">
+    <div class="stat-label">Inactivos</div>
+    <div class="stat-num">{{ usuariosInactivos }}</div>
+    <span class="badge gray">Suspendidos</span>
+  </div>
+  <div class="card">
+    <div class="stat-label">Sincronizados LDAP</div>
+    <div class="stat-num">{{ usuariosLdap }}</div>
+    <span class="badge info">Automático</span>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="section-head">
+    <div>
+      <h3>Listado de usuarios</h3>
+      <div class="desc">Administra el estado y rol asignado dentro del sistema.</div>
+    </div>
+    <button class="btn btn-verde" (click)="abrirModalUsuario()">+ Nuevo usuario</button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search">
+      <input type="search" placeholder="Buscar por nombre, DNI o correo..." [(ngModel)]="filtroTexto">
+    </div>
+    <select [(ngModel)]="filtroRol">
+      <option>Todos los roles</option>
+      <option *ngFor="let r of roles">{{ r }}</option>
+    </select>
+    <select [(ngModel)]="filtroEstado">
+      <option>Todos los estados</option>
+      <option>Activo</option>
+      <option>Inactivo</option>
+    </select>
+    <select [(ngModel)]="filtroOrigen">
+      <option>Todo origen</option>
+      <option>LDAP</option>
+      <option>Local</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Usuario</th><th>DNI</th><th>Área</th><th>Rol asignado</th>
+          <th>Origen</th><th>Último acceso</th><th>Estado</th><th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of usuarios">
+          <td>
+            <div class="cell-user">
+              <div class="av">{{ u.iniciales }}</div>
+              <div>
+                <div class="nm">{{ u.nombre }}</div>
+                <div class="em">{{ u.correo }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ u.dni }}</td>
+          <td>{{ u.area }}</td>
+          <td><span class="badge" [ngClass]="u.rolBadge">{{ u.rol }}</span></td>
+          <td><span class="badge info">{{ u.origen }}</span></td>
+          <td>{{ u.ultimoAcceso }}</td>
+          <td>
+            <button class="toggle" [class.on]="u.activo"
+                    [title]="u.activo ? 'Activo' : 'Inactivo'"
+                    (click)="toggleEstado(u)"></button>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button class="btn ghost sm" (click)="abrirModalUsuario()">Editar</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===================== MODAL: NUEVO / EDITAR USUARIO ===================== -->
+<div class="modal-overlay" [class.open]="modalUsuarioAbierto" (click)="cerrarModalUsuario()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>Nuevo usuario</h3>
+      <button class="modal-close" (click)="cerrarModalUsuario()">✕</button>
+    </div>
+    <div class="modal-body">
+      <label>DNI</label>
+      <input type="text" placeholder="Ej. 12345678">
+      <label>Nombre completo</label>
+      <input type="text" placeholder="Nombres y apellidos">
+      <label>Correo institucional</label>
+      <input type="email" placeholder="usuario@unas.edu.pe">
+      <div class="grid g2">
+        <div>
+          <label>Área</label>
+          <select class="form">
+            <option *ngFor="let a of areas">{{ a }}</option>
+          </select>
+        </div>
+        <div>
+          <label>Rol asignado</label>
+          <select class="form">
+            <option>Administrador CTIC</option>
+            <option *ngFor="let r of roles">{{ r }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid g2">
+        <div>
+          <label>Origen de cuenta</label>
+          <select class="form"><option>LDAP</option><option>Local</option></select>
+        </div>
+        <div>
+          <label>Estado</label>
+          <select class="form"><option>Activo</option><option>Inactivo</option></select>
+        </div>
+      </div>
+      <p class="field-hint">La autenticación se valida contra LDAP/OpenLDAP institucional; este formulario solo gestiona autorización dentro de DIAGTI.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" (click)="cerrarModalUsuario()">Cancelar</button>
+      <button class="btn btn-verde" (click)="guardarUsuario()">Guardar usuario</button>
+    </div>
+  </div>
+</div>
