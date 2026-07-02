@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reportes · CTIC</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="reportes-inventario.component.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Reportes e <span>Indicadores</span></h1>
+            <p>Estadísticas y reportes del sistema de investigación</p>
+            <span class="badge-version">v2.0 · 2026</span>
+        </div>
+
+        <!-- BOTONES DE EXPORTACIÓN -->
+        <div class="exportaciones">
+            <button class="btn-azul" onclick="generarReporte('proyectos')">📄 Reporte Proyectos</button>
+            <button class="btn-azul" onclick="generarReporte('tesis')">📈 Reporte Tesis</button>
+            <button class="btn-azul" onclick="generarReporte('tramites')">🔄 Reporte Trámites</button>
+            <button class="btn-verde" onclick="exportarPDF()">📋 Exportar PDF</button>
+            <button class="btn-verde" onclick="exportarExcel()">📊 Exportar Excel</button>
+        </div>
+
+        <!-- TABLA DE INDICADORES -->
+        <div class="table-wrapper">
+            <h3 style="padding: 1rem; color: var(--primary);">Resumen institucional</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Indicador</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaReportes"></tbody>
+            </table>
+        </div>
+
+        <footer style="margin-top: 3rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            &copy; 2026 CTIC · Todos los derechos reservados
+        </footer>
+    </div>
+
+    <script src="reportes-inventario.component.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evidencias Obligatorias · DIAGTI CTIC</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="evidencias-obligatorias.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>📎 Evidencias <span>Obligatorias</span></h1>
+            <p>Gestión de documentos, archivos y evidencias técnicas requeridas por sistema</p>
+            <span class="badge-version">RF-14 · RF-15 · DIAGTI v2.0</span>
+        </div>
+
+        <!-- ESTADÍSTICAS -->
+        <div class="cards-grid" id="statsEvidencias">
+            <!-- JS -->
+        </div>
+
+        <!-- FILTROS Y ACCIONES -->
+        <div class="toolbar">
+            <div class="filter-group">
+                <input type="text" id="buscarEvidencia" placeholder="🔍 Buscar por sistema o tipo..." oninput="filtrarEvidencias()" />
+            </div>
+            <div class="filter-group">
+                <select id="filtroTipo" onchange="filtrarEvidencias()">
+                    <option value="">Todos los tipos</option>
+                    <option value="PDF">PDF</option>
+                    <option value="DOC">DOC</option>
+                    <option value="DOCX">DOCX</option>
+                    <option value="URL">URL</option>
+                    <option value="Imagen">Imagen</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <select id="filtroEstado" onchange="filtrarEvidencias()">
+                    <option value="">Todos los estados</option>
+                    <option value="Completa">Completa</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Vencida">Vencida</option>
+                </select>
+            </div>
+            <button class="btn-verde" onclick="nuevaEvidencia()">➕ Nueva Evidencia</button>
+            <button class="btn-azul" onclick="exportarEvidencias()">📊 Exportar</button>
+        </div>
+
+        <!-- TABLA DE EVIDENCIAS -->
+        <div class="table-wrapper">
+            <div class="table-header">
+                <h3>📋 Listado de evidencias obligatorias</h3>
+                <span class="event-count" id="evidenciaCount">Total: 0</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sistema</th>
+                        <th>Tipo de Evidencia</th>
+                        <th>Archivo/URL</th>
+                        <th>Estado</th>
+                        <th>Subido por</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaEvidencias">
+                    <!-- JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- MODAL PARA NUEVA EVIDENCIA -->
+        <div class="modal" id="modalEvidencia" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📎 Registrar Nueva Evidencia</h3>
+                    <button class="modal-close" onclick="cerrarModal()">✖</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Sistema asociado *</label>
+                        <select id="sistemaSelect" class="form-control">
+                            <option value="">Seleccionar sistema...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de evidencia *</label>
+                        <select id="tipoEvidenciaSelect" class="form-control">
+                            <option value="PDF">PDF</option>
+                            <option value="DOC">DOC</option>
+                            <option value="DOCX">DOCX</option>
+                            <option value="URL">URL</option>
+                            <option value="Imagen">Imagen</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Archivo o URL *</label>
+                        <input type="text" id="archivoInput" class="form-control" placeholder="Ej: https://... o nombre_archivo.pdf" />
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="descripcionInput" class="form-control" rows="2" placeholder="Descripción opcional..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Obligatoria para validación</label>
+                        <input type="checkbox" id="obligatoriaCheck" checked />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-outline" onclick="cerrarModal()">Cancelar</button>
+                    <button class="btn-verde" onclick="guardarEvidencia()">💾 Guardar</button>
+                </div>
+            </div>
+        </div>
+
+        <footer style="margin-top: 3rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            &copy; 2026 CTIC · DIAGTI · Sistema de Inventario y Diagnóstico TI
+        </footer>
+    </div>
+
+    <script src="evidencias-obligatorias.js"></script>
+</body>
+</html>

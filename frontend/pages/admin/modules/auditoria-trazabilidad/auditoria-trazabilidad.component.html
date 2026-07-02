@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auditoría · CTIC</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="auditoria-trazabilidad.component.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Auditoría y <span>Trazabilidad</span></h1>
+            <p>Historial completo de eventos y cambios en el sistema</p>
+            <span class="badge-version">v2.0 · 2026</span>
+        </div>
+
+        <!-- ESTADÍSTICAS -->
+        <div class="cards-grid" id="statsAuditoria">
+            <!-- JS -->
+        </div>
+
+        <!-- FILTROS -->
+        <div class="toolbar">
+            <input type="text" placeholder="Buscar evento..." id="buscarAuditoria" oninput="filtrarAuditoria()" />
+            <select id="filtroAccion" onchange="filtrarAuditoria()">
+                <option value="">Todas las acciones</option>
+                <option value="Creación">Creación</option>
+                <option value="Edición">Edición</option>
+                <option value="Eliminación">Eliminación</option>
+                <option value="Aprobación">Aprobación</option>
+                <option value="Observación">Observación</option>
+                <option value="Rechazo">Rechazo</option>
+                <option value="Resolución">Resolución</option>
+            </select>
+            <input type="date" id="filtroFechaInicio" onchange="filtrarAuditoria()" />
+            <input type="date" id="filtroFechaFin" onchange="filtrarAuditoria()" />
+            <button class="btn-verde" onclick="filtrarAuditoria()">🔍 Filtrar</button>
+            <button class="btn-outline" onclick="limpiarFiltros()">✖ Limpiar</button>
+        </div>
+
+        <!-- TABLA -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Usuario</th>
+                        <th>Acción</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaAuditoria"></tbody>
+            </table>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        <div style="display:flex; justify-content:center; align-items:center; gap:1rem; padding:1rem; background:var(--bg-card); border-radius:var(--radius); margin-top:0.5rem; box-shadow:var(--shadow);">
+            <button id="btnAnterior" onclick="cambiarPagina(-1)" class="btn-outline" style="padding:0.4rem 1rem;">◀ Anterior</button>
+            <span id="paginaInfo" style="color:var(--text-muted);">Página 1 de 1</span>
+            <button id="btnSiguiente" onclick="cambiarPagina(1)" class="btn-outline" style="padding:0.4rem 1rem;">Siguiente ▶</button>
+        </div>
+
+        <footer style="margin-top: 3rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            &copy; 2026 CTIC · Todos los derechos reservados
+        </footer>
+    </div>
+
+    <script src="auditoria-trazabilidad.component.js"></script>
+</body>
+</html>
