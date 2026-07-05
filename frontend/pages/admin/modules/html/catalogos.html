@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestión de Catálogos · Panel Administrador · DIAGTI – CTIC UNAS</title>
+<link rel="stylesheet" href="../css/catalogos.css">
+</head>
+<body>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"><img src="../assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS"></div>
+      <div>
+        <h1>UNAS</h1>
+        <small>Tingo María</small>
+      </div>
+    </div>
+
+    <div class="sidebar-profile">
+      <div class="profile-avatar">JV</div>
+      <div class="profile-info">
+        <div class="profile-name">Johan Alberto<br>Vela Arevalo</div>
+        <div class="profile-role">Administrador</div>
+      </div>
+    </div>
+
+    <div class="nav-label">Administración</div>
+    <nav class="nav">
+      <a class="nav-item" href="usuarios.html">
+        <span>
+          <span class="lbl">Gestión de Usuarios</span>
+          <span class="sub">Cuentas y accesos</span>
+        </span>
+      </a>
+      <a class="nav-item" href="roles.html">
+        <span>
+          <span class="lbl">Roles y Permisos</span>
+          <span class="sub">Perfiles de acceso</span>
+        </span>
+      </a>
+      <a class="nav-item active" href="catalogos.html">
+        <span>
+          <span class="lbl">Gestión de Catálogos</span>
+          <span class="sub">Listas maestras</span>
+        </span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      DIAGTI v1.0 · CTIC UNAS<br>
+      Módulo de administración interna
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h2>Gestión de Catálogos</h2>
+        <div class="hint">Listas maestras utilizadas en el registro e inventario de sistemas (RF-30).</div>
+      </div>
+    </div>
+
+    <div class="split">
+      <!-- Lista de catálogos -->
+      <div class="card">
+        <div class="section-head" style="margin-bottom:10px">
+          <h3 style="font-size:14.5px">Catálogos disponibles</h3>
+        </div>
+        <div class="list-select" id="lista-catalogos">
+          <div class="list-item active" data-cat="areas" onclick="mostrarCatalogo('areas', this)">
+            <div><div class="n">Áreas usuarias</div></div><span class="count-pill">6</span>
+          </div>
+          <div class="list-item" data-cat="tipos" onclick="mostrarCatalogo('tipos', this)">
+            <div><div class="n">Tipos de aplicativo</div></div><span class="count-pill">4</span>
+          </div>
+          <div class="list-item" data-cat="estados" onclick="mostrarCatalogo('estados', this)">
+            <div><div class="n">Estados de levantamiento</div></div><span class="count-pill">7</span>
+          </div>
+          <div class="list-item" data-cat="criticidad" onclick="mostrarCatalogo('criticidad', this)">
+            <div><div class="n">Criticidades</div></div><span class="count-pill">3</span>
+          </div>
+          <div class="list-item" data-cat="tecnologias" onclick="mostrarCatalogo('tecnologias', this)">
+            <div><div class="n">Tecnologías</div></div><span class="count-pill">8</span>
+          </div>
+          <div class="list-item" data-cat="motores" onclick="mostrarCatalogo('motores', this)">
+            <div><div class="n">Motores de base de datos</div></div><span class="count-pill">5</span>
+          </div>
+          <div class="list-item" data-cat="evidencias" onclick="mostrarCatalogo('evidencias', this)">
+            <div><div class="n">Tipos de evidencia</div></div><span class="count-pill">6</span>
+          </div>
+          <div class="list-item" data-cat="adquisicion" onclick="mostrarCatalogo('adquisicion', this)">
+            <div><div class="n">Formas de adquisición</div></div><span class="count-pill">4</span>
+          </div>
+          <div class="list-item" data-cat="riesgo" onclick="mostrarCatalogo('riesgo', this)">
+            <div><div class="n">Niveles de riesgo</div></div><span class="count-pill">4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalle del catálogo: una vista estática por catálogo -->
+      <div class="card">
+
+        <!-- CATÁLOGO: Áreas usuarias -->
+        <div class="cat-view active" id="cat-areas">
+          <div class="section-head">
+            <div>
+              <h3>Áreas usuarias</h3>
+              <div class="desc">Áreas de la universidad que utilizan o son dueñas de un sistema.</div>
+            </div>
+            <button class="btn btn-verde" onclick="abrirModal('modal-item')">+ Nuevo ítem</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>AR-01</td><td><b>Dirección Académica</b></td><td>Matrícula, notas y currícula</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>AR-02</td><td><b>Secretaría General</b></td><td>Trámites y documentación</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>AR-03</td><td><b>Recursos Humanos</b></td><td>Personal y planillas</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>AR-04</td><td><b>Economía y Finanzas</b></td><td>Presupuesto y tesorería</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>AR-05</td><td><b>Bienestar Universitario</b></td><td>Servicios estudiantiles</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>AR-06</td><td><b>Investigación</b></td><td>Proyectos y publicaciones</td><td><span class="badge gray">Inactivo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CATÁLOGO: Tipos de aplicativo -->
+        <div class="cat-view" id="cat-tipos">
+          <div class="section-head">
+            <div>
+              <h3>Tipos de aplicativo</h3>
+              <div class="desc">Clasificación técnica del sistema registrado.</div>
+            </div>
+            <button class="btn btn-verde" onclick="abrirModal('modal-item')">+ Nuevo ítem</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>TA-01</td><td><b>Web</b></td><td>Aplicación accesible por navegador</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TA-02</td><td><b>Desktop</b></td><td>Aplicación de escritorio</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TA-03</td><td><b>API</b></td><td>Servicio de integración</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TA-04</td><td><b>Legacy</b></td><td>Sistema heredado / obsoleto</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CATÁLOGO: Estados de levantamiento -->
+        <div class="cat-view" id="cat-estados">
+          <div class="section-head">
+            <div>
+              <h3>Estados de levantamiento</h3>
+              <div class="desc">Estados por los que atraviesa el registro de un sistema.</div>
+            </div>
+            <button class="btn btn-verde" onclick="abrirModal('modal-item')">+ Nuevo ítem</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>ES-01</td><td><b>Borrador</b></td><td>Registro en edición</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>ES-02</td><td><b>Enviado</b></td><td>Enviado a validación técnica</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>ES-03</td><td><b>Observado</b></td><td>Con observaciones pendientes</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>ES-04</td><td><b>Subsanado</b></td><td>Observaciones levantadas</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>ES-05</td><td><b>Validado</b></td><td>Aprobado por CTIC</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>ES-06</td><td><b>Rechazado</b></td><td>No aprobado</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>ES-07</td><td><b>Cerrado</b></td><td>Proceso finalizado</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CATÁLOGO: Criticidades -->
+        <div class="cat-view" id="cat-criticidad">
+          <div class="section-head">
+            <div>
+              <h3>Criticidades</h3>
+              <div class="desc">Nivel de importancia institucional del sistema.</div>
+            </div>
+            <button class="btn btn-verde" onclick="abrirModal('modal-item')">+ Nuevo ítem</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>CR-01</td><td><b>Académico</b></td><td>Procesos académicos centrales</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>CR-02</td><td><b>Financiero</b></td><td>Procesos económicos y contables</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>CR-03</td><td><b>RRHH</b></td><td>Gestión de personal</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CATÁLOGO: Tecnologías -->
+        <div class="cat-view" id="cat-tecnologias">
+          <div class="section-head">
+            <div>
+              <h3>Tecnologías</h3>
+              <div class="desc">Lenguajes y frameworks reconocidos por el sistema.</div>
+            </div>
+            <button class="btn btn-verde" onclick="abrirModal('modal-item')">+ Nuevo ítem</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>TE-01</td><td><b>PHP / Laravel</b></td><td>Framework backend</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TE-02</td><td><b>Java / Spring Boot</b></td><td>Framework backend</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TE-03</td><td><b>Visual Basic</b></td><td>Tecnología legacy</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TE-04</td><td><b>Python / Django</b></td><td>Framework backend</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TE-05</td><td><b>.NET / C#</b></td><td>Framework backend</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TE-06</td><td><b>React</b></td><td>Framework frontend</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TE-07</td><td><b>Angular</b></td><td>Framework frontend</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>TE-08</td><td><b>Vue.js</b></td><td>Framework frontend</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CATÁLOGO: Motores de base de datos -->
+        <div class="cat-view" id="cat-motores">
+          <div class="section-head">
+            <div>
+              <h3>Motores de base de datos</h3>
+              <div class="desc">Motores permitidos para el registro de arquitectura.</div>
+            </div>
+            <button class="btn btn-verde" onclick="abrirModal('modal-item')">+ Nuevo ítem</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>BD-01</td><td><b>PostgreSQL</b></td><td>Motor relacional</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>BD-02</td><td><b>MySQL</b></td><td>Motor relacional</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>BD-03</td><td><b>SQL Server</b></td><td>Motor relacional</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>BD-04</td><td><b>Oracle</b></td><td>Motor relacional</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>BD-05</td><td><b>Access</b></td><td>Motor legacy</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CATÁLOGO: Tipos de evidencia -->
+        <div class="cat-view" id="cat-evidencias">
+          <div class="section-head">
+            <div>
+              <h3>Tipos de evidencia</h3>
+              <div class="desc">Documentos requeridos para sustentar cada sistema.</div>
+            </div>
+            <button class="btn btn-verde" onclick="abrirModal('modal-item')">+ Nuevo ítem</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>EV-01</td><td><b>Contrato</b></td><td>Documento contractual</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>EV-02</td><td><b>Repositorio Git</b></td><td>Enlace a control de versiones</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>EV-03</td><td><b>Backup</b></td><td>Constancia de respaldo</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>EV-04</td><td><b>Certificado SSL</b></td><td>Certificado de seguridad</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>EV-05</td><td><b>Manual técnico</b></td><td>Documentación técnica</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>EV-06</td><td><b>Acta de conformidad</b></td><td>Documento de aceptación</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CATÁLOGO: Formas de adquisición -->
+        <div class="cat-view" id="cat-adquisicion">
+          <div class="section-head">
+            <div>
+              <h3>Formas de adquisición</h3>
+              <div class="desc">Origen del desarrollo o compra del sistema.</div>
+            </div>
+            <button class="btn btn-verde" onclick="abrirModal('modal-item')">+ Nuevo ítem</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>AQ-01</td><td><b>Desarrollo interno CTIC</b></td><td>Elaborado por CTIC</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>AQ-02</td><td><b>Proveedor externo</b></td><td>Contratado a terceros</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>AQ-03</td><td><b>Convenio</b></td><td>Adquirido por convenio institucional</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>AQ-04</td><td><b>Compra directa</b></td><td>Adquisición comercial</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CATÁLOGO: Niveles de riesgo -->
+        <div class="cat-view" id="cat-riesgo">
+          <div class="section-head">
+            <div>
+              <h3>Niveles de riesgo</h3>
+              <div class="desc">Escala usada para priorizar la modernización de sistemas.</div>
+            </div>
+            <button class="btn btn-verde" onclick="abrirModal('modal-item')">+ Nuevo ítem</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>RI-01</td><td><b>Bajo</b></td><td>Riesgo controlado</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>RI-02</td><td><b>Medio</b></td><td>Riesgo moderado</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>RI-03</td><td><b>Alto</b></td><td>Riesgo relevante</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+                <tr><td>RI-04</td><td><b>Crítico</b></td><td>Atención inmediata</td><td><span class="badge low">Activo</span></td><td><div class="row-actions"><button class="btn ghost sm" onclick="abrirModal('modal-item')">Editar</button><button class="btn danger sm">Eliminar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ===================== MODAL: NUEVO ÍTEM DE CATÁLOGO ===================== -->
+  <div class="modal-overlay" id="modal-item">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Nuevo ítem de catálogo</h3>
+        <button class="modal-close" onclick="cerrarModal('modal-item')">✕</button>
+      </div>
+      <div class="modal-body">
+        <label>Catálogo</label>
+        <select class="form">
+          <option>Áreas usuarias</option>
+          <option>Tipos de aplicativo</option>
+          <option>Estados de levantamiento</option>
+          <option>Criticidades</option>
+          <option>Tecnologías</option>
+          <option>Motores de base de datos</option>
+          <option>Tipos de evidencia</option>
+          <option>Formas de adquisición</option>
+          <option>Niveles de riesgo</option>
+        </select>
+        <label>Código</label>
+        <input type="text" placeholder="Ej. AR-07">
+        <label>Nombre</label>
+        <input type="text" placeholder="Nombre del ítem">
+        <label>Descripción</label>
+        <textarea placeholder="Descripción breve (opcional)"></textarea>
+        <label>Estado</label>
+        <select class="form"><option>Activo</option><option>Inactivo</option></select>
+      </div>
+      <div class="modal-foot">
+        <button class="btn secondary" onclick="cerrarModal('modal-item')">Cancelar</button>
+        <button class="btn btn-verde" onclick="cerrarModal('modal-item')">Guardar ítem</button>
+      </div>
+    </div>
+  </div>
+  <script src="../js/catalogos.js"></script>
+</body>
+</html>
