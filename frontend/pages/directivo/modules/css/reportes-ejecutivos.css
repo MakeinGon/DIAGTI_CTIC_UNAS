@@ -1,0 +1,498 @@
+/* ============================================================
+   DIAGTI CTIC UNAS
+   Módulo Directivo · Reportes Ejecutivos
+   Estilos específicos de la página
+============================================================ */
+
+
+/* ============================================================
+   1. CATÁLOGO DE REPORTES
+============================================================ */
+
+.report-catalog {
+    margin-bottom: 26px;
+}
+
+
+.report-card-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+}
+
+
+.report-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    min-width: 0;
+    min-height: 230px;
+    padding: 20px;
+
+    overflow: hidden;
+
+    color: inherit;
+    text-decoration: none;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--color-white) 0%,
+            var(--color-surface-soft) 100%
+        );
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform var(--transition-fast),
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+
+.report-card::after {
+    content: "";
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    height: 4px;
+
+    background-color: var(--color-secondary);
+
+    transform: scaleX(0);
+    transform-origin: left center;
+
+    transition: transform var(--transition-fast);
+}
+
+
+.report-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #b7d9ee;
+
+    box-shadow: var(--shadow-md);
+}
+
+
+.report-card:hover::after,
+.report-card:focus-visible::after {
+    transform: scaleX(1);
+}
+
+
+.report-card:focus-visible {
+    outline: 3px solid rgba(15, 117, 188, 0.25);
+    outline-offset: 3px;
+}
+
+
+.report-card__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    color: var(--color-primary-dark);
+    background-color: var(--color-primary-light);
+
+    border: 1px solid #c4e0f1;
+    border-radius: 13px;
+
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+
+.report-card__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+
+.report-card__content h3 {
+    margin-bottom: 9px;
+
+    color: var(--color-primary-dark);
+
+    font-size: 1.02rem;
+    line-height: 1.35;
+}
+
+
+.report-card__content p {
+    margin-bottom: 16px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.89rem;
+    line-height: 1.55;
+}
+
+
+.report-card__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    width: fit-content;
+    margin-top: auto;
+
+    color: var(--color-secondary-dark);
+
+    font-size: 0.86rem;
+    font-weight: 750;
+}
+
+
+.report-card__action::after {
+    content: "→";
+
+    transition: transform var(--transition-fast);
+}
+
+
+.report-card:hover .report-card__action::after {
+    transform: translateX(3px);
+}
+
+
+/* ============================================================
+   2. INDICADORES CONSOLIDADOS
+============================================================ */
+
+.reports-summary {
+    margin-bottom: 26px;
+}
+
+
+.reports-summary .kpi-grid {
+    margin-bottom: 0;
+}
+
+
+.reports-summary .kpi-card:nth-child(1) {
+    border-top-color: var(--color-primary);
+}
+
+
+.reports-summary .kpi-card:nth-child(2) {
+    border-top-color: var(--color-danger);
+}
+
+
+.reports-summary .kpi-card:nth-child(3) {
+    border-top-color: var(--color-warning);
+}
+
+
+.reports-summary .kpi-card:nth-child(4) {
+    border-top-color: var(--color-secondary);
+}
+
+
+/* ============================================================
+   3. CONTROLES Y FILTROS
+============================================================ */
+
+.report-controls .filter-form {
+    grid-template-columns: repeat(5, minmax(150px, 1fr));
+}
+
+
+.report-controls .filter-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+
+    padding-top: 2px;
+}
+
+
+/* ============================================================
+   4. SECCIONES DE REPORTE
+============================================================ */
+
+.report-section {
+    scroll-margin-top: 24px;
+
+    transition:
+        border-color var(--transition-normal),
+        box-shadow var(--transition-normal);
+}
+
+
+.report-section:target {
+    border-color: #9ecde8;
+
+    box-shadow:
+        0 0 0 4px rgba(15, 117, 188, 0.08),
+        var(--shadow-md);
+}
+
+
+.report-section .section-header > div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.report-actions {
+    flex-shrink: 0;
+}
+
+
+.report-actions .button {
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   5. TABLAS DE REPORTES
+============================================================ */
+
+.report-section .table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color:
+        var(--color-border-dark)
+        var(--color-surface-soft);
+}
+
+
+.report-section .table-responsive::-webkit-scrollbar {
+    height: 9px;
+}
+
+
+.report-section .table-responsive::-webkit-scrollbar-track {
+    background-color: var(--color-surface-soft);
+}
+
+
+.report-section .table-responsive::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-dark);
+
+    border: 2px solid var(--color-surface-soft);
+    border-radius: var(--radius-pill);
+}
+
+
+#table-report-inventory {
+    min-width: 840px;
+}
+
+
+#table-report-risks,
+#table-report-obsolescence {
+    min-width: 900px;
+}
+
+
+#table-report-areas,
+#table-report-validation {
+    min-width: 760px;
+}
+
+
+.report-section .data-table td {
+    line-height: 1.5;
+}
+
+
+.report-section .data-table td:first-child {
+    min-width: 180px;
+}
+
+
+/* ============================================================
+   6. ESTADO VACÍO
+============================================================ */
+
+#reports-empty-state {
+    margin-bottom: 26px;
+}
+
+
+/* ============================================================
+   7. IMPRESIÓN
+   Preparación visual solamente.
+   No implementa ni simula exportación PDF.
+============================================================ */
+
+@media print {
+
+    @page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+
+    body {
+        background-color: var(--color-white);
+    }
+
+
+    .report-catalog,
+    .report-controls,
+    .report-actions,
+    #reports-empty-state {
+        display: none !important;
+    }
+
+
+    .page-header,
+    .kpi-card,
+    .report-section {
+        box-shadow: none !important;
+    }
+
+
+    .page-header {
+        break-inside: avoid;
+    }
+
+
+    .reports-summary .kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+
+    .report-section {
+        padding: 0;
+
+        overflow: visible;
+
+        border: 0;
+
+        break-inside: auto;
+    }
+
+
+    .report-section + .report-section {
+        break-before: page;
+    }
+
+
+    .report-section .table-responsive {
+        overflow: visible;
+
+        border-color: #cbd5df;
+    }
+
+
+    .report-section .data-table {
+        width: 100%;
+        min-width: 0;
+
+        font-size: 9pt;
+    }
+
+
+    .report-section .data-table th,
+    .report-section .data-table td {
+        padding: 7px 8px;
+    }
+
+
+    .report-section .data-table tr {
+        break-inside: avoid;
+    }
+}
+
+
+/* ============================================================
+   8. RESPONSIVE
+============================================================ */
+
+@media (max-width: 1450px) {
+
+    .report-card-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+
+    .report-controls .filter-form {
+        grid-template-columns:
+            repeat(3, minmax(170px, 1fr));
+    }
+}
+
+
+@media (max-width: 1050px) {
+
+    .report-card-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .report-controls .filter-form {
+        grid-template-columns:
+            repeat(2, minmax(180px, 1fr));
+    }
+}
+
+
+@media (max-width: 640px) {
+
+    .report-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .report-card {
+        min-height: 0;
+    }
+
+
+    .report-controls .filter-form {
+        grid-template-columns: 1fr;
+    }
+
+
+    .report-controls .filter-actions {
+        grid-column: auto;
+    }
+}
+
+
+/* ============================================================
+   9. ACCESIBILIDAD: REDUCCIÓN DE MOVIMIENTO
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .report-card,
+    .report-card::after,
+    .report-card__action::after,
+    .report-section {
+        transition: none;
+    }
+
+
+    .report-card:hover {
+        transform: none;
+    }
+
+
+    .report-card:hover .report-card__action::after {
+        transform: none;
+    }
+}
