@@ -14,7 +14,7 @@
       <div class="logo"><img src="../assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS"></div>
       <div>
         <h1>UNAS</h1>
-        <small>Tingo María</small>
+        <small>CTIC – Tingo María</small>
       </div>
     </div>
 
@@ -51,6 +51,10 @@
     <div class="sidebar-footer">
       DIAGTI v1.0 · CTIC UNAS<br>
       Módulo de administración interna
+      <button class="btn-logout" onclick="abrirModal('modal-logout')">
+        <span class="ic">⏻</span>
+        <span>Cerrar sesión</span>
+      </button>
     </div>
   </aside>
 
@@ -351,6 +355,24 @@
       </div>
     </div>
   </div>
+  <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+  <div class="modal-overlay" id="modal-logout">
+    <div class="modal" style="width:min(400px,100%)">
+      <div class="modal-head">
+        <h3>Cerrar sesión</h3>
+        <button class="modal-close" onclick="cerrarModal('modal-logout')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin:6px 0 4px;color:var(--text);font-size:14px">¿Estás seguro de que deseas cerrar tu sesión?</p>
+        <p class="field-hint">Tendrás que volver a autenticarte con tu cuenta LDAP institucional para ingresar de nuevo.</p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn secondary" onclick="cerrarModal('modal-logout')">Cancelar</button>
+        <button class="btn danger" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/catalogos.js"></script>
 </body>
 </html>
