@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Despliegue - DIAGTI</title>
+  <link rel="stylesheet" href="../css/infraestructura.css">
+  <link rel="stylesheet" href="css/despliegue.css">
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo-header">
+      <img src="../assets/logo-unas.png" alt="UNAS" width="55">
+      <div>
+        <strong>UNAS</strong><br>
+        <small>Tingo María</small>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="background:#1abb9c; width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: white;">
+          DA
+        </div>
+        <div>
+          <strong>DIEGO ANGHELLO</strong><br>
+          <small>LEON ARTEAGA</small><br>
+          <small style="color: #b0f0ff;">DESARROLLADOR</small>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <a href="dashboard-infraestructura.html" class="nav-item">Dashboard Infraestructura</a>
+      <a href="mis-sistemas.html" class="nav-item">Mis Sistemas</a>
+      <a href="infraestructura.html" class="nav-item">Infraestructura</a>
+      <a href="despliegue.html" class="nav-item active">Despliegue</a>
+      <a href="seguridad.html" class="nav-item">Seguridad</a>
+      <a href="evidencias.html" class="nav-item">Evidencias</a>
+      <a href="enviar-validacion.html" class="nav-item">Enviar Validación</a>
+      <a href="subsanaciones.html" class="nav-item">Subsanaciones</a>
+      <a href="historial.html" class="nav-item">Historial</a>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <h2>Despliegue</h2>
+    <p>Gestión de ambientes, dominios, servidores y mecanismos de publicación de los sistemas.</p>
+
+    <div class="card">
+      <h3>Resumen de Despliegue</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <strong>Ambientes Configurados</strong>
+          <h2>4</h2>
+          <small>Desarrollo, Pruebas, Staging, Producción</small>
+        </div>
+        <div class="info-item">
+          <strong>Dominios Institucionales</strong>
+          <h2>11</h2>
+          <small>Subdominios activos</small>
+        </div>
+        <div class="info-item">
+          <strong>Sistemas en Producción</strong>
+          <h2>8</h2>
+          <small>Con HTTPS y monitoreo</small>
+        </div>
+        <div class="info-item">
+          <strong>Contenedores Docker</strong>
+          <h2>19</h2>
+          <small>En ejecución</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Sistemas Desplegados</h3>
+      <table class="table" id="tabla-despliegue">
+        <thead>
+          <tr>
+            <th>Sistema</th>
+            <th>Ambiente</th>
+            <th>Dominio / IP</th>
+            <th>Plataforma</th>
+            <th>Último Despliegue</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="js/despliegue.js"></script>
+</body>
+</html>

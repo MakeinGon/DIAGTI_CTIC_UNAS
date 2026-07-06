@@ -1,0 +1,41 @@
+.main-content {
+    margin-left: 280px;
+    padding: 25px 35px;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    margin-bottom: 28px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.info-item {
+    background: #f8f9fa;
+    padding: 18px;
+    border-radius: 8px;
+    border-left: 5px solid #1abb9c;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: #f1f1f1;
+    padding: 14px 12px;
+    text-align: left;
+}
+
+.table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #eee;
+}

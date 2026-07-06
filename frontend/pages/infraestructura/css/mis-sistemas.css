@@ -1,0 +1,48 @@
+/* Reutiliza los estilos principales */
+:root {
+    --azul-ctic: #0f75bc;
+    --verde-ctic: #1abb9c;
+}
+
+.main-content {
+    margin-left: 280px;
+    padding: 25px 35px;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    margin-bottom: 28px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.table th {
+    background: #f1f1f1;
+    padding: 14px 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.badge.success { background: #d4edda; color: #155724; }
+.badge.warning { background: #fff3cd; color: #856404; }
+.badge.danger { background: #f8d7da; color: #721c24; }

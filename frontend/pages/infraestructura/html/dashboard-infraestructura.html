@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Infraestructura - DIAGTI</title>
+  <link rel="stylesheet" href="../css/infraestructura.css">
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo-header">
+      <img src="../assets/logo-unas.png" alt="UNAS" width="55">
+      <div>
+        <strong>UNAS</strong><br>
+        <small>Tingo María</small>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="background:#1abb9c; width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: white;">
+          DA
+        </div>
+        <div>
+          <strong>DIEGO ANGHELLO</strong><br>
+          <small>LEON ARTEAGA</small><br>
+          <small style="color: #b0f0ff;">DESARROLLADOR</small>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <a href="dashboard-infraestructura.html" class="nav-item active">Dashboard Infraestructura</a>
+      <a href="mis-sistemas.html" class="nav-item">Mis Sistemas</a>
+      <a href="infraestructura.html" class="nav-item">Infraestructura</a>
+      <a href="despliegue.html" class="nav-item">Despliegue</a>
+      <a href="seguridad.html" class="nav-item">Seguridad</a>
+      <a href="evidencias.html" class="nav-item">Evidencias</a>
+      <a href="enviar-validacion.html" class="nav-item">Enviar Validación</a>
+      <a href="subsanaciones.html" class="nav-item">Subsanaciones</a>
+      <a href="historial.html" class="nav-item">Historial</a>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <h2>Dashboard Infraestructura</h2>
+    <p>Visión general del estado de la infraestructura tecnológica institucional.</p>
+
+    <div class="card">
+      <h3>Estado General</h3>
+      <div class="info-grid">
+        <div class="info-item" style="border-left-color: #1abb9c;">
+          <strong>Cumplimiento General</strong>
+          <h2>78%</h2>
+          <small>12 de 15 controles OK</small>
+        </div>
+        <div class="info-item" style="border-left-color: #0f75bc;">
+          <strong>Sistemas Monitoreados</strong>
+          <h2>8</h2>
+          <small>de 9 sistemas activos</small>
+        </div>
+        <div class="info-item" style="border-left-color: #f39c12;">
+          <strong>Incidentes Pendientes</strong>
+          <h2>2</h2>
+          <small>requieren atención</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Sistemas Recientes</h3>
+      <table class="table" id="tabla-dashboard">
+        <thead>
+          <tr>
+            <th>Sistema</th>
+            <th>Estado Infra</th>
+            <th>Despliegue</th>
+            <th>Seguridad</th>
+            <th>Última Actualización</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="js/dashboard-infraestructura.js"></script>
+</body>
+</html>
