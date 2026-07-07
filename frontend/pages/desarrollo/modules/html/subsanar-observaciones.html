@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Subsanar Observaciones · Área de Desarrollo · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="../css/subsanar-observaciones.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo"><img src="../assets/logo-unas.png" alt="UNAS"></div>
+            <div>
+                <h1>UNAS</h1>
+                <small>Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">DA</div>
+            <div class="profile-info">
+                <div class="profile-name">DIEGO ANGHELLO LEON ARTEAGA</div>
+                <div class="profile-role">Desarrollador</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Área de Desarrollo</div>
+        <nav class="nav">
+            <a href="dashboard.html" class="nav-item"><span class="lbl">Dashboard Desarrollo</span></a>
+            <a href="mis-sistemas.html" class="nav-item"><span class="lbl">Mis Sistemas</span></a>
+            <a href="registrar-sistema.html" class="nav-item"><span class="lbl">Registrar Sistema</span></a>
+            <a href="editar-sistema.html" class="nav-item"><span class="lbl">Editar Sistema</span></a>
+            <a href="arquitectura.html" class="nav-item"><span class="lbl">Arquitectura Software</span></a>
+            <a href="base-datos.html" class="nav-item"><span class="lbl">Base de Datos</span></a>
+            <a href="seguridad.html" class="nav-item"><span class="lbl">Seguridad</span></a>
+            <a href="integraciones.html" class="nav-item"><span class="lbl">Integraciones</span></a>
+            <a href="evidencias.html" class="nav-item"><span class="lbl">Evidencias</span></a>
+            <a href="enviar-validacion.html" class="nav-item"><span class="lbl">Enviar Validación</span></a>
+            <a href="subsanar-observaciones.html" class="nav-item active"><span class="lbl">Subsanar Observaciones</span></a>
+            <a href="historial-sistema.html" class="nav-item"><span class="lbl">Historial del Sistema</span></a>
+        </nav>
+
+        <div class="sidebar-footer">
+            DIAGTI v1.0 · CTIC UNAS<br>
+            <small>Área de Desarrollo</small>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h2>Paso 11: Subsanación de Observaciones</h2>
+                <div class="hint">Responda las observaciones emitidas por el comité evaluador del CTIC</div>
+            </div>
+            <span class="badge danger" id="estadoObs">1 OBSERVACIÓN PENDIENTE</span>
+        </div>
+
+        <div class="card">
+            <!-- Observación Activa -->
+            <div id="bloqueObservacionActiva">
+                <div class="observacion-box">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="badge dark">Módulo afectado: 7. Seguridad</span>
+                        <small class="text-muted">28/07/2026 14:30 h</small>
+                    </div>
+                    
+                    <h6 class="fw-bold text-dark mb-3">Detalle de la Observación del Validador:</h6>
+                    <div class="obs-content">
+                        "Se verificó que el servidor de Base de Datos expuesto en la sección 6 no cuenta con cifrado TLS activo para las conexiones remotas, y falta adjuntar el reporte de análisis de vulnerabilidades OWASP Top 10."
+                    </div>
+                    <small class="text-secondary d-block mt-3">Emitido por: Ing. Evaluador CTIC</small>
+                </div>
+
+                <!-- Formulario de respuesta -->
+                <div class="mt-5">
+                    <label class="control-label">Respuesta del Desarrollador / Sustento de Levantamiento <span class="text-danger">*</span></label>
+                    <textarea id="sustento" class="textarea-subsanar" rows="6" 
+                        placeholder="Explique detalladamente las correcciones realizadas..."></textarea>
+                    
+                    <div class="modal-foot" style="margin-top:30px;">
+                        <button class="btn secondary">Cancelar</button>
+                        <button class="btn btn-verde" onclick="enviarSubsanacion()">Enviar Levantamiento</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado sin observaciones -->
+            <div id="bloqueSinObservaciones" class="text-center py-5 d-none">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 4.5rem;"></i>
+                <h4 class="mt-4 fw-bold">¡No hay observaciones pendientes!</h4>
+                <p class="text-muted">El expediente se encuentra al día y en espera del dictamen final.</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/subsanar-observaciones.js"></script>
+</body>
+</html>
