@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard de Validación | CTIC UNAS</title>
+
+    <!-- FontAwesome -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+</head>
+
+<body>
+
+    <!-- ===================== SIDEBAR ===================== -->
+
+    <aside class="sidebar">
+
+        <!-- Logo -->
+
+        <div class="brand">
+
+            <div class="logo">
+
+                <img src="../assets/logo-unas.png" alt="UNAS">
+
+            </div>
+
+            <div>
+
+                <h1>UNAS</h1>
+
+                <small>
+
+                    CTIC - Tingo María
+
+                </small>
+
+            </div>
+
+        </div>
+
+        <!-- Perfil -->
+
+        <div class="sidebar-profile">
+
+            <div class="profile-avatar">
+
+                VL
+
+            </div>
+
+            <div class="profile-info">
+
+                <div class="profile-name">
+
+                    Validador
+
+                </div>
+
+                <div class="profile-role">
+
+                    CTIC
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Menú -->
+
+        <div class="nav-label">
+
+            VALIDACIÓN
+
+        </div>
+
+        <nav class="nav">
+
+            <a class="nav-item active" href="dashboard.html">
+
+                <span>
+
+                    <span class="lbl">
+
+                        Dashboard
+
+                    </span>
+
+                    <span class="sub">
+
+                        Resumen General
+
+                    </span>
+
+                </span>
+
+            </a>
+
+            <a class="nav-item" href="pendientes.html">
+
+                <span>
+
+                    <span class="lbl">
+
+                        Pendientes
+
+                    </span>
+
+                    <span class="sub">
+
+                        Sistemas enviados
+
+                    </span>
+
+                </span>
+
+            </a>
+
+            <a class="nav-item" href="detalle-sistema.html">
+
+                <span>
+
+                    <span class="lbl">
+
+                        Detalle Sistema
+
+                    </span>
+
+                    <span class="sub">
+
+                        Información completa
+
+                    </span>
+
+                </span>
+
+            </a>
+
+            <a class="nav-item" href="validar-informacion.html">
+
+                <span>
+
+                    <span class="lbl">
+
+                        Validar Información
+
+                    </span>
+
+                    <span class="sub">
+
+                        Revisión técnica
+
+                    </span>
+
+                </span>
+
+            </a>
+
+            <a class="nav-item" href="registrar-observacion.html">
+
+                <span>
+
+                    <span class="lbl">
+
+                        Registrar Observación
+
+                    </span>
+
+                    <span class="sub">
+
+                        Registrar observaciones
+
+                    </span>
+
+                </span>
+
+            </a>
+
+            <a class="nav-item" href="historial.html">
+
+                <span>
+
+                    <span class="lbl">
+
+                        Historial
+
+                    </span>
+
+                    <span class="sub">
+
+                        Validaciones realizadas
+
+                    </span>
+
+                </span>
+
+            </a>
+            <div class="nav-label">
+
+                REPORTES
+
+            </div>
+
+            <a class="nav-item" href="dashboard-riesgos.html">
+
+                <span>
+
+                    <span class="lbl">
+
+                        Dashboard Riesgos
+
+                    </span>
+
+                    <span class="sub">
+
+                        Indicadores de riesgo
+
+                    </span>
+
+                </span>
+
+            </a>
+
+        </nav>
+
+        <!-- Footer -->
+
+ <div class="sidebar-footer">
+
+    <div>
+
+        DIAGTI v1.0
+
+    </div>
+
+    <button class="btn-logout">
+
+        <i class="fas fa-right-from-bracket"></i>
+
+        Cerrar sesión
+
+    </button>
+
+</div>
+
+    </aside>
+
+    <!-- ===================== CONTENIDO ===================== -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h2>
+
+                    Dashboard de Validación
+
+                </h2>
+
+                <div class="hint">
+
+                    Resumen ejecutivo de la gestión de validación y seguimiento de sistemas.
+
+                </div>
+
+            </div>
+
+            <button class="btn btn-verde" id="btn-actualizar">
+
+                <i class="fas fa-rotate-right"></i>
+
+                Actualizar Vista
+
+            </button>
+
+        </div>
+
+        <!-- HERO -->
+
+        <div class="card hero-card">
+
+            <div>
+
+                <span class="badge info">
+
+                    Panel Principal
+
+                </span>
+
+                <h2 style="margin-top:12px;">
+
+                    Estado General de Validaciones
+
+                </h2>
+
+                <p>
+
+                    Visualiza el estado actual de los procesos de validación,
+                    sistemas pendientes, tiempos de atención e indicadores
+                    generales del módulo.
+
+                </p>
+
+            </div>
+
+            <div class="hero-pill">
+
+                <i class="fas fa-chart-line"></i>
+
+            </div>
+
+        </div>
+
+        <!-- TARJETAS -->
+
+        <div class="grid g4">
+
+            <article class="card stat-card critical">
+
+                <div class="stat-header">
+
+                    <span class="stat-title">
+
+                        Sistemas Pendientes
+
+                    </span>
+
+                    <i class="fas fa-clock stat-icon"></i>
+
+                </div>
+
+                <div class="stat-number" id="stats-pendientes">
+
+                    --
+
+                </div>
+
+                <div class="stat-label">
+
+                    Requieren atención inmediata
+
+                </div>
+
+            </article>
+
+            <article class="card stat-card high">
+
+                <div class="stat-header">
+
+                    <span class="stat-title">
+
+                        En Subsanación
+
+                    </span>
+
+                    <i class="fas fa-file-circle-check stat-icon"></i>
+
+                </div>
+
+                <div class="stat-number" id="stats-subsanacion">
+
+                    --
+
+                </div>
+
+                <div class="stat-label">
+
+                    Expedientes en proceso
+
+                </div>
+
+            </article>
+
+            <article class="card stat-card medium">
+
+                <div class="stat-header">
+
+                    <span class="stat-title">
+
+                        Dictámenes Emitidos
+
+                    </span>
+
+                    <i class="fas fa-file-signature stat-icon"></i>
+
+                </div>
+
+                <div class="stat-number" id="stats-dictamenes">
+
+                    --
+
+                </div>
+
+                <div class="stat-label">
+
+                    Durante el presente mes
+
+                </div>
+
+            </article>
+
+            <article class="card stat-card low">
+
+                <div class="stat-header">
+
+                    <span class="stat-title">
+
+                        Tiempo Promedio
+
+                    </span>
+
+                    <i class="fas fa-hourglass-half stat-icon"></i>
+
+                </div>
+
+                <div class="stat-number" id="stats-tiempo">
+
+                    --
+
+                </div>
+
+                <div class="stat-label">
+
+                    Promedio por trámite
+
+                </div>
+
+            </article>
+
+        </div>
+
+        <!-- PANEL PRINCIPAL -->
+
+        <div class="grid g2">
+
+            <!-- Indicadores -->
+
+            <section class="card">
+
+                <div class="card-header">
+
+                    <h3>
+
+                        Indicadores de Gestión
+
+                    </h3>
+
+                </div>
+
+                <div class="legend-list">
+
+                    <div class="legend-item">
+
+                        <div class="legend-left">
+
+                            <span class="dot critical"></span>
+
+                            <span>
+
+                                Sistemas por validar
+
+                            </span>
+
+                        </div>
+
+                        <strong id="ind-validar">
+
+                            --
+
+                        </strong>
+
+                    </div>
+
+                    <div class="legend-item">
+
+                        <div class="legend-left">
+
+                            <span class="dot high"></span>
+
+                            <span>
+
+                                En subsanación
+
+                            </span>
+
+                        </div>
+
+                        <strong id="ind-subsanacion">
+
+                            --
+
+                        </strong>
+
+                    </div>
+
+                    <div class="legend-item">
+
+                        <div class="legend-left">
+
+                            <span class="dot medium"></span>
+
+                            <span>
+
+                                Dictaminados
+
+                            </span>
+
+                        </div>
+
+                        <strong id="ind-dictaminados">
+
+                            --
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- Gráfico -->
+
+            <section class="card">
+
+                <div class="card-header">
+
+                    <h3>
+
+                        Tiempo de Atención
+
+                    </h3>
+
+                </div>
+
+                <div class="chart-placeholder">
+
+                    <div class="chart-icon">
+
+                        <i class="fas fa-chart-column"></i>
+
+                    </div>
+
+                    <h4>
+
+                        Gráfico de Barras
+
+                    </h4>
+
+                    <p>
+
+                        Aquí se mostrará el gráfico de tiempos
+                        de atención cuando se conecte el módulo
+                        con el backend.
+
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+        <!-- PIE DE PÁGINA -->
+
+        <footer class="page-footer">
+
+            <div>
+
+                DIAGTI - CTIC UNAS © 2026|
+
+            </div>
+
+            <div>
+
+                Dashboard de Validación
+
+            </div>
+
+        </footer>
+
+    </main>
+
+    <script type="module" src="../js/dashboard.js"></script>
+
+</body>
+
+</html>

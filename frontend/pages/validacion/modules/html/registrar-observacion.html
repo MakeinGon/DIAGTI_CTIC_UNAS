@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Registrar Observación | DIAGTI - CTIC</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="../css/registrar-observacion.css">
+
+</head>
+
+<body>
+
+<div class="page-shell">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="brand">
+
+                <div class="logo">
+
+                    <img src="../assets/logo-unas.png"
+                         alt="UNAS">
+
+                </div>
+
+                <div>
+
+                    <h1>DIAGTI</h1>
+
+                    <small>CTIC - UNAS</small>
+
+                </div>
+
+            </div>
+
+            <div class="sidebar-profile">
+
+                <div class="profile-avatar">
+
+                    <i class="fas fa-user"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="profile-name">
+
+                        Validador
+
+                    </div>
+
+                    <div class="profile-role">
+
+                        Área CTIC
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="nav-label">
+
+                MENÚ PRINCIPAL
+
+            </div>
+
+            <nav class="nav">
+
+                <a href="dashboard.html" class="nav-item">
+
+                    <span class="lbl">Dashboard</span>
+
+                    <span class="sub">Resumen general</span>
+
+                </a>
+
+                <a href="pendientes.html" class="nav-item">
+
+                    <span class="lbl">Pendientes</span>
+
+                    <span class="sub">Sistemas pendientes</span>
+
+                </a>
+
+                <a href="detalle-sistema.html" class="nav-item">
+
+                    <span class="lbl">Detalle Sistema</span>
+
+                    <span class="sub">Información técnica</span>
+
+                </a>
+
+                <a href="validar-informacion.html" class="nav-item">
+
+                    <span class="lbl">Validar Información</span>
+
+                    <span class="sub">Revisión documental</span>
+
+                </a>
+
+                <a href="registrar-observacion.html"
+                   class="nav-item active">
+
+                    <span class="lbl">Registrar Observación</span>
+
+                    <span class="sub">Comentarios técnicos</span>
+
+                </a>
+
+                <a href="historial.html" class="nav-item">
+
+                    <span class="lbl">Historial</span>
+
+                    <span class="sub">Consultas realizadas</span>
+
+                </a>
+
+                <a href="dashboard-riesgos.html" class="nav-item">
+
+                    <span class="lbl">Dashboard Riesgos</span>
+
+                    <span class="sub">Análisis</span>
+
+                </a>
+
+            </nav>
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <div>
+
+                DIAGTI v1.0
+
+            </div>
+
+            <button class="btn-logout">
+
+                <i class="fas fa-right-from-bracket"></i>
+
+                Cerrar sesión
+
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- CONTENIDO -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+
+                <h2>
+
+                    Registrar Observación
+
+                </h2>
+
+                <div class="hint">
+
+                    Registre observaciones, incidencias y recomendaciones para el sistema seleccionado.
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <!-- HERO -->
+
+        <section class="card hero-card">
+
+            <div>
+
+                <span class="badge warning">
+
+                    OBSERVACIONES
+
+                </span>
+
+                <h2 id="titulo-sistema">
+
+                    Sistema
+
+                </h2>
+
+                <p>
+
+                    Complete el formulario con información clara y detallada para facilitar el análisis por parte del equipo de desarrollo.
+
+                </p>
+
+            </div>
+
+            <div class="hero-pill">
+
+                <i class="fas fa-pen-to-square"></i>
+
+            </div>
+
+        </section>
+
+        <!-- FORMULARIO -->
+
+        <section class="card">
+            <div class="section-head">
+
+                <div>
+
+                    <h3>
+
+                        Nueva Observación
+
+                    </h3>
+
+                    <small>
+
+                        Complete todos los campos requeridos
+
+                    </small>
+
+                </div>
+
+                <span class="badge info">
+
+                    Nuevo Registro
+
+                </span>
+
+            </div>
+
+            <form
+                id="observacion-form"
+                class="observacion-form">
+
+                <div class="form-group">
+
+                    <label for="titulo">
+
+                        Título de la observación
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        class="form-input"
+                        placeholder="Ej. Falta de validación en campos de entrada"
+                        maxlength="100"
+                        required>
+
+                    <small>
+
+                        Sea específico y conciso.
+
+                    </small>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="detalle">
+
+                        Descripción detallada
+
+                    </label>
+
+                    <textarea
+                        id="detalle"
+                        name="detalle"
+                        class="form-textarea"
+                        rows="8"
+                        placeholder="Describa el problema encontrado, su impacto y la recomendación correspondiente."
+                        required></textarea>
+
+                    <small>
+
+                        Incluya toda la información necesaria para facilitar la revisión.
+
+                    </small>
+
+                </div>
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-verde">
+
+                        <i class="fas fa-paper-plane"></i>
+
+                        Enviar Observación
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn"
+                        onclick="history.back()">
+
+                        <i class="fas fa-arrow-left"></i>
+
+                        Cancelar
+
+                    </button>
+
+                </div>
+
+            </form>
+
+            <p
+                id="mensaje-observacion"
+                class="form-message">
+
+            </p>
+
+        </section>
+        <!-- PIE DE PÁGINA -->
+
+        <footer class="page-footer">
+
+            <div>
+
+                DIAGTI - CTIC UNAS © 2026
+
+            </div>
+
+            <div>
+
+                Módulo de Validación · Registro de Observaciones
+
+            </div>
+
+        </footer>
+
+    </main>
+
+</div>
+
+<script type="module" src="../js/registrar-observacion.js"></script>
+
+</body>
+
+</html>

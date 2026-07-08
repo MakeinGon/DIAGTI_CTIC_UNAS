@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Historial de Validaciones | DIAGTI - CTIC</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="../css/historial.css">
+
+</head>
+
+<body>
+
+<div class="page-shell">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="brand">
+
+                <div class="logo">
+
+                    <img src="../assets/logo-unas.png"
+                         alt="UNAS">
+
+                </div>
+
+                <div>
+
+                    <h1>DIAGTI</h1>
+
+                    <small>CTIC - UNAS</small>
+
+                </div>
+
+            </div>
+
+            <div class="sidebar-profile">
+
+                <div class="profile-avatar">
+
+                    <i class="fas fa-user"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="profile-name">
+
+                        Validador
+
+                    </div>
+
+                    <div class="profile-role">
+
+                        Área CTIC
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="nav-label">
+
+                MENÚ PRINCIPAL
+
+            </div>
+
+            <nav class="nav">
+
+                <a href="dashboard.html" class="nav-item">
+
+                    <span class="lbl">Dashboard</span>
+
+                    <span class="sub">Resumen general</span>
+
+                </a>
+
+                <a href="pendientes.html" class="nav-item">
+
+                    <span class="lbl">Pendientes</span>
+
+                    <span class="sub">Sistemas pendientes</span>
+
+                </a>
+
+                <a href="detalle-sistema.html" class="nav-item">
+
+                    <span class="lbl">Detalle Sistema</span>
+
+                    <span class="sub">Información técnica</span>
+
+                </a>
+
+                <a href="validar-informacion.html" class="nav-item">
+
+                    <span class="lbl">Validar Información</span>
+
+                    <span class="sub">Revisión documental</span>
+
+                </a>
+
+                <a href="registrar-observacion.html" class="nav-item">
+
+                    <span class="lbl">Registrar Observación</span>
+
+                    <span class="sub">Comentarios</span>
+
+                </a>
+
+                <a href="historial.html"
+                   class="nav-item active">
+
+                    <span class="lbl">Historial</span>
+
+                    <span class="sub">Consultas realizadas</span>
+
+                </a>
+
+                <a href="dashboard-riesgos.html" class="nav-item">
+
+                    <span class="lbl">Dashboard Riesgos</span>
+
+                    <span class="sub">Análisis</span>
+
+                </a>
+
+            </nav>
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <div>
+
+                DIAGTI v1.0
+
+            </div>
+
+            <button class="btn-logout">
+
+                <i class="fas fa-right-from-bracket"></i>
+
+                Cerrar sesión
+
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- CONTENIDO -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+
+                <h2>
+
+                    Historial de Validaciones
+
+                </h2>
+
+                <div class="hint">
+
+                    Registro histórico de todas las acciones realizadas por el área de validación.
+
+                </div>
+
+            </div>
+
+            <button class="btn btn-verde">
+
+                <i class="fas fa-file-export"></i>
+
+                Exportar Historial
+
+            </button>
+
+        </header>
+
+        <!-- HERO -->
+
+        <section class="card hero-card">
+
+            <div>
+
+                <span class="badge info">
+
+                    HISTORIAL
+
+                </span>
+
+                <h2>
+
+                    Registro de Validaciones
+
+                </h2>
+
+                <p>
+
+                    Consulte todas las validaciones, observaciones y acciones realizadas sobre los sistemas registrados.
+
+                </p>
+
+            </div>
+
+            <div class="hero-pill">
+
+                <i class="fas fa-clock-rotate-left"></i>
+
+            </div>
+
+        </section>
+
+        <!-- TABLA -->
+
+        <section class="card">
+
+            <div class="section-head">
+
+                <div>
+
+                    <h3>
+
+                        Historial de Registros
+
+                    </h3>
+
+                    <small>
+
+                        Acciones realizadas por el equipo de validación
+
+                    </small>
+
+                </div>
+
+            </div>
+
+            <div class="table-wrapper">
+
+                <table class="data-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Sistema</th>
+
+                            <th>Fecha</th>
+
+                            <th>Acción</th>
+
+                            <th>Observaciones</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="historial-body">
+                        <!-- Los registros serán cargados por historial.js -->
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- RESUMEN -->
+
+        <div class="grid g2">
+
+            <section class="card">
+
+                <div class="section-head">
+
+                    <div>
+
+                        <h3>
+
+                            Resumen de Actividad
+
+                        </h3>
+
+                        <small>
+
+                            Estadísticas generales del historial
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <div class="legend-list">
+
+                    <div class="legend-item">
+
+                        <span>
+
+                            Total de Validaciones
+
+                        </span>
+
+                        <strong id="total-validaciones">
+
+                            --
+
+                        </strong>
+
+                    </div>
+
+                    <div class="legend-item">
+
+                        <span>
+
+                            Observaciones Registradas
+
+                        </span>
+
+                        <strong id="total-observaciones">
+
+                            --
+
+                        </strong>
+
+                    </div>
+
+                    <div class="legend-item">
+
+                        <span>
+
+                            Sistemas Revisados
+
+                        </span>
+
+                        <strong id="total-sistemas">
+
+                            --
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="card">
+
+                <div class="section-head">
+
+                    <div>
+
+                        <h3>
+
+                            Estado del Historial
+
+                        </h3>
+
+                        <small>
+
+                            Información del módulo
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <div class="legend-list">
+
+                    <div class="legend-item">
+
+                        <span>
+
+                            Última actualización
+
+                        </span>
+
+                        <strong>
+
+                            Hoy
+
+                        </strong>
+
+                    </div>
+
+                    <div class="legend-item">
+
+                        <span>
+
+                            Registros disponibles
+
+                        </span>
+
+                        <strong>
+
+                            Activos
+
+                        </strong>
+
+                    </div>
+
+                    <div class="legend-item">
+
+                        <span>
+
+                            Exportación
+
+                        </span>
+
+                        <strong>
+
+                            Disponible
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+        <!-- PIE DE PÁGINA -->
+
+        <footer class="page-footer">
+
+            <div>
+
+                DIAGTI - CTIC UNAS © 2026
+
+            </div>
+
+            <div>
+
+                Módulo de Validación · Historial de Validaciones
+
+            </div>
+
+        </footer>
+
+    </main>
+
+</div>
+
+<script type="module" src="../js/historial.js"></script>
+
+</body>
+
+</html>

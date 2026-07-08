@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Validar Información | DIAGTI - CTIC</title>
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="../css/validar-informacion.css">
+
+</head>
+
+<body>
+
+    <div class="page-shell">
+
+        <!-- =======================
+            SIDEBAR
+    ======================== -->
+
+        <aside class="sidebar">
+
+            <div>
+
+                <div class="brand">
+
+                    <div class="logo">
+
+                        <img src="../assets/logo-unas.png" alt="UNAS">
+
+                    </div>
+
+                    <div>
+
+                        <h1>DIAGTI</h1>
+
+                        <small>CTIC - UNAS</small>
+
+                    </div>
+
+                </div>
+
+                <div class="sidebar-profile">
+
+                    <div class="profile-avatar">
+
+                        V
+
+                    </div>
+
+                    <div>
+
+                        <div class="profile-name">
+
+                            Validador CTIC
+
+                        </div>
+
+                        <div class="profile-role">
+
+                            Área de Validación
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="nav-label">
+
+                    MENÚ PRINCIPAL
+
+                </div>
+
+                <nav class="nav">
+
+                    <a href="dashboard.html" class="nav-item">
+
+                        <span class="lbl">
+                            Dashboard
+                        </span>
+
+                        <span class="sub">
+                            Resumen general
+                        </span>
+
+                    </a>
+
+                    <a href="pendientes.html" class="nav-item">
+
+                        <span class="lbl">
+                            Pendientes
+                        </span>
+
+                        <span class="sub">
+                            Sistemas por revisar
+                        </span>
+
+                    </a>
+
+                    <a href="detalle-sistema.html" class="nav-item">
+
+                        <span class="lbl">
+                            Detalle Sistema
+                        </span>
+
+                        <span class="sub">
+                            Información técnica
+                        </span>
+
+                    </a>
+
+                    <a href="validar-informacion.html" class="nav-item active">
+
+                        <span class="lbl">
+                            Validar Información
+                        </span>
+
+                        <span class="sub">
+                            Revisar registro
+                        </span>
+
+                    </a>
+
+                    <a href="registrar-observacion.html" class="nav-item">
+
+                        <span class="lbl">
+                            Registrar Observación
+                        </span>
+
+                        <span class="sub">
+                            Comentarios técnicos
+                        </span>
+
+                    </a>
+
+                    <a href="historial.html" class="nav-item">
+
+                        <span class="lbl">
+                            Historial
+                        </span>
+
+                        <span class="sub">
+                            Validaciones realizadas
+                        </span>
+
+                    </a>
+
+                    <a href="dashboard-riesgos.html" class="nav-item">
+
+                        <span class="lbl">
+                            Dashboard Riesgos
+                        </span>
+
+                        <span class="sub">
+                            Indicadores
+                        </span>
+
+                    </a>
+
+                </nav>
+
+            </div>
+
+            <div class="sidebar-footer">
+
+                <div>
+
+                    DIAGTI v1.0
+
+                </div>
+
+                <button class="btn-logout">
+
+                    <i class="fas fa-right-from-bracket"></i>
+
+                    Cerrar sesión
+
+                </button>
+
+            </div>
+
+        </aside>
+
+        <main class="main">
+            <!-- =======================
+            TOPBAR
+    ======================== -->
+
+            <header class="topbar">
+
+                <div>
+
+                    <h2>
+
+                        Validación de Información
+
+                    </h2>
+
+                    <div class="hint">
+
+                        Revisa la información registrada y emite el resultado de la validación.
+
+                    </div>
+
+                </div>
+
+                <button class="btn btn-verde">
+
+                    <i class="fas fa-check-circle"></i>
+
+                    Validación CTIC
+
+                </button>
+
+            </header>
+
+            <!-- =======================
+            HERO CARD
+    ======================== -->
+
+            <section class="card hero-card">
+
+                <div>
+
+                    <h2 id="titulo-sistema">
+
+                        Sistema en Validación
+
+                    </h2>
+
+                    <p class="subtitle">
+
+                        Verifica que la información registrada sea correcta antes de aprobar o solicitar observaciones.
+
+                    </p>
+
+                </div>
+
+                <div class="hero-pill">
+
+                    <i class="fas fa-shield-check"></i>
+
+                </div>
+
+            </section>
+
+            <!-- =======================
+        TARJETAS
+    ======================== -->
+
+            <section class="grid g2">
+
+                <article class="card stat-card medium">
+
+                    <div class="stat-label">
+
+                        Estado actual
+
+                    </div>
+
+                    <div class="stat-number">
+
+                        Pendiente
+
+                    </div>
+
+                </article>
+
+                <article class="card stat-card high">
+
+                    <div class="stat-label">
+
+                        Fecha de solicitud
+
+                    </div>
+
+                    <div class="stat-number">
+
+                        01/07/2026
+
+                    </div>
+
+                </article>
+
+            </section>
+
+            <!-- =======================
+            PANEL
+    ======================== -->
+
+            <section class="card">
+
+                <div class="section-head">
+
+                    <div>
+
+                        <h3>
+
+                            Acción de Validación
+
+                        </h3>
+
+                        <small>
+
+                            Selecciona la acción correspondiente para continuar el flujo del proceso.
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <form id="validacion-form" class="validacion-form">
+
+                    <div class="form-actions">
+
+                        <button type="button" id="btn-aprobar" class="btn btn-verde">
+
+                            <i class="fas fa-circle-check"></i>
+
+                            Aprobar Registro
+
+                        </button>
+
+                        <button type="button" id="btn-observar" class="btn">
+
+                            <i class="fas fa-circle-exclamation"></i>
+
+                            Observar Registro
+
+                        </button>
+
+                    </div>
+
+                    <p id="mensaje-validacion" class="form-message">
+
+                    </p>
+
+                </form>
+
+            </section>
+            <!-- =======================
+            FOOTER
+    ======================== -->
+
+            <footer class="page-footer">
+
+                <div>
+
+                    DIAGTI - CTIC UNAS © 2026
+
+                </div>
+
+                <div>
+
+                    Módulo de Validación · Validar Información
+
+                </div>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+    <script type="module" src="../js/validar-informacion.js">
+    </script>
+
+</body>
+
+</html>
