@@ -1,16 +1,19 @@
 /* ==========================================================================
    DIAGTI · CTIC UNAS — Panel de Administrador
-   Módulo: Roles y Permisos
+   Módulo: Auditoría y Trazabilidad
    Colores definidos por el equipo: verde #1abb9c · azul #0f75bc
    ========================================================================== */
 
-/* Colores definidos por el equipo */
+/* Colores definidos por el equipo - Mismos que roles.css */
 :root {
     --color-verde-ctic: #1abb9c;
     --color-azul-ctic: #0f75bc;
     --color-verde-dark: #149174;
     --color-azul-dark: #0b5c94;
     --color-verde-light: #e6f9f5;
+    --color-verde-light2: #dcfce7;
+    --color-azul-light: #dbeafe;
+    --color-azul-light2: #e6f0fa;
 
     --bg: #f3f6f6;
     --surface: #ffffff;
@@ -18,125 +21,273 @@
     --text: #1f2a2e;
     --muted: #64757a;
 
-    --crit-bg:#fee2e2; --crit-tx:#991b1b;
-    --high-bg:#ffedd5; --high-tx:#9a3412;
-    --med-bg:#fef9c3;  --med-tx:#854d0e;
-    --low-bg:#dcfce7;  --low-tx:#166534;
-    --info-bg:#dbeafe; --info-tx:#1e40af;
-    --gray-bg:#f2f4f7; --gray-tx:#344054;
+    --crit-bg: #fee2e2;
+    --crit-tx: #991b1b;
+    --high-bg: #ffedd5;
+    --high-tx: #9a3412;
+    --med-bg: #fef9c3;
+    --med-tx: #854d0e;
+    --low-bg: #dcfce7;
+    --low-tx: #166534;
+    --info-bg: #dbeafe;
+    --info-tx: #1e40af;
+    --gray-bg: #f2f4f7;
+    --gray-tx: #344054;
 
-    --radius:14px;
-    --radius-sm:9px;
-    --shadow:0 8px 24px rgba(15,117,188,.08);
+    --radius: 14px;
+    --radius-sm: 9px;
+    --shadow: 0 8px 24px rgba(15, 117, 188, .08);
+    --shadow-sm: 0 2px 8px rgba(15, 117, 188, .06);
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-/* Estilo general para asegurar que se vea limpio */
+html,
+body {
+    height: 100%;
+}
+
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    font-size:14.5px;
+    font-family: var(--font-family);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14.5px;
+    display: flex;
+    min-height: 100vh;
 }
-a{color:inherit;text-decoration:none}
-button{font:inherit}
 
-/* ---------- Sidebar azul ---------- */
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    font: inherit;
+    cursor: pointer;
+}
+
+/* ============================================
+   SIDEBAR - Mismos colores que roles.css
+   ============================================ */
 .sidebar {
     width: 250px;
-    height: 100vh;
+    min-height: 100vh;
     background-color: var(--color-azul-ctic);
     color: white;
     padding: 20px;
-    position:fixed;
-    top:0;
-    left:0;
-    overflow-y:auto;
-    display:flex;
-    flex-direction:column;
-    z-index:10;
-}
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:8px;padding:0 4px}
-.brand .logo{
-  width:54px;height:54px;border-radius:11px;
-  color:#06231d;
-  display:grid;place-items:center;font-weight:900;font-size:15px;
-  letter-spacing:.5px;overflow:hidden;flex:none;
-}
-.brand .logo img{width:100%;height:100%;object-fit:contain}
-.brand h1{font-size:16.5px;margin:0;color:#fff;letter-spacing:.2px}
-.brand small{color:#cfe4f2;font-size:11.5px}
-
-.admin-tag{
-  margin:14px 4px 22px;
-  padding:10px 12px;
-  background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.25);
-  border-radius:var(--radius-sm);
-  font-size:12px;
-  color:#e7f1f8;
-}
-.admin-tag b{display:block;color:#fff;font-size:13px;margin-bottom:2px}
-
-.nav-label{
-  font-size:11px;text-transform:uppercase;letter-spacing:.08em;
-  color:#bcdcf0;margin:6px 8px 10px;
-}
-.nav{display:flex;flex-direction:column;gap:4px}
-.nav-item{
-  display:flex;align-items:center;gap:12px;
-  padding:11px 12px;border-radius:10px;
-  color:#e7f1f8;
-  cursor:pointer;border:1px solid transparent;
-  transition:background .15s ease;
-}
-.nav-item .ic{
-  width:30px;height:30px;border-radius:8px;
-  background:rgba(255,255,255,.12);
-  display:grid;place-items:center;font-size:15px;flex:none;
-}
-.nav-item .lbl{font-weight:600;font-size:13.5px}
-.nav-item .sub{display:block;font-weight:400;font-size:11px;color:#bcdcf0}
-.nav-item:hover{background:rgba(255,255,255,.12)}
-.nav-item.active{
-  background:var(--color-verde-ctic);
-  color:#06231d;
-}
-.nav-item.active .sub{color:rgba(6,35,29,.65)}
-
-.sidebar-footer{
-  margin-top:auto;padding-top:16px;
-  border-top:1px solid rgba(255,255,255,.18);
-  font-size:11.5px;color:#bcdcf0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
 }
 
-/* ---------- Botón cerrar sesión ---------- */
-.btn-logout{
-  display:flex;align-items:center;gap:10px;
-  width:100%;margin-top:14px;
-  padding:10px 11px;border-radius:10px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.2);
-  color:#e7f1f8;font-weight:700;font-size:12.5px;
-  cursor:pointer;text-align:left;
-  transition:background .15s ease, border-color .15s ease, color .15s ease;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    padding: 0 4px;
 }
-.btn-logout .ic{
-  width:26px;height:26px;border-radius:8px;flex:none;
-  background:rgba(255,255,255,.12);
-  display:grid;place-items:center;font-size:14px;
-  transition:background .15s ease;
+
+.brand .logo {
+    width: 54px;
+    height: 54px;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.12);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    flex: none;
 }
-.btn-logout:hover{
-  background:var(--crit-bg);border-color:var(--crit-bg);color:var(--crit-tx);
+
+.brand .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
 }
-.btn-logout:hover .ic{background:rgba(153,27,27,.15)}
+
+.brand h1 {
+    font-size: 16.5px;
+    margin: 0;
+    color: #fff;
+    letter-spacing: .2px;
+}
+
+.brand small {
+    color: #cfe4f2;
+    font-size: 11.5px;
+}
+
+/* Perfil del sidebar */
+.sidebar-profile {
+    margin: 14px 4px 22px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, .1);
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-verde-ctic);
+    color: #06231d;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.profile-info .profile-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.3;
+}
+
+.profile-info .profile-role {
+    font-size: 11px;
+    color: #bcdcf0;
+    margin-top: 1px;
+}
+
+/* Navegación */
+.nav-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #bcdcf0;
+    margin: 6px 8px 10px;
+    font-weight: 600;
+}
+
+/* Separador entre secciones del sidebar */
+.nav-label-separator {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    color: #e7f1f8;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background .15s ease;
+}
+
+.nav-item .lbl {
+    font-weight: 600;
+    font-size: 13.5px;
+    display: block;
+}
+
+.nav-item .sub {
+    display: block;
+    font-weight: 400;
+    font-size: 11px;
+    color: #bcdcf0;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, .12);
+}
+
+.nav-item.active {
+    background: var(--color-verde-ctic);
+    color: #06231d;
+}
+
+.nav-item.active .sub {
+    color: rgba(6, 35, 29, .65);
+}
+
+/* ============================================
+   BOTÓN CERRAR SESIÓN
+   ============================================ */
+.sidebar-logout {
+    padding: 12px 20px 8px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 8px;
+}
+
+.btn-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-sm);
+    color: #e7f1f8;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-logout:hover {
+    background: rgba(220, 53, 69, 0.25);
+    border-color: rgba(220, 53, 69, 0.4);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn-logout svg {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.btn-logout:hover svg {
+    transform: translateX(3px);
+}
+
+/* Footer sidebar */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, .18);
+    font-size: 11.5px;
+    color: #bcdcf0;
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ============================================
+   CONTENIDO DEL MÓDULO
+   ============================================ */
 
 /* ---------- Main ---------- */
-.main{margin-left:250px;padding:26px 32px 60px;min-width:0}
+.main{flex:1;margin-left:250px;padding:26px 32px 60px;min-width:0;width:calc(100% - 250px);max-width:calc(100% - 250px);box-sizing:border-box;background:var(--bg);min-height:100vh}
 .topbar{
   display:flex;justify-content:space-between;align-items:flex-start;
   margin-bottom:22px;gap:16px;flex-wrap:wrap;
@@ -358,27 +509,42 @@ textarea{min-height:78px;resize:vertical}
   .main{padding:18px}
 }
 
-/* ---------- Perfil de usuario (superior izquierda del sidebar) ---------- */
-.sidebar-profile{
-  display:flex;align-items:center;gap:12px;
-  margin:6px 2px 22px;padding:14px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.2);
-  border-radius:var(--radius-sm);
+
+/* ==========================================================================
+   Modal de confirmación: Cerrar sesión
+   (bloque autocontenido con nombres de clase únicos; no modifica ni
+   reutiliza estilos existentes del módulo)
+   ========================================================================== */
+.logout-confirm-overlay{
+  display:none;position:fixed;inset:0;background:rgba(15,60,90,.45);
+  z-index:999;align-items:center;justify-content:center;padding:20px;
 }
-.sidebar-profile .profile-avatar{
-  width:52px;height:52px;border-radius:50%;flex:none;
-  background:var(--color-verde-ctic);color:#06231d;
-  display:grid;place-items:center;
-  font-weight:900;font-size:16px;letter-spacing:.3px;
-  border:2px solid rgba(255,255,255,.55);
+.logout-confirm-overlay.open{display:flex}
+.logout-confirm-box{
+  background:var(--surface);border-radius:var(--radius);
+  width:min(420px,100%);box-shadow:0 24px 60px rgba(0,0,0,.25);
+  overflow:hidden;
 }
-.sidebar-profile .profile-info{min-width:0}
-.sidebar-profile .profile-name{
-  font-weight:800;font-size:12.5px;line-height:1.3;
-  color:#fff;text-transform:uppercase;letter-spacing:.02em;
+.logout-confirm-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 22px;border-bottom:1px solid var(--border);
 }
-.sidebar-profile .profile-role{
-  margin-top:3px;font-size:11px;font-weight:600;
-  color:#bcdcf0;text-transform:uppercase;letter-spacing:.05em;
+.logout-confirm-header h3{margin:0;font-size:16px;color:var(--text)}
+.logout-confirm-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)}
+.logout-confirm-body{padding:18px 22px 4px}
+.logout-confirm-body p{margin:0 0 8px;color:var(--text);font-size:14px}
+.logout-confirm-hint{font-size:12px !important;color:var(--muted) !important}
+.logout-confirm-footer{
+  display:flex;justify-content:flex-end;gap:10px;
+  padding:16px 22px;border-top:1px solid var(--border);
 }
+.logout-confirm-btn-cancel{
+  background:#eef2f2;color:#344054;padding:10px 16px;border:none;border-radius:4px;
+  font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;
+}
+.logout-confirm-btn-cancel:hover{filter:brightness(.97)}
+.logout-confirm-btn-accept{
+  background:var(--crit-bg);color:var(--crit-tx);padding:10px 16px;
+  border:none;border-radius:4px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;
+}
+.logout-confirm-btn-accept:hover{filter:brightness(.97)}

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auditoría y Trazabilidad · DIAGTI CTIC</title>
+
+    <!-- Estilos propios del módulo - TODO EN UN SOLO ARCHIVO -->
+    <link rel="stylesheet" href="auditoria-trazabilidad.component.css" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">JV</div>
+            <div class="profile-info">
+                <div class="profile-name">Johan Alberto Vela Arevalo</div>
+                <div class="profile-role">Administrador</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Administración</div>
+
+        <nav class="nav">
+            <a class="nav-item" href="../gestion-usuarios/gestion-usuarios.component.html">
+                <span>
+                    <span class="lbl">Gestión de Usuarios</span>
+                    <span class="sub">Cuentas y accesos</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../roles-permisos/roles-permisos.component.html">
+                <span>
+                    <span class="lbl">Roles y Permisos</span>
+                    <span class="sub">Perfiles de acceso</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../gestion-catalogos/gestion-catalogos.component.html">
+                <span>
+                    <span class="lbl">Gestión de Catálogos</span>
+                    <span class="sub">Listas maestras</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../evidencias-obligatorias/evidencias-obligatorias.component.html">
+                <span>
+                    <span class="lbl">Evidencias Obligatorias</span>
+                    <span class="sub">Documentación técnica</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../reportes-inventario/reportes-inventario.component.html">
+                <span>
+                    <span class="lbl">Reportes de Inventario</span>
+                    <span class="sub">Estadísticas y análisis</span>
+                </span>
+            </a>
+            <a class="nav-item active" href="auditoria-trazabilidad.component.html">
+                <span>
+                    <span class="lbl">Auditoría y Trazabilidad</span>
+                    <span class="sub">Historial y seguimiento</span>
+                </span>
+            </a>
+        </nav>
+
+        <!-- ===== BOTÓN CERRAR SESIÓN ===== -->
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v2.0 · CTIC UNAS<br>
+            Módulo de administración interna
+        </div>
+    </aside>
+<!-- ===================== CONTENIDO PRINCIPAL ===================== -->
+<main class="main-content">
+    <div class="content-wrapper">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>🔍 Auditoría y <span>Trazabilidad</span></h1>
+                    <p>Historial completo de eventos y cambios en el sistema</p>
+                    <span class="badge-version">v2.0 · 2026</span>
+                </div>
+
+                <div class="header-right">
+                    <span class="badge-live">
+                        <span class="pulse-dot"></span>
+                        En Vivo
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- ESTADÍSTICAS -->
+        <div class="cards-grid" id="statsAuditoria">
+            <div class="card">
+                <div class="card-number">20</div>
+                <div class="card-label">Total Eventos</div>
+            </div>
+
+            <div class="card verde">
+                <div class="card-number">5</div>
+                <div class="card-label">Creaciones</div>
+            </div>
+
+            <div class="card azul">
+                <div class="card-number">4</div>
+                <div class="card-label">Ediciones</div>
+            </div>
+
+            <div class="card rojo">
+                <div class="card-number">1</div>
+                <div class="card-label">Eliminaciones</div>
+            </div>
+
+            <div class="card amarillo">
+                <div class="card-number">2</div>
+                <div class="card-label">Aprobaciones</div>
+            </div>
+
+            <div class="card verde">
+                <div class="card-number">3</div>
+                <div class="card-label">Observaciones</div>
+            </div>
+        </div>
+
+    </div>
+
+        <!-- FILTROS -->
+        <div class="filters-section">
+            <div class="toolbar">
+
+                <div class="filter-group">
+                    <label class="filter-label">Buscar</label>
+                    <input
+                        type="text"
+                        id="buscarAuditoria"
+                        placeholder="Buscar evento..."
+                        oninput="filtrarAuditoria()">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Acción</label>
+                    <select id="filtroAccion" onchange="filtrarAuditoria()">
+                        <option value="">Todas las acciones</option>
+                        <option value="Creación">Creación</option>
+                        <option value="Edición">Edición</option>
+                        <option value="Eliminación">Eliminación</option>
+                        <option value="Aprobación">Aprobación</option>
+                        <option value="Observación">Observación</option>
+                        <option value="Rechazo">Rechazo</option>
+                        <option value="Resolución">Resolución</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Fecha Inicio</label>
+                    <input
+                        type="date"
+                        id="filtroFechaInicio"
+                        onchange="filtrarAuditoria()">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Fecha Fin</label>
+                    <input
+                        type="date"
+                        id="filtroFechaFin"
+                        onchange="filtrarAuditoria()">
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn-verde" onclick="filtrarAuditoria()">
+                        Filtrar
+                    </button>
+
+                    <button class="btn-outline" onclick="limpiarFiltros()">
+                        Limpiar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+
+
+            <!-- TABLA -->
+            <div class="table-section">
+                <div class="table-wrapper">
+                    <div class="table-header">
+                        <div class="table-header-left">
+                            <h3>📋 Historial de Eventos</h3>
+                            <span class="event-count" id="eventoCount">Total: 12</span>
+                        </div>
+                        <div class="table-header-right">
+                            <button class="btn-export" onclick="exportarAuditoria()">📤 Exportar</button>
+                            <button class="btn-refresh" onclick="refrescarAuditoria()">🔄</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Usuario</th>
+                                    <th>Acción</th>
+                                    <th>Módulo</th>
+                                    <th>Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaAuditoria">
+                                <!-- JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGINACIÓN -->
+            <div class="pagination-wrapper">
+                <div style="display:flex; justify-content:center; align-items:center; gap:1rem; padding:1rem; background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow-sm);">
+                    <button id="btnAnterior" onclick="cambiarPagina(-1)" class="pagination-btn">◀ Anterior</button>
+                    <span id="paginaInfo" style="color:var(--muted); font-size:0.9rem;">Página 1 de 1</span>
+                    <button id="btnSiguiente" onclick="cambiarPagina(1)" class="pagination-btn">Siguiente ▶</button>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer>
+                <div class="footer-content">
+                    <p>&copy; 2026 CTIC · DIAGTI v2.0 · Sistema de Inventario y Diagnóstico TI</p>
+                    <div class="footer-right">
+                        <span class="footer-badge">Auditoría en tiempo real</span>
+                        <span class="footer-badge">v2.0</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+      <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+      <div class="logout-confirm-overlay" id="logout-confirm-overlay">
+        <div class="logout-confirm-box">
+          <div class="logout-confirm-header">
+            <h3>Cerrar sesión</h3>
+            <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
+          </div>
+          <div class="logout-confirm-body">
+            <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+            <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+          </div>
+          <div class="logout-confirm-footer">
+            <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
+            <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+
+    <script src="auditoria-trazabilidad.component.js"></script>
+    <script>
+        // Prevenir navegación a la página actual y doble clic
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-item');
+            
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href) {
+                    const linkPage = href.split('/').pop();
+                    
+                    if (linkPage === currentPage) {
+                        link.addEventListener('click', function(e) {
+                            e.preventDefault();
+                        });
+                    } else {
+                        let isClicked = false;
+                        link.addEventListener('click', function(e) {
+                            if (isClicked) {
+                                e.preventDefault();
+                                return;
+                            }
+                            isClicked = true;
+                            setTimeout(() => {
+                                isClicked = false;
+                            }, 500);
+                        });
+                    }
+                }
+            });
+        });
+
+        // Funciones placeholder
+        function filtrarAuditoria() { console.log('Filtrando auditoría...'); }
+        function limpiarFiltros() { 
+            document.getElementById('buscarAuditoria').value = '';
+            document.getElementById('filtroAccion').value = '';
+            document.getElementById('filtroFechaInicio').value = '';
+            document.getElementById('filtroFechaFin').value = '';
+            filtrarAuditoria();
+        }
+        function cambiarPagina(dir) { console.log('Cambiando página:', dir); }
+        function exportarAuditoria() { alert('Exportando auditoría...'); }
+        function refrescarAuditoria() { alert('Actualizando datos...'); }
+    </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reportes e Inventario · DIAGTI CTIC</title>
+
+    <!-- Estilos propios del módulo - TODO EN UN SOLO ARCHIVO -->
+    <link rel="stylesheet" href="reportes-inventario.component.css" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">JV</div>
+            <div class="profile-info">
+                <div class="profile-name">Johan Alberto Vela Arevalo</div>
+                <div class="profile-role">Administrador</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Administración</div>
+
+        <nav class="nav">
+            <a class="nav-item" href="../gestion-usuarios/gestion-usuarios.component.html">
+                <span>
+                    <span class="lbl">Gestión de Usuarios</span>
+                    <span class="sub">Cuentas y accesos</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../roles-permisos/roles-permisos.component.html">
+                <span>
+                    <span class="lbl">Roles y Permisos</span>
+                    <span class="sub">Perfiles de acceso</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../gestion-catalogos/gestion-catalogos.component.html">
+                <span>
+                    <span class="lbl">Gestión de Catálogos</span>
+                    <span class="sub">Listas maestras</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../evidencias-obligatorias/evidencias-obligatorias.component.html">
+                <span>
+                    <span class="lbl">Evidencias Obligatorias</span>
+                    <span class="sub">Documentación técnica</span>
+                </span>
+            </a>
+            <a class="nav-item active" href="reportes-inventario.component.html">
+                <span>
+                    <span class="lbl">Reportes de Inventario</span>
+                    <span class="sub">Estadísticas y análisis</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../auditoria-trazabilidad/auditoria-trazabilidad.component.html">
+                <span>
+                    <span class="lbl">Auditoría y Trazabilidad</span>
+                    <span class="sub">Historial y seguimiento</span>
+                </span>
+            </a>
+        </nav>
+
+        <!-- ===== BOTÓN CERRAR SESIÓN ===== -->
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v2.0 · CTIC UNAS<br>
+            Módulo de administración interna
+        </div>
+    </aside>
+
+    <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- HEADER -->
+            <div class="header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <h1>📊 Reportes e <span>Indicadores</span></h1>
+                        <p>Estadísticas y reportes del sistema de investigación</p>
+                        <span class="badge-version">v2.0 · 2026</span>
+                    </div>
+                    <div class="header-right">
+                        <span class="badge-live">
+                            <span class="pulse-dot"></span>
+                            En Vivo
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARDS DE ESTADÍSTICAS -->
+            <div class="cards-grid" id="statsReportes">
+                <div class="card">
+                    <div class="card-number">156</div>
+                    <div class="card-label">Proyectos Activos</div>
+                </div>
+                <div class="card verde">
+                    <div class="card-number">89</div>
+                    <div class="card-label">Tesis Registradas</div>
+                </div>
+                <div class="card azul">
+                    <div class="card-number">234</div>
+                    <div class="card-label">Trámites Realizados</div>
+                </div>
+                <div class="card amarillo">
+                    <div class="card-number">12</div>
+                    <div class="card-label">En Revisión</div>
+                </div>
+            </div>
+
+            <!-- BOTONES DE EXPORTACIÓN -->
+            <div class="exportaciones">
+                <button class="btn-azul" onclick="generarReporte('proyectos')">📄 Reporte Proyectos</button>
+                <button class="btn-azul" onclick="generarReporte('tesis')">📈 Reporte Tesis</button>
+                <button class="btn-azul" onclick="generarReporte('tramites')">🔄 Reporte Trámites</button>
+                <button class="btn-verde" onclick="exportarPDF()">📋 Exportar PDF</button>
+                <button class="btn-verde" onclick="exportarExcel()">📊 Exportar Excel</button>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="filtros">
+                <div class="filter-group">
+                    <label class="filter-label">Buscar</label>
+                    <input type="text" placeholder="Buscar reporte..." id="buscarReporte" oninput="filtrarReportes()" />
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Categoría</label>
+                    <select id="filtroCategoria" onchange="filtrarReportes()">
+                        <option value="">Todas las categorías</option>
+                        <option value="Proyectos">Proyectos</option>
+                        <option value="Tesis">Tesis</option>
+                        <option value="Trámites">Trámites</option>
+                        <option value="Publicaciones">Publicaciones</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select id="filtroEstado" onchange="filtrarReportes()">
+                        <option value="">Todos los estados</option>
+                        <option value="Activo">Activo</option>
+                        <option value="Completado">Completado</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Revisión">En Revisión</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn-verde" onclick="filtrarReportes()">Filtrar</button>
+                    <button class="btn-outline" onclick="limpiarFiltros()">Limpiar</button>
+                </div>
+            </div>
+
+            <!-- TABLA DE INDICADORES -->
+            <div class="table-wrapper">
+                <div class="table-header">
+                    <div class="table-header-left">
+                        <h3>📋 Resumen Institucional</h3>
+                        <span class="event-count" id="reporteCount">Total: 8</span>
+                    </div>
+                    <div class="table-header-right">
+                        <button class="btn-refresh" onclick="refrescarReportes()">🔄</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Indicador</th>
+                                <th>Categoría</th>
+                                <th>Valor</th>
+                                <th>Estado</th>
+                                <th>Última Actualización</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaReportes">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PAGINACIÓN -->
+            <div class="pagination-wrapper">
+                <div style="display:flex; justify-content:center; align-items:center; gap:1rem; padding:1rem; background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow-sm);">
+                    <button id="btnAnterior" onclick="cambiarPagina(-1)" class="pagination-btn">◀ Anterior</button>
+                    <span id="paginaInfo" style="color:var(--muted); font-size:0.9rem;">Página 1 de 1</span>
+                    <button id="btnSiguiente" onclick="cambiarPagina(1)" class="pagination-btn">Siguiente ▶</button>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer>
+                <div class="footer-content">
+                    <p>&copy; 2026 CTIC · DIAGTI v2.0 · Sistema de Inventario y Diagnóstico TI</p>
+                    <div class="footer-right">
+                        <span class="footer-badge">Reportes en tiempo real</span>
+                        <span class="footer-badge">v2.0</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+      <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+      <div class="logout-confirm-overlay" id="logout-confirm-overlay">
+        <div class="logout-confirm-box">
+          <div class="logout-confirm-header">
+            <h3>Cerrar sesión</h3>
+            <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
+          </div>
+          <div class="logout-confirm-body">
+            <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+            <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+          </div>
+          <div class="logout-confirm-footer">
+            <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
+            <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+
+    <script src="reportes-inventario.component.js"></script>
+    <script>
+        // Prevenir navegación a la página actual y doble clic
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-item');
+            
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href) {
+                    const linkPage = href.split('/').pop();
+                    
+                    if (linkPage === currentPage) {
+                        link.addEventListener('click', function(e) {
+                            e.preventDefault();
+                        });
+                    } else {
+                        let isClicked = false;
+                        link.addEventListener('click', function(e) {
+                            if (isClicked) {
+                                e.preventDefault();
+                                return;
+                            }
+                            isClicked = true;
+                            setTimeout(() => {
+                                isClicked = false;
+                            }, 500);
+                        });
+                    }
+                }
+            });
+        });
+
+        // Funciones placeholder
+        function filtrarReportes() { console.log('Filtrando reportes...'); }
+        function limpiarFiltros() { 
+            document.getElementById('buscarReporte').value = '';
+            document.getElementById('filtroCategoria').value = '';
+            document.getElementById('filtroEstado').value = '';
+            filtrarReportes();
+        }
+        function cambiarPagina(dir) { console.log('Cambiando página:', dir); }
+        function generarReporte(tipo) { alert('Generando reporte de ' + tipo + '...'); }
+        function exportarPDF() { alert('Exportando a PDF...'); }
+        function exportarExcel() { alert('Exportando a Excel...'); }
+        function refrescarReportes() { alert('Actualizando datos...'); }
+    </script>
+</body>
+</html>

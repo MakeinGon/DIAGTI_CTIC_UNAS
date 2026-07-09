@@ -10,14 +10,34 @@ document.querySelectorAll('.modal-overlay').forEach(function(ov){
 // ============================================================
 // Cerrar sesión
 // ============================================================
-function confirmarCerrarSesion(){
-  cerrarModal('modal-logout');
-  // TODO: reemplazar esta línea por la lógica real de logout:
-  // invalidar el token/sesión en el backend, limpiar datos locales y
-  // redirigir a la pantalla de login, por ejemplo:
-  // window.location.href = '/login';
-  window.location.reload();
+function cerrarSesion() {
+    // Muestra la pantalla de confirmación antes de cerrar la sesión
+    const overlay = document.getElementById('logout-confirm-overlay');
+    if (overlay) overlay.classList.add('open');
 }
+
+function cancelarCerrarSesion() {
+    const overlay = document.getElementById('logout-confirm-overlay');
+    if (overlay) overlay.classList.remove('open');
+}
+
+function confirmarCerrarSesion() {
+    // Eliminar datos de sesión (si existen)
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Redirigir al login
+    window.location.href = "../../../login/html/login.html";
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const overlay = document.getElementById('logout-confirm-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) cancelarCerrarSesion();
+        });
+    }
+});
 
 // ============================================================
 // Confirmación genérica (usada para eliminar ítems, etc.)
