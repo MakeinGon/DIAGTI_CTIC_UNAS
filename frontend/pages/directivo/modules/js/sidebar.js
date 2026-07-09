@@ -46,7 +46,6 @@ function inicializarSidebar() {
     crearControlesMoviles(sidebarContainer);
 
     configurarPaginaActiva(sidebarContainer);
-    configurarEstadoSidebar(sidebarContainer);
     configurarSidebarMovil(sidebarContainer);
 
     cargarInformacionUsuario();
@@ -105,17 +104,7 @@ function renderizarSidebar(sidebarContainer) {
                 </a>
 
 
-                <button
-                    type="button"
-                    class="sidebar-toggle"
-                    id="sidebar-toggle"
-                    aria-label="Plegar menú lateral"
-                    aria-controls="sidebar-navigation"
-                    aria-expanded="true"
-                    title="Plegar o desplegar menú"
-                >
-                    ☰
-                </button>
+                
 
             </header>
 
@@ -251,15 +240,6 @@ function renderizarSidebar(sidebarContainer) {
                     aria-label="Opciones de cuenta"
                 >
 
-                    <a
-                        href="configuracion-cuenta.html"
-                        class="sidebar-account-link"
-                        data-page="configuracion-cuenta.html"
-                    >
-                        Configuración de Cuenta
-                    </a>
-
-
                     <button
                         type="button"
                         class="sidebar-logout"
@@ -360,73 +340,7 @@ function obtenerPaginaActual() {
 }
 
 
-/* ============================================================
-   5. ESTADO PLEGADO / DESPLEGADO
-============================================================ */
 
-function configurarEstadoSidebar(sidebarContainer) {
-
-    const toggleButton = document.getElementById(
-        "sidebar-toggle"
-    );
-
-
-    if (!toggleButton) {
-        return;
-    }
-
-
-    const estadoGuardado = leerEstadoSidebar();
-
-
-    if (estadoGuardado === true) {
-        aplicarEstadoColapsado(
-            sidebarContainer,
-            toggleButton,
-            true
-        );
-    }
-
-
-    toggleButton.addEventListener("click", () => {
-
-        /*
-           En móvil el botón interno cierra el panel.
-           En escritorio pliega o despliega.
-        */
-
-        if (esVistaMovil()) {
-
-            cerrarSidebarMovil(
-                sidebarContainer
-            );
-
-            return;
-        }
-
-
-        const estaColapsado =
-            sidebarContainer.classList.contains(
-                "is-collapsed"
-            );
-
-
-        const nuevoEstado = !estaColapsado;
-
-
-        aplicarEstadoColapsado(
-            sidebarContainer,
-            toggleButton,
-            nuevoEstado
-        );
-
-
-        guardarEstadoSidebar(
-            nuevoEstado
-        );
-
-    });
-}
 
 
 function aplicarEstadoColapsado(
