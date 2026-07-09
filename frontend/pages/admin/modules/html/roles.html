@@ -68,7 +68,7 @@
     </div>
 
     <div class="grid g3">
-      <div class="card"><div class="stat-label">Roles del sistema</div><div class="stat-num">7</div><span class="badge brand">Predefinidos</span></div>
+      <div class="card"><div class="stat-label">Roles del sistema</div><div class="stat-num" id="stat-total-roles">7</div><span class="badge brand">Predefinidos</span></div>
       <div class="card"><div class="stat-label">Módulos controlados</div><div class="stat-num accent">9</div><span class="badge info">Con permisos</span></div>
       <div class="card"><div class="stat-label">Usuarios con rol asignado</div><div class="stat-num">32</div><span class="badge low">100% cubierto</span></div>
     </div>
@@ -109,11 +109,11 @@
             <span class="count-pill">5</span>
           </div>
         </div>
-        <button class="btn secondary" style="width:100%;justify-content:center;margin-top:12px" onclick="abrirModal('modal-rol')">+ Nuevo rol</button>
+        <button class="btn secondary" style="width:100%;justify-content:center;margin-top:12px" onclick="abrirNuevoRol()">+ Nuevo rol</button>
       </div>
 
       <!-- Matriz de permisos: una vista estática por rol -->
-      <div class="card">
+      <div class="card" id="panel-roles">
 
         <!-- ROL: Administrador CTIC -->
         <div class="role-view active" id="role-admin">
@@ -122,9 +122,10 @@
               <h3>Administrador CTIC</h3>
               <p>Usuario con control total del sistema. Administra usuarios, roles, catálogos, parámetros, validaciones y reportes.</p>
             </div>
-            <div style="display:flex;gap:8px">
-              <button class="btn ghost sm" onclick="abrirModal('modal-rol')">Editar rol</button>
-              <button class="btn btn-verde sm">Guardar cambios</button>
+            <div class="role-actions">
+              <button class="btn ghost sm" onclick="editarRol(this)">Editar rol</button>
+              <button class="btn btn-verde sm" onclick="guardarPermisos(this)">Guardar cambios</button>
+              <button class="btn danger sm" onclick="eliminarRol(this)">Eliminar rol</button>
             </div>
           </div>
           <div class="matrix-wrap">
@@ -153,9 +154,10 @@
               <h3>Área de Desarrollo</h3>
               <p>Registra y actualiza información técnica de los sistemas bajo su responsabilidad.</p>
             </div>
-            <div style="display:flex;gap:8px">
-              <button class="btn ghost sm" onclick="abrirModal('modal-rol')">Editar rol</button>
-              <button class="btn btn-verde sm">Guardar cambios</button>
+            <div class="role-actions">
+              <button class="btn ghost sm" onclick="editarRol(this)">Editar rol</button>
+              <button class="btn btn-verde sm" onclick="guardarPermisos(this)">Guardar cambios</button>
+              <button class="btn danger sm" onclick="eliminarRol(this)">Eliminar rol</button>
             </div>
           </div>
           <div class="matrix-wrap">
@@ -184,9 +186,10 @@
               <h3>Área de Infraestructura</h3>
               <p>Registra información relacionada con servidores, red, dominios y despliegue.</p>
             </div>
-            <div style="display:flex;gap:8px">
-              <button class="btn ghost sm" onclick="abrirModal('modal-rol')">Editar rol</button>
-              <button class="btn btn-verde sm">Guardar cambios</button>
+            <div class="role-actions">
+              <button class="btn ghost sm" onclick="editarRol(this)">Editar rol</button>
+              <button class="btn btn-verde sm" onclick="guardarPermisos(this)">Guardar cambios</button>
+              <button class="btn danger sm" onclick="eliminarRol(this)">Eliminar rol</button>
             </div>
           </div>
           <div class="matrix-wrap">
@@ -215,9 +218,10 @@
               <h3>Responsable Funcional</h3>
               <p>Registra y valida los datos generales del sistema en representación de su área.</p>
             </div>
-            <div style="display:flex;gap:8px">
-              <button class="btn ghost sm" onclick="abrirModal('modal-rol')">Editar rol</button>
-              <button class="btn btn-verde sm">Guardar cambios</button>
+            <div class="role-actions">
+              <button class="btn ghost sm" onclick="editarRol(this)">Editar rol</button>
+              <button class="btn btn-verde sm" onclick="guardarPermisos(this)">Guardar cambios</button>
+              <button class="btn danger sm" onclick="eliminarRol(this)">Eliminar rol</button>
             </div>
           </div>
           <div class="matrix-wrap">
@@ -246,9 +250,10 @@
               <h3>Validador Técnico</h3>
               <p>Revisa la información registrada y determina si un sistema es aprobado, observado o rechazado.</p>
             </div>
-            <div style="display:flex;gap:8px">
-              <button class="btn ghost sm" onclick="abrirModal('modal-rol')">Editar rol</button>
-              <button class="btn btn-verde sm">Guardar cambios</button>
+            <div class="role-actions">
+              <button class="btn ghost sm" onclick="editarRol(this)">Editar rol</button>
+              <button class="btn btn-verde sm" onclick="guardarPermisos(this)">Guardar cambios</button>
+              <button class="btn danger sm" onclick="eliminarRol(this)">Eliminar rol</button>
             </div>
           </div>
           <div class="matrix-wrap">
@@ -277,9 +282,10 @@
               <h3>Auditor</h3>
               <p>Consulta el sistema con fines de control, sin capacidad de edición sobre los registros.</p>
             </div>
-            <div style="display:flex;gap:8px">
-              <button class="btn ghost sm" onclick="abrirModal('modal-rol')">Editar rol</button>
-              <button class="btn btn-verde sm">Guardar cambios</button>
+            <div class="role-actions">
+              <button class="btn ghost sm" onclick="editarRol(this)">Editar rol</button>
+              <button class="btn btn-verde sm" onclick="guardarPermisos(this)">Guardar cambios</button>
+              <button class="btn danger sm" onclick="eliminarRol(this)">Eliminar rol</button>
             </div>
           </div>
           <div class="matrix-wrap">
@@ -308,9 +314,10 @@
               <h3>Directivo</h3>
               <p>Consulta indicadores, riesgos y reportes ejecutivos para la toma de decisiones institucionales.</p>
             </div>
-            <div style="display:flex;gap:8px">
-              <button class="btn ghost sm" onclick="abrirModal('modal-rol')">Editar rol</button>
-              <button class="btn btn-verde sm">Guardar cambios</button>
+            <div class="role-actions">
+              <button class="btn ghost sm" onclick="editarRol(this)">Editar rol</button>
+              <button class="btn btn-verde sm" onclick="guardarPermisos(this)">Guardar cambios</button>
+              <button class="btn danger sm" onclick="eliminarRol(this)">Eliminar rol</button>
             </div>
           </div>
           <div class="matrix-wrap">
@@ -340,21 +347,38 @@
   <div class="modal-overlay" id="modal-rol">
     <div class="modal">
       <div class="modal-head">
-        <h3>Nuevo rol</h3>
+        <h3 id="rol-modal-titulo">Nuevo rol</h3>
         <button class="modal-close" onclick="cerrarModal('modal-rol')">✕</button>
       </div>
       <div class="modal-body">
         <label>Nombre del rol</label>
-        <input type="text" placeholder="Ej. Coordinador de Seguridad">
+        <input type="text" id="input-rol-nombre" placeholder="Ej. Coordinador de Seguridad">
         <label>Descripción</label>
-        <textarea placeholder="Describe el alcance y responsabilidad de este rol..."></textarea>
+        <textarea id="textarea-rol-desc" placeholder="Describe el alcance y responsabilidad de este rol..."></textarea>
         <label>Basado en rol existente (opcional)</label>
-        <select class="form"><option>Ninguno — permisos en blanco</option><option>Validador Técnico</option><option>Auditor</option><option>Área de Desarrollo</option></select>
+        <select class="form" id="select-rol-base"><option>Ninguno — permisos en blanco</option><option>Validador Técnico</option><option>Auditor</option><option>Área de Desarrollo</option></select>
         <p class="field-hint">Los permisos por módulo se configuran luego desde la matriz de permisos del rol.</p>
+        <p class="form-error" id="rol-form-error"></p>
       </div>
       <div class="modal-foot">
         <button class="btn secondary" onclick="cerrarModal('modal-rol')">Cancelar</button>
-        <button class="btn btn-verde" onclick="cerrarModal('modal-rol')">Crear rol</button>
+        <button class="btn btn-verde" id="rol-btn-guardar" onclick="guardarRol()">Crear rol</button>
+      </div>
+    </div>
+  </div>
+  <!-- ===================== MODAL: CONFIRMACIÓN GENÉRICA (eliminar, etc.) ===================== -->
+  <div class="modal-overlay" id="modal-confirmar">
+    <div class="modal" style="width:min(420px,100%)">
+      <div class="modal-head">
+        <h3 id="confirmar-titulo">Confirmar acción</h3>
+        <button class="modal-close" onclick="cerrarModal('modal-confirmar')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmar-mensaje" style="margin:6px 0 4px;color:var(--text);font-size:14px"></p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn secondary" onclick="cerrarModal('modal-confirmar')">Cancelar</button>
+        <button class="btn danger" id="confirmar-btn-aceptar">Eliminar</button>
       </div>
     </div>
   </div>
