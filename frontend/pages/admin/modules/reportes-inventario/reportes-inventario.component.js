@@ -215,7 +215,7 @@ function reporteLegacy() {
 // CERRAR SESIÓN
 // ============================================================
 
-function cerrarSesion() {
+function cerrarSesion() {   
     // Eliminar datos de sesión (si existen)
     localStorage.clear();
     sessionStorage.clear();

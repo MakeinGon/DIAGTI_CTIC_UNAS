@@ -1,58 +1,92 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Roles y Permisos · Panel Administrador · DIAGTI – CTIC UNAS</title>
-<link rel="stylesheet" href="../css/roles.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Roles y Permisos · Panel Administrador · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="../css/roles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- ===================== SIDEBAR ===================== -->
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="logo"><img src="../assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS"></div>
-      <div>
-        <h1>UNAS</h1>
-        <small>Tingo María</small>
-      </div>
-    </div>
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>Tingo María</small>
+            </div>
+        </div>
 
-    <div class="sidebar-profile">
-      <div class="profile-avatar">JV</div>
-      <div class="profile-info">
-        <div class="profile-name">Johan Alberto<br>Vela Arevalo</div>
-        <div class="profile-role">Administrador</div>
-      </div>
-    </div>
+        <div class="sidebar-profile">
+            <div class="profile-avatar">JV</div>
+            <div class="profile-info">
+                <div class="profile-name">Johan Alberto Vela Arevalo</div>
+                <div class="profile-role">Administrador</div>
+            </div>
+        </div>
 
-    <div class="nav-label">Administración</div>
-    <nav class="nav">
-      <a class="nav-item" href="usuarios.html">
-        <span>
-          <span class="lbl">Gestión de Usuarios</span>
-          <span class="sub">Cuentas y accesos</span>
-        </span>
-      </a>
-      <a class="nav-item active" href="roles.html">
-        <span>
-          <span class="lbl">Roles y Permisos</span>
-          <span class="sub">Perfiles de acceso</span>
-        </span>
-      </a>
-      <a class="nav-item" href="catalogos.html">
-        <span>
-          <span class="lbl">Gestión de Catálogos</span>
-          <span class="sub">Listas maestras</span>
-        </span>
-      </a>
-    </nav>
+        <div class="nav-label">Administración</div>
 
-    <div class="sidebar-footer">
-      DIAGTI v1.0 · CTIC UNAS<br>
-      Módulo de administración interna
-    </div>
-  </aside>
+        <nav class="nav">
+            <a class="nav-item" href="usuarios.html">
+                <span>
+                    <span class="lbl">Gestión de Usuarios</span>
+                    <span class="sub">Cuentas y accesos</span>
+                </span>
+            </a>
+            <a class="nav-item active" href="roles.html">
+                <span>
+                    <span class="lbl">Roles y Permisos</span>
+                    <span class="sub">Perfiles de acceso</span>
+                </span>
+            </a>
+            <a class="nav-item" href="catalogos.html">
+                <span>
+                    <span class="lbl">Gestión de Catálogos</span>
+                    <span class="sub">Listas maestras</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../evidencias-obligatorias/evidencias-obligatorias.component.html">
+                <span>
+                    <span class="lbl">Evidencias Obligatorias</span>
+                    <span class="sub">Documentación técnica</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../reportes-inventario/reportes-inventario.component.html">
+                <span>
+                    <span class="lbl">Reportes de Inventario</span>
+                    <span class="sub">Estadísticas y análisis</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../auditoria-trazabilidad/auditoria-trazabilidad.component.html">
+                <span>
+                    <span class="lbl">Auditoría y Trazabilidad</span>
+                    <span class="sub">Historial y seguimiento</span>
+                </span>
+            </a>
+        </nav>
+
+        <!-- ===== BOTÓN CERRAR SESIÓN ===== -->
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v2.0 · CTIC UNAS<br>
+            Módulo de administración interna
+        </div>
+    </aside>
 
   <!-- ===================== MAIN ===================== -->
   <main class="main">
