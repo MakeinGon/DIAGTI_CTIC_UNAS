@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrar Sistema · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="../css/registrar-sistema.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo"><img src="../assets/logo-unas.png" alt="UNAS"></div>
+            <div>
+                <h1>UNAS</h1>
+                <small>Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">LA</div>
+            <div class="profile-info">
+                <div class="profile-name">LUIS ANGEL LARA DEL AGUILA</div>
+                <div class="profile-role">Desarrollador</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Área de Desarrollo</div>
+        <nav class="nav">
+            <a href="dashboard.html" class="nav-item"><span class="lbl">Dashboard Desarrollo</span></a>
+            <a href="mis-sistemas.html" class="nav-item"><span class="lbl">Mis Sistemas</span></a>
+            <a href="registrar-sistema.html" class="nav-item active"><span class="lbl">Registrar Sistema</span></a>
+            <a href="editar-sistema.html" class="nav-item"><span class="lbl">Editar Sistema</span></a>
+            <a href="arquitectura.html" class="nav-item"><span class="lbl">Arquitectura Software</span></a>
+            <a href="base-datos.html" class="nav-item"><span class="lbl">Base de Datos</span></a>
+            <a href="seguridad.html" class="nav-item"><span class="lbl">Seguridad</span></a>
+            <a href="integraciones.html" class="nav-item"><span class="lbl">Integraciones</span></a>
+            <a href="evidencias.html" class="nav-item"><span class="lbl">Evidencias</span></a>
+            <a href="enviar-validacion.html" class="nav-item"><span class="lbl">Enviar Validación</span></a>
+            <a href="subsanar-observaciones.html" class="nav-item"><span class="lbl">Subsanar Observaciones</span></a>
+            <a href="historial-sistema.html" class="nav-item"><span class="lbl">Historial del Sistema</span></a>
+        </nav>
+
+        <div class="sidebar-footer" style="margin-top:auto; font-size:11px; color:#bcdcf0; text-align:center;">
+            DIAGTI v1.0 · CTIC UNAS
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h2>Paso 3: Ficha de Registro de Sistema Informático</h2>
+                <div class="hint">Inserte los datos generales y administrativos del aplicativo de acuerdo a la norma RN-01.</div>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: left;">
+            <form id="form-registro">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="control-label">Código Único Institucional *</label>
+                        <input type="text" id="reg-codigo" class="form-control" placeholder="Ej: SYS-SGA" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Nombre del Aplicativo *</label>
+                        <input type="text" id="reg-nombre" class="form-control" placeholder="Ej: Sistema de Gestión Académica" required>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top:20px;">
+                    <label class="control-label">Descripción Funcional Corta *</label>
+                    <textarea id="reg-descripcion" class="textarea-control" placeholder="Describa brevemente qué procesos institucionales cubre este software..." required></textarea>
+                </div>
+
+                <div class="form-row" style="margin-top:20px;">
+                    <div class="form-group">
+                        <label class="control-label">Tipo de Aplicativo (RF-05) *</label>
+                        <select id="reg-tipo" class="select-control" required>
+                            <option value="">Seleccione una opción...</option>
+                            <option value="web">Web Application</option>
+                            <option value="api">REST API / Servicio Web</option>
+                            <option value="movil">Aplicación Móvil</option>
+                            <option value="legacy">Legacy (Sistema Obsoleto)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Forma de Adquisición (RF-06) *</label>
+                        <select id="reg-adquisicion" class="select-control" required>
+                            <option value="">Seleccione una opción...</option>
+                            <option value="propio">Desarrollo Propio Interno (CTIC)</option>
+                            <option value="externo">Proveedor Externo / Contrato</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn secondary" id="btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn btn-verde">Guardar y Continuar</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="../js/registrar-sistema.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Editar Sistema · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="../css/editar-sistema.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo"><img src="../assets/logo-unas.png" alt="UNAS"></div>
+            <div>
+                <h1>UNAS</h1>
+                <small>Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">LA</div>
+            <div class="profile-info">
+                <div class="profile-name">LUIS ANGEL LARA DEL AGUILA</div>
+                <div class="profile-role">Desarrollador</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Área de Desarrollo</div>
+        <nav class="nav">
+            <a href="dashboard.html" class="nav-item"><span class="lbl">Dashboard Desarrollo</span></a>
+            <a href="mis-sistemas.html" class="nav-item"><span class="lbl">Mis Sistemas</span></a>
+            <a href="registrar-sistema.html" class="nav-item"><span class="lbl">Registrar Sistema</span></a>
+            <a href="editar-sistema.html" class="nav-item active"><span class="lbl">Editar Sistema</span></a>
+            <a href="arquitectura.html" class="nav-item"><span class="lbl">Arquitectura Software</span></a>
+            <a href="base-datos.html" class="nav-item"><span class="lbl">Base de Datos</span></a>
+            <a href="seguridad.html" class="nav-item"><span class="lbl">Seguridad</span></a>
+            <a href="integraciones.html" class="nav-item"><span class="lbl">Integraciones</span></a>
+            <a href="evidencias.html" class="nav-item"><span class="lbl">Evidencias</span></a>
+            <a href="enviar-validacion.html" class="nav-item"><span class="lbl">Enviar Validación</span></a>
+            <a href="subsanar-observaciones.html" class="nav-item"><span class="lbl">Subsanar Observaciones</span></a>
+            <a href="historial-sistema.html" class="nav-item"><span class="lbl">Historial del Sistema</span></a>
+        </nav>
+
+        <div class="sidebar-footer" style="margin-top:auto; font-size:11px; color:#bcdcf0; text-align:center;">
+            DIAGTI v1.0 · CTIC UNAS
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h2>Paso 4: Modificar Expediente de Sistema</h2>
+                <div class="hint">Actualice los metadatos de la entidad antes de que el expediente sea congelado en modo de solo lectura.</div>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: left;">
+            <form id="form-edicion">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="control-label">Código Único Institucional (Bloqueado)</label>
+                        <input type="text" id="edit-codigo" class="form-control" value="SYS-DIAGTI" disabled style="background:#eef2f2; color:#64757a; font-weight: 700;">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Nombre del Aplicativo</label>
+                        <input type="text" id="edit-nombre" class="form-control" value="DIAGTI - Core API" required>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top:20px;">
+                    <label class="control-label">Descripción Funcional Corta</label>
+                    <textarea id="edit-descripcion" class="textarea-control" required>Ficha técnica y backend transaccional centralizado para el levantamiento de inventarios TI.</textarea>
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn secondary" id="btn-regresar">Atrás</button>
+                    <button type="submit" class="btn btn-verde">Actualizar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="../js/editar-sistema.js"></script>
+</body>
+</html>
