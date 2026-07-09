@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Enviar Validación | CTIC - UNAS</title>
+
+    <link rel="stylesheet" href="../enviar-validacion/enviar-validacion.css">
+
+</head>
+
+<body>
+
+    <!--=========================
+            SIDEBAR
+    ==========================-->
+
+    <aside class="sidebar">
+
+        <div class="logo-container">
+
+            <img src="../assets/logo-unas.png"
+                 alt="Logo UNAS"
+                 class="logo">
+
+            <h2>CTIC</h2>
+
+            <span>Área Infraestructura</span>
+
+        </div>
+
+        <nav>
+
+            <ul>
+
+                <li><a href="dashboard.html">Dashboard</a></li>
+
+                <li><a href="mis-sistemas.html">Mis Sistemas</a></li>
+
+                <li><a href="infraestructura.html">Infraestructura</a></li>
+
+                <li><a href="despliegue.html">Despliegue</a></li>
+
+                <li><a href="seguridad.html">Seguridad</a></li>
+
+                <li><a href="evidencias.html">Evidencias</a></li>
+
+                <li class="active">
+                    <a href="enviar-validacion.html">
+                        Enviar Validación
+                    </a>
+                </li>
+
+                <li><a href="subsanaciones.html">Subsanaciones</a></li>
+
+                <li><a href="historial.html">Historial</a></li>
+
+            </ul>
+
+        </nav>
+
+    </aside>
+
+    <!--=========================
+            CONTENIDO
+    ==========================-->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>Enviar Validación</h1>
+
+                <p>
+                    Envío de evidencias para revisión del Área de Infraestructura.
+                </p>
+
+            </div>
+
+            <div class="usuario">
+
+                <strong>Administrador</strong>
+
+                <span>Infraestructura</span>
+
+            </div>
+
+        </header>
+
+        <section class="contenido">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2>Formulario de Validación</h2>
+
+                </div>
+
+                <form id="formValidacion">
+
+                    <div class="grupo">
+
+                        <label>Sistema</label>
+
+                        <select id="sistema" required>
+
+                            <option value="">Seleccione un sistema</option>
+
+                            <option>SIGA</option>
+
+                            <option>Correo Institucional</option>
+
+                            <option>Campus Virtual</option>
+
+                            <option>Servidor Web</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="grupo">
+
+                        <label>Responsable</label>
+
+                        <input
+                            type="text"
+                            placeholder="Nombre del responsable"
+                            required>
+
+                    </div>
+
+                    <div class="grupo">
+
+                        <label>Fecha de envío</label>
+
+                        <input
+                            type="date"
+                            required>
+
+                    </div>
+
+                    <div class="grupo">
+
+                        <label>Evidencias disponibles</label>
+
+                        <div class="lista-evidencias">
+
+                            <label>
+                                <input type="checkbox">
+                                Captura Login.png
+                            </label>
+
+                            <label>
+                                <input type="checkbox">
+                                Manual.pdf
+                            </label>
+
+                            <label>
+                                <input type="checkbox">
+                                Configuración Servidor.pdf
+                            </label>
+
+                            <label>
+                                <input type="checkbox">
+                                Arquitectura Red.png
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                                        <div class="grupo">
+
+                        <label>Observaciones</label>
+
+                        <textarea
+                            id="observaciones"
+                            rows="5"
+                            placeholder="Ingrese observaciones para la validación..."></textarea>
+
+                    </div>
+
+                    <div class="grupo">
+
+                        <label>Prioridad</label>
+
+                        <select id="prioridad">
+
+                            <option value="">Seleccione</option>
+
+                            <option>Alta</option>
+
+                            <option>Media</option>
+
+                            <option>Baja</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="grupo">
+
+                        <label>Estado de la Solicitud</label>
+
+                        <select id="estado">
+
+                            <option>Pendiente</option>
+
+                            <option>Enviado</option>
+
+                            <option>Observado</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="acciones">
+
+                        <button
+                            type="reset"
+                            class="btn-gris">
+
+                            Limpiar
+
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn-verde">
+
+                            Enviar Validación
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!--=========================
+            MODAL
+    ==========================-->
+
+    <div class="modal" id="modalConfirmacion">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>Confirmación</h2>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p>
+
+                    ¿Desea enviar esta validación al área correspondiente?
+
+                </p>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="btn-gris"
+                    onclick="cerrarModal()">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    class="btn-verde"
+                    onclick="confirmarEnvio()">
+
+                    Confirmar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="../enviar-validacion/enviar-validacion.js"></script>
+
+</body>
+
+</html>
+                
+                

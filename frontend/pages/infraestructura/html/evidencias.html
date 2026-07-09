@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidencias | CTIC - UNAS</title>
+
+    <link rel="stylesheet" href="../evidencia/evidencias.css">
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo-container">
+            <img src="../assets/logo-unas.png" alt="Logo UNAS" class="logo">
+            <h2>CTIC</h2>
+            <span>Área Infraestructura</span>
+        </div>
+
+        <nav>
+
+            <ul>
+
+                <li><a href="dashboard.html">Dashboard</a></li>
+
+                <li><a href="mis-sistemas.html">Mis Sistemas</a></li>
+
+                <li><a href="infraestructura.html">Infraestructura</a></li>
+
+                <li><a href="despliegue.html">Despliegue</a></li>
+
+                <li><a href="seguridad.html">Seguridad</a></li>
+
+                <li class="active">
+                    <a href="evidencias.html">
+                        Evidencias
+                    </a>
+                </li>
+
+                <li>
+                    <a href="enviar-validacion.html">
+                        Enviar Validación
+                    </a>
+                </li>
+
+                <li>
+                    <a href="subsanaciones.html">
+                        Subsanaciones
+                    </a>
+                </li>
+
+                <li>
+                    <a href="historial.html">
+                        Historial
+                    </a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </aside>
+
+    <!-- ================= CONTENIDO ================= -->
+
+    <main class="main">
+
+        <!-- Header -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>Evidencias</h1>
+
+                <p>
+                    Gestión de evidencias de infraestructura tecnológica.
+                </p>
+
+            </div>
+
+            <div class="usuario">
+
+                <strong>Administrador</strong>
+
+                <span>Infraestructura</span>
+
+            </div>
+
+        </header>
+
+        <!-- Contenido -->
+
+        <section class="contenido">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2>Listado de Evidencias</h2>
+
+                    <button id="btnNueva" class="btn-verde">
+                        Nueva Evidencia
+                    </button>
+
+                </div>
+
+                <div class="filtros">
+
+                    <input
+                        type="text"
+                        id="buscar"
+                        placeholder="Buscar evidencia...">
+
+                    <select id="estado">
+
+                        <option value="">Todos los estados</option>
+
+                        <option>Pendiente</option>
+
+                        <option>Validado</option>
+
+                        <option>Observado</option>
+
+                    </select>
+
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Código</th>
+
+                            <th>Sistema</th>
+
+                            <th>Tipo</th>
+
+                            <th>Archivo</th>
+
+                            <th>Fecha</th>
+
+                            <th>Estado</th>
+
+                            <th>Acciones</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="tablaEvidencias">
+
+                        <tr>
+
+                            <td>EV-001</td>
+
+                            <td>SIGA</td>
+
+                            <td>Captura</td>
+
+                            <td>login.png</td>
+
+                            <td>08/07/2026</td>
+
+                            <td>
+
+                                <span class="estado validado">
+                                    Validado
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button class="btn-azul">
+                                    Ver
+                                </button>
+
+                                <button class="btn-verde">
+                                    Descargar
+                                </button>
+
+                                <button class="btn-rojo">
+                                    Eliminar
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>EV-002</td>
+
+                            <td>Correo Institucional</td>
+
+                            <td>PDF</td>
+
+                            <td>configuracion.pdf</td>
+
+                            <td>06/07/2026</td>
+
+                            <td>
+
+                                <span class="estado pendiente">
+                                    Pendiente
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button class="btn-azul">
+                                    Ver
+                                </button>
+
+                                <button class="btn-verde">
+                                    Descargar
+                                </button>
+
+                                <button class="btn-rojo">
+                                    Eliminar
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                                                <tr>
+
+                            <td>EV-003</td>
+
+                            <td>Servidor Web</td>
+
+                            <td>Documento</td>
+
+                            <td>manual-servidor.docx</td>
+
+                            <td>04/07/2026</td>
+
+                            <td>
+
+                                <span class="estado observado">
+                                    Observado
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button class="btn-azul">
+                                    Ver
+                                </button>
+
+                                <button class="btn-verde">
+                                    Descargar
+                                </button>
+
+                                <button class="btn-rojo">
+                                    Eliminar
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ================= MODAL ================= -->
+
+    <div class="modal" id="modalEvidencia">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>Registrar Evidencia</h2>
+
+                <button class="cerrar" onclick="cerrarModal()">
+                    ×
+                </button>
+
+            </div>
+
+            <form id="formEvidencia">
+
+                <div class="grupo">
+
+                    <label>Sistema</label>
+
+                    <select required>
+
+                        <option value="">Seleccione</option>
+
+                        <option>SIGA</option>
+
+                        <option>Correo Institucional</option>
+
+                        <option>Servidor Web</option>
+
+                        <option>Campus Virtual</option>
+
+                    </select>
+
+                </div>
+
+                <div class="grupo">
+
+                    <label>Tipo de Evidencia</label>
+
+                    <select required>
+
+                        <option value="">Seleccione</option>
+
+                        <option>Captura</option>
+
+                        <option>PDF</option>
+
+                        <option>Documento</option>
+
+                        <option>Configuración</option>
+
+                    </select>
+
+                </div>
+
+                <div class="grupo">
+
+                    <label>Descripción</label>
+
+                    <textarea
+                        rows="4"
+                        placeholder="Ingrese una descripción..."
+                        required></textarea>
+
+                </div>
+
+                <div class="grupo">
+
+                    <label>Seleccionar Archivo</label>
+
+                    <input
+                        type="file"
+                        required>
+
+                </div>
+
+                <div class="acciones">
+
+                    <button
+                        type="button"
+                        class="btn-gris"
+                        onclick="cerrarModal()">
+
+                        Cancelar
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn-verde">
+
+                        Guardar Evidencia
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script src="../evidencia/evidencias.js"></script>
+
+</body>
+
+</html>

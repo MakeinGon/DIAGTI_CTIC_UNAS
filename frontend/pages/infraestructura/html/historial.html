@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Historial | CTIC - UNAS</title>
+
+    <link rel="stylesheet" href="../historial/historial.css">
+
+</head>
+
+<body>
+
+    <!--=========================
+            SIDEBAR
+    ==========================-->
+
+    <aside class="sidebar">
+
+        <div class="logo-container">
+
+            <img src="../assets/logo-unas.png"
+                 alt="Logo UNAS"
+                 class="logo">
+
+            <h2>CTIC</h2>
+
+            <span>Área Infraestructura</span>
+
+        </div>
+
+        <nav>
+
+            <ul>
+
+                <li><a href="dashboard.html">Dashboard</a></li>
+
+                <li><a href="mis-sistemas.html">Mis Sistemas</a></li>
+
+                <li><a href="infraestructura.html">Infraestructura</a></li>
+
+                <li><a href="despliegue.html">Despliegue</a></li>
+
+                <li><a href="seguridad.html">Seguridad</a></li>
+
+                <li><a href="evidencias.html">Evidencias</a></li>
+
+                <li><a href="enviar-validacion.html">Enviar Validación</a></li>
+
+                <li><a href="subsanaciones.html">Subsanaciones</a></li>
+
+                <li class="active">
+
+                    <a href="historial.html">
+
+                        Historial
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </aside>
+
+    <!--=========================
+            CONTENIDO
+    ==========================-->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>Historial</h1>
+
+                <p>
+
+                    Registro de actividades realizadas en el módulo de Infraestructura.
+
+                </p>
+
+            </div>
+
+            <div class="usuario">
+
+                <strong>Administrador</strong>
+
+                <span>Infraestructura</span>
+
+            </div>
+
+        </header>
+
+        <section class="contenido">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2>Historial de Operaciones</h2>
+
+                    <input
+                        type="text"
+                        id="buscar"
+                        placeholder="Buscar registro...">
+
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Código</th>
+
+                            <th>Fecha</th>
+
+                            <th>Sistema</th>
+
+                            <th>Actividad</th>
+
+                            <th>Usuario</th>
+
+                            <th>Estado</th>
+
+                            <th>Acción</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="tablaHistorial">
+
+                        <tr>
+
+                            <td>HIS-001</td>
+
+                            <td>10/07/2026</td>
+
+                            <td>SIGA</td>
+
+                            <td>Registro de Evidencia</td>
+
+                            <td>Administrador</td>
+
+                            <td>
+
+                                <span class="completado">
+
+                                    Completado
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="btn-azul"
+                                    onclick="verDetalle()">
+
+                                    Ver
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>HIS-002</td>
+
+                            <td>09/07/2026</td>
+
+                            <td>Servidor Web</td>
+
+                            <td>Envío de Validación</td>
+
+                            <td>Administrador</td>
+
+                            <td>
+
+                                <span class="pendiente">
+
+                                    Pendiente
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="btn-azul"
+                                    onclick="verDetalle()">
+
+                                    Ver
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                                                <tr>
+
+                            <td>HIS-003</td>
+
+                            <td>08/07/2026</td>
+
+                            <td>Campus Virtual</td>
+
+                            <td>Subsanación Registrada</td>
+
+                            <td>Administrador</td>
+
+                            <td>
+
+                                <span class="completado">
+
+                                    Completado
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="btn-azul"
+                                    onclick="verDetalle()">
+
+                                    Ver
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>HIS-004</td>
+
+                            <td>06/07/2026</td>
+
+                            <td>Correo Institucional</td>
+
+                            <td>Actualización de Evidencia</td>
+
+                            <td>Administrador</td>
+
+                            <td>
+
+                                <span class="observado">
+
+                                    Observado
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="btn-azul"
+                                    onclick="verDetalle()">
+
+                                    Ver
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!--=========================
+            MODAL DETALLE
+    ==========================-->
+
+    <div class="modal" id="modalHistorial">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>Detalle del Historial</h2>
+
+                <button
+                    class="cerrar"
+                    onclick="cerrarModal()">
+
+                    ×
+
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p><strong>Código:</strong> HIS-001</p>
+
+                <p><strong>Sistema:</strong> SIGA</p>
+
+                <p><strong>Actividad:</strong> Registro de Evidencia</p>
+
+                <p><strong>Usuario:</strong> Administrador</p>
+
+                <p><strong>Fecha:</strong> 10/07/2026</p>
+
+                <p><strong>Estado:</strong> Completado</p>
+
+                <p>
+
+                    Registro realizado correctamente dentro del módulo
+                    de Infraestructura.
+
+                </p>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="btn-gris"
+                    onclick="cerrarModal()">
+
+                    Cerrar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="../historial/historial.js"></script>
+
+</body>
+
+</html>
