@@ -69,46 +69,52 @@ class AuditoriaModule {
     // RENDERIZADO DE ESTADÍSTICAS
     // ============================================================
     
-    renderStats() {
-        const stats = {
-            total: this.eventosAuditoria.length,
-            creaciones: this.eventosAuditoria.filter(e => e.accion === 'Creación').length,
-            ediciones: this.eventosAuditoria.filter(e => e.accion === 'Edición').length,
-            eliminaciones: this.eventosAuditoria.filter(e => e.accion === 'Eliminación').length,
-            aprobaciones: this.eventosAuditoria.filter(e => e.accion === 'Aprobación').length,
-            observaciones: this.eventosAuditoria.filter(e => e.accion === 'Observación').length,
-        };
+renderStats() {
+    const stats = {
+        total: this.eventosAuditoria.length,
+        creaciones: this.eventosAuditoria.filter(e => e.accion === 'Creación').length,
+        ediciones: this.eventosAuditoria.filter(e => e.accion === 'Edición').length,
+        eliminaciones: this.eventosAuditoria.filter(e => e.accion === 'Eliminación').length,
+        aprobaciones: this.eventosAuditoria.filter(e => e.accion === 'Aprobación').length,
+        observaciones: this.eventosAuditoria.filter(e => e.accion === 'Observación').length,
+    };
 
-        const statsContainer = document.getElementById('statsAuditoria');
-        if (statsContainer) {
-            statsContainer.innerHTML = `
-                <div class="stat-card">
-                    <div class="number">${stats.total}</div>
-                    <div class="label">Total Eventos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" style="color:var(--badge-creacion)">${stats.creaciones}</div>
-                    <div class="label">Creaciones</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" style="color:var(--badge-edicion)">${stats.ediciones}</div>
-                    <div class="label">Ediciones</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" style="color:var(--badge-eliminacion)">${stats.eliminaciones}</div>
-                    <div class="label">Eliminaciones</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" style="color:var(--badge-aprobacion)">${stats.aprobaciones}</div>
-                    <div class="label">Aprobaciones</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" style="color:var(--badge-observacion)">${stats.observaciones}</div>
-                    <div class="label">Observaciones</div>
-                </div>
-            `;
-        }
-    }
+    const statsContainer = document.getElementById("statsAuditoria");
+
+    if (!statsContainer) return;
+
+    statsContainer.innerHTML = `
+        <div class="card">
+            <div class="card-number">${stats.total}</div>
+            <div class="card-label">Total Eventos</div>
+        </div>
+
+        <div class="card verde">
+            <div class="card-number">${stats.creaciones}</div>
+            <div class="card-label">Creaciones</div>
+        </div>
+
+        <div class="card azul">
+            <div class="card-number">${stats.ediciones}</div>
+            <div class="card-label">Ediciones</div>
+        </div>
+
+        <div class="card rojo">
+            <div class="card-number">${stats.eliminaciones}</div>
+            <div class="card-label">Eliminaciones</div>
+        </div>
+
+        <div class="card amarillo">
+            <div class="card-number">${stats.aprobaciones}</div>
+            <div class="card-label">Aprobaciones</div>
+        </div>
+
+        <div class="card morado">
+            <div class="card-number">${stats.observaciones}</div>
+            <div class="card-label">Observaciones</div>
+        </div>
+    `;
+}
 
     // ============================================================
     // RENDERIZADO DE TABLA
@@ -399,7 +405,18 @@ class AuditoriaModule {
         console.log('✅ Event listeners configurados');
     }
 }
+// ============================================================
+// CERRAR SESIÓN
+// ============================================================
 
+function cerrarSesion() {
+    // Eliminar datos de sesión (si existen)
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Redirigir al login
+   window.location.href = "../../../login/html/login.html";
+}
 // ============================================================
 // INICIALIZAR AL CARGAR EL DOM
 // ============================================================

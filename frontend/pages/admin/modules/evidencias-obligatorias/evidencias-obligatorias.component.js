@@ -191,7 +191,18 @@ function verArchivo(archivo) {
 function exportarEvidencias() {
     alert('📊 Exportando evidencias a Excel... (simulación)');
 }
+// ============================================================
+// CERRAR SESIÓN
+// ============================================================
 
+function cerrarSesion() {
+    // Limpiar almacenamiento
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Ir al login
+    window.location.href = "../../../login/html/login.html";
+}
 // ============================================================
 // INICIALIZAR
 // ============================================================

@@ -4,12 +4,95 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Evidencias Obligatorias · DIAGTI CTIC</title>
-    <link rel="stylesheet" href="../styles.css" />
-    <link rel="stylesheet" href="evidencias-obligatorias.css" />
+
+    <!-- Estilos propios del módulo - TODO EN UN SOLO ARCHIVO -->
+    <link rel="stylesheet" href="evidencias-obligatorias.component.css" />
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <div class="container">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">JV</div>
+            <div class="profile-info">
+                <div class="profile-name">Johan Alberto Vela Arevalo</div>
+                <div class="profile-role">Administrador</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Administración</div>
+
+        <nav class="nav">
+            <a class="nav-item" href="../modules/html/usuarios.html">
+                <span>
+                    <span class="lbl">Gestión de Usuarios</span>
+                    <span class="sub">Cuentas y accesos</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../modules/html/roles.html">
+                <span>
+                    <span class="lbl">Roles y Permisos</span>
+                    <span class="sub">Perfiles de acceso</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../html/catalogos.html">
+                <span>
+                    <span class="lbl">Gestión de Catálogos</span>
+                    <span class="sub">Listas maestras</span>
+                </span>
+            </a>
+            <a class="nav-item active" href="../modules/evidencias-obligatorias/evidencias-obligatorias.component.html">
+                <span>
+                    <span class="lbl">Evidencias Obligatorias</span>
+                    <span class="sub">Documentación técnica</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../reportes-inventario/reportes-inventario.component.html">
+                <span>
+                    <span class="lbl">Reportes de Inventario</span>
+                    <span class="sub">Estadísticas y análisis</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../auditoria-trazabilidad/auditoria-trazabilidad.component.html">
+                <span>
+                    <span class="lbl">Auditoría y Trazabilidad</span>
+                    <span class="sub">Historial y seguimiento</span>
+                </span>
+            </a>
+        </nav>
+
+        <!-- ===== BOTÓN CERRAR SESIÓN ===== -->
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v2.0 · CTIC UNAS<br>
+            Módulo de administración interna
+        </div>
+    </aside>
+    <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
+    <main class="main-content">
         <!-- HEADER -->
         <div class="header">
             <h1>📎 Evidencias <span>Obligatorias</span></h1>
@@ -19,13 +102,28 @@
 
         <!-- ESTADÍSTICAS -->
         <div class="cards-grid" id="statsEvidencias">
-            <!-- JS -->
+            <div class="card">
+                <div class="card-number">12</div>
+                <div class="card-label">Total Evidencias</div>
+            </div>
+            <div class="card verde">
+                <div class="card-number">8</div>
+                <div class="card-label">Completas</div>
+            </div>
+            <div class="card amarillo">
+                <div class="card-number">3</div>
+                <div class="card-label">Pendientes</div>
+            </div>
+            <div class="card rojo">
+                <div class="card-number">1</div>
+                <div class="card-label">Vencidas</div>
+            </div>
         </div>
 
-        <!-- FILTROS Y ACCIONES -->
+        <!-- FILTROS Y TOOLBAR -->
         <div class="toolbar">
             <div class="filter-group">
-                <input type="text" id="buscarEvidencia" placeholder="🔍 Buscar por sistema o tipo..." oninput="filtrarEvidencias()" />
+                <input type="text" id="buscarEvidencia" placeholder="🔍 Buscar por sistema o tipo..." oninput="filtrarEvidencias()">
             </div>
             <div class="filter-group">
                 <select id="filtroTipo" onchange="filtrarEvidencias()">
@@ -54,13 +152,13 @@
         <div class="table-wrapper">
             <div class="table-header">
                 <h3>📋 Listado de evidencias obligatorias</h3>
-                <span class="event-count" id="evidenciaCount">Total: 0</span>
+                <span class="event-count" id="evidenciaCount">Total: 4</span>
             </div>
             <table>
                 <thead>
                     <tr>
                         <th>Sistema</th>
-                        <th>Tipo de Evidencia</th>
+                        <th>Tipo</th>
                         <th>Archivo/URL</th>
                         <th>Estado</th>
                         <th>Subido por</th>
@@ -69,61 +167,157 @@
                     </tr>
                 </thead>
                 <tbody id="tablaEvidencias">
-                    <!-- JS -->
+                    <tr>
+                        <td><span class="sistema-tag">DIAGTI</span></td>
+                        <td>PDF</td>
+                        <td><a href="#" class="file-link">manual_usuario.pdf</a></td>
+                        <td><span class="badge-estado completa">Completa</span></td>
+                        <td>Johan Vela</td>
+                        <td>2026-07-05</td>
+                        <td>
+                            <button class="btn-icon">👁️</button>
+                            <button class="btn-icon">✏️</button>
+                            <button class="btn-icon">🗑️</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="sistema-tag">SIGA</span></td>
+                        <td>DOCX</td>
+                        <td><a href="#" class="file-link">informe_siga.docx</a></td>
+                        <td><span class="badge-estado pendiente">Pendiente</span></td>
+                        <td>Maria Torres</td>
+                        <td>2026-07-04</td>
+                        <td>
+                            <button class="btn-icon">👁️</button>
+                            <button class="btn-icon">✏️</button>
+                            <button class="btn-icon">🗑️</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="sistema-tag">SIGA</span></td>
+                        <td>URL</td>
+                        <td><a href="#" class="file-link">https://docs.google.com/...</a></td>
+                        <td><span class="badge-estado vencida">Vencida</span></td>
+                        <td>Carlos Ruiz</td>
+                        <td>2026-06-28</td>
+                        <td>
+                            <button class="btn-icon">👁️</button>
+                            <button class="btn-icon">✏️</button>
+                            <button class="btn-icon">🗑️</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="sistema-tag">DIAGTI</span></td>
+                        <td>Imagen</td>
+                        <td><a href="#" class="file-link">captura_pantalla.png</a></td>
+                        <td><span class="badge-estado completa">Completa</span></td>
+                        <td>Johan Vela</td>
+                        <td>2026-07-03</td>
+                        <td>
+                            <button class="btn-icon">👁️</button>
+                            <button class="btn-icon">✏️</button>
+                            <button class="btn-icon">🗑️</button>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- MODAL PARA NUEVA EVIDENCIA -->
-        <div class="modal" id="modalEvidencia" style="display:none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>📎 Registrar Nueva Evidencia</h3>
-                    <button class="modal-close" onclick="cerrarModal()">✖</button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Sistema asociado *</label>
-                        <select id="sistemaSelect" class="form-control">
-                            <option value="">Seleccionar sistema...</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de evidencia *</label>
-                        <select id="tipoEvidenciaSelect" class="form-control">
-                            <option value="PDF">PDF</option>
-                            <option value="DOC">DOC</option>
-                            <option value="DOCX">DOCX</option>
-                            <option value="URL">URL</option>
-                            <option value="Imagen">Imagen</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Archivo o URL *</label>
-                        <input type="text" id="archivoInput" class="form-control" placeholder="Ej: https://... o nombre_archivo.pdf" />
-                    </div>
-                    <div class="form-group">
-                        <label>Descripción</label>
-                        <textarea id="descripcionInput" class="form-control" rows="2" placeholder="Descripción opcional..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Obligatoria para validación</label>
-                        <input type="checkbox" id="obligatoriaCheck" checked />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-outline" onclick="cerrarModal()">Cancelar</button>
-                    <button class="btn-verde" onclick="guardarEvidencia()">💾 Guardar</button>
-                </div>
-            </div>
-        </div>
-
-        <footer style="margin-top: 3rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+        <!-- FOOTER -->
+        <footer>
             &copy; 2026 CTIC · DIAGTI · Sistema de Inventario y Diagnóstico TI
         </footer>
+    </main>
+
+    <!-- MODAL PARA NUEVA EVIDENCIA -->
+    <div class="modal" id="modalEvidencia" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📎 Registrar Nueva Evidencia</h3>
+                <button class="modal-close" onclick="cerrarModal()">✖</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Sistema asociado *</label>
+                    <select id="sistemaSelect" class="form-control">
+                        <option value="">Seleccionar sistema...</option>
+                        <option value="DIAGTI">DIAGTI</option>
+                        <option value="SIGA">SIGA</option>
+                        <option value="SIAF">SIAF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de evidencia *</label>
+                    <select id="tipoEvidenciaSelect" class="form-control">
+                        <option value="PDF">PDF</option>
+                        <option value="DOC">DOC</option>
+                        <option value="DOCX">DOCX</option>
+                        <option value="URL">URL</option>
+                        <option value="Imagen">Imagen</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Archivo o URL *</label>
+                    <input type="text" id="archivoInput" class="form-control" placeholder="Ej: https://... o nombre_archivo.pdf" />
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="descripcionInput" class="form-control" rows="2" placeholder="Descripción opcional..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="obligatoriaCheck" checked />
+                        Obligatoria para validación
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-verde" onclick="guardarEvidencia()">💾 Guardar</button>
+            </div>
+        </div>
     </div>
 
-    <script src="evidencias-obligatorias.js"></script>
+    <script src="evidencias-obligatorias.component.js"></script>
+    <script>
+        // Prevenir navegación a la página actual y doble clic
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-item');
+            
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href) {
+                    const linkPage = href.split('/').pop();
+                    
+                    if (linkPage === currentPage) {
+                        link.addEventListener('click', function(e) {
+                            e.preventDefault();
+                        });
+                    } else {
+                        let isClicked = false;
+                        link.addEventListener('click', function(e) {
+                            if (isClicked) {
+                                e.preventDefault();
+                                return;
+                            }
+                            isClicked = true;
+                            setTimeout(() => {
+                                isClicked = false;
+                            }, 500);
+                        });
+                    }
+                }
+            });
+        });
+
+        // Funciones placeholder para el módulo
+        function filtrarEvidencias() { console.log('Filtrando...'); }
+        function nuevaEvidencia() { document.getElementById('modalEvidencia').style.display = 'flex'; }
+        function cerrarModal() { document.getElementById('modalEvidencia').style.display = 'none'; }
+        function guardarEvidencia() { alert('Evidencia guardada'); cerrarModal(); }
+        function exportarEvidencias() { alert('Exportando evidencias...'); }
+    </script>
 </body>
 </html>

@@ -211,7 +211,18 @@ function reporteLegacy() {
     const legacy = sistemas.filter(s => s.tecnologias.some(t => ['COBOL', 'Mainframe'].includes(t)));
     alert(`🏚️ Reporte Legacy\nSistemas Legacy identificados: ${legacy.length}\n\n${legacy.map(s => `- ${s.nombre} (${s.codigo})`).join('\n')}`);
 }
+// ============================================================
+// CERRAR SESIÓN
+// ============================================================
 
+function cerrarSesion() {
+    // Eliminar datos de sesión (si existen)
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Redirigir al login
+   window.location.href = "../../../login/html/login.html";
+}
 // ============================================================
 // INICIALIZAR
 // ============================================================
