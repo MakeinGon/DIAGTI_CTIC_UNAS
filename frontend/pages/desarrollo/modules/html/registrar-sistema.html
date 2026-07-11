@@ -156,6 +156,7 @@
                         <option>RRHH</option>
                     </select>
                 </div>
+                <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
             </div>
 
             <!-- Pestaña 2: Tipo de Aplicativo -->
@@ -174,6 +175,11 @@
                 <div class="form-group" style="margin-top:12px;">
                     <label>Especificar (si seleccionó Otro)</label>
                     <input type="text" placeholder="Especificar tipo">
+                </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
                 </div>
             </div>
 
@@ -219,6 +225,11 @@
                         <textarea placeholder="Observaciones adicionales"></textarea>
                     </div>
                 </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
             </div>
 
             <!-- Pestaña 4: Arquitectura Software -->
@@ -262,6 +273,12 @@
                     <label>Tecnologías complementarias</label>
                     <textarea placeholder="Ej. Redis, Elasticsearch, Kafka"></textarea>
                 </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
+
             </div>
 
             <!-- Pestaña 5: Base de Datos -->
@@ -334,6 +351,11 @@
                     <label>Responsable BD</label>
                     <input type="text" placeholder="Nombre del responsable">
                 </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
             </div>
 
             <!-- Pestaña 6: Seguridad -->
@@ -352,6 +374,11 @@
                 <div class="form-group" style="margin-top:12px;">
                     <label>Observaciones de seguridad</label>
                     <textarea placeholder="Observaciones adicionales"></textarea>
+                </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
                 </div>
             </div>
 
@@ -404,6 +431,11 @@
                             <tbody></tbody>
                         </table>
                     </div>
+                </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
                 </div>
             </div>
 
@@ -471,6 +503,11 @@
                     <label>Repositorio Git</label>
                     <input type="text" placeholder="URL del repositorio Git">
                 </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
             </div>
 
             <!-- Pestaña 9: Resumen -->
@@ -497,6 +534,7 @@
                     <button class="btn btn-verde" onclick="guardarBorrador()">💾 Guardar Borrador</button>
                     <button class="btn btn-azul" onclick="enviarValidacion()">📤 Enviar Validación</button>
                 </div>
+                <button type="button" class="btn-atras" onclick="anteriorPantalla()" style="margin-bottom: 16px;">Atrás</button>
             </div>
         </div>
     </main>

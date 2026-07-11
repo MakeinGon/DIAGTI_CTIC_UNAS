@@ -45,6 +45,8 @@ button { font: inherit; cursor: pointer; }
     display: flex;
     flex-direction: column;
     z-index: 10;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
 }
 
 .brand {

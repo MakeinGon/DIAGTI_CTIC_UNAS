@@ -163,3 +163,32 @@ document.addEventListener('DOMContentLoaded', function () {
         cambiarTab(tabId);
     }
 });
+
+// ============================================================
+// BOTONES NAVEGACIÓN LATERAL (SIGUIENTE / ATRÁS)
+// ============================================================
+function siguientePantalla() {
+    const pantallaActual = document.querySelector('.tab-content.active');
+    if (pantallaActual) {
+        const pantallaSiguiente = pantallaActual.nextElementSibling;
+        
+        // Validamos que exista y que sea un bloque de contenido con clase tab-content
+        if (pantallaSiguiente && pantallaSiguiente.classList.contains('tab-content')) {
+            // Reutilizamos tu función original pasándole el ID de la siguiente pantalla
+            cambiarTab(pantallaSiguiente.id);
+        }
+    }
+}
+
+function anteriorPantalla() {
+    const pantallaActual = document.querySelector('.tab-content.active');
+    if (pantallaActual) {
+        const pantallaAnterior = pantallaActual.previousElementSibling;
+        
+        // Validamos que exista y que sea un bloque de contenido con clase tab-content
+        if (pantallaAnterior && pantallaAnterior.classList.contains('tab-content')) {
+            // Reutilizamos tu función original pasándole el ID de la pantalla anterior
+            cambiarTab(pantallaAnterior.id);
+        }
+    }
+}

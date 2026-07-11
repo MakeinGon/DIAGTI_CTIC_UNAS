@@ -56,6 +56,8 @@ button {
     display: flex;
     flex-direction: column;
     z-index: 10;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
 }
 
 .brand {
@@ -513,4 +515,67 @@ button {
         width: 100%;
         justify-content: center;
     }
+}
+
+/* ============================================================
+   ESTILOS PARA BOTONES DE NAVEGACIÓN (SIGUIENTE / ATRÁS)
+   ============================================================ */
+
+/* Contenedor para alinear los botones abajo en las pestañas 2 a 8 */
+.form-actions-navegacion {
+    display: flex;
+    justify-content: flex-start; /* Alineados a la izquierda, puedes usar 'space-between' si prefieres uno a cada extremo */
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border); /* Línea sutil de separación */
+}
+
+/* Base general de los botones */
+.btn-siguiente, 
+.btn-atras {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px; /* Combinando con tu estilo de diseño */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    outline: none;
+}
+
+/* Botón Siguiente (Color Verde CTIC) */
+.btn-siguiente {
+    background-color: var(--color-verde-ctic);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(26, 187, 156, 0.2);
+}
+
+.btn-siguiente:hover {
+    background-color: var(--color-verde-dark);
+    transform: translateY(-1px);
+}
+
+.btn-siguiente:active {
+    transform: translateY(0);
+}
+
+/* Botón Atrás (Estilo sutil/neutral para no competir visualmente) */
+.btn-atras {
+    background-color: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-atras:hover {
+    background-color: var(--border);
+    color: var(--text);
+    transform: translateY(-1px);
+}
+
+.btn-atras:active {
+    transform: translateY(0);
 }
