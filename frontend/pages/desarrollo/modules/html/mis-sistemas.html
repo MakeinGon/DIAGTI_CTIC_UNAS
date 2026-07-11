@@ -1,16 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mis Sistemas · DIAGTI – CTIC UNAS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Sistemas · Área de Desarrollo · DIAGTI – CTIC UNAS</title>
     <link rel="stylesheet" href="../css/mis-sistemas.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="brand">
-            <div class="logo"><img src="../assets/logo-unas.png" alt="UNAS"></div>
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="UNAS">
+            </div>
             <div>
                 <h1>UNAS</h1>
                 <small>Tingo María</small>
@@ -18,83 +24,104 @@
         </div>
 
         <div class="sidebar-profile">
-            <div class="profile-avatar">LA</div>
+            <div class="profile-avatar">DV</div>
             <div class="profile-info">
-                <div class="profile-name">LUIS ANGEL LARA DEL AGUILA</div>
-                <div class="profile-role">Desarrollador</div>
+                <div class="profile-name">Desarrollador Demo</div>
+                <div class="profile-role">Área de Desarrollo</div>
             </div>
         </div>
 
-        <div class="nav-label">Área de Desarrollo</div>
+        <div class="nav-label">Desarrollo</div>
+
         <nav class="nav">
-            <a href="dashboard.html" class="nav-item"><span class="lbl">Dashboard Desarrollo</span></a>
-            <a href="mis-sistemas.html" class="nav-item active"><span class="lbl">Mis Sistemas</span></a>
-            <a href="registrar-sistema.html" class="nav-item"><span class="lbl">Registrar Sistema</span></a>
-            <a href="editar-sistema.html" class="nav-item"><span class="lbl">Editar Sistema</span></a>
-            <a href="arquitectura.html" class="nav-item"><span class="lbl">Arquitectura Software</span></a>
-            <a href="base-datos.html" class="nav-item"><span class="lbl">Base de Datos</span></a>
-            <a href="seguridad.html" class="nav-item"><span class="lbl">Seguridad</span></a>
-            <a href="integraciones.html" class="nav-item"><span class="lbl">Integraciones</span></a>
-            <a href="evidencias.html" class="nav-item"><span class="lbl">Evidencias</span></a>
-            <a href="enviar-validacion.html" class="nav-item"><span class="lbl">Enviar Validación</span></a>
-            <a href="subsanar-observaciones.html" class="nav-item"><span class="lbl">Subsanar Observaciones</span></a>
-            <a href="historial-sistema.html" class="nav-item"><span class="lbl">Historial del Sistema</span></a>
+            <a class="nav-item" href="dashboard.html">
+                <span><span class="lbl">Dashboard</span><span class="sub">Resumen de trabajo</span></span>
+            </a>
+            <a class="nav-item active" href="mis-sistemas.html">
+                <span><span class="lbl">Mis Sistemas</span><span class="sub">Administrar sistemas</span></span>
+            </a>
+            <a class="nav-item" href="registrar-sistema.html">
+                <span><span class="lbl">Registrar Sistema</span><span class="sub">Nuevo registro</span></span>
+            </a>
+            <a class="nav-item" href="enviar-validacion.html">
+                <span><span class="lbl">Enviar Validación</span><span class="sub">Sistemas completos</span></span>
+            </a>
+            <a class="nav-item" href="subsanar-observaciones.html">
+                <span><span class="lbl">Subsanar Observaciones</span><span class="sub">Corregir
+                        observaciones</span></span>
+            </a>
+            <a class="nav-item" href="historial-sistema.html">
+                <span><span class="lbl">Historial del Sistema</span><span class="sub">Trazabilidad</span></span>
+            </a>
         </nav>
 
-        <div class="sidebar-footer" style="margin-top:auto; font-size:11px; color:#bcdcf0; text-align:center;">
-            DIAGTI v1.0 · CTIC UNAS
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Cerrar Sesión
+            </button>
         </div>
+
+        <div class="sidebar-footer">DIAGTI v2.0 · CTIC UNAS<br>Módulo de desarrollo</div>
     </aside>
 
-    <main class="main">
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
         <div class="topbar">
             <div>
-                <h2>Paso 2: Inventario de Mis Sistemas Asignados</h2>
-                <div class="hint">Listado oficial de sistemas bajo la gestión de tu área académica/operativa.</div>
+                <h2>Mis Sistemas</h2>
+                <div class="hint">Administrar todos los sistemas creados</div>
             </div>
-            <a href="registrar-sistema.html" class="btn btn-verde" style="display: flex; align-items: center; gap: 8px;">
-                + Registrar Nuevo Aplicativo
-            </a>
+            <a href="registrar-sistema.html" class="btn btn-verde">➕ Registrar Nuevo Sistema</a>
         </div>
 
         <div class="card">
-            <div class="table-wrap">
-                <table class="table-sistemas">
-                    <thead>
-                        <tr>
-                            <th>CÓDIGO</th>
-                            <th>NOMBRE DEL SISTEMA INFORMÁTICO</th>
-                            <th>TIPO</th>
-                            <th>CRITICIDAD</th>
-                            <th>ESTADO LEVANTAMIENTO</th>
-                            <th class="text-center">ACCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>SYS-DIAGTI</code></td>
-                            <td><strong>DIAGTI - Core API</strong></td>
-                            <td>REST API</td>
-                            <td><span class="badge status-danger">Crítico</span></td>
-                            <td><span class="badge status-warning">OBSERVADO</span></td>
-                            <td class="text-center">
-                                <a href="editar-sistema.html?id=1" class="btn secondary btn-sm">⚙️ Editar</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><code>SYS-SGA</code></td>
-                            <td><strong>SGA - Gestión Académica</strong></td>
-                            <td>Web / Modular</td>
-                            <td><span class="badge status-danger">Crítico</span></td>
-                            <td><span class="badge status-success">VALIDADO</span></td>
-                            <td class="text-center">
-                                <span class="text-muted">🔒 Bloqueado</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Buscador y Filtros -->
+            <div class="toolbar">
+                <div class="search">
+                    <input type="text" id="search-input" placeholder="Buscar por código o nombre...">
+                </div>
+                <select id="filter-estado">
+                    <option value="">Todos los estados</option>
+                    <option value="Borrador">Borrador</option>
+                    <option value="Enviado">Enviado</option>
+                    <option value="Observado">Observado</option>
+                    <option value="Validado">Validado</option>
+                </select>
+                <select id="filter-area">
+                    <option value="">Todas las áreas</option>
+                    <option value="Dirección Académica">Dirección Académica</option>
+                    <option value="Biblioteca">Biblioteca</option>
+                    <option value="Economía y Finanzas">Economía y Finanzas</option>
+                    <option value="Recursos Humanos">Recursos Humanos</option>
+                    <option value="Comunicaciones">Comunicaciones</option>
+                </select>
+                <select id="filter-tipo">
+                    <option value="">Todos los tipos</option>
+                    <option value="Web">Web</option>
+                    <option value="Desktop">Desktop</option>
+                    <option value="API">API</option>
+                    <option value="Mobile">Mobile</option>
+                </select>
+                <select id="filter-criticidad">
+                    <option value="">Todas las criticidades</option>
+                    <option value="Académico">Académico</option>
+                    <option value="Financiero">Financiero</option>
+                    <option value="RRHH">RRHH</option>
+                </select>
             </div>
+
+            <!-- Tabla -->
+            <div class="table-wrap" id="tabla-sistemas"></div>
         </div>
     </main>
+
+    <script src="../js/mis-sistemas.js"></script>
 </body>
+
 </html>

@@ -1,11 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enviar Validación · Área de Desarrollo · DIAGTI – CTIC UNAS</title>
     <link rel="stylesheet" href="../css/enviar-validacion.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
     <!-- SIDEBAR -->
@@ -13,96 +16,97 @@
         <div class="brand">
             <div class="logo"><img src="../assets/logo-unas.png" alt="UNAS"></div>
             <div>
-                <h1>UNAS</h1>
-                <small>Tingo María</small>
+                <h1>UNAS</h1><small>Tingo María</small>
             </div>
         </div>
 
         <div class="sidebar-profile">
-            <div class="profile-avatar">DA</div>
+            <div class="profile-avatar">DV</div>
             <div class="profile-info">
-                <div class="profile-name">DIEGO ANGHELLO LEON ARTEAGA</div>
-                <div class="profile-role">Desarrollador</div>
+                <div class="profile-name">Desarrollador Demo</div>
+                <div class="profile-role">Área de Desarrollo</div>
             </div>
         </div>
 
-        <div class="nav-label">Área de Desarrollo</div>
+        <div class="nav-label">Desarrollo</div>
+
         <nav class="nav">
-            <a href="dashboard.html" class="nav-item"><span class="lbl">Dashboard Desarrollo</span></a>
-            <a href="mis-sistemas.html" class="nav-item"><span class="lbl">Mis Sistemas</span></a>
-            <a href="registrar-sistema.html" class="nav-item"><span class="lbl">Registrar Sistema</span></a>
-            <a href="editar-sistema.html" class="nav-item"><span class="lbl">Editar Sistema</span></a>
-            <a href="arquitectura.html" class="nav-item"><span class="lbl">Arquitectura Software</span></a>
-            <a href="base-datos.html" class="nav-item"><span class="lbl">Base de Datos</span></a>
-            <a href="seguridad.html" class="nav-item"><span class="lbl">Seguridad</span></a>
-            <a href="integraciones.html" class="nav-item"><span class="lbl">Integraciones</span></a>
-            <a href="evidencias.html" class="nav-item"><span class="lbl">Evidencias</span></a>
-            <a href="enviar-validacion.html" class="nav-item active"><span class="lbl">Enviar Validación</span></a>
-            <a href="subsanar-observaciones.html" class="nav-item"><span class="lbl">Subsanar Observaciones</span></a>
-            <a href="historial-sistema.html" class="nav-item"><span class="lbl">Historial del Sistema</span></a>
+            <a class="nav-item" href="dashboard.html">
+                <span><span class="lbl">Dashboard</span><span class="sub">Resumen de trabajo</span></span>
+            </a>
+            <a class="nav-item" href="mis-sistemas.html">
+                <span><span class="lbl">Mis Sistemas</span><span class="sub">Administrar sistemas</span></span>
+            </a>
+            <a class="nav-item" href="registrar-sistema.html">
+                <span><span class="lbl">Registrar Sistema</span><span class="sub">Nuevo registro</span></span>
+            </a>
+            <a class="nav-item active" href="enviar-validacion.html">
+                <span><span class="lbl">Enviar Validación</span><span class="sub">Sistemas completos</span></span>
+            </a>
+            <a class="nav-item" href="subsanar-observaciones.html">
+                <span><span class="lbl">Subsanar Observaciones</span><span class="sub">Corregir
+                        observaciones</span></span>
+            </a>
+            <a class="nav-item" href="historial-sistema.html">
+                <span><span class="lbl">Historial del Sistema</span><span class="sub">Trazabilidad</span></span>
+            </a>
         </nav>
 
-        <div class="sidebar-footer">
-            DIAGTI v1.0 · CTIC UNAS<br>
-            <small>Área de Desarrollo</small>
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Cerrar Sesión
+            </button>
         </div>
+
+        <div class="sidebar-footer">DIAGTI v2.0 · CTIC UNAS<br>Módulo de desarrollo</div>
     </aside>
 
-    <!-- MAIN -->
-    <main class="main">
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
         <div class="topbar">
             <div>
-                <h2>Paso 10: Enviar Validación</h2>
-                <div class="hint">Envío formal del expediente técnico para revisión del CTIC</div>
+                <h2>Enviar Validación</h2>
+                <div class="hint">Selecciona sistemas completos para enviar a validación técnica</div>
             </div>
         </div>
 
-        <div class="card text-center" style="padding: 60px 40px;">
-            <h3 class="mb-4">Enviar Expediente Técnico para Validación</h3>
-            <p class="text-muted mb-5" style="max-width: 520px; margin: 0 auto;">
-                Una vez completados todos los pasos anteriores, puede enviar formalmente el sistema para su revisión técnica.
-            </p>
-            
-            <button class="btn btn-verde btn-lg" onclick="abrirModalValidacion()">
-                <strong><i class="bi bi-send-check-fill"></i> Enviar a Validación del CTIC</strong>
-            </button>
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3>Sistemas en Borrador</h3>
+                    <div class="desc">Solo los sistemas con 100% de completitud pueden ser enviados</div>
+                </div>
+            </div>
+
+            <div class="table-wrap" id="tabla-validacion"></div>
+
+            <!-- Resumen del sistema seleccionado -->
+            <div id="resumen-seleccion" class="resumen-seleccion">
+                <h4 style="margin-bottom:12px;">📋 Resumen del Sistema</h4>
+                <div class="resumen-grid">
+                    <div><strong>Código:</strong> <span id="resumen-codigo">-</span></div>
+                    <div><strong>Nombre:</strong> <span id="resumen-nombre">-</span></div>
+                    <div><strong>Área usuaria:</strong> <span id="resumen-area">-</span></div>
+                    <div><strong>Completitud:</strong> <span id="resumen-completitud">-</span></div>
+                    <div><strong>Riesgo:</strong> <span id="resumen-riesgo">-</span></div>
+                </div>
+                <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+                    <button class="btn btn-verde" id="btn-enviar-validacion" onclick="enviarValidacion()">📤 Enviar
+                        Validación</button>
+                    <button class="btn btn-secondary"
+                        onclick="document.getElementById('resumen-seleccion').classList.remove('visible'); sistemaSeleccionado=null;">Cancelar</button>
+                </div>
+            </div>
         </div>
     </main>
 
-    <!-- ===================== MODAL DE CONFIRMACIÓN ===================== -->
-    <div class="modal-overlay" id="modalValidacion">
-        <div class="modal modal-validacion">
-            <div class="modal-head">
-                <h3><i class="bi bi-send-check-fill text-success"></i> Confirmar Envío</h3>
-                <button class="modal-close" onclick="cerrarModal('modalValidacion')">✕</button>
-            </div>
-            
-            <div class="modal-body text-center">
-                <div class="mb-4">
-                    <i class="bi bi-exclamation-circle-fill" style="font-size: 4.5rem; color: #0d6efd; animation: pulse 2s infinite;"></i>
-                </div>
-                
-                <h5 class="fw-bold">¿Está seguro de enviar este aplicativo al CTIC?</h5>
-                <p class="text-muted">
-                    Está a punto de enviar formalmente la configuración de la arquitectura del sistema <strong>DIAGTI</strong> para la revisión técnica.
-                </p>
-
-                <div class="alert-box">
-                    <strong>Efecto del envío:</strong><br>
-                    Los registros de Base de Datos, Seguridad e Integraciones entrarán en <strong>Modo de Solo Lectura</strong> (congelados).<br>
-                    Se notificará automáticamente al comité técnico de la universidad.
-                </div>
-            </div>
-            
-            <div class="modal-foot">
-                <button class="btn secondary" onclick="cerrarModal('modalValidacion')">Cancelar y Revisar</button>
-                <button class="btn btn-verde" onclick="confirmarEnvio()">
-                    Confirmar y Enviar
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script src="../js/enviar-validacion.js"></script>
 </body>
+
 </html>

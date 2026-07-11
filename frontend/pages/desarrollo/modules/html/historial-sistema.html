@@ -1,11 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial del Sistema · Área de Desarrollo · DIAGTI – CTIC UNAS</title>
     <link rel="stylesheet" href="../css/historial-sistema.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
     <!-- SIDEBAR -->
@@ -13,148 +16,97 @@
         <div class="brand">
             <div class="logo"><img src="../assets/logo-unas.png" alt="UNAS"></div>
             <div>
-                <h1>UNAS</h1>
-                <small>Tingo María</small>
+                <h1>UNAS</h1><small>Tingo María</small>
             </div>
         </div>
 
         <div class="sidebar-profile">
-            <div class="profile-avatar">DA</div>
+            <div class="profile-avatar">DV</div>
             <div class="profile-info">
-                <div class="profile-name">DIEGO ANGHELLO LEON ARTEAGA</div>
-                <div class="profile-role">Desarrollador</div>
+                <div class="profile-name">Desarrollador Demo</div>
+                <div class="profile-role">Área de Desarrollo</div>
             </div>
         </div>
 
-        <div class="nav-label">Área de Desarrollo</div>
+        <div class="nav-label">Desarrollo</div>
+
         <nav class="nav">
-            <a href="dashboard.html" class="nav-item"><span class="lbl">Dashboard Desarrollo</span></a>
-            <a href="mis-sistemas.html" class="nav-item"><span class="lbl">Mis Sistemas</span></a>
-            <a href="registrar-sistema.html" class="nav-item"><span class="lbl">Registrar Sistema</span></a>
-            <a href="editar-sistema.html" class="nav-item"><span class="lbl">Editar Sistema</span></a>
-            <a href="arquitectura.html" class="nav-item"><span class="lbl">Arquitectura Software</span></a>
-            <a href="base-datos.html" class="nav-item"><span class="lbl">Base de Datos</span></a>
-            <a href="seguridad.html" class="nav-item"><span class="lbl">Seguridad</span></a>
-            <a href="integraciones.html" class="nav-item"><span class="lbl">Integraciones</span></a>
-            <a href="evidencias.html" class="nav-item"><span class="lbl">Evidencias</span></a>
-            <a href="enviar-validacion.html" class="nav-item"><span class="lbl">Enviar Validación</span></a>
-            <a href="subsanar-observaciones.html" class="nav-item"><span class="lbl">Subsanar Observaciones</span></a>
-            <a href="historial-sistema.html" class="nav-item active"><span class="lbl">Historial del Sistema</span></a>
+            <a class="nav-item" href="dashboard.html">
+                <span><span class="lbl">Dashboard</span><span class="sub">Resumen de trabajo</span></span>
+            </a>
+            <a class="nav-item" href="mis-sistemas.html">
+                <span><span class="lbl">Mis Sistemas</span><span class="sub">Administrar sistemas</span></span>
+            </a>
+            <a class="nav-item" href="registrar-sistema.html">
+                <span><span class="lbl">Registrar Sistema</span><span class="sub">Nuevo registro</span></span>
+            </a>
+            <a class="nav-item" href="enviar-validacion.html">
+                <span><span class="lbl">Enviar Validación</span><span class="sub">Sistemas completos</span></span>
+            </a>
+            <a class="nav-item" href="subsanar-observaciones.html">
+                <span><span class="lbl">Subsanar Observaciones</span><span class="sub">Corregir
+                        observaciones</span></span>
+            </a>
+            <a class="nav-item active" href="historial-sistema.html">
+                <span><span class="lbl">Historial del Sistema</span><span class="sub">Trazabilidad</span></span>
+            </a>
         </nav>
 
-        <div class="sidebar-footer">
-            DIAGTI v1.0 · CTIC UNAS<br>
-            <small>Área de Desarrollo</small>
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Cerrar Sesión
+            </button>
         </div>
+
+        <div class="sidebar-footer">DIAGTI v2.0 · CTIC UNAS<br>Módulo de desarrollo</div>
     </aside>
 
-    <!-- MAIN -->
-    <main class="main">
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
         <div class="topbar">
             <div>
-                <h2>Paso 12: Historial de Auditoría y Trazabilidad</h2>
-                <div class="hint">Registro completo de todas las acciones realizadas en el ciclo de vida del sistema</div>
+                <h2>Historial del Sistema</h2>
+                <div class="hint">Trazabilidad completa de cambios y validaciones</div>
             </div>
-            <button class="btn btn-verde" onclick="window.print()">Exportar PDF</button>
+            <a href="mis-sistemas.html" class="btn btn-secondary">← Volver a Mis Sistemas</a>
         </div>
 
-        <div class="card">
-            <!-- Estado Actual -->
-            <div class="estado-actual">
+        <!-- Información del sistema -->
+        <div class="card" style="margin-bottom:20px;">
+            <div class="section-head">
                 <div>
-                    <span class="text-muted small">Aplicativo Consultado</span><br>
-                    <strong>DIAGTI - API Core Servicios</strong>
-                </div>
-                <div class="badge success">
-                    <i class="bi bi-check-circle-fill"></i> ESTADO ACTUAL: VALIDADO
+                    <h3>Información del Sistema</h3>
+                    <div class="desc">Datos generales del sistema</div>
                 </div>
             </div>
+            <div class="info-grid">
+                <div><strong>Código:</strong> <span id="hist-codigo">-</span></div>
+                <div><strong>Nombre:</strong> <span id="hist-nombre">-</span></div>
+                <div><strong>Área usuaria:</strong> <span id="hist-area">-</span></div>
+                <div><strong>Responsable técnico:</strong> <span id="hist-responsable">-</span></div>
+                <div><strong>Estado actual:</strong> <span id="hist-estado">-</span></div>
+            </div>
+        </div>
 
-            <!-- Timeline -->
-            <div class="timeline">
-                <!-- Item 1 -->
-                <div class="timeline-item">
-                    <div class="timeline-badge success"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <span class="badge success">Dictamen Conforme</span>
-                            <small>30/07/2026 09:15 h</small>
-                        </div>
-                        <p>El comité técnico evaluador aprobó satisfactoriamente el expediente técnico, liberando el aplicativo para el inventario oficial.</p>
-                        <div class="timeline-footer">
-                            <span><strong>Ing. Evaluador CTIC</strong></span>
-                            <span>IP: <code>10.0.4.112</code></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 2 -->
-                <div class="timeline-item">
-                    <div class="timeline-badge primary"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <span class="badge primary">Levantamiento de Observaciones</span>
-                            <small>29/07/2026 11:00 h</small>
-                        </div>
-                        <p>Se cargó el sustento correspondiente al paso 11 y se adjuntó el documento complementario omitido en el control de seguridad perimetral.</p>
-                        <div class="timeline-footer">
-                            <span><strong>Área de Desarrollo</strong></span>
-                            <span>IP: <code>192.168.45.23</code></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 3 -->
-                <div class="timeline-item">
-                    <div class="timeline-badge danger"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <span class="badge danger">Expediente Observado</span>
-                            <small>28/07/2026 14:30 h</small>
-                        </div>
-                        <p class="text-danger">Falta configurar la redirección forzosa a HTTPS y adjuntar reporte OWASP Top 10.</p>
-                        <div class="timeline-footer">
-                            <span><strong>Ing. Evaluador CTIC</strong></span>
-                            <span>IP: <code>10.0.4.112</code></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 4 -->
-                <div class="timeline-item">
-                    <div class="timeline-badge warning"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <span class="badge warning">Primer Envío Formal</span>
-                            <small>25/07/2026 17:05 h</small>
-                        </div>
-                        <p>El formulario interactivo del Wizard se completó en su totalidad. El expediente se congeló y pasó a revisión de gobernanza TI.</p>
-                        <div class="timeline-footer">
-                            <span><strong>Área de Desarrollo</strong></span>
-                            <span>IP: <code>192.168.45.24</code></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 5 -->
-                <div class="timeline-item">
-                    <div class="timeline-badge dark"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <span class="badge dark">Apertura en Borrador</span>
-                            <small>21/07/2026 09:00 h</small>
-                        </div>
-                        <p>Se generó el Código Único Institucional del aplicativo en la plataforma, inicializando el paso 1 de datos generales.</p>
-                        <div class="timeline-footer">
-                            <span><strong>Área de Desarrollo</strong></span>
-                            <span>IP: <code>192.168.45.23</code></span>
-                        </div>
-                    </div>
+        <!-- Trazabilidad -->
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3>📋 Trazabilidad de Cambios</h3>
+                    <div class="desc">Registro cronológico de todas las acciones sobre el sistema</div>
                 </div>
             </div>
+            <div class="timeline" id="historial-timeline"></div>
         </div>
     </main>
 
     <script src="../js/historial-sistema.js"></script>
 </body>
+
 </html>

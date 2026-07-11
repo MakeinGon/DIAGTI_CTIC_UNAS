@@ -1,16 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard Desarrollo · DIAGTI – CTIC UNAS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard · Área de Desarrollo · DIAGTI – CTIC UNAS</title>
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="brand">
-            <div class="logo"><img src="../assets/logo-unas.png" alt="UNAS"></div>
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="UNAS">
+            </div>
             <div>
                 <h1>UNAS</h1>
                 <small>Tingo María</small>
@@ -18,63 +22,111 @@
         </div>
 
         <div class="sidebar-profile">
-            <div class="profile-avatar">LA</div>
+            <div class="profile-avatar">DV</div>
             <div class="profile-info">
-                <div class="profile-name">LUIS ANGEL LARA DEL AGUILA</div>
-                <div class="profile-role">Desarrollador</div>
+                <div class="profile-name">Desarrollador Demo</div>
+                <div class="profile-role">Área de Desarrollo</div>
             </div>
         </div>
 
-        <div class="nav-label">Área de Desarrollo</div>
+        <div class="nav-label">Desarrollo</div>
+
         <nav class="nav">
-            <a href="dashboard.html" class="nav-item active"><span class="lbl">Dashboard Desarrollo</span></a>
-            <a href="mis-sistemas.html" class="nav-item"><span class="lbl">Mis Sistemas</span></a>
-            <a href="registrar-sistema.html" class="nav-item"><span class="lbl">Registrar Sistema</span></a>
-            <a href="editar-sistema.html" class="nav-item"><span class="lbl">Editar Sistema</span></a>
-            <a href="arquitectura.html" class="nav-item"><span class="lbl">Arquitectura Software</span></a>
-            <a href="base-datos.html" class="nav-item"><span class="lbl">Base de Datos</span></a>
-            <a href="seguridad.html" class="nav-item"><span class="lbl">Seguridad</span></a>
-            <a href="integraciones.html" class="nav-item"><span class="lbl">Integraciones</span></a>
-            <a href="evidencias.html" class="nav-item"><span class="lbl">Evidencias</span></a>
-            <a href="enviar-validacion.html" class="nav-item"><span class="lbl">Enviar Validación</span></a>
-            <a href="subsanar-observaciones.html" class="nav-item"><span class="lbl">Subsanar Observaciones</span></a>
-            <a href="historial-sistema.html" class="nav-item"><span class="lbl">Historial del Sistema</span></a>
+            <a class="nav-item active" href="dashboard.html">
+                <span><span class="lbl">Dashboard</span><span class="sub">Resumen de trabajo</span></span>
+            </a>
+            <a class="nav-item" href="mis-sistemas.html">
+                <span><span class="lbl">Mis Sistemas</span><span class="sub">Administrar sistemas</span></span>
+            </a>
+            <a class="nav-item" href="registrar-sistema.html">
+                <span><span class="lbl">Registrar Sistema</span><span class="sub">Nuevo registro</span></span>
+            </a>
+            <a class="nav-item" href="enviar-validacion.html">
+                <span><span class="lbl">Enviar Validación</span><span class="sub">Sistemas completos</span></span>
+            </a>
+            <a class="nav-item" href="subsanar-observaciones.html">
+                <span><span class="lbl">Subsanar Observaciones</span><span class="sub">Corregir observaciones</span></span>
+            </a>
+            <a class="nav-item" href="historial-sistema.html">
+                <span><span class="lbl">Historial del Sistema</span><span class="sub">Trazabilidad</span></span>
+            </a>
         </nav>
 
-        <div class="sidebar-footer" style="margin-top:auto; font-size:11px; color:#bcdcf0; text-align:center;">
-            DIAGTI v1.0 · CTIC UNAS
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Cerrar Sesión
+            </button>
         </div>
+
+        <div class="sidebar-footer">DIAGTI v2.0 · CTIC UNAS<br>Módulo de desarrollo</div>
     </aside>
 
-    <main class="main">
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
         <div class="topbar">
             <div>
-                <h2>Dashboard de Control y Mando TI</h2>
-                <div class="hint">Resumen general del estado de los aplicativos bajo tu responsabilidad.</div>
+                <h2>Dashboard</h2>
+                <div class="hint">Resumen rápido del trabajo del desarrollador</div>
             </div>
         </div>
 
-        <div class="metrics-grid">
-            <div class="metric-card card-blue">
-                <span class="metric-title">Sistemas Totales</span>
-                <div class="metric-value">4</div>
+        <!-- Tarjetas -->
+        <div class="stats-grid">
+            <div class="card">
+                <div class="stat-label">Total Sistemas</div>
+                <div class="stat-num accent" id="total-sistemas">0</div>
+                <div style="font-size:13px;color:var(--muted);">Registrados</div>
             </div>
-            <div class="metric-card card-amber">
-                <span class="metric-title">Observados</span>
-                <div class="metric-value">1</div>
+            <div class="card">
+                <div class="stat-label">Borrador</div>
+                <div class="stat-num" style="color:#344054;" id="total-borrador">0</div>
+                <div style="font-size:13px;color:var(--muted);">Pendientes</div>
             </div>
-            <div class="metric-card card-verde">
-                <span class="metric-title">Validados Oficiales</span>
-                <div class="metric-value">2</div>
+            <div class="card">
+                <div class="stat-label">Enviados</div>
+                <div class="stat-num" style="color:#1e40af;" id="total-enviado">0</div>
+                <div style="font-size:13px;color:var(--muted);">En validación</div>
+            </div>
+            <div class="card">
+                <div class="stat-label">Observados</div>
+                <div class="stat-num" style="color:#9a3412;" id="total-observado">0</div>
+                <div style="font-size:13px;color:var(--muted);">Corregir</div>
+            </div>
+            <div class="card">
+                <div class="stat-label">Validados</div>
+                <div class="stat-num verde" id="total-validado">0</div>
+                <div style="font-size:13px;color:var(--muted);">Aprobados</div>
             </div>
         </div>
 
-        <div class="card" style="margin-top: 24px;">
+        <!-- Actividad Reciente -->
+        <div class="card" style="margin-bottom:24px;">
+            <div class="section-head" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <div>
+                    <h3>Actividad Reciente</h3>
+                    <div class="desc">Últimos movimientos en los sistemas</div>
+                </div>
+            </div>
+            <div class="table-wrap" id="actividad-reciente"></div>
+        </div>
+
+        <!-- Accesos Rápidos -->
+        <div class="card">
             <div class="section-head">
-                <strong style="font-size: 16px;">Alertas de Riesgo y Obsolescencia Tecnológica</strong>
+                <div>
+                    <h3>Accesos Rápidos</h3>
+                    <div class="desc">Atajos para las acciones más comunes</div>
+                </div>
             </div>
-            <div class="alert-box alert-danger">
-                <strong>⚠️ Alerta Crítica (RN-04):</strong> El sistema "SGA Core" se encuentra expuesto a Internet sin un certificado SSL/TLS válido. Riesgo recalculado automáticamente a <strong>ALTO</strong>.
+            <div class="quick-access">
+                <a href="registrar-sistema.html" class="btn btn-verde">➕ Registrar Sistema</a>
+                <a href="mis-sistemas.html" class="btn btn-azul">📋 Ver Mis Sistemas</a>
+                <a href="subsanar-observaciones.html" class="btn" style="background:#ffedd5;color:#9a3412;">✏️ Corregir Observaciones</a>
             </div>
         </div>
     </main>
