@@ -2,6 +2,16 @@
 // DIAGTI · CTIC UNAS — Dashboard Desarrollo
 // ============================================================
 
+const SISTEMAS_KEY = 'diagti_sistemas';
+
+function getSistemas() {
+    const data = localStorage.getItem(SISTEMAS_KEY);
+    if (data) {
+        return JSON.parse(data);
+    }
+    return [];
+}
+
 // ============================================================
 // CERRAR SESIÓN
 // ============================================================
@@ -14,25 +24,15 @@ function cerrarSesion() {
 }
 
 // ============================================================
-// DATOS MOCK
-// ============================================================
-const sistemasMock = [
-    { id: 'SIS001', nombre: 'Sistema Académico', estado: 'Validado', fecha: '08/07/2026', accion: 'Actualizado' },
-    { id: 'SIS002', nombre: 'Sistema Biblioteca', estado: 'Observado', fecha: '05/07/2026', accion: 'Observado' },
-    { id: 'SIS003', nombre: 'Sistema Finanzas', estado: 'Enviado', fecha: '03/07/2026', accion: 'Enviado' },
-    { id: 'SIS004', nombre: 'Sistema RRHH', estado: 'Borrador', fecha: '01/07/2026', accion: 'Creado' },
-    { id: 'SIS005', nombre: 'Portal Web UNAS', estado: 'Validado', fecha: '28/06/2026', accion: 'Actualizado' }
-];
-
-// ============================================================
 // CONTADORES POR ESTADO
 // ============================================================
 function contarPorEstado() {
-    const total = sistemasMock.length;
-    const borrador = sistemasMock.filter(s => s.estado === 'Borrador').length;
-    const enviado = sistemasMock.filter(s => s.estado === 'Enviado').length;
-    const observado = sistemasMock.filter(s => s.estado === 'Observado').length;
-    const validado = sistemasMock.filter(s => s.estado === 'Validado').length;
+    const sistemas = getSistemas();
+    const total = sistemas.length;
+    const borrador = sistemas.filter(s => s.estado === 'Borrador').length;
+    const enviado = sistemas.filter(s => s.estado === 'Enviado').length;
+    const observado = sistemas.filter(s => s.estado === 'Observado').length;
+    const validado = sistemas.filter(s => s.estado === 'Validado').length;
     return { total, borrador, enviado, observado, validado };
 }
 
@@ -43,12 +43,34 @@ function renderizarActividadReciente() {
     const container = document.getElementById('actividad-reciente');
     if (!container) return;
 
-    // Tomar los 5 más recientes (simulamos orden por fecha)
-    const recientes = [...sistemasMock].sort((a, b) => {
+    const sistemas = getSistemas();
+    // Simular actividades basadas en los sistemas
+    const actividades = sistemas.map(s => {
+        let accion = 'Registrar sistema';
+        if (s.estado === 'Validado') accion = 'Validar sistema';
+        else if (s.estado === 'Observado') accion = 'Observar sistema';
+        else if (s.estado === 'Enviado') accion = 'Enviar a validación';
+        else if (s.estado === 'Subsanado') accion = 'Corregir observaciones';
+        return {
+            sistema: s.nombre,
+            accion: accion,
+            fecha: s.fecha || new Date().toLocaleDateString('es-PE')
+        };
+    });
+
+    // Ordenar por fecha (más reciente primero)
+    actividades.sort((a, b) => {
         const da = a.fecha.split('/').reverse().join('');
         const db = b.fecha.split('/').reverse().join('');
         return db - da;
     });
+
+    const recientes = actividades.slice(0, 5);
+
+    if (recientes.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">No hay actividad reciente</div>';
+        return;
+    }
 
     let html = `
         <table>
@@ -62,12 +84,12 @@ function renderizarActividadReciente() {
             <tbody>
     `;
 
-    recientes.forEach(s => {
+    recientes.forEach(a => {
         html += `
             <tr>
-                <td><strong>${s.nombre}</strong></td>
-                <td><span class="badge ${s.estado === 'Validado' ? 'low' : s.estado === 'Observado' ? 'high' : s.estado === 'Enviado' ? 'info' : 'gray'}">${s.accion}</span></td>
-                <td>${s.fecha}</td>
+                <td><strong>${a.sistema}</strong></td>
+                <td>${a.accion}</td>
+                <td>${a.fecha}</td>
             </tr>
         `;
     });
@@ -83,7 +105,7 @@ function renderizarActividadReciente() {
 // ============================================================
 // INICIALIZACIÓN
 // ============================================================
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Actualizar contadores
     const stats = contarPorEstado();
     document.getElementById('total-sistemas').textContent = stats.total;
