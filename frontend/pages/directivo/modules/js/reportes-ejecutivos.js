@@ -14,7 +14,7 @@
  * - Abrir la impresión del reporte seleccionado para permitir guardarlo
  *   como PDF mediante la funcionalidad nativa del navegador.
  *
- * No contiene llamadas a backend, APIs ni descargas simuladas.
+ * Funciona con datos estáticos; PDF usa impresión del navegador y Excel se entrega como CSV compatible.
  */
 
 (() => {
@@ -40,6 +40,10 @@
         'filter-report-risk'
     );
 
+    const periodFilter = document.getElementById(
+        'filter-report-period'
+    );
+
     const reportSections = Array.from(
         document.querySelectorAll(
             '[data-report-section]'
@@ -52,6 +56,12 @@
         )
     );
 
+    const excelButtons = Array.from(
+        document.querySelectorAll(
+            '[data-action="export-excel"][data-report-id]'
+        )
+    );
+
 
     if (
         !form
@@ -60,6 +70,7 @@
         || !areaFilter
         || !criticalityFilter
         || !riskFilter
+        || !periodFilter
         || reportSections.length === 0
     ) {
         return;
@@ -81,6 +92,11 @@
             key: 'risk',
             datasetKey: 'risk',
             control: riskFilter
+        },
+        {
+            key: 'period',
+            datasetKey: 'period',
+            control: periodFilter
         }
     ];
 
@@ -574,4 +590,60 @@
      */
 
     applyFilters();
+
+
+    const sanitizeCsvCell = (value) => {
+        const normalized = String(value ?? '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        return `"${normalized.replaceAll('"', '""')}"`;
+    };
+
+    const exportSectionAsCsv = (section) => {
+        const table = section.querySelector('table');
+        if (!table) {
+            return;
+        }
+
+        const rows = Array.from(table.querySelectorAll('tr'))
+            .filter((row) => !row.hidden)
+            .map((row) => Array.from(row.querySelectorAll('th, td'))
+                .map((cell) => sanitizeCsvCell(cell.textContent))
+                .join(';'));
+
+        if (rows.length <= 1) {
+            window.alert('No existen registros visibles para exportar.');
+            return;
+        }
+
+        const reportTitle = section.querySelector('h2')?.textContent?.trim()
+            || 'reporte-ejecutivo';
+        const fileName = reportTitle
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
+
+        const content = `\uFEFF${rows.join('\n')}`;
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${fileName || 'reporte-ejecutivo'}-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+    };
+
+    excelButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const section = document.getElementById(button.dataset.reportId);
+            if (section) {
+                exportSectionAsCsv(section);
+            }
+        });
+    });
+
 })();

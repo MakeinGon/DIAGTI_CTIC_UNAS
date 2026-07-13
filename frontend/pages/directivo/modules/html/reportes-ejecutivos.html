@@ -1,1846 +1,1142 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="description"
-        content="Reportes ejecutivos consolidados del inventario de sistemas TI del CTIC UNAS."
-    >
-
-    <title>Reportes Ejecutivos | DIAGTI CTIC UNAS</title>
-
-
-    <!-- =====================================================
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Reportes ejecutivos consolidados del inventario de sistemas TI del CTIC UNAS." name="description"/>
+<title>Reportes Ejecutivos | DIAGTI CTIC UNAS</title>
+<!-- =====================================================
          ESTILOS COMPARTIDOS
     ====================================================== -->
-    <link
-        rel="stylesheet"
-        href="../css/base.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="../css/sidebar.css"
-    >
-
-
-    <!-- =====================================================
+<link href="../css/base.css" rel="stylesheet"/>
+<link href="../css/sidebar.css" rel="stylesheet"/>
+<!-- =====================================================
          ESTILO ESPECÍFICO DE LA PÁGINA
     ====================================================== -->
-    <link
-        rel="stylesheet"
-        href="../css/reportes-ejecutivos.css"
-    >
+<link href="../css/reportes-ejecutivos.css?v=20260712-2" rel="stylesheet"/>
 </head>
-
-
 <body>
-
-    <!-- =====================================================
+<!-- =====================================================
          SIDEBAR COMPARTIDO
     ====================================================== -->
-    <aside
-        id="sidebar-container"
-        class="sidebar-container"
-        aria-label="Navegación principal del módulo directivo"
-    ></aside>
-
-
-    <!-- =====================================================
+<aside aria-label="Navegación principal del módulo directivo" class="sidebar-container" id="sidebar-container"></aside>
+<!-- =====================================================
          CONTENIDO PRINCIPAL
     ====================================================== -->
-    <main
-        class="main-content"
-        id="main-content"
-    >
-
-        <!-- =================================================
+<main class="main-content" id="main-content">
+<!-- =================================================
              CABECERA
         ================================================== -->
-        <header class="page-header">
-
-            <div class="page-header__content">
-
-                <span class="section-label">
+<header class="page-header">
+<div class="page-header__content">
+<span class="section-label">
                     Módulo Directivo
                 </span>
-
-                <h1>
+<h1>
                     Reportes Ejecutivos
                 </h1>
-
-                <p class="page-header__description">
-                    Consulta de información consolidada del inventario
-                    institucional para revisar sistemas registrados,
-                    riesgos, obsolescencia, distribución por áreas
-                    y avance de validación.
+<p class="page-header__description">
+                    Centro de descarga y consulta de informes consolidados. Permite filtrar por periodos o áreas funcionales para generar resúmenes ejecutivos listos para presentaciones de alta dirección.
                 </p>
-
-            </div>
-
-
-            <div class="page-header__status">
-
-                <span class="badge badge-success">
-                    Datos consolidados
+</div>
+<div class="page-header__status">
+<span class="badge badge-success">
+                    Descargas ejecutivas
                 </span>
-
-                <small>
-                    Periodo de referencia: 2026
+<small>
+                    PDF · Excel · vistas consolidadas
                 </small>
-
-            </div>
-
-        </header>
-
-
-        <!-- =================================================
+</div>
+</header>
+<!-- =================================================
              1. CATÁLOGO DE REPORTES
         ================================================== -->
-        <section
-            class="report-catalog"
-            id="catalogo-reportes"
-            aria-labelledby="titulo-catalogo-reportes"
-        >
-
-            <header class="section-heading">
-
-                <span class="section-label">
+<section aria-labelledby="titulo-catalogo-reportes" class="report-catalog" id="catalogo-reportes">
+<header class="section-heading">
+<span class="section-label">
                     Catálogo
                 </span>
-
-                <h2 id="titulo-catalogo-reportes">
-                    Reportes Disponibles
+<h2 id="titulo-catalogo-reportes">
+                    Centro de Reportes Ejecutivos
                 </h2>
-
-                <p>
-                    Seleccione un reporte para consultar su vista consolidada
-                    y acceder posteriormente a sus opciones de exportación.
+<p>
+                    Seleccione un reporte para consultarlo, filtrarlo y descargarlo en formatos ejecutivos.
                 </p>
-
-            </header>
-
-
-            <nav
-                class="report-card-grid"
-                aria-label="Acceso a reportes ejecutivos"
-            >
-
-                <!-- Reporte 01 -->
-                <a
-                    href="#reporte-inventario"
-                    class="report-card"
-                    data-report-link="inventario"
-                >
-
-                    <span class="report-card__number">
+</header>
+<nav aria-label="Acceso a reportes ejecutivos" class="report-card-grid">
+<!-- Reporte 01 -->
+<a class="report-card" data-report-link="inventario" href="#reporte-inventario">
+<span class="report-card__number">
                         01
                     </span>
-
-                    <div class="report-card__content">
-
-                        <h3>
+<div class="report-card__content">
+<h3>
                             Reporte General de Inventario
                         </h3>
-
-                        <p>
+<p>
                             Sistemas registrados, áreas usuarias,
                             criticidad, estado y responsables.
                         </p>
-
-                        <span class="report-card__action">
+<span class="report-card__action">
                             Ver reporte
                         </span>
-
-                    </div>
-
-                </a>
-
-
-                <!-- Reporte 02 -->
-                <a
-                    href="#reporte-riesgos"
-                    class="report-card"
-                    data-report-link="riesgos"
-                >
-
-                    <span class="report-card__number">
+</div>
+</a>
+<!-- Reporte 02 -->
+<a class="report-card" data-report-link="riesgos" href="#reporte-riesgos">
+<span class="report-card__number">
                         02
                     </span>
-
-                    <div class="report-card__content">
-
-                        <h3>
+<div class="report-card__content">
+<h3>
                             Reporte de Riesgos
                         </h3>
-
-                        <p>
+<p>
                             Sistemas con exposición operativa,
                             técnica, de seguridad o continuidad.
                         </p>
-
-                        <span class="report-card__action">
+<span class="report-card__action">
                             Ver reporte
                         </span>
-
-                    </div>
-
-                </a>
-
-
-                <!-- Reporte 03 -->
-                <a
-                    href="#reporte-obsolescencia"
-                    class="report-card"
-                    data-report-link="obsolescencia"
-                >
-
-                    <span class="report-card__number">
+</div>
+</a>
+<!-- Reporte 03 -->
+<a class="report-card" data-report-link="obsolescencia" href="#reporte-obsolescencia">
+<span class="report-card__number">
                         03
                     </span>
-
-                    <div class="report-card__content">
-
-                        <h3>
+<div class="report-card__content">
+<h3>
                             Reporte de Obsolescencia
                         </h3>
-
-                        <p>
+<p>
                             Tecnologías antiguas, soporte vencido
                             y necesidades de intervención tecnológica.
                         </p>
-
-                        <span class="report-card__action">
+<span class="report-card__action">
                             Ver reporte
                         </span>
-
-                    </div>
-
-                </a>
-
-
-                <!-- Reporte 04 -->
-                <a
-                    href="#reporte-area"
-                    class="report-card"
-                    data-report-link="area"
-                >
-
-                    <span class="report-card__number">
+</div>
+</a>
+<!-- Reporte 04 -->
+<a class="report-card" data-report-link="area" href="#reporte-area">
+<span class="report-card__number">
                         04
                     </span>
-
-                    <div class="report-card__content">
-
-                        <h3>
+<div class="report-card__content">
+<h3>
                             Reporte por Área Usuaria
                         </h3>
-
-                        <p>
+<p>
                             Distribución de sistemas, criticidad
                             y pendientes por dependencia institucional.
                         </p>
-
-                        <span class="report-card__action">
+<span class="report-card__action">
                             Ver reporte
                         </span>
-
-                    </div>
-
-                </a>
-
-
-                <!-- Reporte 05 -->
-                <a
-                    href="#reporte-validacion"
-                    class="report-card"
-                    data-report-link="validacion"
-                >
-
-                    <span class="report-card__number">
+</div>
+</a>
+<!-- Reporte 05 -->
+<a class="report-card" data-report-link="validacion" href="#reporte-validacion">
+<span class="report-card__number">
                         05
                     </span>
-
-                    <div class="report-card__content">
-
-                        <h3>
+<div class="report-card__content">
+<h3>
                             Reporte de Validación
                         </h3>
-
-                        <p>
+<p>
                             Estado consolidado de sistemas aprobados,
                             observados, rechazados y pendientes.
                         </p>
-
-                        <span class="report-card__action">
+<span class="report-card__action">
                             Ver reporte
                         </span>
-
-                    </div>
-
-                </a>
-
-            </nav>
-
-        </section>
-
-
-        <!-- =================================================
+</div>
+</a>
+</nav>
+</section>
+<!-- =================================================
              2. INDICADORES CONSOLIDADOS
         ================================================== -->
-        <section
-            class="reports-summary"
-            aria-labelledby="titulo-indicadores-reportes"
-        >
-
-            <div class="section-heading section-heading--hidden">
-
-                <h2 id="titulo-indicadores-reportes">
+<section aria-labelledby="titulo-indicadores-reportes" class="reports-summary">
+<div class="section-heading section-heading--hidden">
+<h2 id="titulo-indicadores-reportes">
                     Indicadores consolidados
                 </h2>
-
-            </div>
-
-
-            <div class="kpi-grid">
-
-                <!-- Total -->
-                <article class="kpi-card">
-
-                    <div class="kpi-card__content">
-
-                        <span class="kpi-card__label">
+</div>
+<div class="kpi-grid">
+<!-- Total -->
+<article class="kpi-card">
+<div class="kpi-card__content">
+<span class="kpi-card__label">
                             Total de Sistemas
                         </span>
-
-                        <strong class="kpi-card__value">
+<strong class="kpi-card__value">
                             48
                         </strong>
-
-                        <p class="kpi-card__description">
+<p class="kpi-card__description">
                             Sistemas registrados en el inventario TI.
                         </p>
-
-                    </div>
-
-                </article>
-
-
-                <!-- Riesgo -->
-                <article class="kpi-card">
-
-                    <div class="kpi-card__content">
-
-                        <span class="kpi-card__label">
+</div>
+</article>
+<!-- Riesgo -->
+<article class="kpi-card">
+<div class="kpi-card__content">
+<span class="kpi-card__label">
                             Riesgo Alto
                         </span>
-
-                        <strong class="kpi-card__value">
+<strong class="kpi-card__value">
                             9
                         </strong>
-
-                        <p class="kpi-card__description">
+<p class="kpi-card__description">
                             Sistemas que requieren atención prioritaria.
                         </p>
-
-                    </div>
-
-                </article>
-
-
-                <!-- Soporte -->
-                <article class="kpi-card">
-
-                    <div class="kpi-card__content">
-
-                        <span class="kpi-card__label">
+</div>
+</article>
+<!-- Soporte -->
+<article class="kpi-card">
+<div class="kpi-card__content">
+<span class="kpi-card__label">
                             Soporte Vencido
                         </span>
-
-                        <strong class="kpi-card__value">
+<strong class="kpi-card__value">
                             8
                         </strong>
-
-                        <p class="kpi-card__description">
+<p class="kpi-card__description">
                             Sistemas con condiciones de obsolescencia.
                         </p>
-
-                    </div>
-
-                </article>
-
-
-                <!-- Revisados -->
-                <article class="kpi-card">
-
-                    <div class="kpi-card__content">
-
-                        <span class="kpi-card__label">
+</div>
+</article>
+<!-- Revisados -->
+<article class="kpi-card">
+<div class="kpi-card__content">
+<span class="kpi-card__label">
                             Revisados
                         </span>
-
-                        <strong class="kpi-card__value">
+<strong class="kpi-card__value">
                             31
                         </strong>
-
-                        <p class="kpi-card__description">
+<p class="kpi-card__description">
                             24 aprobados y 7 observados.
                         </p>
-
-                    </div>
-
-                </article>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
+</div>
+</article>
+</div>
+</section>
+<!-- =================================================
              3. CONTROLES DE CONSULTA
         ================================================== -->
-        <section
-            class="report-controls"
-            id="controles-reportes"
-            aria-labelledby="titulo-controles-reportes"
-        >
-
-            <header class="section-heading">
-
-                <span class="section-label">
+<section aria-labelledby="titulo-controles-reportes" class="report-controls" id="controles-reportes">
+<header class="section-heading">
+<span class="section-label">
                     Consulta
                 </span>
-
-                <h2 id="titulo-controles-reportes">
+<h2 id="titulo-controles-reportes">
                     Filtros de Reportes
                 </h2>
-
-                <p>
+<p>
                     Seleccione los criterios de consulta para preparar
                     la visualización de los reportes ejecutivos.
                 </p>
-
-            </header>
-
-
-            <form
-                class="filter-form"
-                id="reports-filter-form"
-            >
-
-                <!-- Tipo de reporte -->
-                <div class="filter-group">
-
-                    <label for="filter-report-type">
+</header>
+<form class="filter-form" id="reports-filter-form">
+<!-- Tipo de reporte -->
+<div class="filter-group">
+<label for="filter-report-type">
                         Tipo de reporte
                     </label>
-
-                    <select
-                        id="filter-report-type"
-                        name="reportType"
-                    >
-
-                        <option value="">
+<select id="filter-report-type" name="reportType">
+<option value="">
                             Todos los reportes
                         </option>
-
-                        <option value="inventario">
+<option value="inventario">
                             Inventario General
                         </option>
-
-                        <option value="riesgos">
+<option value="riesgos">
                             Riesgos
                         </option>
-
-                        <option value="obsolescencia">
+<option value="obsolescencia">
                             Obsolescencia
                         </option>
-
-                        <option value="area">
+<option value="area">
                             Área Usuaria
                         </option>
-
-                        <option value="validacion">
+<option value="validacion">
                             Validación
                         </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- Área -->
-                <div class="filter-group">
-
-                    <label for="filter-report-area">
+</select>
+</div>
+<!-- Área -->
+<div class="filter-group">
+<label for="filter-report-area">
                         Área usuaria
                     </label>
-
-                    <select
-                        id="filter-report-area"
-                        name="area"
-                    >
-
-                        <option value="">
+<select id="filter-report-area" name="area">
+<option value="">
                             Todas las áreas
                         </option>
-
-                        <option value="direccion-academica">
+<option value="direccion-academica">
                             Dirección Académica
                         </option>
-
-                        <option value="registros-academicos">
+<option value="registros-academicos">
                             Registros Académicos
                         </option>
-
-                        <option value="administracion">
+<option value="administracion">
                             Administración
                         </option>
-
-                        <option value="biblioteca-central">
+<option value="biblioteca-central">
                             Biblioteca Central
                         </option>
-
-                        <option value="investigacion">
+<option value="investigacion">
                             Investigación
                         </option>
-
-                        <option value="secretaria-general">
+<option value="secretaria-general">
                             Secretaría General
                         </option>
-
-                        <option value="otros">
+<option value="otros">
                             Otros
                         </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- Nivel de criticidad -->
-                <div class="filter-group">
-
-                    <label for="filter-report-criticality">
+</select>
+</div>
+<!-- Nivel de criticidad -->
+<div class="filter-group">
+<label for="filter-report-criticality">
                         Criticidad
                     </label>
-
-                    <select
-                        id="filter-report-criticality"
-                        name="criticality"
-                    >
-
-                        <option value="">
+<select id="filter-report-criticality" name="criticality">
+<option value="">
                             Todas
                         </option>
-
-                        <option value="alta">
+<option value="alta">
                             Alta
                         </option>
-
-                        <option value="media">
+<option value="media">
                             Media
                         </option>
-
-                        <option value="baja">
+<option value="baja">
                             Baja
                         </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- Nivel de riesgo -->
-                <div class="filter-group">
-
-                    <label for="filter-report-risk">
+</select>
+</div>
+<!-- Nivel de riesgo -->
+<div class="filter-group">
+<label for="filter-report-risk">
                         Nivel de riesgo
                     </label>
-
-                    <select
-                        id="filter-report-risk"
-                        name="risk"
-                    >
-
-                        <option value="">
+<select id="filter-report-risk" name="risk">
+<option value="">
                             Todos
                         </option>
-
-                        <option value="alto">
+<option value="alto">
                             Alto
                         </option>
-
-                        <option value="medio">
+<option value="medio">
                             Medio
                         </option>
-
-                        <option value="bajo">
+<option value="bajo">
                             Bajo
                         </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- Periodo -->
-                <div class="filter-group">
-
-                    <label for="filter-report-period">
+</select>
+</div>
+<!-- Periodo -->
+<div class="filter-group">
+<label for="filter-report-period">
                         Periodo
                     </label>
-
-                    <select
-                        id="filter-report-period"
-                        name="period"
-                    >
-
-                        <option value="2026">
-                            2026
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- Acciones -->
-                <div class="filter-actions">
-
-                    <button
-                        type="submit"
-                        class="button button--primary"
-                        id="apply-report-filters"
-                    >
+<select id="filter-report-period" name="period"><option value="">Todos los periodos</option><option value="2026">2026</option><option value="2025">2025</option></select>
+</div>
+<!-- Acciones -->
+<div class="filter-actions">
+<button class="button button--primary" id="apply-report-filters" type="submit">
                         Aplicar filtros
                     </button>
-
-
-                    <button
-                        type="reset"
-                        class="button button--secondary"
-                        id="clear-report-filters"
-                    >
+<button class="button button--secondary" id="clear-report-filters" type="reset">
                         Limpiar
                     </button>
-
-                </div>
-
-            </form>
-
-        </section>
-
-
-        <!-- =================================================
+</div>
+</form>
+</section>
+<!-- =================================================
              REPORTE 01
              INVENTARIO GENERAL
         ================================================== -->
-        <section
-            class="data-section report-section"
-            id="reporte-inventario"
-            data-report-section="inventario"
-            aria-labelledby="titulo-reporte-inventario"
-        >
-
-            <header class="section-header">
-
-                <div>
-
-                    <span class="section-label">
+<section aria-labelledby="titulo-reporte-inventario" class="data-section report-section" data-report-section="inventario" id="reporte-inventario">
+<header class="section-header">
+<div>
+<span class="section-label">
                         Reporte 01
                     </span>
-
-                    <h2 id="titulo-reporte-inventario">
+<h2 id="titulo-reporte-inventario">
                         Reporte General de Inventario TI
                     </h2>
-
-                    <p class="section-description">
+<p class="section-description">
                         Vista consolidada de sistemas registrados,
                         áreas usuarias, criticidad, situación operativa
                         y responsables institucionales.
                     </p>
-
-                </div>
-
-
-                <div class="report-actions">
-
-                    <button
-                        type="button"
-                        class="button button--primary"
-                        data-action="export-pdf"
-                        data-report-id="reporte-inventario"
-                    >
+</div>
+<div class="report-actions">
+<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-inventario" type="button">
                         Exportar PDF
                     </button>
-
-                </div>
-
-            </header>
-
-
-            <div class="table-responsive">
-
-                <table
-                    class="data-table"
-                    id="table-report-inventory"
-                >
-
-                    <caption class="sr-only">
+<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-inventario" type="button">
+                        Exportar Excel (CSV)
+                    </button>
+</div>
+</header>
+<div class="table-responsive">
+<table class="data-table" id="table-report-inventory">
+<caption class="sr-only">
                         Reporte general del inventario de sistemas TI.
                     </caption>
-
-
-                    <thead>
-
-                        <tr>
-                            <th scope="col">
+<thead>
+<tr>
+<th scope="col">
                                 Sistema
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Área Usuaria
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Criticidad
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Estado
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Responsable
                             </th>
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        <!-- Sistema Académico -->
-                        <tr
-                            data-area="direccion-academica"
-                            data-criticality="alta"
-                        >
-
-                            <td>
-                                <strong>
+</tr>
+</thead>
+<tbody>
+<!-- Sistema Académico -->
+<tr data-area="direccion-academica" data-criticality="alta" data-period="2026">
+<td>
+<strong>
                                     Sistema Académico
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Dirección Académica
                             </td>
-
-                            <td>
-                                <span class="badge badge-danger">
+<td>
+<span class="badge badge-danger">
                                     Alta
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 En producción
                             </td>
-
-                            <td>
+<td>
                                 Responsable Funcional
                             </td>
-
-                        </tr>
-
-
-                        <!-- Sistema de Matrícula -->
-                        <tr
-                            data-area="registros-academicos"
-                            data-criticality="alta"
-                        >
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Sistema de Matrícula -->
+<tr data-area="registros-academicos" data-criticality="alta" data-period="2026">
+<td>
+<strong>
                                     Sistema de Matrícula
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Registros Académicos
                             </td>
-
-                            <td>
-                                <span class="badge badge-danger">
+<td>
+<span class="badge badge-danger">
                                     Alta
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Revisión prioritaria
                             </td>
-
-                            <td>
+<td>
                                 Coordinador TI
                             </td>
-
-                        </tr>
-
-
-                        <!-- Sistema Biblioteca -->
-                        <tr
-                            data-area="biblioteca-central"
-                            data-criticality="media"
-                        >
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Sistema Biblioteca -->
+<tr data-area="biblioteca-central" data-criticality="media" data-period="2026">
+<td>
+<strong>
                                     Sistema Biblioteca
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Biblioteca Central
                             </td>
-
-                            <td>
-                                <span class="badge badge-warning">
+<td>
+<span class="badge badge-warning">
                                     Media
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Requiere actualización
                             </td>
-
-                            <td>
+<td>
                                 Administrador Biblioteca
                             </td>
-
-                        </tr>
-
-
-                        <!-- Sistema Documentario -->
-                        <tr
-                            data-area="secretaria-general"
-                            data-criticality="media"
-                        >
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Sistema Documentario -->
+<tr data-area="secretaria-general" data-criticality="media" data-period="2025">
+<td>
+<strong>
                                     Sistema Documentario
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Secretaría General
                             </td>
-
-                            <td>
-                                <span class="badge badge-warning">
+<td>
+<span class="badge badge-warning">
                                     Media
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Operativo
                             </td>
-
-                            <td>
+<td>
                                 Secretaría General
                             </td>
-
-                        </tr>
-
-
-                        <!-- Sistema de Pagos -->
-                        <tr
-                            data-area="administracion"
-                            data-criticality="alta"
-                        >
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Sistema de Pagos -->
+<tr data-area="administracion" data-criticality="alta" data-period="2026">
+<td>
+<strong>
                                     Sistema de Pagos
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Administración
                             </td>
-
-                            <td>
-                                <span class="badge badge-danger">
+<td>
+<span class="badge badge-danger">
                                     Alta
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Observado
                             </td>
-
-                            <td>
+<td>
                                 Área Administrativa
                             </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- =================================================
              REPORTE 02
              RIESGOS
         ================================================== -->
-        <section
-            class="data-section report-section"
-            id="reporte-riesgos"
-            data-report-section="riesgos"
-            aria-labelledby="titulo-reporte-riesgos"
-        >
-
-            <header class="section-header">
-
-                <div>
-
-                    <span class="section-label">
+<section aria-labelledby="titulo-reporte-riesgos" class="data-section report-section" data-report-section="riesgos" id="reporte-riesgos">
+<header class="section-header">
+<div>
+<span class="section-label">
                         Reporte 02
                     </span>
-
-                    <h2 id="titulo-reporte-riesgos">
+<h2 id="titulo-reporte-riesgos">
                         Reporte de Riesgos TI
                     </h2>
-
-                    <p class="section-description">
+<p class="section-description">
                         Sistemas con condiciones que pueden afectar
                         la continuidad, seguridad, operación,
                         mantenimiento o trazabilidad técnica.
                     </p>
-
-                </div>
-
-
-                <div class="report-actions">
-
-                    <button
-                        type="button"
-                        class="button button--primary"
-                        data-action="export-pdf"
-                        data-report-id="reporte-riesgos"
-                    >
+</div>
+<div class="report-actions">
+<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-riesgos" type="button">
                         Exportar PDF
                     </button>
-
-                </div>
-
-            </header>
-
-
-            <div class="table-responsive">
-
-                <table
-                    class="data-table"
-                    id="table-report-risks"
-                >
-
-                    <caption class="sr-only">
+<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-riesgos" type="button">
+                        Exportar Excel (CSV)
+                    </button>
+</div>
+</header>
+<div class="table-responsive">
+<table class="data-table" id="table-report-risks">
+<caption class="sr-only">
                         Reporte de riesgos de los sistemas TI institucionales.
                     </caption>
-
-
-                    <thead>
-
-                        <tr>
-                            <th scope="col">
+<thead>
+<tr>
+<th scope="col">
                                 Sistema
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Condición de Riesgo
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Nivel
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Impacto
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Acción Recomendada
                             </th>
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        <!-- Matrícula -->
-                        <tr data-risk="alto">
-
-                            <td>
-                                <strong>
+</tr>
+</thead>
+<tbody>
+<!-- Matrícula -->
+<tr data-period="2026" data-risk="alto">
+<td>
+<strong>
                                     Sistema de Matrícula
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Continuidad operativa
                             </td>
-
-                            <td>
-                                <span class="badge badge-danger">
+<td>
+<span class="badge badge-danger">
                                     Alto
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Interrupción de procesos académicos.
                             </td>
-
-                            <td>
+<td>
                                 Revisar respaldo y plan de continuidad.
                             </td>
-
-                        </tr>
-
-
-                        <!-- Pagos -->
-                        <tr data-risk="alto">
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Pagos -->
+<tr data-period="2026" data-risk="alto">
+<td>
+<strong>
                                     Sistema de Pagos
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Backup no documentado
                             </td>
-
-                            <td>
-                                <span class="badge badge-danger">
+<td>
+<span class="badge badge-danger">
                                     Alto
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Riesgo financiero y operativo.
                             </td>
-
-                            <td>
+<td>
                                 Formalizar la política de respaldo.
                             </td>
-
-                        </tr>
-
-
-                        <!-- Biblioteca -->
-                        <tr data-risk="medio">
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Biblioteca -->
+<tr data-period="2026" data-risk="medio">
+<td>
+<strong>
                                     Sistema Biblioteca
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Dificultad de mantenimiento tecnológico
                             </td>
-
-                            <td>
-                                <span class="badge badge-warning">
+<td>
+<span class="badge badge-warning">
                                     Medio
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Incremento de dificultad para mantener
                                 y evolucionar la plataforma.
                             </td>
-
-                            <td>
+<td>
                                 Evaluar modernización.
                             </td>
-
-                        </tr>
-
-
-                        <!-- Documentario -->
-                        <tr data-risk="medio">
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Documentario -->
+<tr data-period="2025" data-risk="medio">
+<td>
+<strong>
                                     Sistema Documentario
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Documentación incompleta
                             </td>
-
-                            <td>
-                                <span class="badge badge-warning">
+<td>
+<span class="badge badge-warning">
                                     Medio
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Falta de trazabilidad técnica.
                             </td>
-
-                            <td>
+<td>
                                 Completar el diagnóstico técnico.
                             </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- =================================================
              REPORTE 03
              OBSOLESCENCIA
         ================================================== -->
-        <section
-            class="data-section report-section"
-            id="reporte-obsolescencia"
-            data-report-section="obsolescencia"
-            aria-labelledby="titulo-reporte-obsolescencia"
-        >
-
-            <header class="section-header">
-
-                <div>
-
-                    <span class="section-label">
+<section aria-labelledby="titulo-reporte-obsolescencia" class="data-section report-section" data-report-section="obsolescencia" id="reporte-obsolescencia">
+<header class="section-header">
+<div>
+<span class="section-label">
                         Reporte 03
                     </span>
-
-                    <h2 id="titulo-reporte-obsolescencia">
+<h2 id="titulo-reporte-obsolescencia">
                         Reporte de Obsolescencia
                     </h2>
-
-                    <p class="section-description">
+<p class="section-description">
                         Sistemas con tecnologías antiguas, soporte vencido,
                         soporte limitado o condiciones que requieren
                         intervención tecnológica.
                     </p>
-
-                </div>
-
-
-                <div class="report-actions">
-
-                    <button
-                        type="button"
-                        class="button button--primary"
-                        data-action="export-pdf"
-                        data-report-id="reporte-obsolescencia"
-                    >
+</div>
+<div class="report-actions">
+<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-obsolescencia" type="button">
                         Exportar PDF
                     </button>
-
-                </div>
-
-            </header>
-
-
-            <div class="table-responsive">
-
-                <table
-                    class="data-table"
-                    id="table-report-obsolescence"
-                >
-
-                    <caption class="sr-only">
+<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-obsolescencia" type="button">
+                        Exportar Excel (CSV)
+                    </button>
+</div>
+</header>
+<div class="table-responsive">
+<table class="data-table" id="table-report-obsolescence">
+<caption class="sr-only">
                         Reporte de obsolescencia tecnológica
                         de los sistemas institucionales.
                     </caption>
-
-
-                    <thead>
-
-                        <tr>
-                            <th scope="col">
+<thead>
+<tr>
+<th scope="col">
                                 Sistema
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Tecnología
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Año
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Estado de Soporte
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Recomendación
                             </th>
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        <!-- Biblioteca -->
-                        <tr>
-
-                            <td>
-                                <strong>
+</tr>
+</thead>
+<tbody>
+<!-- Biblioteca -->
+<tr data-period="2026">
+<td>
+<strong>
                                     Sistema Biblioteca
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 PHP / MySQL antiguo
                             </td>
-
-                            <td>
+<td>
                                 2016
                             </td>
-
-                            <td>
-                                <span class="badge badge-danger">
+<td>
+<span class="badge badge-danger">
                                     Vencido
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Modernizar plataforma.
                             </td>
-
-                        </tr>
-
-
-                        <!-- Reportes -->
-                        <tr>
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Reportes -->
+<tr data-period="2026">
+<td>
+<strong>
                                     Sistema Reportes
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Servidor local
                             </td>
-
-                            <td>
+<td>
                                 2017
                             </td>
-
-                            <td>
-                                <span class="badge badge-danger">
+<td>
+<span class="badge badge-danger">
                                     Sin soporte
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Planificar migración.
                             </td>
-
-                        </tr>
-
-
-                        <!-- Inventario -->
-                        <tr>
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Inventario -->
+<tr data-period="2026">
+<td>
+<strong>
                                     Sistema Inventario
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Java antiguo
                             </td>
-
-                            <td>
+<td>
                                 2018
                             </td>
-
-                            <td>
-                                <span class="badge badge-warning">
+<td>
+<span class="badge badge-warning">
                                     Limitado
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Evaluar actualización.
                             </td>
-
-                        </tr>
-
-
-                        <!-- Documentario -->
-                        <tr>
-
-                            <td>
-                                <strong>
+</tr>
+<!-- Documentario -->
+<tr data-period="2025">
+<td>
+<strong>
                                     Sistema Documentario
                                 </strong>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Base de datos local
                             </td>
-
-                            <td>
+<td>
                                 2019
                             </td>
-
-                            <td>
-                                <span class="badge badge-warning">
+<td>
+<span class="badge badge-warning">
                                     Revisar
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 Documentar infraestructura.
                             </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- =================================================
              REPORTE 04
              ÁREAS USUARIAS
         ================================================== -->
-        <section
-            class="data-section report-section"
-            id="reporte-area"
-            data-report-section="area"
-            aria-labelledby="titulo-reporte-area"
-        >
-
-            <header class="section-header">
-
-                <div>
-
-                    <span class="section-label">
+<section aria-labelledby="titulo-reporte-area" class="data-section report-section" data-report-section="area" id="reporte-area">
+<header class="section-header">
+<div>
+<span class="section-label">
                         Reporte 04
                     </span>
-
-                    <h2 id="titulo-reporte-area">
+<h2 id="titulo-reporte-area">
                         Reporte por Área Usuaria
                     </h2>
-
-                    <p class="section-description">
+<p class="section-description">
                         Distribución del inventario por dependencia
                         institucional, mostrando concentración de sistemas,
                         criticidad y pendientes.
                     </p>
-
-                </div>
-
-
-                <div class="report-actions">
-
-                    <button
-                        type="button"
-                        class="button button--primary"
-                        data-action="export-pdf"
-                        data-report-id="reporte-area"
-                    >
+</div>
+<div class="report-actions">
+<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-area" type="button">
                         Exportar PDF
                     </button>
-
-                </div>
-
-            </header>
-
-
-            <div class="table-responsive">
-
-                <table
-                    class="data-table"
-                    id="table-report-areas"
-                >
-
-                    <caption class="sr-only">
+<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-area" type="button">
+                        Exportar Excel (CSV)
+                    </button>
+</div>
+</header>
+<div class="table-responsive">
+<table class="data-table" id="table-report-areas">
+<caption class="sr-only">
                         Reporte consolidado de sistemas por área usuaria.
                     </caption>
-
-
-                    <thead>
-
-                        <tr>
-                            <th scope="col">
+<thead>
+<tr>
+<th scope="col">
                                 Área Usuaria
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Sistemas
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Críticos
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Pendientes
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Responsable Funcional
                             </th>
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        <tr data-area="direccion-academica">
-
-                            <td>
+</tr>
+</thead>
+<tbody>
+<tr data-area="direccion-academica" data-period="2026">
+<td>
                                 Dirección Académica
                             </td>
-
-                            <td>
+<td>
                                 14
                             </td>
-
-                            <td>
+<td>
                                 5
                             </td>
-
-                            <td>
+<td>
                                 3
                             </td>
-
-                            <td>
+<td>
                                 Coordinación Académica
                             </td>
-
-                        </tr>
-
-
-                        <tr data-area="administracion">
-
-                            <td>
+</tr>
+<tr data-area="administracion" data-period="2026">
+<td>
                                 Administración
                             </td>
-
-                            <td>
+<td>
                                 11
                             </td>
-
-                            <td>
+<td>
                                 4
                             </td>
-
-                            <td>
+<td>
                                 2
                             </td>
-
-                            <td>
+<td>
                                 Jefatura Administrativa
                             </td>
-
-                        </tr>
-
-
-                        <tr data-area="biblioteca-central">
-
-                            <td>
+</tr>
+<tr data-area="biblioteca-central" data-period="2026">
+<td>
                                 Biblioteca Central
                             </td>
-
-                            <td>
+<td>
                                 6
                             </td>
-
-                            <td>
+<td>
                                 1
                             </td>
-
-                            <td>
+<td>
                                 1
                             </td>
-
-                            <td>
+<td>
                                 Administrador Biblioteca
                             </td>
-
-                        </tr>
-
-
-                        <tr data-area="investigacion">
-
-                            <td>
+</tr>
+<tr data-area="investigacion" data-period="2025">
+<td>
                                 Investigación
                             </td>
-
-                            <td>
+<td>
                                 5
                             </td>
-
-                            <td>
+<td>
                                 1
                             </td>
-
-                            <td>
+<td>
                                 2
                             </td>
-
-                            <td>
+<td>
                                 Unidad de Investigación
                             </td>
-
-                        </tr>
-
-
-                        <tr data-area="otros">
-
-                            <td>
+</tr>
+<tr data-area="otros" data-period="2026">
+<td>
                                 Otros
                             </td>
-
-                            <td>
+<td>
                                 12
                             </td>
-
-                            <td>
+<td>
                                 1
                             </td>
-
-                            <td>
+<td>
                                 9
                             </td>
-
-                            <td>
+<td>
                                 Dependencias varias
                             </td>
-
-                        </tr>
-
-                    </tbody>
-
-
-                    <tfoot>
-
-                        <tr>
-
-                            <th scope="row">
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<th scope="row">
                                 Total
                             </th>
-
-                            <td>
-                                <strong>48</strong>
-                            </td>
-
-                            <td>
-                                <strong>12</strong>
-                            </td>
-
-                            <td>
-                                <strong>17</strong>
-                            </td>
-
-                            <td>
+<td>
+<strong>48</strong>
+</td>
+<td>
+<strong>12</strong>
+</td>
+<td>
+<strong>17</strong>
+</td>
+<td>
                                 —
                             </td>
-
-                        </tr>
-
-                    </tfoot>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
+</tr>
+</tfoot>
+</table>
+</div>
+</section>
+<!-- =================================================
              REPORTE 05
              VALIDACIÓN
         ================================================== -->
-        <section
-            class="data-section report-section"
-            id="reporte-validacion"
-            data-report-section="validacion"
-            aria-labelledby="titulo-reporte-validacion"
-        >
-
-            <header class="section-header">
-
-                <div>
-
-                    <span class="section-label">
+<section aria-labelledby="titulo-reporte-validacion" class="data-section report-section" data-report-section="validacion" id="reporte-validacion">
+<header class="section-header">
+<div>
+<span class="section-label">
                         Reporte 05
                     </span>
-
-                    <h2 id="titulo-reporte-validacion">
+<h2 id="titulo-reporte-validacion">
                         Reporte de Validación
                     </h2>
-
-                    <p class="section-description">
+<p class="section-description">
                         Resumen del avance de revisión técnica y funcional
                         de los sistemas registrados en el inventario TI.
                     </p>
-
-                </div>
-
-
-                <div class="report-actions">
-
-                    <button
-                        type="button"
-                        class="button button--primary"
-                        data-action="export-pdf"
-                        data-report-id="reporte-validacion"
-                    >
+</div>
+<div class="report-actions">
+<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-validacion" type="button">
                         Exportar PDF
                     </button>
-
-                </div>
-
-            </header>
-
-
-            <div class="table-responsive">
-
-                <table
-                    class="data-table"
-                    id="table-report-validation"
-                >
-
-                    <caption class="sr-only">
+<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-validacion" type="button">
+                        Exportar Excel (CSV)
+                    </button>
+</div>
+</header>
+<div class="table-responsive">
+<table class="data-table" id="table-report-validation">
+<caption class="sr-only">
                         Reporte consolidado del estado de validación
                         de los sistemas TI.
                     </caption>
-
-
-                    <thead>
-
-                        <tr>
-                            <th scope="col">
+<thead>
+<tr>
+<th scope="col">
                                 Estado de Validación
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Cantidad
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Porcentaje
                             </th>
-
-                            <th scope="col">
+<th scope="col">
                                 Interpretación
                             </th>
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        <!-- Aprobados -->
-                        <tr>
-
-                            <td>
-                                <span class="badge badge-success">
+</tr>
+</thead>
+<tbody>
+<!-- Aprobados -->
+<tr data-period="2026">
+<td>
+<span class="badge badge-success">
                                     Aprobados
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 24
                             </td>
-
-                            <td>
+<td>
                                 50%
                             </td>
-
-                            <td>
+<td>
                                 Sistemas revisados sin observaciones críticas.
                             </td>
-
-                        </tr>
-
-
-                        <!-- Observados -->
-                        <tr>
-
-                            <td>
-                                <span class="badge badge-warning">
+</tr>
+<!-- Observados -->
+<tr data-period="2026">
+<td>
+<span class="badge badge-warning">
                                     Observados
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 7
                             </td>
-
-                            <td>
+<td>
                                 15%
                             </td>
-
-                            <td>
+<td>
                                 Requieren corrección o información adicional.
                             </td>
-
-                        </tr>
-
-
-                        <!-- Rechazados -->
-                        <tr>
-
-                            <td>
-                                <span class="badge badge-danger">
+</tr>
+<!-- Rechazados -->
+<tr data-period="2026">
+<td>
+<span class="badge badge-danger">
                                     Rechazados
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 0
                             </td>
-
-                            <td>
+<td>
                                 0%
                             </td>
-
-                            <td>
+<td>
                                 No se registran rechazos definitivos.
                             </td>
-
-                        </tr>
-
-
-                        <!-- Pendientes -->
-                        <tr>
-
-                            <td>
-                                <span class="badge badge-neutral">
+</tr>
+<!-- Pendientes -->
+<tr data-period="2025">
+<td>
+<span class="badge badge-neutral">
                                     Pendientes
                                 </span>
-                            </td>
-
-                            <td>
+</td>
+<td>
                                 17
                             </td>
-
-                            <td>
+<td>
                                 35%
                             </td>
-
-                            <td>
+<td>
                                 Falta completar el diagnóstico
                                 o proceso de revisión.
                             </td>
-
-                        </tr>
-
-                    </tbody>
-
-
-                    <tfoot>
-
-                        <tr>
-
-                            <th scope="row">
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<th scope="row">
                                 Total
                             </th>
-
-                            <td>
-                                <strong>48</strong>
-                            </td>
-
-                            <td>
-                                <strong>100%</strong>
-                            </td>
-
-                            <td>
+<td>
+<strong>48</strong>
+</td>
+<td>
+<strong>100%</strong>
+</td>
+<td>
                                 Total del inventario institucional.
                             </td>
-
-                        </tr>
-
-                    </tfoot>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
+</tr>
+</tfoot>
+</table>
+</div>
+</section>
+<!-- =================================================
              ESTADO VACÍO PARA FILTROS
         ================================================== -->
-        <div
-            class="empty-state"
-            id="reports-empty-state"
-            hidden
-        >
-
-            <h2>
+<div class="empty-state" hidden="" id="reports-empty-state">
+<h2>
                 No se encontraron reportes
             </h2>
-
-            <p>
+<p>
                 No existen vistas que coincidan con los criterios
                 de consulta seleccionados.
             </p>
-
-        </div>
-
-    </main>
-
-
-    <!-- =====================================================
+</div>
+</main>
+<!-- =====================================================
          JAVASCRIPT COMPARTIDO
     ====================================================== -->
-    <script
-        src="../js/sidebar.js"
-        defer
-    ></script>
-
-
-    <!-- =====================================================
+<script defer="" src="../js/sidebar.js?v=20260712-6"></script>
+<!-- =====================================================
          JAVASCRIPT ESPECÍFICO
     ====================================================== -->
-    <script
-        src="../js/reportes-ejecutivos.js"
-        defer
-    ></script>
-
+<script defer="" src="../js/reportes-ejecutivos.js?v=20260712-2"></script>
 </body>
 </html>

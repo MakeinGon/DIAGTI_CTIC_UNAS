@@ -513,41 +513,39 @@
 
 
 .sidebar-logout {
+    justify-content: center;
+    gap: 9px;
+    min-height: 46px;
+    color: var(--color-white);
+    background: rgba(197, 48, 48, 0.88);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 8px 18px rgba(66, 17, 17, 0.16);
     font-family: inherit;
+    font-weight: 800;
+    text-align: center;
 }
 
+.sidebar-logout__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
 
 .sidebar-logout:hover {
     color: var(--color-white);
-
-    background-color:
-        rgba(197, 48, 48, 0.78);
-
-    border-color:
-        rgba(255, 255, 255, 0.12);
+    background: #a92323;
+    border-color: rgba(255, 255, 255, 0.34);
+    transform: translateY(-1px);
 }
 
+.sidebar-logout:active {
+    transform: translateY(0);
+}
 
-/* ============================================================
-   10. FECHA Y HORA DE SESIÓN
-============================================================ */
-
-.sidebar-session-time {
-    margin-top: 12px;
-    padding: 10px 12px;
-
-    color:
-        rgba(255, 255, 255, 0.68);
-
-    background-color:
-        rgba(0, 0, 0, 0.08);
-
-    border-radius: 9px;
-
-    font-size: 0.68rem;
-    line-height: 1.45;
-
-    text-align: center;
+.sidebar-logout:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.38);
+    outline-offset: 2px;
 }
 
 
@@ -774,9 +772,6 @@
 /* Fecha y pie */
 
 .sidebar-container.is-collapsed
-.sidebar-session-time {
-    display: none;
-}
 
 
 .sidebar-container.is-collapsed
@@ -966,9 +961,6 @@
 
 
     .sidebar-container.is-collapsed
-    .sidebar-session-time {
-        display: block;
-    }
 
 
     .sidebar-container.is-collapsed

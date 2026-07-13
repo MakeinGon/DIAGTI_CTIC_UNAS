@@ -3,913 +3,498 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta
         name="description"
-        content="Resumen ejecutivo del inventario de sistemas TI del CTIC UNAS."
+        content="Dashboard ejecutivo del inventario y diagnóstico TI del CTIC UNAS."
     >
 
-    <title>Resumen Ejecutivo | DIAGTI CTIC UNAS</title>
+    <title>Dashboard Ejecutivo | DIAGTI CTIC UNAS</title>
 
-    <!-- Estilos compartidos -->
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/sidebar.css">
-
-    <!-- Estilos específicos de la página -->
-    <link rel="stylesheet" href="../css/resumen-ejecutivo.css">
+    <link rel="stylesheet" href="../css/resumen-ejecutivo.css?v=20260712-5">
 </head>
-
 <body>
-
-    <!-- Sidebar compartido -->
     <aside
         id="sidebar-container"
         class="sidebar-container"
         aria-label="Navegación principal del módulo directivo"
     ></aside>
 
-
-    <!-- Contenido principal -->
     <main class="main-content" id="main-content">
-
-        <!-- =====================================================
-             CABECERA DEL RESUMEN EJECUTIVO
-        ====================================================== -->
-        <header class="page-header">
-
+        <header class="page-header executive-header">
             <div class="page-header__content">
-                <span class="section-label">
-                    Módulo Directivo
-                </span>
-
-                <h1>Resumen Ejecutivo</h1>
-
+                <span class="section-label">Módulo Directivo</span>
+                <h1>Dashboard Ejecutivo</h1>
                 <p class="page-header__description">
-                    Visión estratégica del inventario de sistemas TI del CTIC
-                    para supervisar su estado, identificar prioridades y apoyar
-                    la toma de decisiones sobre riesgos, obsolescencia y
-                    modernización institucional.
+                    Resumen estratégico de la salud tecnológica institucional,
+                    el cumplimiento del diagnóstico y el avance de los proyectos
+                    de modernización.
                 </p>
             </div>
-
-            <div class="page-header__status">
-                <span class="badge badge-success">
-                    Inventario en progreso
-                </span>
-
-                <small>
-                    Última actualización: hoy
-                </small>
-            </div>
-
         </header>
 
+        <section class="executive-filter-panel" aria-labelledby="dashboard-filter-title">
+            <div class="executive-filter-panel__heading">
+                <div>
+                    <span class="section-label">Alcance del análisis</span>
+                    <h2 id="dashboard-filter-title">Filtros ejecutivos</h2>
+                </div>
 
-        <!-- =====================================================
-             INDICADORES PRINCIPALES
-        ====================================================== -->
-        <section
-            class="kpi-section"
-            aria-labelledby="titulo-indicadores-principales"
-        >
-            <div class="section-heading section-heading--hidden">
-                <h2 id="titulo-indicadores-principales">
-                    Indicadores principales
-                </h2>
-            </div>
-
-            <div class="kpi-grid">
-
-                <article class="kpi-card">
-                    <div class="kpi-card__content">
-                        <span class="kpi-card__label">
-                            Sistemas Inventariados
-                        </span>
-
-                        <strong class="kpi-card__value">
-                            48
-                        </strong>
-
-                        <p class="kpi-card__description">
-                            Total registrado en el inventario TI.
-                        </p>
-                    </div>
-                </article>
-
-
-                <article class="kpi-card">
-                    <div class="kpi-card__content">
-                        <span class="kpi-card__label">
-                            Sistemas Críticos
-                        </span>
-
-                        <strong class="kpi-card__value">
-                            12
-                        </strong>
-
-                        <p class="kpi-card__description">
-                            Sistemas con alto impacto institucional.
-                        </p>
-                    </div>
-                </article>
-
-
-                <article class="kpi-card">
-                    <div class="kpi-card__content">
-                        <span class="kpi-card__label">
-                            Riesgo Alto
-                        </span>
-
-                        <strong class="kpi-card__value">
-                            9
-                        </strong>
-
-                        <p class="kpi-card__description">
-                            Sistemas que requieren atención prioritaria.
-                        </p>
-                    </div>
-                </article>
-
-
-                <article class="kpi-card">
-                    <div class="kpi-card__content">
-                        <span class="kpi-card__label">
-                            Avance del Diagnóstico
-                        </span>
-
-                        <strong class="kpi-card__value">
-                            65%
-                        </strong>
-
-                        <p class="kpi-card__description">
-                            Proporción de sistemas evaluados.
-                        </p>
-                    </div>
-                </article>
-
-            </div>
-        </section>
-
-
-        <!-- =====================================================
-             SALUD DEL INVENTARIO Y ALERTAS
-        ====================================================== -->
-        <section
-            class="executive-overview"
-            aria-label="Estado general y alertas prioritarias"
-        >
-
-            <!-- Salud del inventario -->
-            <article class="health-card">
-
-                <header class="health-card__header">
-
-                    <div>
-                        <span class="section-label">
-                            Estado general
-                        </span>
-
-                        <h2>Salud del Inventario TI</h2>
-                    </div>
-
-                    <strong class="health-card__value">
-                        72%
-                    </strong>
-
-                </header>
-
-
-                <p class="health-card__description">
-                    Nivel estimado de control sobre los sistemas institucionales,
-                    considerando validación, criticidad, obsolescencia,
-                    responsables y riesgos identificados.
+                <p id="dashboard-result-summary" aria-live="polite">
+                    Preparando información del tablero.
                 </p>
+            </div>
 
-
-                <div
-                    class="progress-bar"
-                    role="progressbar"
-                    aria-label="Salud del Inventario TI"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    aria-valuenow="72"
-                >
-                    <span
-                        class="progress-bar__fill"
-                        data-progress="72"
-                    ></span>
+            <form id="executive-filter-form" class="executive-filter-form">
+                <div class="executive-filter-group">
+                    <label for="filter-period">Periodo</label>
+                    <select id="filter-period" name="period">
+                        <option value="2026-I">2026 · Primer semestre</option>
+                        <option value="2025-II">2025 · Segundo semestre</option>
+                        <option value="2025-I">2025 · Primer semestre</option>
+                    </select>
                 </div>
 
-
-                <div class="health-card__legend">
-                    <span>Controlado</span>
-                    <span>Requiere seguimiento</span>
+                <div class="executive-filter-group">
+                    <label for="filter-area">Área funcional</label>
+                    <select id="filter-area" name="area">
+                        <option value="all">Todas las áreas</option>
+                        <option value="academica">Gestión Académica</option>
+                        <option value="administrativa">Gestión Administrativa</option>
+                        <option value="investigacion">Investigación</option>
+                        <option value="infraestructura">Infraestructura TI</option>
+                    </select>
                 </div>
 
-            </article>
+                <div class="executive-filter-group">
+                    <label for="filter-criticality">Criticidad</label>
+                    <select id="filter-criticality" name="criticality">
+                        <option value="all">Todas</option>
+                        <option value="critica">Crítica</option>
+                        <option value="alta">Alta</option>
+                        <option value="media">Media</option>
+                        <option value="baja">Baja</option>
+                    </select>
+                </div>
 
+                <div class="executive-filter-group">
+                    <label for="filter-validation">Estado</label>
+                    <select id="filter-validation" name="validation">
+                        <option value="all">Todos</option>
+                        <option value="observado">Observado</option>
+                        <option value="validado">Validado</option>
+                        <option value="pendiente">Pendiente</option>
+                    </select>
+                </div>
 
-            <!-- Alertas prioritarias -->
-            <article class="priority-alerts">
+                <div class="executive-filter-group executive-filter-group--search">
+                    <label for="filter-search">Buscar sistema</label>
+                    <div class="executive-search-control">
+                        <span aria-hidden="true">⌕</span>
+                        <input
+                            id="filter-search"
+                            name="search"
+                            type="search"
+                            placeholder="Código o nombre"
+                            autocomplete="off"
+                        >
+                    </div>
+                </div>
 
-                <header class="section-heading">
-                    <span class="section-label">
-                        Atención inmediata
-                    </span>
+                <div class="executive-filter-actions">
+                    <button
+                        type="button"
+                        class="executive-button executive-button--secondary"
+                        id="reset-dashboard-filters"
+                    >
+                        Restablecer
+                    </button>
+                </div>
+            </form>
 
-                    <h2>Alertas Prioritarias</h2>
+            <div
+                class="executive-active-filters"
+                id="active-filter-list"
+                aria-live="polite"
+                aria-label="Filtros activos"
+            ></div>
+        </section>
+
+        <section
+            id="dashboard-loading"
+            class="dashboard-state dashboard-state--loading"
+            aria-live="polite"
+        >
+            <div class="dashboard-loading-grid" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <p>Cargando información ejecutiva...</p>
+        </section>
+
+        <section
+            id="dashboard-error"
+            class="dashboard-state dashboard-state--error"
+            hidden
+            role="alert"
+        >
+            <div class="dashboard-state__icon" aria-hidden="true">!</div>
+            <h2>No se pudo cargar la información ejecutiva</h2>
+            <p id="dashboard-error-message">
+                Verifique la conexión e intente nuevamente.
+            </p>
+            <button
+                type="button"
+                class="executive-button executive-button--primary"
+                id="retry-dashboard"
+            >
+                Reintentar
+            </button>
+        </section>
+
+        <section
+            id="dashboard-empty"
+            class="dashboard-state dashboard-state--empty"
+            hidden
+        >
+            <div class="dashboard-state__icon" aria-hidden="true">○</div>
+            <h2>No existen datos para los criterios seleccionados</h2>
+            <p>
+                Los indicadores y gráficos aparecerán cuando existan registros
+                dentro del periodo y filtros aplicados.
+            </p>
+            <button
+                type="button"
+                class="executive-button executive-button--secondary"
+                id="empty-reset-filters"
+            >
+                Restablecer filtros
+            </button>
+        </section>
+
+        <div id="dashboard-content" class="dashboard-content" hidden>
+            <section class="executive-kpi-grid" aria-label="Indicadores ejecutivos principales">
+                <article class="executive-kpi-card executive-kpi-card--systems">
+                    <div class="executive-kpi-card__header">
+                        <span class="executive-kpi-card__label">Sistemas registrados</span>
+                        <span class="executive-kpi-card__icon" aria-hidden="true">▦</span>
+                    </div>
+                    <strong class="executive-kpi-card__value" id="kpi-total-systems">—</strong>
+                    <p class="executive-kpi-card__detail" id="kpi-total-detail">Sin datos</p>
+                    <span class="executive-kpi-card__trend" id="kpi-total-trend">Sin comparación</span>
+                </article>
+
+                <article class="executive-kpi-card executive-kpi-card--health">
+                    <div class="executive-kpi-card__header">
+                        <span class="executive-kpi-card__label">Salud tecnológica</span>
+                        <span class="executive-kpi-card__icon" aria-hidden="true">◔</span>
+                    </div>
+                    <strong class="executive-kpi-card__value" id="kpi-health">—</strong>
+                    <p class="executive-kpi-card__detail" id="kpi-health-detail">Sin datos</p>
+                    <span class="executive-kpi-card__trend" id="kpi-health-trend">Sin comparación</span>
+                </article>
+
+                <article class="executive-kpi-card executive-kpi-card--projects">
+                    <div class="executive-kpi-card__header">
+                        <span class="executive-kpi-card__label">Avance de proyectos</span>
+                        <span class="executive-kpi-card__icon" aria-hidden="true">↗</span>
+                    </div>
+                    <strong class="executive-kpi-card__value" id="kpi-project-progress">—</strong>
+                    <p class="executive-kpi-card__detail" id="kpi-project-detail">Sin datos</p>
+                    <span class="executive-kpi-card__trend" id="kpi-project-trend">Sin comparación</span>
+                </article>
+
+                <article class="executive-kpi-card executive-kpi-card--compliance">
+                    <div class="executive-kpi-card__header">
+                        <span class="executive-kpi-card__label">Cumplimiento macro</span>
+                        <span class="executive-kpi-card__icon" aria-hidden="true">✓</span>
+                    </div>
+                    <strong class="executive-kpi-card__value" id="kpi-compliance">—</strong>
+                    <p class="executive-kpi-card__detail" id="kpi-compliance-detail">Sin datos</p>
+                    <span class="executive-kpi-card__trend" id="kpi-compliance-trend">Sin comparación</span>
+                </article>
+            </section>
+
+            <section class="executive-chart-grid" aria-label="Análisis visual principal">
+                <article class="executive-panel executive-panel--health">
+                    <header class="executive-panel__header">
+                        <div>
+                            <span class="section-label">Estado general</span>
+                            <h2>Estado de validación de los sistemas</h2>
+                            <p>Vista simple del Dashboard de Riesgos. Resume la validación del diagnóstico sobre los sistemas filtrados.</p>
+                            <a class="executive-origin-tag" href="dashboard-riesgos.html">Pertenece a: Dashboard de Riesgos</a>
+                        </div>
+                        <span class="executive-panel__counter" id="health-total">0 sistemas</span>
+                    </header>
+
+                    <div class="health-chart-layout">
+                        <div id="health-chart" class="health-chart" aria-live="polite"></div>
+                        <div id="health-legend" class="health-legend" aria-label="Leyenda de estados de validación"></div>
+                    </div>
+                </article>
+
+                <article class="executive-panel executive-panel--areas">
+                    <header class="executive-panel__header">
+                        <div>
+                            <span class="section-label">Distribución institucional</span>
+                            <h2>Validación por área funcional</h2>
+                            <p>Vista simple del Dashboard de Riesgos. Compara sistemas validados, observados y pendientes por área.</p>
+                            <a class="executive-origin-tag" href="dashboard-riesgos.html">Pertenece a: Dashboard de Riesgos</a>
+                        </div>
+                    </header>
+
+                    <div id="area-chart" class="area-chart" aria-live="polite"></div>
+                </article>
+
+                <article class="executive-panel executive-panel--compliance">
+                    <header class="executive-panel__header">
+                        <div>
+                            <span class="section-label">Seguimiento ejecutivo</span>
+                            <h2>Capacidad de atención por área</h2>
+                            <p>Vista simple del Dashboard de Riesgos. Resume la distribución de sistemas, observaciones y pendientes por área.</p>
+                            <a class="executive-origin-tag" href="dashboard-riesgos.html">Pertenece a: Dashboard de Riesgos</a>
+                        </div>
+                    </header>
+
+                    <div id="compliance-chart" class="compliance-chart" aria-live="polite"></div>
+                </article>
+
+                <div class="executive-projects-grid">
+                    <article class="executive-panel executive-panel--projects">
+                        <header class="executive-panel__header">
+                            <div>
+                                <span class="section-label">Planificación estratégica</span>
+                                <h2>Avance de proyectos</h2>
+                                <p>Vista simple del Roadmap de Migración. El porcentaje de color representa el avance real y el gris representa el avance planificado.</p>
+                                <a class="executive-origin-tag" href="plan-modernizacion.html">Pertenece a: Roadmap de Migración</a>
+                            </div>
+                        </header>
+
+                        <div id="project-chart" class="project-chart" aria-live="polite"></div>
+                    </article>
+
+                    <article class="executive-panel executive-panel--project-detail executive-panel--project-detail-inline">
+                        <header class="executive-panel__header">
+                            <div>
+                                <span class="section-label">Detalle seleccionado</span>
+                                <h2>Proyecto estratégico</h2>
+                                <p>Complemento del Roadmap de Migración. Seleccione una barra para revisar su estado.</p>
+                                <a class="executive-origin-tag" href="plan-modernizacion.html">Pertenece a: Roadmap de Migración</a>
+                            </div>
+                        </header>
+
+                        <div id="project-detail" class="project-detail">
+                            <div class="project-detail__empty">
+                                Seleccione un proyecto del gráfico de avance.
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="executive-panel executive-panel--trend" aria-labelledby="trend-chart-title">
+                <header class="executive-panel__header executive-panel__header--trend">
+                    <div>
+                        <span class="section-label">Evolución</span>
+                        <h2 id="trend-chart-title">Tendencia de indicadores ejecutivos</h2>
+                        <p>Evolución comparativa de salud tecnológica y cumplimiento.</p>
+                    </div>
+
+                    <div class="trend-controls" aria-label="Series visibles">
+                        <label>
+                            <input type="checkbox" id="trend-health-toggle" checked>
+                            Salud tecnológica
+                        </label>
+                        <label>
+                            <input type="checkbox" id="trend-compliance-toggle" checked>
+                            Cumplimiento
+                        </label>
+                    </div>
                 </header>
 
+                <div id="trend-chart" class="trend-chart" aria-live="polite"></div>
+            </section>
 
-                <div class="alerts-list">
-
-                    <article class="alert-item alert-item--danger">
-                        <div class="alert-item__content">
-                            <strong>
-                                9 sistemas en riesgo alto
-                            </strong>
-
-                            <p>
-                                Continuidad, seguridad o soporte comprometido.
-                            </p>
-                        </div>
-
-                        <a
-                            href="riesgos-obsolescencia.html#analisis-riesgos"
-                            class="alert-item__link"
-                        >
-                            Ver detalle
-                        </a>
-                    </article>
-
-
-                    <article class="alert-item alert-item--warning">
-                        <div class="alert-item__content">
-                            <strong>
-                                8 sistemas con soporte vencido
-                            </strong>
-
-                            <p>
-                                Riesgo de dependencia y obsolescencia tecnológica.
-                            </p>
-                        </div>
-
-                        <a
-                            href="riesgos-obsolescencia.html#analisis-obsolescencia"
-                            class="alert-item__link"
-                        >
-                            Ver detalle
-                        </a>
-                    </article>
-
-
-                    <article class="alert-item alert-item--info">
-                        <div class="alert-item__content">
-                            <strong>
-                                4 sistemas sin responsable
-                            </strong>
-
-                            <p>
-                                Falta de control técnico o funcional.
-                            </p>
-                        </div>
-
-                        <a
-                            href="inventario-sistemas.html"
-                            class="alert-item__link"
-                        >
-                            Ver detalle
-                        </a>
-                    </article>
-
-
-                    <article class="alert-item alert-item--neutral">
-                        <div class="alert-item__content">
-                            <strong>
-                                17 sistemas pendientes
-                            </strong>
-
-                            <p>
-                                Diagnóstico o validación incompleta.
-                            </p>
-                        </div>
-
-                        <a
-                            href="inventario-sistemas.html"
-                            class="alert-item__link"
-                        >
-                            Ver detalle
-                        </a>
-                    </article>
-
-                </div>
-
-            </article>
-
-        </section>
-
-
-        <!-- =====================================================
-             DISTRIBUCIÓN DEL INVENTARIO
-        ====================================================== -->
-        <section
-            class="distribution-section"
-            aria-labelledby="titulo-distribucion-inventario"
-        >
-
-            <header class="section-heading">
-                <span class="section-label">
-                    Composición del inventario
-                </span>
-
-                <h2 id="titulo-distribucion-inventario">
-                    Distribución General
-                </h2>
-            </header>
-
-
-            <div class="distribution-grid">
-
-                <!-- Criticidad -->
-                <article class="distribution-card">
-
-                    <h3>Criticidad</h3>
-
-                    <div class="bar-list">
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>Alta</span>
-                                <strong>12</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Criticidad alta"
-                                aria-valuemin="0"
-                                aria-valuemax="21"
-                                aria-valuenow="12"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--danger"
-                                    data-progress="57"
-                                ></span>
-                            </div>
-                        </div>
-
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>Media</span>
-                                <strong>21</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Criticidad media"
-                                aria-valuemin="0"
-                                aria-valuemax="21"
-                                aria-valuenow="21"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--warning"
-                                    data-progress="100"
-                                ></span>
-                            </div>
-                        </div>
-
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>Baja</span>
-                                <strong>15</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Criticidad baja"
-                                aria-valuemin="0"
-                                aria-valuemax="21"
-                                aria-valuenow="15"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--success"
-                                    data-progress="71"
-                                ></span>
-                            </div>
-                        </div>
-
+            <section class="executive-secondary-group" aria-labelledby="quick-indicators-title">
+                <header class="executive-inline-heading">
+                    <div>
+                        <span class="section-label">Accesos rápidos</span>
+                        <h2 id="quick-indicators-title">Indicadores prioritarios</h2>
+                        <p>Cada tarjeta funciona como acceso interactivo para filtrar la tabla, enfocar alertas o abrir el seguimiento de proyectos.</p>
                     </div>
+                </header>
 
+                <div class="executive-secondary-grid" aria-label="Indicadores complementarios y accesos rápidos">
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--danger" data-quick-filter="critical">
+                        <span>Sistemas críticos</span>
+                        <strong id="secondary-critical">0</strong>
+                        <small>Clic para filtrar atención inmediata</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--warning" data-quick-filter="legacy">
+                        <span>Sistemas legacy</span>
+                        <strong id="secondary-legacy">0</strong>
+                        <small>Clic para ubicar dependencia tecnológica elevada</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--warning" data-quick-filter="noSupport">
+                        <span>Sin soporte</span>
+                        <strong id="secondary-no-support">0</strong>
+                        <small>Clic para revisar cobertura vencida</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--info" data-quick-filter="obsolete">
+                        <span>Tecnologías obsoletas</span>
+                        <strong id="secondary-obsolete">0</strong>
+                        <small>Clic para evaluar renovación técnica</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--warning" data-quick-filter="observed">
+                        <span>Observados</span>
+                        <strong id="secondary-observed">0</strong>
+                        <small>Clic para filtrar correcciones pendientes</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--danger" data-quick-filter="delayed">
+                        <span>Proyectos retrasados</span>
+                        <strong id="secondary-delayed">0</strong>
+                        <small>Clic para enfocar el Roadmap</small>
+                    </button>
+                </div>
+            </section>
+
+            <section class="executive-bottom-grid">
+                <article class="executive-panel executive-panel--alerts">
+                    <header class="executive-panel__header">
+                        <div>
+                            <span class="section-label">Atención prioritaria</span>
+                            <h2>Alertas ejecutivas</h2>
+                            <p>Situaciones que requieren seguimiento o decisión.</p>
+                            <a class="executive-origin-tag" href="dashboard-riesgos.html">Pertenece a: Dashboard de Riesgos</a>
+                        </div>
+                        <span class="executive-panel__counter" id="alert-total">0 alertas</span>
+                    </header>
+
+                    <div id="executive-alert-list" class="executive-alert-list"></div>
                 </article>
 
+            </section>
 
-                <!-- Estado operativo -->
-                <article class="distribution-card">
-
-                    <h3>Estado Operativo</h3>
-
-                    <div class="bar-list">
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>Producción</span>
-                                <strong>30</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Sistemas en producción"
-                                aria-valuemin="0"
-                                aria-valuemax="30"
-                                aria-valuenow="30"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--success"
-                                    data-progress="100"
-                                ></span>
-                            </div>
-                        </div>
-
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>Actualización</span>
-                                <strong>10</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Sistemas en actualización"
-                                aria-valuemin="0"
-                                aria-valuemax="30"
-                                aria-valuenow="10"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--warning"
-                                    data-progress="33"
-                                ></span>
-                            </div>
-                        </div>
-
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>En revisión</span>
-                                <strong>6</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Sistemas en revisión"
-                                aria-valuemin="0"
-                                aria-valuemax="30"
-                                aria-valuenow="6"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--info"
-                                    data-progress="20"
-                                ></span>
-                            </div>
-                        </div>
-
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>En desuso</span>
-                                <strong>2</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Sistemas en desuso"
-                                aria-valuemin="0"
-                                aria-valuemax="30"
-                                aria-valuenow="2"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--danger"
-                                    data-progress="7"
-                                ></span>
-                            </div>
-                        </div>
-
+            <section class="executive-table-section" aria-labelledby="priority-table-title">
+                <header class="executive-table-header">
+                    <div>
+                        <span class="section-label">Priorización</span>
+                        <h2 id="priority-table-title">Prioridades ejecutivas</h2>
+                        <p>
+                            Vista simple de Reportes Ejecutivos. Sistemas que requieren seguimiento según criticidad,
+                            validación, riesgo u obsolescencia.
+                        </p>
+                        <a class="executive-origin-tag" href="reportes-ejecutivos.html">Pertenece a: Reportes Ejecutivos</a>
                     </div>
 
-                </article>
-
-
-                <!-- Áreas con más sistemas -->
-                <article class="distribution-card">
-
-                    <h3>Áreas con más sistemas</h3>
-
-                    <div class="bar-list">
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>Académica</span>
-                                <strong>14</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Sistemas del área académica"
-                                aria-valuemin="0"
-                                aria-valuemax="14"
-                                aria-valuenow="14"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--info"
-                                    data-progress="100"
-                                ></span>
-                            </div>
-                        </div>
-
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>Administrativa</span>
-                                <strong>11</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Sistemas del área administrativa"
-                                aria-valuemin="0"
-                                aria-valuemax="14"
-                                aria-valuenow="11"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--info"
-                                    data-progress="79"
-                                ></span>
-                            </div>
-                        </div>
-
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>Biblioteca</span>
-                                <strong>6</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Sistemas del área de biblioteca"
-                                aria-valuemin="0"
-                                aria-valuemax="14"
-                                aria-valuenow="6"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--info"
-                                    data-progress="43"
-                                ></span>
-                            </div>
-                        </div>
-
-
-                        <div class="bar-item">
-                            <div class="bar-item__header">
-                                <span>Investigación</span>
-                                <strong>5</strong>
-                            </div>
-
-                            <div
-                                class="bar-track"
-                                role="progressbar"
-                                aria-label="Sistemas del área de investigación"
-                                aria-valuemin="0"
-                                aria-valuemax="14"
-                                aria-valuenow="5"
-                            >
-                                <span
-                                    class="bar-fill bar-fill--info"
-                                    data-progress="36"
-                                ></span>
-                            </div>
-                        </div>
-
+                    <div class="executive-table-tools">
+                        <label for="table-page-size">Filas</label>
+                        <select id="table-page-size">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                        </select>
                     </div>
+                </header>
 
-                </article>
+                <div class="executive-table-context" id="table-filter-context" aria-live="polite"></div>
 
-            </div>
-
-        </section>
-
-
-        <!-- =====================================================
-             DECISIONES RECOMENDADAS
-        ====================================================== -->
-        <section
-            class="data-section"
-            aria-labelledby="titulo-decisiones-recomendadas"
-        >
-
-            <header class="section-header">
-
-                <div>
-                    <span class="section-label">
-                        Priorización
-                    </span>
-
-                    <h2 id="titulo-decisiones-recomendadas">
-                        Decisiones Recomendadas
-                    </h2>
+                <div class="executive-table-responsive">
+                    <table class="executive-table">
+                        <caption class="sr-only">
+                            Prioridades ejecutivas de los sistemas filtrados.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="code">Código</button>
+                                </th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="name">Sistema</button>
+                                </th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="area">Área</button>
+                                </th>
+                                <th scope="col">Alerta principal</th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="criticality">Criticidad</button>
+                                </th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="validation">Estado</button>
+                                </th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="priority">Prioridad</button>
+                                </th>
+                                <th scope="col">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="priority-table-body"></tbody>
+                    </table>
                 </div>
 
-                <a
-                    href="plan-modernizacion.html"
-                    class="button button--primary"
-                >
-                    Ver plan de modernización
-                </a>
-
-            </header>
-
-
-            <div class="table-responsive">
-
-                <table class="data-table">
-
-                    <caption class="sr-only">
-                        Decisiones recomendadas según situaciones detectadas
-                        en el inventario de sistemas TI.
-                    </caption>
-
-                    <thead>
-                        <tr>
-                            <th scope="col">Prioridad</th>
-                            <th scope="col">Situación Detectada</th>
-                            <th scope="col">Impacto</th>
-                            <th scope="col">Acción Recomendada</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>
-                                <span class="badge badge-danger">
-                                    Alta
-                                </span>
-                            </td>
-
-                            <td>
-                                Sistemas críticos con soporte vencido
-                            </td>
-
-                            <td>
-                                Riesgo de interrupción del servicio
-                            </td>
-
-                            <td>
-                                Evaluar su modernización, migración,
-                                reemplazo o retiro según criticidad y viabilidad.
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <span class="badge badge-danger">
-                                    Alta
-                                </span>
-                            </td>
-
-                            <td>
-                                Sistemas sin responsable asignado
-                            </td>
-
-                            <td>
-                                Falta de control y trazabilidad
-                            </td>
-
-                            <td>
-                                Asignar responsable técnico y funcional.
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <span class="badge badge-warning">
-                                    Media
-                                </span>
-                            </td>
-
-                            <td>
-                                Sistemas pendientes de validación
-                            </td>
-
-                            <td>
-                                Inventario incompleto
-                            </td>
-
-                            <td>
-                                Solicitar el cierre del diagnóstico
-                                correspondiente por área.
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <span class="badge badge-warning">
-                                    Media
-                                </span>
-                            </td>
-
-                            <td>
-                                Sistemas legacy operativos
-                            </td>
-
-                            <td>
-                                Riesgo progresivo de obsolescencia
-                            </td>
-
-                            <td>
-                                Planificar una estrategia gradual de modernización.
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================================================
-             SISTEMAS QUE REQUIEREN ATENCIÓN
-        ====================================================== -->
-        <section
-            class="data-section"
-            aria-labelledby="titulo-sistemas-prioritarios"
-        >
-
-            <header class="section-header">
-
-                <div>
-                    <span class="section-label">
-                        Seguimiento directivo
-                    </span>
-
-                    <h2 id="titulo-sistemas-prioritarios">
-                        Sistemas que Requieren Atención
-                    </h2>
+                <div class="executive-pagination">
+                    <p id="pagination-summary">Sin resultados</p>
+                    <div class="executive-pagination__controls">
+                        <button
+                            type="button"
+                            class="executive-button executive-button--secondary executive-button--small"
+                            id="previous-page"
+                        >
+                            Anterior
+                        </button>
+                        <span id="pagination-page">Página 1 de 1</span>
+                        <button
+                            type="button"
+                            class="executive-button executive-button--secondary executive-button--small"
+                            id="next-page"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
                 </div>
+            </section>
 
-                <a
-                    href="riesgos-obsolescencia.html"
-                    class="button button--primary"
-                >
-                    Ver riesgos y obsolescencia
-                </a>
+            <aside class="executive-data-notice" aria-label="Origen de los datos">
+                <strong>Preparado para integración con backend</strong>
+                <p>
+                    Esta versión utiliza datos demostrativos centralizados en
+                    <code>resumen-ejecutivo.js</code>. Al habilitar el modo backend,
+                    el mismo dashboard consumirá la API sin modificar su estructura HTML.
+                </p>
+            </aside>
+        </div>
 
-            </header>
+        <dialog id="system-detail-dialog" class="executive-dialog">
+            <form method="dialog" class="executive-dialog__surface">
+                <header class="executive-dialog__header">
+                    <div>
+                        <span class="section-label">Detalle ejecutivo</span>
+                        <h2 id="dialog-system-title">Sistema</h2>
+                    </div>
+                    <button
+                        type="submit"
+                        class="executive-dialog__close"
+                        aria-label="Cerrar detalle"
+                    >
+                        ×
+                    </button>
+                </header>
+                <div id="dialog-system-content" class="executive-dialog__content"></div>
+            </form>
+        </dialog>
 
-
-            <div class="table-responsive">
-
-                <table class="data-table">
-
-                    <caption class="sr-only">
-                        Sistemas prioritarios que requieren seguimiento directivo.
-                    </caption>
-
-                    <thead>
-                        <tr>
-                            <th scope="col">Sistema</th>
-                            <th scope="col">Área</th>
-                            <th scope="col">Problema Detectado</th>
-                            <th scope="col">Riesgo</th>
-                            <th scope="col">Decisión Sugerida</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>Sistema de Matrícula</td>
-
-                            <td>
-                                Registros Académicos
-                            </td>
-
-                            <td>
-                                Alta dependencia operativa
-                            </td>
-
-                            <td>
-                                <span class="badge badge-danger">
-                                    Alto
-                                </span>
-                            </td>
-
-                            <td>
-                                Revisar continuidad y respaldo.
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>Sistema de Pagos</td>
-
-                            <td>
-                                Administración
-                            </td>
-
-                            <td>
-                                Backup no documentado
-                            </td>
-
-                            <td>
-                                <span class="badge badge-danger">
-                                    Alto
-                                </span>
-                            </td>
-
-                            <td>
-                                Regularizar la política de respaldo.
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>Sistema Biblioteca</td>
-
-                            <td>
-                                Biblioteca Central
-                            </td>
-
-                            <td>
-                                Tecnología antigua
-                            </td>
-
-                            <td>
-                                <span class="badge badge-warning">
-                                    Medio
-                                </span>
-                            </td>
-
-                            <td>
-                                Planificar su modernización.
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>Sistema Documentario</td>
-
-                            <td>
-                                Secretaría General
-                            </td>
-
-                            <td>
-                                Documentación incompleta
-                            </td>
-
-                            <td>
-                                <span class="badge badge-warning">
-                                    Medio
-                                </span>
-                            </td>
-
-                            <td>
-                                Completar el diagnóstico técnico.
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
+        <noscript>
+            <section class="dashboard-state dashboard-state--error">
+                <h2>JavaScript está desactivado</h2>
+                <p>
+                    El Dashboard Ejecutivo requiere JavaScript para cargar,
+                    filtrar y representar la información.
+                </p>
+            </section>
+        </noscript>
     </main>
 
-
-    <!-- JavaScript compartido -->
-    <script src="../js/sidebar.js" defer></script>
-
-    <!-- JavaScript específico de la página -->
-    <script src="../js/resumen-ejecutivo.js" defer></script>
-
+    <script src="../js/sidebar.js?v=20260712-6" defer></script>
+    <script src="../js/resumen-ejecutivo.js?v=20260712-5" defer></script>
 </body>
 </html>

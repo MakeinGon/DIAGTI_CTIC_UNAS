@@ -49,8 +49,6 @@ function inicializarSidebar() {
     configurarSidebarMovil(sidebarContainer);
 
     cargarInformacionUsuario();
-    iniciarRelojSesion();
-
     configurarCerrarSesion();
 }
 
@@ -75,7 +73,7 @@ function renderizarSidebar(sidebarContainer) {
                 <a
                     href="resumen-ejecutivo.html"
                     class="sidebar-brand"
-                    aria-label="Ir al Resumen Ejecutivo"
+                    aria-label="Ir al Dashboard Ejecutivo"
                 >
 
                     <div class="sidebar-brand__logo">
@@ -168,43 +166,29 @@ function renderizarSidebar(sidebarContainer) {
                         data-page="resumen-ejecutivo.html"
                     >
                         <span class="sidebar-nav__text">
-                            Resumen Ejecutivo
+                            Dashboard Ejecutivo
                         </span>
                     </a>
-
 
                     <a
-                        href="inventario-sistemas.html"
+                        href="dashboard-riesgos.html"
                         class="sidebar-nav__link"
-                        data-page="inventario-sistemas.html"
+                        data-page="dashboard-riesgos.html"
                     >
                         <span class="sidebar-nav__text">
-                            Inventario de Sistemas
+                            Dashboard Riesgos
                         </span>
                     </a>
-
 
                     <a
-                        href="riesgos-obsolescencia.html"
+                        href="dashboard-obsolescencia.html"
                         class="sidebar-nav__link"
-                        data-page="riesgos-obsolescencia.html"
+                        data-page="dashboard-obsolescencia.html"
                     >
                         <span class="sidebar-nav__text">
-                            Riesgos y Obsolescencia
+                            Dashboard Obsolescencia
                         </span>
                     </a>
-
-
-                    <a
-                        href="plan-modernizacion.html"
-                        class="sidebar-nav__link"
-                        data-page="plan-modernizacion.html"
-                    >
-                        <span class="sidebar-nav__text">
-                            Plan de Modernización
-                        </span>
-                    </a>
-
 
                     <a
                         href="reportes-ejecutivos.html"
@@ -213,6 +197,16 @@ function renderizarSidebar(sidebarContainer) {
                     >
                         <span class="sidebar-nav__text">
                             Reportes Ejecutivos
+                        </span>
+                    </a>
+
+                    <a
+                        href="plan-modernizacion.html"
+                        class="sidebar-nav__link"
+                        data-page="plan-modernizacion.html"
+                    >
+                        <span class="sidebar-nav__text">
+                            Roadmap Migración
                         </span>
                     </a>
 
@@ -245,22 +239,11 @@ function renderizarSidebar(sidebarContainer) {
                         class="sidebar-logout"
                         id="sidebar-logout"
                     >
-                        Cerrar Sesión
+                        <span class="sidebar-logout__icon" aria-hidden="true">↪</span>
+                        <span>Cerrar sesión</span>
                     </button>
 
                 </nav>
-
-
-                <!-- =========================================
-                     FECHA Y HORA
-                ========================================== -->
-                <div
-                    class="sidebar-session-time"
-                    id="sidebar-session-time"
-                    aria-live="off"
-                >
-                    Cargando fecha y hora...
-                </div>
 
 
                 <!-- =========================================
@@ -786,91 +769,7 @@ function cargarInformacionUsuario() {
 
 
 /* ============================================================
-   10. FECHA Y HORA
-============================================================ */
-
-function iniciarRelojSesion() {
-
-    const sessionTime =
-        document.getElementById(
-            "sidebar-session-time"
-        );
-
-
-    if (!sessionTime) {
-        return;
-    }
-
-
-    const formatoFecha =
-        new Intl.DateTimeFormat(
-            "es-PE",
-            {
-                weekday: "short",
-                day: "2-digit",
-                month: "short",
-                year: "numeric"
-            }
-        );
-
-
-    const formatoHora =
-        new Intl.DateTimeFormat(
-            "es-PE",
-            {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false
-            }
-        );
-
-
-    function actualizar() {
-
-        const ahora = new Date();
-
-
-        const fecha =
-            formatoFecha.format(ahora);
-
-
-        const hora =
-            formatoHora.format(ahora);
-
-
-        sessionTime.textContent =
-            `${capitalizarPrimeraLetra(fecha)} · ${hora}`;
-
-    }
-
-
-    actualizar();
-
-
-    window.setInterval(
-        actualizar,
-        1000
-    );
-}
-
-
-function capitalizarPrimeraLetra(texto) {
-
-    if (!texto) {
-        return "";
-    }
-
-
-    return (
-        texto.charAt(0).toUpperCase() +
-        texto.slice(1)
-    );
-}
-
-
-/* ============================================================
-   11. CIERRE DE SESIÓN
+   10. CIERRE DE SESIÓN
 ============================================================ */
 
 function configurarCerrarSesion() {
