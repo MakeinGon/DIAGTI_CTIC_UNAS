@@ -246,6 +246,21 @@ function renderizarTabla(lista) {
             criticidad === 'Alta' ? 'status-warning' :
                 criticidad === 'Media' ? 'status-info' : 'status-success';
 
+        // LÓGICA DINÁMICA DE BOTONES SEGÚN EL ESTADO
+        let botonesAccion = `<button class="btn btn-ghost btn-sm" onclick="verSistema('${s.id}')">👁️ Ver</button>`;
+
+        if (estado === 'Borrador') {
+            const porcentaje = calcularPorcentaje(s); // Calculamos si está al 100%
+            botonesAccion += `<button class="btn btn-ghost btn-sm" onclick="editarSistema('${s.id}')">✏️ Editar</button>`;
+
+            // Si está completo, mostrar botón de enviar directo
+            if (porcentaje === 100) {
+                botonesAccion += `<button class="btn btn-azul btn-sm" onclick="enviarAValidacionDirecto('${s.id}')" style="margin-left:4px;">🚀 Enviar a Validación</button>`;
+            }
+        } else if (estado === 'Observado') {
+            botonesAccion += `<a href="observaciones.html" class="btn btn-warning btn-sm">⚠️ Corregir</a>`;
+        }
+
         html += `
             <tr>
                 <td><strong>${codigo}</strong></td>
@@ -256,9 +271,7 @@ function renderizarTabla(lista) {
                 <td>${fecha}</td>
                 <td>
                     <div class="row-actions">
-                        <button class="btn btn-ghost btn-sm" onclick="verSistema('${s.id}')">👁 Ver</button>
-                        ${estado === 'Borrador' ? `<button class="btn btn-ghost btn-sm" onclick="editarSistema('${s.id}')">✏ Editar</button>` : ''}
-                        ${estado === 'Observado' ? `<button class="btn btn-verde btn-sm" onclick="corregirSistema('${s.id}')">🔧 Corregir</button>` : ''}
+                        ${botonesAccion}
                     </div>
                 </td>
             </tr>
@@ -282,6 +295,8 @@ function filtrarSistemas() {
     const area = document.getElementById('filter-area').value;
     const tipo = document.getElementById('filter-tipo').value;
     const criticidad = document.getElementById('filter-criticidad').value;
+    const responsable = document.getElementById('filter-responsable').value;
+    const riesgo = document.getElementById('filter-riesgo').value;
 
     let filtrados = sistemas.filter(s => {
         const matchSearch = s.codigo.toLowerCase().includes(search) || s.nombre.toLowerCase().includes(search);
@@ -290,6 +305,11 @@ function filtrarSistemas() {
         if (area && s.area !== area) return false;
         if (tipo && s.tipo !== tipo) return false;
         if (criticidad && s.criticidad !== criticidad) return false;
+        // NUEVO: Filtro por responsable técnico
+        if (responsable && s.responsable_tecnico !== responsable) return false;
+
+        // NUEVO: Filtro por riesgo (calculado o asignado)
+        if (riesgo && s.riesgo !== riesgo) return false;
         return true;
     });
 
@@ -364,9 +384,8 @@ function cerrarModalSistema() {
 // CALCULAR PORCENTAJE DE COMPLETITUD
 // ============================================================
 function calcularPorcentaje(data) {
-    const tieneIntegraciones = data.tiene_integraciones !== undefined &&
-        data.tiene_integraciones !== null &&
-        data.tiene_integraciones !== '';
+    // La sección está completa si es explícitamente true (Sí) o false (No)
+    const tieneIntegracionesOk = data.tiene_integraciones === true || data.tiene_integraciones === false;
 
     const secciones = {
         'General': !!(data.nombre && data.nombre.trim() !== '' && data.area && data.responsable_tecnico && data.responsable_tecnico.trim() !== '' && data.criticidad),
@@ -374,9 +393,10 @@ function calcularPorcentaje(data) {
         'Desarrollo': true,
         'Arquitectura': !!(data.arquitectura && data.arquitectura.trim() !== ''),
         'BD': !!(data.motor_bd),
-        'Integraciones': tieneIntegraciones,
+        'Integraciones': tieneIntegracionesOk,
         'Evidencias': evidenciasSubidas.length > 0 || (data.evidencias && data.evidencias.length > 0)
     };
+
     const completas = Object.values(secciones).filter(v => v).length;
     const total = Object.keys(secciones).length;
     return Math.round((completas / total) * 100);
@@ -799,6 +819,7 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
             <div class="form-group">
                 <label>Estado operativo</label>
                 <select id="campo-estado-operativo" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
+                    <option value="">Seleccionar</option>
                     <option value="En Desarrollo" ${data.estado_operativo === 'En Desarrollo' ? 'selected' : ''}>En Desarrollo</option>
                     <option value="Activo / En Producción" ${data.estado_operativo === 'Activo / En Producción' ? 'selected' : ''}>Activo / En Producción</option>
                     <option value="Inactivo" ${data.estado_operativo === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
@@ -854,10 +875,14 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
                 </div>
                 <div class="form-group">
                     <label>Contrato vigente</label>
-                    <select id="campo-contrato" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
-                        <option value="Si" ${data.contrato === 'Si' ? 'selected' : ''}>Si</option>
-                        <option value="No" ${data.contrato === 'No' ? 'selected' : ''}>No</option>
-                    </select>
+                    <div class="radio-group" style="display:flex;gap:20px;margin-top:6px;">
+                        <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;">
+                            <input type="radio" name="campo-contrato" value="Si" ${data.contrato === 'Si' ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()"> Sí
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;">
+                            <input type="radio" name="campo-contrato" value="No" ${data.contrato === 'No' ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()"> No
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-row">
@@ -873,7 +898,7 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
         </div>
     `;
 
-    // ===== PESTAÑA 4: ARQUITECTURA =====
+// ===== PESTAÑA 4: ARQUITECTURA =====
     html += `
         <div class="tab-content ${tabActual === 3 ? 'active' : ''}" id="tab-arquitectura">
             <div class="form-row">
@@ -901,7 +926,7 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
                     <label>Arquitectura <span class="required">*</span></label>
                     <input type="text" id="campo-arquitectura" value="${data.arquitectura || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. MVC, Hexagonal" oninput="actualizarResumen()">
                     <div class="field-error" id="error-arquitectura">Este campo es obligatorio</div>
-                    ${camposObservados['arquitectura'] ? `<div class="observacion-validador">🔴 ${camposObservados['arquitectura']}</div>` : ''}
+                    ${camposObservados['arquitectura'] ? `<div class="observacion-validador">⚠️ ${camposObservados['arquitectura']}</div>` : ''}
                 </div>
                 <div class="form-group">
                     <label>Patrón</label>
@@ -911,7 +936,7 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
             <div class="form-group" data-campo="repositorio">
                 <label>Repositorio Git</label>
                 <input type="text" id="campo-repositorio" value="${data.repositorio || ''}" ${soloLectura ? 'disabled' : ''} placeholder="URL del repositorio Git" oninput="actualizarResumen()">
-                ${camposObservados['repositorio'] ? `<div class="observacion-validador">🔴 ${camposObservados['repositorio']}</div>` : ''}
+                ${camposObservados['repositorio'] ? `<div class="observacion-validador">⚠️ ${camposObservados['repositorio']}</div>` : ''}
             </div>
             <div class="form-group">
                 <label>Tecnologías complementarias</label>
@@ -935,7 +960,7 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
                         <option value="Access" ${data.motor_bd === 'Access' ? 'selected' : ''}>Access</option>
                     </select>
                     <div class="field-error" id="error-motor-bd">Este campo es obligatorio</div>
-                    ${camposObservados['motor_bd'] ? `<div class="observacion-validador">🔴 ${camposObservados['motor_bd']}</div>` : ''}
+                    ${camposObservados['motor_bd'] ? `<div class="observacion-validador">⚠️ ${camposObservados['motor_bd']}</div>` : ''}
                 </div>
                 <div class="form-group">
                     <label>Versión</label>
@@ -963,10 +988,14 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
                 </div>
                 <div class="form-group">
                     <label>Backup</label>
-                    <select id="campo-backup" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
-                        <option value="Si" ${data.backup === 'Si' ? 'selected' : ''}>Si</option>
-                        <option value="No" ${data.backup === 'No' ? 'selected' : ''}>No</option>
-                    </select>
+                    <div class="radio-group" style="display:flex;gap:20px;margin-top:6px;">
+                        <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;">
+                            <input type="radio" name="campo-backup" value="Si" ${data.backup === 'Si' ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()"> Sí
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;">
+                            <input type="radio" name="campo-backup" value="No" ${data.backup === 'No' ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()"> No
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-row">
@@ -982,10 +1011,14 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
                 </div>
                 <div class="form-group">
                     <label>Cifrado</label>
-                    <select id="campo-cifrado" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
-                        <option value="Si" ${data.cifrado === 'Si' ? 'selected' : ''}>Si</option>
-                        <option value="No" ${data.cifrado === 'No' ? 'selected' : ''}>No</option>
-                    </select>
+                    <div class="radio-group" style="display:flex;gap:20px;margin-top:6px;">
+                        <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;">
+                            <input type="radio" name="campo-cifrado" value="Si" ${data.cifrado === 'Si' ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()"> Sí
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;">
+                            <input type="radio" name="campo-cifrado" value="No" ${data.cifrado === 'No' ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()"> No
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -998,9 +1031,6 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
     // ===== PESTAÑA 6: INTEGRACIONES =====
     const integs = data.integraciones || [];
     let tieneIntegracionesValor = data.tiene_integraciones;
-    if (tieneIntegracionesValor === undefined || tieneIntegracionesValor === null) {
-        tieneIntegracionesValor = false;
-    }
 
     html += `
         <div class="tab-content ${tabActual === 5 ? 'active' : ''}" id="tab-integraciones">
@@ -1008,20 +1038,17 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
                 <label>¿Tiene integraciones? <span class="required">*</span></label>
                 <div class="radio-group" style="display:flex;gap:20px;margin-top:6px;">
                     <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;">
-                        <input type="radio" name="tiene-integraciones" value="true" ${tieneIntegracionesValor ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="toggleIntegraciones(true)">
-                        Sí
+                        <input type="radio" name="tiene-integraciones" value="true" ${tieneIntegracionesValor === true ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="toggleIntegraciones(true)"> Sí
                     </label>
                     <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;">
-                        <input type="radio" name="tiene-integraciones" value="false" ${!tieneIntegracionesValor ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="toggleIntegraciones(false)">
-                        No
+                        <input type="radio" name="tiene-integraciones" value="false" ${tieneIntegracionesValor === false ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="toggleIntegraciones(false)"> No
                     </label>
                 </div>
                 <div class="field-error" id="error-integraciones">Este campo es obligatorio</div>
             </div>
-
-            <div id="integraciones-content" style="${tieneIntegracionesValor ? 'display:block;' : 'display:none;'}">
+            <div id="integraciones-content" style="${tieneIntegracionesValor === true ? 'display:block;' : 'display:none;'}">
                 ${!soloLectura ? `<button class="btn btn-verde btn-sm" onclick="abrirModalIntegracion()" style="margin-bottom:12px;">➕ Agregar Integración</button>` : ''}
-                
+                                 
                 <div id="integraciones-lista">
                     ${integs.length > 0 ? `
                         <div class="table-wrap">
@@ -1039,7 +1066,7 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
                                         <tr data-index="${idx}">
                                             <td>${i.destino}</td>
                                             <td>${i.metodo}</td>
-                                            <td>${i.frecuencia || '—'}</td>
+                                            <td>${i.frecuencia || '-'}</td>
                                             <td>
                                                 ${!soloLectura ? `
                                                     <button class="btn btn-ghost btn-sm" onclick="editarIntegracion(${idx})">✏️</button>
@@ -1061,7 +1088,7 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
             <div class="modal" style="width:min(550px,100%);">
                 <div class="modal-head">
                     <h3 id="modal-integracion-titulo">Agregar Integración</h3>
-                    <button class="modal-close" onclick="cerrarModalIntegracion()">✕</button>
+                    <button class="modal-close" onclick="cerrarModalIntegracion()">✖</button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -1144,21 +1171,21 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
                     ${['Manual', 'Documento técnico', 'Contrato', 'Capturas', 'Certificados'].map(t => `
                         <div style="border:1px dashed var(--border);border-radius:10px;padding:12px;text-align:center;">
                             <label style="display:block;font-weight:600;font-size:13px;">${t}</label>
-                            <input type="file" ${soloLectura ? 'disabled' : ''} style="margin-top:8px;font-size:12px;width:100%;" 
-                                   onchange="subirEvidencia('${t}', this)">
+                            <input type="file" ${soloLectura ? 'disabled' : ''} style="margin-top:8px;font-size:12px;width:100%;"
+                                    onchange="subirEvidencia('${t}', this)">
                         </div>
                     `).join('')}
                 </div>
                 <div class="field-error" id="error-evidencias">Debe subir al menos una evidencia</div>
-                ${camposObservados['evidencias'] ? `<div class="observacion-validador">🔴 ${camposObservados['evidencias']}</div>` : ''}
+                ${camposObservados['evidencias'] ? `<div class="observacion-validador">⚠️ ${camposObservados['evidencias']}</div>` : ''}
             </div>
             <div style="margin-bottom:12px;">
                 <h4 style="margin-bottom:6px;font-size:14px;">Archivos subidos</h4>
                 <div class="archivos-subidos-lista">
                     ${evidenciasSubidas.length > 0 ? evidenciasSubidas.map(e => `
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#f8fafa;border-radius:6px;margin-bottom:4px;">
-                            <span>📄 <strong>${e.tipo}:</strong> ${e.nombre} (${(e.size / 1024).toFixed(1)} KB)</span>
-                            ${!soloLectura ? `<button class="btn btn-danger btn-sm" onclick="eliminarEvidencia('${e.tipo}')">✕</button>` : ''}
+                            <span>📎 <strong>${e.tipo}:</strong> ${e.nombre} (${(e.size / 1024).toFixed(1)} KB)</span>
+                            ${!soloLectura ? `<button class="btn btn-danger btn-sm" onclick="eliminarEvidencia('${e.tipo}')">🗑️</button>` : ''}
                         </div>
                     `).join('') : '<p style="color:var(--muted);font-size:13px;">No hay archivos subidos</p>'}
                 </div>
@@ -1180,7 +1207,7 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
                     ${urlsAgregadas.length > 0 ? urlsAgregadas.map(u => `
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#f8fafa;border-radius:6px;margin-bottom:4px;">
                             <span>🔗 <strong>${u.desc}:</strong> <a href="${u.url}" target="_blank" style="color:var(--color-azul-ctic);">${u.url}</a></span>
-                            ${!soloLectura ? `<button class="btn btn-danger btn-sm" onclick="eliminarUrl('${u.url}')">✕</button>` : ''}
+                            ${!soloLectura ? `<button class="btn btn-danger btn-sm" onclick="eliminarUrl('${u.url}')">🗑️</button>` : ''}
                         </div>
                     `).join('') : '<p style="color:var(--muted);font-size:13px;">No hay URLs agregadas</p>'}
                 </div>
@@ -1190,13 +1217,15 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
 
     // ===== PESTAÑA 8: RESUMEN =====
     const porcentaje = calcularPorcentaje(data);
+    const tieneIntegracionesOk = data.tiene_integraciones === true || data.tiene_integraciones === false;
+
     const secciones = {
         'General': !!(data.nombre && data.nombre.trim() !== '' && data.area && data.responsable_tecnico && data.responsable_tecnico.trim() !== '' && data.criticidad),
         'Tipo': !!data.tipo,
         'Desarrollo': true,
         'Arquitectura': !!(data.arquitectura && data.arquitectura.trim() !== ''),
         'BD': !!(data.motor_bd),
-        'Integraciones': data.tiene_integraciones !== undefined && data.tiene_integraciones !== null && data.tiene_integraciones !== '',
+        'Integraciones': tieneIntegracionesOk,
         'Evidencias': evidenciasSubidas.length > 0 || (data.evidencias && data.evidencias.length > 0)
     };
 
@@ -1211,7 +1240,7 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
         const ok = secciones[key];
         return `
                         <div class="item">
-                            ${ok ? '<span class="check">✔</span>' : '<span class="cross">✖</span>'}
+                            ${ok ? '<span class="check">✔️</span>' : '<span class="cross">❌</span>'}
                             ${key}
                             ${ok ? '' : '<span class="pendiente"> (pendiente)</span>'}
                         </div>
@@ -1226,7 +1255,6 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
     `;
 
     html += `</div>`;
-
     container.innerHTML = html;
 
     if (soloLectura) {
@@ -1234,17 +1262,27 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
         container.querySelectorAll('input, select, textarea').forEach(el => {
             el.disabled = true;
         });
-        
+
         // Deshabilitar botones de acciones (agregar integración, agregar URL, etc.)
         // PERO NO deshabilitar los botones de las pestañas (.tab-btn)
         container.querySelectorAll('button:not(.tab-btn)').forEach(el => {
-            // No deshabilitar el botón de cerrar del modal (está fuera del modal-body)
+            // No deshabilitar el botón de cerrar del modal
             if (!el.closest('.modal-close')) {
                 el.disabled = true;
             }
         });
+
+        // NUEVO: Ocultar explícitamente el botón de Guardar Borrador
+        const btnGuardar = document.getElementById('btn-guardar-modal');
+        if (btnGuardar) btnGuardar.style.display = 'none';
+
+    } else {
+        // NUEVO: Mostrar el botón Guardar Borrador si NO es solo lectura
+        const btnGuardar = document.getElementById('btn-guardar-modal');
+        if (btnGuardar) btnGuardar.style.display = 'inline-flex';
     }
-    actualizarBotonEnviar(); // <--- SOLO LA LLAMADA
+
+    actualizarBotonEnviar();
     actualizarResumen();
 }
 
@@ -1301,7 +1339,7 @@ function actualizarResumen() {
     const motor_bd = document.getElementById('campo-motor-bd')?.value || '';
 
     const tieneIntegracionesRadio = document.querySelector('input[name="tiene-integraciones"]:checked');
-    const tieneIntegraciones = tieneIntegracionesRadio ? tieneIntegracionesRadio.value === 'true' : false;
+    const tieneIntegraciones = tieneIntegracionesRadio ? (tieneIntegracionesRadio.value === 'true') : null;
 
     const data = {
         nombre,
@@ -1322,7 +1360,7 @@ function actualizarResumen() {
         'Desarrollo': true,
         'Arquitectura': !!arquitectura,
         'BD': !!motor_bd,
-        'Integraciones': tieneIntegraciones,
+        'Integraciones': tieneIntegraciones !== null,
         'Evidencias': evidenciasSubidas.length > 0
     };
 
@@ -1347,7 +1385,7 @@ function actualizarResumen() {
 // ============================================================
 // GUARDAR SISTEMA MODAL (SIN VALIDACIONES)
 // ============================================================
-function guardarSistemaModal() {
+function guardarSistemaModal(esEnvioFinal = false) { // <--- AÑADIR PARÁMETRO
     if (modoModal === 'ver') {
         cerrarModalSistema();
         return;
@@ -1371,7 +1409,7 @@ function guardarSistemaModal() {
     const anio_desarrollo = document.getElementById('campo-anio')?.value || '';
     const adquisicion = document.getElementById('campo-adquisicion')?.value || '';
     const empresa = document.getElementById('campo-empresa')?.value?.trim() || '';
-    const contrato = document.getElementById('campo-contrato')?.value || 'No';
+    const contrato = document.querySelector('input[name="campo-contrato"]:checked')?.value || '';
     const fecha_soporte = document.getElementById('campo-soporte')?.value || '';
     const observaciones = document.getElementById('campo-obs-desarrollo')?.value?.trim() || '';
 
@@ -1389,9 +1427,9 @@ function guardarSistemaModal() {
     const tipo_bd = document.getElementById('campo-tipo-bd')?.value || 'Relacional';
     const servidor = document.getElementById('campo-servidor')?.value?.trim() || '';
     const esquema = document.getElementById('campo-esquema')?.value?.trim() || '';
-    const backup = document.getElementById('campo-backup')?.value || 'No';
+    const backup = document.querySelector('input[name="campo-backup"]:checked')?.value || '';
     const frecuencia_backup = document.getElementById('campo-frecuencia')?.value || '';
-    const cifrado = document.getElementById('campo-cifrado')?.value || 'No';
+    const cifrado = document.querySelector('input[name="campo-cifrado"]:checked')?.value || '';
     const responsable_bd = document.getElementById('campo-responsable-bd')?.value?.trim() || '';
 
     const tieneIntegracionesRadio = document.querySelector('input[name="tiene-integraciones"]:checked');
@@ -1400,6 +1438,7 @@ function guardarSistemaModal() {
     const fecha = new Date().toLocaleDateString('es-PE');
 
     // --- Guardar ---
+    const estadoGuardar = esEnvioFinal ? 'Enviado' : 'Borrador';
     if (modoModal === 'registrar') {
         const nuevoId = 'SIS' + String(sistemas.length + 1).padStart(3, '0');
         const nuevoSistema = {
@@ -1410,7 +1449,7 @@ function guardarSistemaModal() {
             area,
             responsable_tecnico,
             responsable_funcional,
-            estado: 'Borrador',
+            estado: estadoGuardar,
             criticidad,
             fecha,
             tipo,
@@ -1447,7 +1486,7 @@ function guardarSistemaModal() {
         };
         sistemas.push(nuevoSistema);
         guardarSistemas(sistemas);
-        alert('✅ Sistema registrado correctamente como BORRADOR.');
+        alert(esEnvioFinal ? '✅ El sistema ha sido enviado a revisión técnica correctamente.' : '✅ Sistema registrado correctamente como BORRADOR.');
     } else if (modoModal === 'editar' || modoModal === 'corregir') {
         const index = sistemas.findIndex(s => s.id === sistemaEnEdicion.id);
         if (index !== -1) {
@@ -1490,13 +1529,18 @@ function guardarSistemaModal() {
                 urls: urlsAgregadas,
                 estado_operativo
             };
-            if (modoModal === 'corregir') {
+            if (esEnvioFinal) {
+                sistemas[index].estado = 'Enviado';
+            } else if (modoModal === 'corregir') {
                 sistemas[index].estado = 'Subsanado';
                 sistemas[index].observaciones_validador = [];
             }
             guardarSistemas(sistemas);
             alert('✅ Cambios guardados correctamente.');
         }
+    }
+    if (esEnvioFinal && modoModal !== 'registrar') {
+        alert('✅ El sistema ha sido enviado a revisión técnica correctamente.');
     }
 
     cerrarModalSistema();
@@ -1571,6 +1615,7 @@ function validateFinalSubmit() {
     if (sistemaEnEdicion) {
         sistemaEnEdicion.estado = 'Enviado';
     }
+    guardarSistemaModal(true);
 
     // Actualizar el estado en el DOM
     const estadoSelect = document.querySelector('.estado-automatico');
@@ -1606,6 +1651,25 @@ function actualizarBotonEnviar() {
 }
 
 // ============================================================
+// POBLAR SELECT DE RESPONSABLES
+// ============================================================
+function poblarSelectResponsables() {
+    const select = document.getElementById('filter-responsable');
+    if (!select) return;
+
+    const responsables = [...new Set(sistemas.map(s => s.responsable_tecnico).filter(r => r && r.trim() !== ''))];
+
+    select.innerHTML = '<option value="">Todos los responsables</option>';
+
+    responsables.forEach(r => {
+        const option = document.createElement('option');
+        option.value = r;
+        option.textContent = r;
+        select.appendChild(option);
+    });
+}
+
+// ============================================================
 // INICIALIZACIÓN
 // ============================================================
 document.addEventListener('DOMContentLoaded', function () {
@@ -1623,10 +1687,57 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('filter-area').addEventListener('change', filtrarSistemas);
     document.getElementById('filter-tipo').addEventListener('change', filtrarSistemas);
     document.getElementById('filter-criticidad').addEventListener('change', filtrarSistemas);
+    document.getElementById('filter-responsable').addEventListener('change', filtrarSistemas);
+    document.getElementById('filter-riesgo').addEventListener('change', filtrarSistemas);
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             cerrarModalSistema();
         }
     });
+
+    // ============================================================
+    // LECTURA DE PARÁMETROS DE URL (desde Dashboard)
+    // ============================================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action');
+    const id = urlParams.get('id');
+
+    if (action && id) {
+        const sistema = sistemas.find(s => s.id === id);
+        if (sistema) {
+            if (action === 'editar') {
+                // Abrir modal en modo edición
+                editarSistema(id);
+            } else if (action === 'enviar') {
+                // Abrir modal en modo edición y cambiar a la pestaña de Resumen
+                editarSistema(id);
+                // Esperar a que el modal se renderice para cambiar de pestaña
+                setTimeout(function () {
+                    cambiarTab(7); // Índice 7 = Resumen
+                }, 150);
+            } else if (action === 'corregir') {
+                // Abrir modal en modo corregir
+                corregirSistema(id);
+            }
+        }
+    }
+
+    // Cargar los responsables en el select
+    poblarSelectResponsables();
+    // ============================================================
+    // ENVIAR A VALIDACIÓN DIRECTAMENTE DESDE LA TABLA
+    // ============================================================
+    window.enviarAValidacionDirecto = function (id) {
+        if (confirm('¿Estás seguro de que deseas enviar este sistema a validación técnica? Ya no podrás editarlo.')) {
+            const index = sistemas.findIndex(s => s.id === id);
+            if (index !== -1) {
+                sistemas[index].estado = 'Enviado';
+                guardarSistemas(sistemas);
+                alert('✅ El sistema ha sido enviado a revisión técnica correctamente.');
+                sistemas = getSistemas();
+                renderizarTabla();
+            }
+        }
+    }
 });
