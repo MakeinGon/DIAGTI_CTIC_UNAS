@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CatalogoRepository extends JpaRepository<CatalogoEntity, Long> {
+
+    // Solo devuelve ítems activos
     List<CatalogoEntity> findByTipoCatalogoAndEstadoTrueOrderByOrdenAsc(String tipoCatalogo);
+
     Optional<CatalogoEntity> findByTipoCatalogoAndCodigo(String tipoCatalogo, String codigo);
     boolean existsByTipoCatalogoAndCodigo(String tipoCatalogo, String codigo);
 }

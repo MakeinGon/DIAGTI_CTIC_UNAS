@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class CatalogoDTO {
     private String codigo;
-    private String nombre;
+    private String nombre;      // se mapea a 'valor'
     private String descripcion;
-    private String estado; // "Activo" o "Inactivo"
+    private String estado;      // "Activo" o "Inactivo"
     private Integer orden;
 }

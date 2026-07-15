@@ -51,7 +51,7 @@ public class CatalogoServiceImpl implements CatalogoService {
         entity.setValor(dto.getNombre());
         entity.setDescripcion(dto.getDescripcion());
         entity.setEstado("Activo".equals(dto.getEstado()));
-        entity.setOrden(dto.getOrden());
+        entity.setOrden(dto.getOrden() != null ? dto.getOrden() : 0);
 
         return mapper.toDTO(repository.save(entity));
     }
@@ -61,7 +61,7 @@ public class CatalogoServiceImpl implements CatalogoService {
     public void eliminar(String tipo, String codigo) {
         CatalogoEntity entity = repository.findByTipoCatalogoAndCodigo(tipo, codigo)
                 .orElseThrow(() -> new RuntimeException("Ítem no encontrado."));
-        entity.setEstado(false);
-        repository.save(entity);
+        // Borrado físico
+        repository.delete(entity);
     }
 }
