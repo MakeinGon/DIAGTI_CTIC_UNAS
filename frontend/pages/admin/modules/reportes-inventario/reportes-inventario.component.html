@@ -36,19 +36,19 @@
         <div class="nav-label">Administración</div>
 
         <nav class="nav">
-            <a class="nav-item" href="/DIAGTI_CTIC_UNAS/frontend/pages/admin/modules/html/usuarios.html">
+            <a class="nav-item" href="../gestion-usuarios/gestion-usuarios.component.html">
                 <span>
                     <span class="lbl">Gestión de Usuarios</span>
                     <span class="sub">Cuentas y accesos</span>
                 </span>
             </a>
-            <a class="nav-item" href="/DIAGTI_CTIC_UNAS/frontend/pages/admin/modules/html/roles.html">
+            <a class="nav-item" href="../roles-permisos/roles-permisos.component.html">
                 <span>
                     <span class="lbl">Roles y Permisos</span>
                     <span class="sub">Perfiles de acceso</span>
                 </span>
             </a>
-            <a class="nav-item" href="/DIAGTI_CTIC_UNAS/frontend/pages/admin/modules/html/catalogos.html">
+            <a class="nav-item" href="../gestion-catalogos/gestion-catalogos.component.html">
                 <span>
                     <span class="lbl">Gestión de Catálogos</span>
                     <span class="sub">Listas maestras</span>
@@ -62,7 +62,7 @@
             </a>
             <a class="nav-item active" href="reportes-inventario.component.html">
                 <span>
-                    <span class="lbl">Reportes e Inventario</span>
+                    <span class="lbl">Reportes de Inventario</span>
                     <span class="sub">Estadísticas y análisis</span>
                 </span>
             </a>
@@ -223,6 +223,24 @@
             </footer>
         </div>
     </main>
+
+      <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+      <div class="logout-confirm-overlay" id="logout-confirm-overlay">
+        <div class="logout-confirm-box">
+          <div class="logout-confirm-header">
+            <h3>Cerrar sesión</h3>
+            <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
+          </div>
+          <div class="logout-confirm-body">
+            <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+            <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+          </div>
+          <div class="logout-confirm-footer">
+            <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
+            <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+          </div>
+        </div>
+      </div>
 
     <script src="reportes-inventario.component.js"></script>
     <script>

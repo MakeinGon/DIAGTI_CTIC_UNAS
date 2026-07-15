@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 btnText.textContent = 'Acceso concedido';
                 loginBtn.style.background = '#1abb9c';
                 setTimeout(function() {
-                    window.location.href = 'evidencias-obligatorias.html';
+                    window.location.href = '../../admin/modules/gestion-usuarios/gestion-usuarios.component.html';
                 }, 800);
             } else {
                 mostrarError('Usuario o contraseña incorrectos');

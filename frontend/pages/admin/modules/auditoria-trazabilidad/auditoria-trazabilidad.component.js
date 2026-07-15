@@ -410,13 +410,33 @@ renderStats() {
 // ============================================================
 
 function cerrarSesion() {
+    // Muestra la pantalla de confirmación antes de cerrar la sesión
+    const overlay = document.getElementById('logout-confirm-overlay');
+    if (overlay) overlay.classList.add('open');
+}
+
+function cancelarCerrarSesion() {
+    const overlay = document.getElementById('logout-confirm-overlay');
+    if (overlay) overlay.classList.remove('open');
+}
+
+function confirmarCerrarSesion() {
     // Eliminar datos de sesión (si existen)
     localStorage.clear();
     sessionStorage.clear();
 
     // Redirigir al login
-   window.location.href = "../../../login/html/login.html";
+    window.location.href = "../../../login/html/login.html";
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const overlay = document.getElementById('logout-confirm-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) cancelarCerrarSesion();
+        });
+    }
+});
 // ============================================================
 // INICIALIZAR AL CARGAR EL DOM
 // ============================================================
