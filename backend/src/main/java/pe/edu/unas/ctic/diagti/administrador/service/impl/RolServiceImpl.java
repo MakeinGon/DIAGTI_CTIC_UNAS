@@ -18,6 +18,7 @@ public class RolServiceImpl implements RolService {
     private final RolRepository repository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<RolDTO> listar() {
         return repository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
@@ -51,24 +52,35 @@ public class RolServiceImpl implements RolService {
     @Override
     @Transactional
     public void eliminar(Long id) {
-        if (repository.existsUsuariosByRolId(id)) {
-            throw new RuntimeException("No se puede eliminar el rol porque tiene usuarios asignados");
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Rol no encontrado");
         }
+        // Quita el rol de cualquier usuario que lo tenga asignado (tal como
+        // avisa el modal de confirmacion del frontend) y recien despues borra
+        // el rol. Ya no se bloquea la eliminacion por tener usuarios asignados.
+        repository.desasignarUsuariosDelRol(id);
         repository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public RolDTO obtenerPorId(Long id) {
         return repository.findById(id).map(this::toDTO).orElse(null);
     }
 
+    /**
+     * Convierte la entidad a DTO sin tocar la coleccion lazy
+     * RolEntity.usuarios: el conteo se obtiene con una query directa
+     * (RolRepository.contarUsuariosPorRol), evitando
+     * LazyInitializationException fuera de una transaccion.
+     */
     private RolDTO toDTO(RolEntity entity) {
         RolDTO dto = new RolDTO();
         dto.setId(entity.getIdRol());
         dto.setNombre(entity.getNombre());
         dto.setDescripcion(entity.getDescripcion());
         dto.setEstado(entity.getEstado() ? "Activo" : "Inactivo");
-        dto.setCantidadUsuarios(entity.getUsuarios().size());
+        dto.setCantidadUsuarios((int) repository.contarUsuariosPorRol(entity.getIdRol()));
         return dto;
     }
 }

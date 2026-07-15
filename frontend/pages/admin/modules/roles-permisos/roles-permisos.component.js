@@ -1,282 +1,429 @@
 // ============================================================
-// Modal: abrir / cerrar
+// CONFIGURACIÓN API
 // ============================================================
-function abrirModal(id){ document.getElementById(id).classList.add('open'); }
-function cerrarModal(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(function(ov){
-  ov.addEventListener('click', function(e){ if(e.target === ov) ov.classList.remove('open'); });
+const API_BASE = 'http://localhost:8080/api/admin';
+
+// Lista de módulos que aparecerán en la matriz (debe coincidir con backend)
+const MODULOS = [
+    'Dashboard ejecutivo',
+    'Inventario de sistemas',
+    'Registro de sistemas',
+    'Validación técnica',
+    'Evidencias técnicas',
+    'Auditoría y trazabilidad',
+    'Reportes',
+    'Usuarios y roles',
+    'Catálogos'
+];
+
+// ============================================================
+// FUNCIONES AUXILIARES
+// ============================================================
+function manejarError(res) {
+    if (!res.ok) {
+        return res.json().then(err => { throw new Error(err.message || 'Error en la petición'); });
+    }
+    return res.json();
+}
+
+function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(function(ov) {
+    ov.addEventListener('click', function(e) { if (e.target === ov) ov.classList.remove('open'); });
 });
 
 // ============================================================
-// Cerrar sesión
+// CERRAR SESIÓN
 // ============================================================
 function cerrarSesion() {
-    // Muestra la pantalla de confirmación antes de cerrar la sesión
-    const overlay = document.getElementById('logout-confirm-overlay');
-    if (overlay) overlay.classList.add('open');
+    document.getElementById('logout-confirm-overlay').classList.add('open');
 }
-
 function cancelarCerrarSesion() {
-    const overlay = document.getElementById('logout-confirm-overlay');
-    if (overlay) overlay.classList.remove('open');
+    document.getElementById('logout-confirm-overlay').classList.remove('open');
 }
-
 function confirmarCerrarSesion() {
-    // Eliminar datos de sesión (si existen)
     localStorage.clear();
     sessionStorage.clear();
-
-    // Redirigir al login
     window.location.href = "../../../login/html/login.html";
 }
-
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     const overlay = document.getElementById('logout-confirm-overlay');
     if (overlay) {
-        overlay.addEventListener('click', function (e) {
+        overlay.addEventListener('click', function(e) {
             if (e.target === overlay) cancelarCerrarSesion();
         });
     }
 });
 
 // ============================================================
-// Confirmación genérica (usada para eliminar roles, etc.)
+// CONFIRMACIÓN GENÉRICA
 // ============================================================
 let accionConfirmada = null;
-
-function pedirConfirmacion(mensaje, callback, textoBoton){
-  document.getElementById('confirmar-mensaje').textContent = mensaje;
-  document.getElementById('confirmar-btn-aceptar').textContent = textoBoton || 'Eliminar';
-  accionConfirmada = callback;
-  abrirModal('modal-confirmar');
+function pedirConfirmacion(mensaje, callback, textoBoton) {
+    document.getElementById('confirmar-mensaje').textContent = mensaje;
+    document.getElementById('confirmar-btn-aceptar').textContent = textoBoton || 'Eliminar';
+    accionConfirmada = callback;
+    abrirModal('modal-confirmar');
 }
-
-document.getElementById('confirmar-btn-aceptar').addEventListener('click', function(){
-  if(typeof accionConfirmada === 'function'){ accionConfirmada(); }
-  accionConfirmada = null;
-  cerrarModal('modal-confirmar');
+document.getElementById('confirmar-btn-aceptar').addEventListener('click', function() {
+    if (typeof accionConfirmada === 'function') { accionConfirmada(); }
+    accionConfirmada = null;
+    cerrarModal('modal-confirmar');
 });
 
 // ============================================================
-// Mensajes de error de formulario
+// MENSAJES DE ERROR
 // ============================================================
-function mostrarErrorFormulario(id, mensaje){
-  const el = document.getElementById(id);
-  if(el){ el.textContent = mensaje; el.style.display = 'block'; }
+function mostrarErrorFormulario(id, mensaje) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = mensaje; el.style.display = 'block'; }
 }
-function ocultarErrorFormulario(id){
-  const el = document.getElementById(id);
-  if(el){ el.style.display = 'none'; }
-}
-
-// ============================================================
-// Selector de rol: muestra la vista estática correspondiente
-// ============================================================
-function mostrarRol(rolKey, el){
-  document.querySelectorAll('.role-view').forEach(function(v){ v.classList.remove('active'); });
-  const vista = document.getElementById('role-' + rolKey);
-  if(vista) vista.classList.add('active');
-  document.querySelectorAll('#lista-roles .list-item').forEach(function(i){ i.classList.remove('active'); });
-  if(el) el.classList.add('active');
+function ocultarErrorFormulario(id) {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; }
 }
 
 // ============================================================
-// Matriz de permisos: marcar / desmarcar cada casilla al hacer
-// clic (delegado: también funciona en matrices creadas después)
+// CARGAR LISTA DE ROLES
 // ============================================================
-document.addEventListener('click', function(e){
-  const box = e.target.closest('.perm-box');
-  if(box) box.classList.toggle('on');
-});
-
-// ============================================================
-// "Guardar cambios" de la matriz de permisos: los checks ya se
-// guardan al vuelo (delegación de arriba); este botón solo da
-// una confirmación visual al usuario.
-// ============================================================
-function guardarPermisos(btn){
-  const textoOriginal = btn.textContent;
-  btn.textContent = '✓ Guardado';
-  btn.disabled = true;
-  setTimeout(function(){
-    btn.textContent = textoOriginal;
-    btn.disabled = false;
-  }, 1200);
+function cargarRoles() {
+    fetch(`${API_BASE}/roles`)
+        .then(res => manejarError(res))
+        .then(data => {
+            const lista = document.getElementById('lista-roles');
+            lista.innerHTML = '';
+            data.forEach(rol => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.setAttribute('data-role', rol.id);
+                div.onclick = function() { mostrarRol(rol.id, this); };
+                div.innerHTML = `
+                    <div><div class="n">${rol.nombre}</div><div class="c">${rol.descripcion || ''}</div></div>
+                    <span class="count-pill">${rol.cantidadUsuarios || 0}</span>
+                `;
+                lista.appendChild(div);
+            });
+            // Seleccionar el primer rol si existe
+            if (data.length > 0) {
+                const primero = lista.querySelector('.list-item');
+                if (primero) {
+                    mostrarRol(data[0].id, primero);
+                }
+            } else {
+                mostrarEstadoVacio();
+            }
+            actualizarContadorRoles();
+        })
+        .catch(err => {
+            // No bloquear la pantalla: dejar el tab vacío y listo para crear roles,
+            // igual que hace Catálogos cuando no hay datos o falla la carga.
+            console.error('Error cargando roles:', err);
+            const lista = document.getElementById('lista-roles');
+            if (lista) lista.innerHTML = '';
+            mostrarEstadoVacio();
+            actualizarContadorRoles();
+        });
 }
 
 // ============================================================
-// Alta / edición / eliminación de roles
+// ESTADO VACÍO DEL PANEL (sin roles o carga fallida)
 // ============================================================
-let rolEditando = null;
-
-const MODULOS_SISTEMA = [
-  'Dashboard ejecutivo', 'Inventario de sistemas', 'Registro de sistemas',
-  'Validación técnica', 'Evidencias técnicas', 'Auditoría y trazabilidad',
-  'Reportes', 'Usuarios y roles', 'Catálogos'
-];
-
-// Roles predefinidos disponibles como base al crear uno nuevo
-const ROL_BASE_A_ID = {
-  'Validador Técnico': 'role-validador',
-  'Auditor': 'role-auditor',
-  'Área de Desarrollo': 'role-desarrollo'
-};
-
-function construirFilasMatriz(){
-  return MODULOS_SISTEMA.map(function(mod){
-    const celdas = '<td><span class="perm-box"></span></td>'.repeat(6);
-    return '<tr><td>' + mod + '</td>' + celdas + '</tr>';
-  }).join('');
-}
-
-function limpiarFormularioRol(){
-  document.getElementById('input-rol-nombre').value = '';
-  document.getElementById('textarea-rol-desc').value = '';
-  document.getElementById('select-rol-base').selectedIndex = 0;
-  ocultarErrorFormulario('rol-form-error');
-}
-
-function abrirNuevoRol(){
-  rolEditando = null;
-  document.getElementById('rol-modal-titulo').textContent = 'Nuevo rol';
-  document.getElementById('rol-btn-guardar').textContent = 'Crear rol';
-  document.getElementById('select-rol-base').style.display = '';
-  document.getElementById('select-rol-base').previousElementSibling.style.display = '';
-  limpiarFormularioRol();
-  abrirModal('modal-rol');
-}
-
-function editarRol(btn){
-  const vista = btn.closest('.role-view');
-  rolEditando = vista;
-  document.getElementById('rol-modal-titulo').textContent = 'Editar rol';
-  document.getElementById('rol-btn-guardar').textContent = 'Guardar cambios';
-  ocultarErrorFormulario('rol-form-error');
-
-  document.getElementById('input-rol-nombre').value = vista.querySelector('.role-header h3').textContent.trim();
-  document.getElementById('textarea-rol-desc').value = vista.querySelector('.role-header p').textContent.trim();
-  // Al editar un rol existente no aplica lo de "basarlo en otro rol"
-  document.getElementById('select-rol-base').selectedIndex = 0;
-  document.getElementById('select-rol-base').style.display = 'none';
-  document.getElementById('select-rol-base').previousElementSibling.style.display = 'none';
-
-  abrirModal('modal-rol');
+function mostrarEstadoVacio() {
+    rolActualId = null;
+    document.getElementById('panel-roles').innerHTML =
+        '<p class="empty">No hay roles registrados. Crea uno nuevo con el botón "+ Nuevo rol".</p>';
 }
 
 // ============================================================
-// Expresión regular de validación para el nombre del rol
+// MOSTRAR ROL Y SUS PERMISOS
 // ============================================================
-const RE_NOMBRE_ROL = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9][A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.-]{2,59}$/;
+let rolActualId = null;
 
-function guardarRol(){
-  const nombre = document.getElementById('input-rol-nombre').value.trim().replace(/\s+/g, ' ');
-  const desc = document.getElementById('textarea-rol-desc').value.trim();
-  const base = document.getElementById('select-rol-base').value;
+function mostrarRol(rolId, el) {
+    // Guardar el ID del rol actual
+    rolActualId = rolId;
 
-  if(!nombre){
-    mostrarErrorFormulario('rol-form-error', 'Ingresa el nombre del rol.');
-    return;
-  }
-  if(!RE_NOMBRE_ROL.test(nombre)){
-    mostrarErrorFormulario('rol-form-error', 'El nombre del rol debe tener al menos 3 caracteres y solo puede contener letras, números, espacios, puntos y guiones.');
-    return;
-  }
+    // Cambiar clase activa en la lista
+    document.querySelectorAll('#lista-roles .list-item').forEach(i => i.classList.remove('active'));
+    if (el) el.classList.add('active');
 
-  const keyEnEdicion = rolEditando ? rolEditando.id.replace('role-', '') : null;
-  const nombreDuplicado = Array.from(document.querySelectorAll('.list-item')).some(function(item){
-    if(keyEnEdicion && item.getAttribute('data-role') === keyEnEdicion) return false;
-    const texto = item.querySelector('.n');
-    return texto && texto.textContent.trim().toLowerCase() === nombre.toLowerCase();
-  });
-  if(nombreDuplicado){
-    mostrarErrorFormulario('rol-form-error', 'Ya existe un rol con ese nombre.');
-    return;
-  }
+    // Cargar permisos del rol
+    fetch(`${API_BASE}/permisos/${rolId}`)
+        .then(res => manejarError(res))
+        .then(permisos => {
+            const panel = document.getElementById('panel-roles');
+            panel.innerHTML = generarVistaRol(rolId, permisos);
+        })
+        .catch(err => {
+            // Si el rol aún no tiene permisos guardados (o falla la carga),
+            // mostramos la matriz completa en blanco: el usuario puede marcar
+            // casillas y "Guardar cambios" la crea desde cero.
+            console.error('Error cargando permisos:', err);
+            const panel = document.getElementById('panel-roles');
+            panel.innerHTML = generarVistaRol(rolId, []);
+        });
+}
 
-  ocultarErrorFormulario('rol-form-error');
+// ============================================================
+// GENERAR VISTA DE MATRIZ DE PERMISOS
+// ============================================================
+function generarVistaRol(rolId, permisos) {
+    // Crear un mapa de módulo -> permisos para acceso rápido
+    const permisosMap = {};
+    permisos.forEach(p => {
+        permisosMap[p.modulo] = p;
+    });
 
-  if(rolEditando){
-    // --- Editar rol existente: solo actualiza nombre y descripción ---
-    rolEditando.querySelector('.role-header h3').textContent = nombre;
-    rolEditando.querySelector('.role-header p').textContent = desc || 'Sin descripción registrada.';
-    const key = rolEditando.id.replace('role-', '');
-    const itemLista = document.querySelector('.list-item[data-role="' + key + '"] .n');
-    if(itemLista) itemLista.textContent = nombre;
-  } else {
-    // --- Crear rol nuevo ---
-    const key = 'custom' + Date.now();
+    let html = `
+        <div class="role-header">
+            <div>
+                <h3 id="rol-nombre-display">Cargando...</h3>
+                <p id="rol-desc-display">Cargando...</p>
+            </div>
+            <div class="role-actions">
+                <button class="btn ghost sm" onclick="editarRol()">Editar rol</button>
+                <button class="btn btn-verde sm" onclick="guardarPermisos()">Guardar cambios</button>
+                <button class="btn danger sm" onclick="eliminarRol()">Eliminar rol</button>
+            </div>
+        </div>
+        <div class="matrix-wrap">
+            <table class="matrix">
+                <thead>
+                    <tr><th>Módulo</th><th>Ver</th><th>Crear</th><th>Editar</th><th>Eliminar</th><th>Validar</th><th>Exportar</th></tr>
+                </thead>
+                <tbody>
+    `;
 
-    const nuevoItem = document.createElement('div');
-    nuevoItem.className = 'list-item';
-    nuevoItem.setAttribute('data-role', key);
-    nuevoItem.setAttribute('onclick', "mostrarRol('" + key + "', this)");
-    nuevoItem.innerHTML = '<div><div class="n">' + nombre + '</div><div class="c">' + (desc || 'Rol personalizado') + '</div></div><span class="count-pill">0</span>';
-    document.getElementById('lista-roles').appendChild(nuevoItem);
+    MODULOS.forEach(modulo => {
+        const p = permisosMap[modulo] || { ver: false, crear: false, editar: false, eliminar: false, validar: false, exportar: false };
+        html += `
+            <tr>
+                <td>${modulo}</td>
+                <td><span class="perm-box ${p.ver ? 'on' : ''}" data-modulo="${modulo}" data-accion="ver"></span></td>
+                <td><span class="perm-box ${p.crear ? 'on' : ''}" data-modulo="${modulo}" data-accion="crear"></span></td>
+                <td><span class="perm-box ${p.editar ? 'on' : ''}" data-modulo="${modulo}" data-accion="editar"></span></td>
+                <td><span class="perm-box ${p.eliminar ? 'on' : ''}" data-modulo="${modulo}" data-accion="eliminar"></span></td>
+                <td><span class="perm-box ${p.validar ? 'on' : ''}" data-modulo="${modulo}" data-accion="validar"></span></td>
+                <td><span class="perm-box ${p.exportar ? 'on' : ''}" data-modulo="${modulo}" data-accion="exportar"></span></td>
+            </tr>
+        `;
+    });
 
-    let filasMatriz;
-    if(base && base !== 'Ninguno — permisos en blanco' && ROL_BASE_A_ID[base]){
-      const vistaBase = document.getElementById(ROL_BASE_A_ID[base]);
-      filasMatriz = vistaBase.querySelector('table.matrix tbody').innerHTML;
-    } else {
-      filasMatriz = construirFilasMatriz();
+    html += `
+                </tbody>
+            </table>
+        </div>
+        <p class="field-hint" style="margin-top:12px">Haz clic en las casillas para activar/desactivar permisos. Luego presiona "Guardar cambios".</p>
+    `;
+
+    // También actualizar el nombre y descripción del rol (necesitamos obtenerlos de la lista)
+    const itemSeleccionado = document.querySelector('.list-item.active');
+    if (itemSeleccionado) {
+        const nombre = itemSeleccionado.querySelector('.n')?.textContent || '';
+        const desc = itemSeleccionado.querySelector('.c')?.textContent || '';
+        // Insertar en el html temporal, pero mejor actualizar después de renderizar
+        setTimeout(() => {
+            const nombreDisplay = document.getElementById('rol-nombre-display');
+            const descDisplay = document.getElementById('rol-desc-display');
+            if (nombreDisplay) nombreDisplay.textContent = nombre;
+            if (descDisplay) descDisplay.textContent = desc;
+        }, 50);
     }
 
-    const nuevaVista = document.createElement('div');
-    nuevaVista.className = 'role-view';
-    nuevaVista.id = 'role-' + key;
-    nuevaVista.innerHTML =
-      '<div class="role-header">' +
-        '<div><h3>' + nombre + '</h3><p>' + (desc || 'Sin descripción registrada.') + '</p></div>' +
-        '<div class="role-actions">' +
-          '<button class="btn ghost sm" onclick="editarRol(this)">Editar rol</button>' +
-          '<button class="btn btn-verde sm" onclick="guardarPermisos(this)">Guardar cambios</button>' +
-          '<button class="btn danger sm" onclick="eliminarRol(this)">Eliminar rol</button>' +
-        '</div>' +
-      '</div>' +
-      '<div class="matrix-wrap">' +
-        '<table class="matrix">' +
-          '<thead><tr><th>Módulo</th><th>Ver</th><th>Crear</th><th>Editar</th><th>Eliminar</th><th>Validar</th><th>Exportar</th></tr></thead>' +
-          '<tbody>' + filasMatriz + '</tbody>' +
-        '</table>' +
-      '</div>' +
-      '<p class="field-hint" style="margin-top:12px">Matriz de permisos del rol seleccionado (haz clic en las casillas para editar).</p>';
-
-    document.getElementById('panel-roles').appendChild(nuevaVista);
-    mostrarRol(key, nuevoItem);
-  }
-
-  actualizarContadorRoles();
-  cerrarModal('modal-rol');
+    return html;
 }
 
-function eliminarRol(btn){
-  const vista = btn.closest('.role-view');
-  const key = vista.id.replace('role-', '');
-  const nombre = vista.querySelector('.role-header h3').textContent.trim();
+// ============================================================
+// TOGGLE DE CASILLAS DE PERMISOS (delegado)
+// ============================================================
+document.addEventListener('click', function(e) {
+    const box = e.target.closest('.perm-box');
+    if (box) {
+        box.classList.toggle('on');
+    }
+});
 
-  pedirConfirmacion(
-    '¿Eliminar el rol "' + nombre + '"? Los usuarios que lo tengan asignado quedarán sin rol. Esta acción no se puede deshacer.',
-    function(){
-      const item = document.querySelector('.list-item[data-role="' + key + '"]');
-      const eraActiva = vista.classList.contains('active');
-      vista.remove();
-      if(item) item.remove();
-      actualizarContadorRoles();
+// ============================================================
+// GUARDAR PERMISOS DEL ROL ACTUAL
+// ============================================================
+function guardarPermisos() {
+    if (!rolActualId) {
+        alert('No hay un rol seleccionado.');
+        return;
+    }
 
-      if(eraActiva){
-        const primero = document.querySelector('#lista-roles .list-item');
-        if(primero){
-          primero.click();
-        } else {
-          document.getElementById('panel-roles').innerHTML = '<p class="empty">No hay roles registrados. Crea uno nuevo con el botón "+ Nuevo rol".</p>';
+    // Recopilar permisos de la matriz
+    const filas = document.querySelectorAll('#panel-roles table.matrix tbody tr');
+    const permisos = [];
+    filas.forEach(tr => {
+        const modulo = tr.cells[0].textContent;
+        const celdas = tr.querySelectorAll('.perm-box');
+        const ver = celdas[0].classList.contains('on');
+        const crear = celdas[1].classList.contains('on');
+        const editar = celdas[2].classList.contains('on');
+        const eliminar = celdas[3].classList.contains('on');
+        const validar = celdas[4].classList.contains('on');
+        const exportar = celdas[5].classList.contains('on');
+        permisos.push({ modulo, ver, crear, editar, eliminar, validar, exportar });
+    });
+
+    // Enviar al backend
+    fetch(`${API_BASE}/permisos/${rolActualId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(permisos)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Error al guardar permisos');
+        // El backend responde 204 No Content: no hay body que parsear.
+        return null;
+    })
+    .then(() => {
+        // Feedback visual
+        const btn = document.querySelector('.role-actions .btn-verde');
+        if (btn) {
+            const original = btn.textContent;
+            btn.textContent = '✓ Guardado';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.textContent = original;
+                btn.disabled = false;
+            }, 1500);
         }
-      }
-    }
-  );
+    })
+    .catch(err => {
+        alert('Error al guardar: ' + err.message);
+    });
 }
 
-function actualizarContadorRoles(){
-  const total = document.querySelectorAll('#lista-roles .list-item').length;
-  const stat = document.getElementById('stat-total-roles');
-  if(stat) stat.textContent = total;
+// ============================================================
+// CRUD DE ROLES
+// ============================================================
+let rolEditandoId = null;
+
+function abrirNuevoRol() {
+    rolEditandoId = null;
+    document.getElementById('rol-modal-titulo').textContent = 'Nuevo rol';
+    document.getElementById('rol-btn-guardar').textContent = 'Crear rol';
+    document.getElementById('input-rol-nombre').value = '';
+    document.getElementById('textarea-rol-desc').value = '';
+    document.getElementById('select-rol-base').style.display = 'none';
+    document.getElementById('select-rol-base').previousElementSibling.style.display = 'none';
+    ocultarErrorFormulario('rol-form-error');
+    abrirModal('modal-rol');
 }
+
+function editarRol() {
+    if (!rolActualId) {
+        alert('No hay un rol seleccionado.');
+        return;
+    }
+    rolEditandoId = rolActualId;
+    const item = document.querySelector(`.list-item[data-role="${rolActualId}"]`);
+    if (!item) {
+        alert('No se encontró el rol en la lista.');
+        return;
+    }
+    const nombre = item.querySelector('.n')?.textContent || '';
+    const desc = item.querySelector('.c')?.textContent || '';
+    document.getElementById('rol-modal-titulo').textContent = 'Editar rol';
+    document.getElementById('rol-btn-guardar').textContent = 'Guardar cambios';
+    document.getElementById('input-rol-nombre').value = nombre;
+    document.getElementById('textarea-rol-desc').value = desc;
+    document.getElementById('select-rol-base').style.display = 'none';
+    document.getElementById('select-rol-base').previousElementSibling.style.display = 'none';
+    ocultarErrorFormulario('rol-form-error');
+    abrirModal('modal-rol');
+}
+
+function guardarRol() {
+    const nombre = document.getElementById('input-rol-nombre').value.trim();
+    const descripcion = document.getElementById('textarea-rol-desc').value.trim();
+    const estado = 'Activo'; // Por defecto, podrías agregar un campo en el modal
+
+    if (!nombre) {
+        mostrarErrorFormulario('rol-form-error', 'El nombre del rol es obligatorio.');
+        return;
+    }
+
+    const payload = { nombre, descripcion, estado };
+
+    const method = rolEditandoId ? 'PUT' : 'POST';
+    const url = rolEditandoId ? `${API_BASE}/roles/${rolEditandoId}` : `${API_BASE}/roles`;
+
+    fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(res => manejarError(res))
+    .then(data => {
+        cerrarModal('modal-rol');
+        // Recargar lista de roles
+        cargarRoles();
+        // Si se creó un nuevo rol, seleccionarlo automáticamente
+        if (!rolEditandoId) {
+            setTimeout(() => {
+                const items = document.querySelectorAll('#lista-roles .list-item');
+                const ultimo = items[items.length - 1];
+                if (ultimo) {
+                    const id = ultimo.getAttribute('data-role');
+                    mostrarRol(parseInt(id), ultimo);
+                }
+            }, 200);
+        } else {
+            // Si se editó, refrescar la vista del rol actual
+            const item = document.querySelector(`.list-item[data-role="${rolEditandoId}"]`);
+            if (item) {
+                mostrarRol(rolEditandoId, item);
+            }
+        }
+    })
+    .catch(err => {
+        mostrarErrorFormulario('rol-form-error', err.message || 'Error al guardar rol');
+    });
+}
+
+function eliminarRol() {
+    if (!rolActualId) {
+        alert('No hay un rol seleccionado.');
+        return;
+    }
+    const item = document.querySelector(`.list-item[data-role="${rolActualId}"]`);
+    const nombre = item ? item.querySelector('.n')?.textContent : 'este rol';
+
+    pedirConfirmacion(
+        `¿Eliminar el rol "${nombre}"? Los usuarios con este rol quedarán sin asignación.`,
+        function() {
+            fetch(`${API_BASE}/roles/${rolActualId}`, { method: 'DELETE' })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json()
+                            .then(err => { throw new Error(err.message || 'Error al eliminar rol'); })
+                            .catch(() => { throw new Error('Error al eliminar rol'); });
+                    }
+                    // Recargar lista
+                    cargarRoles();
+                    // Limpiar panel
+                    document.getElementById('panel-roles').innerHTML = '<p class="empty">Selecciona un rol para ver sus permisos.</p>';
+                    rolActualId = null;
+                })
+                .catch(err => alert('Error al eliminar: ' + err.message));
+        }
+    );
+}
+
+// ============================================================
+// CONTADOR DE ROLES (estadísticas)
+// ============================================================
+function actualizarContadorRoles() {
+    const total = document.querySelectorAll('#lista-roles .list-item').length;
+    document.getElementById('stat-total-roles').textContent = total;
+}
+
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    cargarRoles();
+});
