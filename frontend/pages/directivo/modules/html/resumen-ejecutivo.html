@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="description"
+        content="Dashboard ejecutivo del inventario y diagnóstico TI del CTIC UNAS."
+    >
+
+    <title>Dashboard Ejecutivo | DIAGTI CTIC UNAS</title>
+
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/resumen-ejecutivo.css?v=20260712-5">
+</head>
+<body>
+    <aside
+        id="sidebar-container"
+        class="sidebar-container"
+        aria-label="Navegación principal del módulo directivo"
+    ></aside>
+
+    <main class="main-content" id="main-content">
+        <header class="page-header executive-header">
+            <div class="page-header__content">
+                <span class="section-label">Módulo Directivo</span>
+                <h1>Dashboard Ejecutivo</h1>
+                <p class="page-header__description">
+                    Resumen estratégico de la salud tecnológica institucional,
+                    el cumplimiento del diagnóstico y el avance de los proyectos
+                    de modernización.
+                </p>
+            </div>
+        </header>
+
+        <section class="executive-filter-panel" aria-labelledby="dashboard-filter-title">
+            <div class="executive-filter-panel__heading">
+                <div>
+                    <span class="section-label">Alcance del análisis</span>
+                    <h2 id="dashboard-filter-title">Filtros ejecutivos</h2>
+                </div>
+
+                <p id="dashboard-result-summary" aria-live="polite">
+                    Preparando información del tablero.
+                </p>
+            </div>
+
+            <form id="executive-filter-form" class="executive-filter-form">
+                <div class="executive-filter-group">
+                    <label for="filter-period">Periodo</label>
+                    <select id="filter-period" name="period">
+                        <option value="2026-I">2026 · Primer semestre</option>
+                        <option value="2025-II">2025 · Segundo semestre</option>
+                        <option value="2025-I">2025 · Primer semestre</option>
+                    </select>
+                </div>
+
+                <div class="executive-filter-group">
+                    <label for="filter-area">Área funcional</label>
+                    <select id="filter-area" name="area">
+                        <option value="all">Todas las áreas</option>
+                        <option value="academica">Gestión Académica</option>
+                        <option value="administrativa">Gestión Administrativa</option>
+                        <option value="investigacion">Investigación</option>
+                        <option value="infraestructura">Infraestructura TI</option>
+                    </select>
+                </div>
+
+                <div class="executive-filter-group">
+                    <label for="filter-criticality">Criticidad</label>
+                    <select id="filter-criticality" name="criticality">
+                        <option value="all">Todas</option>
+                        <option value="critica">Crítica</option>
+                        <option value="alta">Alta</option>
+                        <option value="media">Media</option>
+                        <option value="baja">Baja</option>
+                    </select>
+                </div>
+
+                <div class="executive-filter-group">
+                    <label for="filter-validation">Estado</label>
+                    <select id="filter-validation" name="validation">
+                        <option value="all">Todos</option>
+                        <option value="observado">Observado</option>
+                        <option value="validado">Validado</option>
+                        <option value="pendiente">Pendiente</option>
+                    </select>
+                </div>
+
+                <div class="executive-filter-group executive-filter-group--search">
+                    <label for="filter-search">Buscar sistema</label>
+                    <div class="executive-search-control">
+                        <span aria-hidden="true">⌕</span>
+                        <input
+                            id="filter-search"
+                            name="search"
+                            type="search"
+                            placeholder="Código o nombre"
+                            autocomplete="off"
+                        >
+                    </div>
+                </div>
+
+                <div class="executive-filter-actions">
+                    <button
+                        type="button"
+                        class="executive-button executive-button--secondary"
+                        id="reset-dashboard-filters"
+                    >
+                        Restablecer
+                    </button>
+                </div>
+            </form>
+
+            <div
+                class="executive-active-filters"
+                id="active-filter-list"
+                aria-live="polite"
+                aria-label="Filtros activos"
+            ></div>
+        </section>
+
+        <section
+            id="dashboard-loading"
+            class="dashboard-state dashboard-state--loading"
+            aria-live="polite"
+        >
+            <div class="dashboard-loading-grid" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <p>Cargando información ejecutiva...</p>
+        </section>
+
+        <section
+            id="dashboard-error"
+            class="dashboard-state dashboard-state--error"
+            hidden
+            role="alert"
+        >
+            <div class="dashboard-state__icon" aria-hidden="true">!</div>
+            <h2>No se pudo cargar la información ejecutiva</h2>
+            <p id="dashboard-error-message">
+                Verifique la conexión e intente nuevamente.
+            </p>
+            <button
+                type="button"
+                class="executive-button executive-button--primary"
+                id="retry-dashboard"
+            >
+                Reintentar
+            </button>
+        </section>
+
+        <section
+            id="dashboard-empty"
+            class="dashboard-state dashboard-state--empty"
+            hidden
+        >
+            <div class="dashboard-state__icon" aria-hidden="true">○</div>
+            <h2>No existen datos para los criterios seleccionados</h2>
+            <p>
+                Los indicadores y gráficos aparecerán cuando existan registros
+                dentro del periodo y filtros aplicados.
+            </p>
+            <button
+                type="button"
+                class="executive-button executive-button--secondary"
+                id="empty-reset-filters"
+            >
+                Restablecer filtros
+            </button>
+        </section>
+
+        <div id="dashboard-content" class="dashboard-content" hidden>
+            <section class="executive-kpi-grid" aria-label="Indicadores ejecutivos principales">
+                <article class="executive-kpi-card executive-kpi-card--systems">
+                    <div class="executive-kpi-card__header">
+                        <span class="executive-kpi-card__label">Sistemas registrados</span>
+                        <span class="executive-kpi-card__icon" aria-hidden="true">▦</span>
+                    </div>
+                    <strong class="executive-kpi-card__value" id="kpi-total-systems">—</strong>
+                    <p class="executive-kpi-card__detail" id="kpi-total-detail">Sin datos</p>
+                    <span class="executive-kpi-card__trend" id="kpi-total-trend">Sin comparación</span>
+                </article>
+
+                <article class="executive-kpi-card executive-kpi-card--health">
+                    <div class="executive-kpi-card__header">
+                        <span class="executive-kpi-card__label">Salud tecnológica</span>
+                        <span class="executive-kpi-card__icon" aria-hidden="true">◔</span>
+                    </div>
+                    <strong class="executive-kpi-card__value" id="kpi-health">—</strong>
+                    <p class="executive-kpi-card__detail" id="kpi-health-detail">Sin datos</p>
+                    <span class="executive-kpi-card__trend" id="kpi-health-trend">Sin comparación</span>
+                </article>
+
+                <article class="executive-kpi-card executive-kpi-card--projects">
+                    <div class="executive-kpi-card__header">
+                        <span class="executive-kpi-card__label">Avance de proyectos</span>
+                        <span class="executive-kpi-card__icon" aria-hidden="true">↗</span>
+                    </div>
+                    <strong class="executive-kpi-card__value" id="kpi-project-progress">—</strong>
+                    <p class="executive-kpi-card__detail" id="kpi-project-detail">Sin datos</p>
+                    <span class="executive-kpi-card__trend" id="kpi-project-trend">Sin comparación</span>
+                </article>
+
+                <article class="executive-kpi-card executive-kpi-card--compliance">
+                    <div class="executive-kpi-card__header">
+                        <span class="executive-kpi-card__label">Cumplimiento macro</span>
+                        <span class="executive-kpi-card__icon" aria-hidden="true">✓</span>
+                    </div>
+                    <strong class="executive-kpi-card__value" id="kpi-compliance">—</strong>
+                    <p class="executive-kpi-card__detail" id="kpi-compliance-detail">Sin datos</p>
+                    <span class="executive-kpi-card__trend" id="kpi-compliance-trend">Sin comparación</span>
+                </article>
+            </section>
+
+            <section class="executive-chart-grid" aria-label="Análisis visual principal">
+                <article class="executive-panel executive-panel--health">
+                    <header class="executive-panel__header">
+                        <div>
+                            <span class="section-label">Estado general</span>
+                            <h2>Estado de validación de los sistemas</h2>
+                            <p>Vista simple del Dashboard de Riesgos. Resume la validación del diagnóstico sobre los sistemas filtrados.</p>
+                            <a class="executive-origin-tag" href="dashboard-riesgos.html">Pertenece a: Dashboard de Riesgos</a>
+                        </div>
+                        <span class="executive-panel__counter" id="health-total">0 sistemas</span>
+                    </header>
+
+                    <div class="health-chart-layout">
+                        <div id="health-chart" class="health-chart" aria-live="polite"></div>
+                        <div id="health-legend" class="health-legend" aria-label="Leyenda de estados de validación"></div>
+                    </div>
+                </article>
+
+                <article class="executive-panel executive-panel--areas">
+                    <header class="executive-panel__header">
+                        <div>
+                            <span class="section-label">Distribución institucional</span>
+                            <h2>Validación por área funcional</h2>
+                            <p>Vista simple del Dashboard de Riesgos. Compara sistemas validados, observados y pendientes por área.</p>
+                            <a class="executive-origin-tag" href="dashboard-riesgos.html">Pertenece a: Dashboard de Riesgos</a>
+                        </div>
+                    </header>
+
+                    <div id="area-chart" class="area-chart" aria-live="polite"></div>
+                </article>
+
+                <article class="executive-panel executive-panel--compliance">
+                    <header class="executive-panel__header">
+                        <div>
+                            <span class="section-label">Seguimiento ejecutivo</span>
+                            <h2>Capacidad de atención por área</h2>
+                            <p>Vista simple del Dashboard de Riesgos. Resume la distribución de sistemas, observaciones y pendientes por área.</p>
+                            <a class="executive-origin-tag" href="dashboard-riesgos.html">Pertenece a: Dashboard de Riesgos</a>
+                        </div>
+                    </header>
+
+                    <div id="compliance-chart" class="compliance-chart" aria-live="polite"></div>
+                </article>
+
+                <div class="executive-projects-grid">
+                    <article class="executive-panel executive-panel--projects">
+                        <header class="executive-panel__header">
+                            <div>
+                                <span class="section-label">Planificación estratégica</span>
+                                <h2>Avance de proyectos</h2>
+                                <p>Vista simple del Roadmap de Migración. El porcentaje de color representa el avance real y el gris representa el avance planificado.</p>
+                                <a class="executive-origin-tag" href="plan-modernizacion.html">Pertenece a: Roadmap de Migración</a>
+                            </div>
+                        </header>
+
+                        <div id="project-chart" class="project-chart" aria-live="polite"></div>
+                    </article>
+
+                    <article class="executive-panel executive-panel--project-detail executive-panel--project-detail-inline">
+                        <header class="executive-panel__header">
+                            <div>
+                                <span class="section-label">Detalle seleccionado</span>
+                                <h2>Proyecto estratégico</h2>
+                                <p>Complemento del Roadmap de Migración. Seleccione una barra para revisar su estado.</p>
+                                <a class="executive-origin-tag" href="plan-modernizacion.html">Pertenece a: Roadmap de Migración</a>
+                            </div>
+                        </header>
+
+                        <div id="project-detail" class="project-detail">
+                            <div class="project-detail__empty">
+                                Seleccione un proyecto del gráfico de avance.
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="executive-panel executive-panel--trend" aria-labelledby="trend-chart-title">
+                <header class="executive-panel__header executive-panel__header--trend">
+                    <div>
+                        <span class="section-label">Evolución</span>
+                        <h2 id="trend-chart-title">Tendencia de indicadores ejecutivos</h2>
+                        <p>Evolución comparativa de salud tecnológica y cumplimiento.</p>
+                    </div>
+
+                    <div class="trend-controls" aria-label="Series visibles">
+                        <label>
+                            <input type="checkbox" id="trend-health-toggle" checked>
+                            Salud tecnológica
+                        </label>
+                        <label>
+                            <input type="checkbox" id="trend-compliance-toggle" checked>
+                            Cumplimiento
+                        </label>
+                    </div>
+                </header>
+
+                <div id="trend-chart" class="trend-chart" aria-live="polite"></div>
+            </section>
+
+            <section class="executive-secondary-group" aria-labelledby="quick-indicators-title">
+                <header class="executive-inline-heading">
+                    <div>
+                        <span class="section-label">Accesos rápidos</span>
+                        <h2 id="quick-indicators-title">Indicadores prioritarios</h2>
+                        <p>Cada tarjeta funciona como acceso interactivo para filtrar la tabla, enfocar alertas o abrir el seguimiento de proyectos.</p>
+                    </div>
+                </header>
+
+                <div class="executive-secondary-grid" aria-label="Indicadores complementarios y accesos rápidos">
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--danger" data-quick-filter="critical">
+                        <span>Sistemas críticos</span>
+                        <strong id="secondary-critical">0</strong>
+                        <small>Clic para filtrar atención inmediata</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--warning" data-quick-filter="legacy">
+                        <span>Sistemas legacy</span>
+                        <strong id="secondary-legacy">0</strong>
+                        <small>Clic para ubicar dependencia tecnológica elevada</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--warning" data-quick-filter="noSupport">
+                        <span>Sin soporte</span>
+                        <strong id="secondary-no-support">0</strong>
+                        <small>Clic para revisar cobertura vencida</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--info" data-quick-filter="obsolete">
+                        <span>Tecnologías obsoletas</span>
+                        <strong id="secondary-obsolete">0</strong>
+                        <small>Clic para evaluar renovación técnica</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--warning" data-quick-filter="observed">
+                        <span>Observados</span>
+                        <strong id="secondary-observed">0</strong>
+                        <small>Clic para filtrar correcciones pendientes</small>
+                    </button>
+                    <button type="button" class="executive-mini-kpi executive-mini-kpi--danger" data-quick-filter="delayed">
+                        <span>Proyectos retrasados</span>
+                        <strong id="secondary-delayed">0</strong>
+                        <small>Clic para enfocar el Roadmap</small>
+                    </button>
+                </div>
+            </section>
+
+            <section class="executive-bottom-grid">
+                <article class="executive-panel executive-panel--alerts">
+                    <header class="executive-panel__header">
+                        <div>
+                            <span class="section-label">Atención prioritaria</span>
+                            <h2>Alertas ejecutivas</h2>
+                            <p>Situaciones que requieren seguimiento o decisión.</p>
+                            <a class="executive-origin-tag" href="dashboard-riesgos.html">Pertenece a: Dashboard de Riesgos</a>
+                        </div>
+                        <span class="executive-panel__counter" id="alert-total">0 alertas</span>
+                    </header>
+
+                    <div id="executive-alert-list" class="executive-alert-list"></div>
+                </article>
+
+            </section>
+
+            <section class="executive-table-section" aria-labelledby="priority-table-title">
+                <header class="executive-table-header">
+                    <div>
+                        <span class="section-label">Priorización</span>
+                        <h2 id="priority-table-title">Prioridades ejecutivas</h2>
+                        <p>
+                            Vista simple de Reportes Ejecutivos. Sistemas que requieren seguimiento según criticidad,
+                            validación, riesgo u obsolescencia.
+                        </p>
+                        <a class="executive-origin-tag" href="reportes-ejecutivos.html">Pertenece a: Reportes Ejecutivos</a>
+                    </div>
+
+                    <div class="executive-table-tools">
+                        <label for="table-page-size">Filas</label>
+                        <select id="table-page-size">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+                </header>
+
+                <div class="executive-table-context" id="table-filter-context" aria-live="polite"></div>
+
+                <div class="executive-table-responsive">
+                    <table class="executive-table">
+                        <caption class="sr-only">
+                            Prioridades ejecutivas de los sistemas filtrados.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="code">Código</button>
+                                </th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="name">Sistema</button>
+                                </th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="area">Área</button>
+                                </th>
+                                <th scope="col">Alerta principal</th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="criticality">Criticidad</button>
+                                </th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="validation">Estado</button>
+                                </th>
+                                <th scope="col">
+                                    <button type="button" data-sort-key="priority">Prioridad</button>
+                                </th>
+                                <th scope="col">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="priority-table-body"></tbody>
+                    </table>
+                </div>
+
+                <div class="executive-pagination">
+                    <p id="pagination-summary">Sin resultados</p>
+                    <div class="executive-pagination__controls">
+                        <button
+                            type="button"
+                            class="executive-button executive-button--secondary executive-button--small"
+                            id="previous-page"
+                        >
+                            Anterior
+                        </button>
+                        <span id="pagination-page">Página 1 de 1</span>
+                        <button
+                            type="button"
+                            class="executive-button executive-button--secondary executive-button--small"
+                            id="next-page"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="executive-data-notice" aria-label="Origen de los datos">
+                <strong>Preparado para integración con backend</strong>
+                <p>
+                    Esta versión utiliza datos demostrativos centralizados en
+                    <code>resumen-ejecutivo.js</code>. Al habilitar el modo backend,
+                    el mismo dashboard consumirá la API sin modificar su estructura HTML.
+                </p>
+            </aside>
+        </div>
+
+        <dialog id="system-detail-dialog" class="executive-dialog">
+            <form method="dialog" class="executive-dialog__surface">
+                <header class="executive-dialog__header">
+                    <div>
+                        <span class="section-label">Detalle ejecutivo</span>
+                        <h2 id="dialog-system-title">Sistema</h2>
+                    </div>
+                    <button
+                        type="submit"
+                        class="executive-dialog__close"
+                        aria-label="Cerrar detalle"
+                    >
+                        ×
+                    </button>
+                </header>
+                <div id="dialog-system-content" class="executive-dialog__content"></div>
+            </form>
+        </dialog>
+
+        <noscript>
+            <section class="dashboard-state dashboard-state--error">
+                <h2>JavaScript está desactivado</h2>
+                <p>
+                    El Dashboard Ejecutivo requiere JavaScript para cargar,
+                    filtrar y representar la información.
+                </p>
+            </section>
+        </noscript>
+    </main>
+
+    <script src="../js/sidebar.js?v=20260712-6" defer></script>
+    <script src="../js/resumen-ejecutivo.js?v=20260712-5" defer></script>
+</body>
+</html>

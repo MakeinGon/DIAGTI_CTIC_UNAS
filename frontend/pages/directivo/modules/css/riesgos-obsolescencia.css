@@ -1,0 +1,633 @@
+/* ============================================================
+   DIAGTI CTIC UNAS
+   Módulo Directivo
+   Riesgos y Obsolescencia
+============================================================ */
+
+
+/* ============================================================
+   1. DISTRIBUCIÓN GENERAL
+============================================================ */
+
+.global-summary,
+.analysis-section,
+.combined-priority {
+    margin-bottom: 26px;
+}
+
+
+/* ============================================================
+   2. RESUMEN GLOBAL
+============================================================ */
+
+.global-summary {
+    position: relative;
+}
+
+
+.global-summary .kpi-card:nth-child(1) {
+    border-top-color: var(--color-danger);
+}
+
+
+.global-summary .kpi-card:nth-child(2) {
+    border-top-color: var(--color-warning);
+}
+
+
+.global-summary .kpi-card:nth-child(3) {
+    border-top-color: #d97706;
+}
+
+
+.global-summary .kpi-card:nth-child(4) {
+    border-top-color: var(--color-primary);
+}
+
+
+/* ============================================================
+   3. BLOQUES DE ANÁLISIS
+============================================================ */
+
+.analysis-section {
+    position: relative;
+
+    padding: 28px;
+
+    background-color: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+    overflow: hidden;
+}
+
+
+/*
+   Línea superior diferenciada.
+*/
+
+.analysis-section::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 4px;
+}
+
+
+/* Riesgos */
+
+.risk-analysis::before {
+    background:
+        linear-gradient(
+            90deg,
+            var(--color-danger),
+            #e57373
+        );
+}
+
+
+/* Obsolescencia */
+
+.obsolescence-analysis::before {
+    background:
+        linear-gradient(
+            90deg,
+            var(--color-warning),
+            #e6ad46
+        );
+}
+
+
+/* ============================================================
+   4. TÍTULOS DIFERENCIADOS
+============================================================ */
+
+.risk-analysis > .section-heading h2 {
+    color: var(--color-danger);
+}
+
+
+.obsolescence-analysis > .section-heading h2 {
+    color: var(--color-warning);
+}
+
+
+/* ============================================================
+   5. INDICADORES ESPECÍFICOS
+============================================================ */
+
+.indicator-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 24px;
+}
+
+
+.indicator-card {
+    position: relative;
+
+    min-width: 0;
+
+    padding: 20px;
+
+    background-color: var(--color-surface-soft);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+
+.indicator-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow-md);
+}
+
+
+.indicator-card__label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.78rem;
+    font-weight: 750;
+
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+
+.indicator-card__value {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--color-primary-dark);
+
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: 800;
+}
+
+
+.indicator-card p {
+    margin-bottom: 0;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.84rem;
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   6. INDICADORES DE RIESGO
+============================================================ */
+
+.risk-analysis .indicator-card {
+    border-left: 4px solid var(--color-danger);
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            var(--color-danger-bg) 100%
+        );
+}
+
+
+.risk-analysis .indicator-card__value {
+    color: var(--color-danger);
+}
+
+
+/* ============================================================
+   7. INDICADORES DE OBSOLESCENCIA
+============================================================ */
+
+.obsolescence-analysis .indicator-card {
+    border-left: 4px solid var(--color-warning);
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            var(--color-warning-bg) 100%
+        );
+}
+
+
+.obsolescence-analysis .indicator-card__value {
+    color: var(--color-warning);
+}
+
+
+/* ============================================================
+   8. DATA SECTION DENTRO DE LOS ANÁLISIS
+============================================================ */
+
+.analysis-section > .data-section {
+    padding: 22px;
+    margin-bottom: 0;
+
+    background-color: var(--color-white);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+
+    box-shadow: none;
+}
+
+
+/*
+   Evita dobles decoraciones.
+*/
+
+.analysis-section > .data-section::before {
+    display: none;
+}
+
+
+/* ============================================================
+   9. TABLA DE RIESGOS
+============================================================ */
+
+.risk-analysis .data-table {
+    min-width: 850px;
+}
+
+
+.risk-analysis .data-table td:nth-child(1) {
+    min-width: 180px;
+}
+
+
+.risk-analysis .data-table td:nth-child(2) {
+    min-width: 170px;
+}
+
+
+.risk-analysis .data-table td:nth-child(3) {
+    min-width: 220px;
+}
+
+
+.risk-analysis .data-table td:nth-child(4) {
+    min-width: 90px;
+}
+
+
+.risk-analysis .data-table td:nth-child(5) {
+    min-width: 230px;
+}
+
+
+/* ============================================================
+   10. FILAS DE RIESGO ALTO
+============================================================ */
+
+.risk-analysis
+.data-table
+tbody
+tr:has(.badge-danger) {
+    background-color: #fffafa;
+}
+
+
+.risk-analysis
+.data-table
+tbody
+tr:has(.badge-danger):hover {
+    background-color: var(--color-danger-bg);
+}
+
+
+/* ============================================================
+   11. TABLA DE OBSOLESCENCIA
+============================================================ */
+
+.obsolescence-analysis .data-table {
+    min-width: 820px;
+}
+
+
+.obsolescence-analysis .data-table td:nth-child(1) {
+    min-width: 180px;
+}
+
+
+.obsolescence-analysis .data-table td:nth-child(2) {
+    min-width: 190px;
+}
+
+
+.obsolescence-analysis .data-table td:nth-child(3) {
+    min-width: 90px;
+}
+
+
+.obsolescence-analysis .data-table td:nth-child(4) {
+    min-width: 120px;
+}
+
+
+.obsolescence-analysis .data-table td:nth-child(5) {
+    min-width: 210px;
+}
+
+
+/* ============================================================
+   12. PRIORIZACIÓN COMBINADA
+============================================================ */
+
+.combined-priority {
+    position: relative;
+
+    border-top:
+        4px solid var(--color-secondary);
+}
+
+
+/*
+   Fondo ligeramente diferenciado porque este bloque
+   representa la síntesis de ambos análisis.
+*/
+
+.combined-priority {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #f4fbf9 100%
+        );
+}
+
+
+/* ============================================================
+   13. TABLA DE PRIORIZACIÓN COMBINADA
+============================================================ */
+
+.combined-priority .data-table {
+    min-width: 1050px;
+}
+
+
+.combined-priority .data-table th:nth-child(1),
+.combined-priority .data-table td:nth-child(1) {
+    min-width: 180px;
+}
+
+
+.combined-priority .data-table th:nth-child(2),
+.combined-priority .data-table td:nth-child(2) {
+    min-width: 170px;
+}
+
+
+.combined-priority .data-table th:nth-child(3),
+.combined-priority .data-table td:nth-child(3) {
+    min-width: 200px;
+}
+
+
+.combined-priority .data-table th:nth-child(4),
+.combined-priority .data-table td:nth-child(4) {
+    min-width: 260px;
+}
+
+
+.combined-priority .data-table th:nth-child(5),
+.combined-priority .data-table td:nth-child(5) {
+    min-width: 230px;
+}
+
+
+/* ============================================================
+   14. SISTEMAS CON DOBLE CONDICIÓN
+============================================================ */
+
+/*
+   Sistema Biblioteca:
+   riesgo registrado + soporte vencido.
+*/
+
+.combined-priority
+.data-table
+tbody
+tr:has(.badge-danger):has(.badge-warning) {
+    box-shadow:
+        inset 4px 0 0 var(--color-secondary);
+}
+
+
+/* ============================================================
+   15. BADGES NEUTRALES LARGOS
+============================================================ */
+
+.combined-priority .badge-neutral {
+    white-space: normal;
+
+    text-align: center;
+
+    line-height: 1.35;
+}
+
+
+/* ============================================================
+   16. SCROLL HORIZONTAL DE TABLAS
+============================================================ */
+
+.analysis-section .table-responsive,
+.combined-priority .table-responsive {
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        var(--color-border-dark)
+        var(--color-surface-soft);
+}
+
+
+.analysis-section
+.table-responsive::-webkit-scrollbar,
+.combined-priority
+.table-responsive::-webkit-scrollbar {
+    height: 9px;
+}
+
+
+.analysis-section
+.table-responsive::-webkit-scrollbar-track,
+.combined-priority
+.table-responsive::-webkit-scrollbar-track {
+    background-color:
+        var(--color-surface-soft);
+}
+
+
+.analysis-section
+.table-responsive::-webkit-scrollbar-thumb,
+.combined-priority
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color:
+        var(--color-border-dark);
+
+    border: 2px solid var(--color-surface-soft);
+    border-radius: var(--radius-pill);
+}
+
+
+.analysis-section
+.table-responsive::-webkit-scrollbar-thumb:hover,
+.combined-priority
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background-color:
+        var(--color-primary);
+}
+
+
+/* ============================================================
+   17. NAVEGACIÓN POR ANCLAS
+============================================================ */
+
+#resumen-global,
+#analisis-riesgos,
+#analisis-obsolescencia,
+#priorizacion-combinada {
+    scroll-margin-top: 24px;
+}
+
+
+/* ============================================================
+   18. CABECERAS FIJAS DE TABLA
+============================================================ */
+
+.analysis-section .data-table thead th,
+.combined-priority .data-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+
+/* ============================================================
+   19. TRANSICIONES DE FILAS
+============================================================ */
+
+.analysis-section .data-table tbody tr,
+.combined-priority .data-table tbody tr {
+    transition:
+        background-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+
+/* ============================================================
+   20. RESPONSIVE - TABLET
+============================================================ */
+
+@media (max-width: 1100px) {
+
+    .indicator-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* ============================================================
+   21. RESPONSIVE - MÓVIL
+============================================================ */
+
+@media (max-width: 700px) {
+
+    .analysis-section {
+        padding: 22px 18px;
+    }
+
+
+    .indicator-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .analysis-section > .data-section {
+        padding: 18px 14px;
+    }
+
+}
+
+
+/* ============================================================
+   22. RESPONSIVE - MÓVIL PEQUEÑO
+============================================================ */
+
+@media (max-width: 480px) {
+
+    .analysis-section {
+        padding:
+            20px
+            14px;
+    }
+
+
+    .indicator-card {
+        padding: 17px;
+    }
+
+
+    .indicator-card__value {
+        font-size: 1.8rem;
+    }
+
+
+    .combined-priority {
+        border-top-width: 3px;
+    }
+
+}
+
+
+/* ============================================================
+   23. COMPATIBILIDAD SIN :has()
+============================================================ */
+
+/*
+   Las reglas principales no dependen de :has().
+   Las reglas anteriores que usan :has() son únicamente
+   mejoras visuales adicionales.
+*/
+
+
+/* ============================================================
+   24. REDUCCIÓN DE MOVIMIENTO
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .indicator-card,
+    .analysis-section .data-table tbody tr,
+    .combined-priority .data-table tbody tr {
+        transition: none;
+    }
+
+}
