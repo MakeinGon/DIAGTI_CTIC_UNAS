@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario · Auditor · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="../css/inventario.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>CTIC – Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">AC</div>
+            <div class="profile-info">
+                <div class="profile-name">Auditor CTIC</div>
+                <div class="profile-role">Auditor / OCI</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Auditoría</div>
+
+        <nav class="nav">
+            <a class="nav-item active" href="inventario.html">
+                <span>
+                    <span class="lbl">Inventario</span>
+                    <span class="sub">Consulta general</span>
+                </span>
+            </a>
+
+            <a class="nav-item" href="auditoria.html">
+                <span>
+                    <span class="lbl">Auditoría</span>
+                    <span class="sub">Logs y trazabilidad</span>
+                </span>
+            </a>
+
+            <a class="nav-item" href="reportes.html">
+                <span>
+                    <span class="lbl">Reportes</span>
+                    <span class="sub">PDF y Excel</span>
+                </span>
+            </a>
+        </nav>
+
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v1.0 · CTIC UNAS<br>
+            Módulo de auditoría interna
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h2>Inventario General</h2>
+                <div class="hint">
+                    Consulta general de sistemas registrados en DIAGTI.
+                </div>
+            </div>
+        </div>
+
+        <!-- AVISO SOLO LECTURA -->
+        <div class="readonly-box">
+            <div>
+                <strong>Modo auditor activo</strong>
+                <p>Esta pantalla permite consultar información registrada, pero no crear, editar ni eliminar registros.</p>
+            </div>
+            <span class="badge status-secondary">Solo lectura</span>
+        </div>
+
+        <!-- KPIS -->
+        <div class="kpi-grid">
+            <div class="card kpi-card">
+                <div class="stat-label">Total sistemas</div>
+                <div class="stat-num">42</div>
+                <span class="badge status-info">Registrados</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Validados</div>
+                <div class="stat-num accent">24</div>
+                <span class="badge status-success">Aprobados CTIC</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Observados</div>
+                <div class="stat-num">8</div>
+                <span class="badge status-warning">Pendientes de corrección</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Pendientes</div>
+                <div class="stat-num">4</div>
+                <span class="badge status-info">Sistemas pendientes</span>
+            </div>
+        </div>
+
+        <!-- TABLA INVENTARIO -->
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3>Consulta del inventario</h3>
+                    <div class="desc">
+                        Lista de sistemas auditables con filtros por área, estado y tipo.
+                    </div>
+                </div>
+
+                <div class="section-actions">
+                    <button class="btn btn-verde">Exportar Excel</button>
+                </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="toolbar">
+                <div class="search">
+                    <input type="text" id="search-input" placeholder="Buscar por código, nombre, área o tecnología...">
+                </div>
+
+                <select id="filter-area">
+                    <option value="">Todas las áreas</option>
+                    <option value="Dirección Académica">Dirección Académica</option>
+                    <option value="Secretaría General">Secretaría General</option>
+                    <option value="Biblioteca Central">Biblioteca Central</option>
+                    <option value="Recursos Humanos">Recursos Humanos</option>
+                    <option value="Economía y Finanzas">Economía y Finanzas</option>
+                    <option value="Imagen Institucional">Imagen Institucional</option>
+                </select>
+
+                <select id="filter-estado">
+                    <option value="">Todos los estados</option>
+                    <option value="Observado">Observado</option>
+                    <option value="Validado">Validado</option>
+                    <option value="Pendiente">Pendiente</option>
+                </select>
+
+                <select id="filter-tipo">
+                    <option value="">Todos los tipos</option>
+                    <option value="Web">Web</option>
+                    <option value="Desktop">Desktop</option>
+                    <option value="API">API</option>
+                </select>
+            </div>
+
+            <!-- TABLA -->
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Sistema</th>
+                            <th>Área usuaria</th>
+                            <th>Tipo</th>
+                            <th>Tecnología</th>
+                            <th>Estado</th>
+                            <th>Última actualización</th>
+                            <th>Consulta</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabla-inventario">
+                        <!-- JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <span id="contador-registros">Mostrando registros del inventario</span>
+
+                <div class="page-actions">
+                    <button class="btn btn-ghost btn-sm">Anterior</button>
+                    <button class="page active">1</button>
+                    <button class="page">2</button>
+                    <button class="page">3</button>
+                    <button class="btn btn-ghost btn-sm">Siguiente</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL DETALLE SISTEMA -->
+    <div class="modal-overlay" id="modal-detalle">
+        <div class="modal-detalle">
+            <div class="modal-header">
+                <div>
+                    <span class="modal-code" id="modal-codigo">SYS-001</span>
+                    <h3 id="modal-nombre">Sistema Académico</h3>
+                    <p id="modal-descripcion">Detalle del sistema seleccionado.</p>
+                </div>
+
+                <button class="modal-close" onclick="cerrarModalDetalle()">×</button>
+            </div>
+
+            <div class="modal-badges" id="modal-badges">
+                <!-- JS -->
+            </div>
+
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <h4>Información general</h4>
+
+                        <div class="detail-row">
+                            <span>Área usuaria</span>
+                            <b id="modal-area">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Responsable funcional</span>
+                            <b id="modal-responsable">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Tipo de aplicativo</span>
+                            <b id="modal-tipo">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Estado</span>
+                            <b id="modal-estado">-</b>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Arquitectura y base de datos</h4>
+
+                        <div class="detail-row">
+                            <span>Tecnología</span>
+                            <b id="modal-tecnologia">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Backend</span>
+                            <b id="modal-backend">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Base de datos</span>
+                            <b id="modal-bd">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Repositorio</span>
+                            <b id="modal-repositorio">-</b>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Infraestructura</h4>
+
+                        <div class="detail-row">
+                            <span>Servidor</span>
+                            <b id="modal-servidor">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Ambiente</span>
+                            <b id="modal-ambiente">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Backup</span>
+                            <b id="modal-backup">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Última actualización</span>
+                            <b id="modal-fecha">-</b>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Seguridad y evidencias</h4>
+
+                        <div class="security-list" id="modal-seguridad">
+                            <!-- JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-card full">
+                    <h4>Historial reciente</h4>
+
+                    <div class="timeline" id="modal-historial">
+                        <!-- JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="cerrarModalDetalle()">Cerrar</button>
+                <button class="btn btn-verde" onclick="alert('Ficha del sistema exportada correctamente.')">
+                    Exportar ficha
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/inventario.js"></script>
+</body>
+
+</html>

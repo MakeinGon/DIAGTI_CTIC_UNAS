@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes · Auditor · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="../css/reportes.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>CTIC – Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">AC</div>
+            <div class="profile-info">
+                <div class="profile-name">Auditor CTIC</div>
+                <div class="profile-role">Auditor / OCI</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Auditoría</div>
+
+        <nav class="nav">
+            <a class="nav-item" href="inventario.html">
+                <span>
+                    <span class="lbl">Inventario</span>
+                    <span class="sub">Consulta general</span>
+                </span>
+            </a>
+
+            <a class="nav-item" href="auditoria.html">
+                <span>
+                    <span class="lbl">Auditoría</span>
+                    <span class="sub">Logs y trazabilidad</span>
+                </span>
+            </a>
+
+            <a class="nav-item active" href="reportes.html">
+                <span>
+                    <span class="lbl">Reportes</span>
+                    <span class="sub">PDF y Excel</span>
+                </span>
+            </a>
+        </nav>
+
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v1.0 · CTIC UNAS<br>
+            Módulo de auditoría interna
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h2>Reportes de Auditoría</h2>
+                <div class="hint">
+                    Generación y consulta de reportes sobre inventario, trazabilidad, evidencias y validaciones.
+                </div>
+            </div>
+        </div>
+
+        <!-- AVISO -->
+        <div class="readonly-box">
+            <div>
+                <strong>Exportación controlada</strong>
+                <p>Los reportes generados quedan registrados en auditoría para mantener trazabilidad.</p>
+            </div>
+            <span class="badge status-secondary">PDF / Excel</span>
+        </div>
+
+        <!-- KPIS -->
+        <div class="kpi-grid">
+            <div class="card kpi-card">
+                <div class="stat-label">Reportes generados</div>
+                <div class="stat-num">18</div>
+                <span class="badge status-info">Últimos 30 días</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Inventario exportado</div>
+                <div class="stat-num accent">42</div>
+                <span class="badge status-success">Sistemas incluidos</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Reportes pendientes</div>
+                <div class="stat-num">3</div>
+                <span class="badge status-warning">Por revisar</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Última exportación</div>
+                <div class="stat-num text-small">08/07</div>
+                <span class="badge status-secondary">Auditor CTIC</span>
+            </div>
+        </div>
+
+        <!-- GENERAR REPORTE -->
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3>Generar nuevo reporte</h3>
+                    <div class="desc">Selecciona los filtros y el formato de salida del reporte.</div>
+                </div>
+            </div>
+
+            <div class="report-form">
+                <div class="form-group">
+                    <label>Tipo de reporte</label>
+                    <select id="tipo-reporte">
+                        <option value="">Seleccionar tipo</option>
+                        <option value="Inventario general">Inventario general</option>
+                        <option value="Auditoría y trazabilidad">Auditoría y trazabilidad</option>
+                        <option value="Evidencias técnicas">Evidencias técnicas</option>
+                        <option value="Validaciones y observaciones">Validaciones y observaciones</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Módulo</label>
+                    <select id="modulo-reporte">
+                        <option value="">Todos los módulos</option>
+                        <option value="Inventario">Inventario</option>
+                        <option value="Seguridad">Seguridad</option>
+                        <option value="Evidencias">Evidencias</option>
+                        <option value="Validación">Validación</option>
+                        <option value="Auditoría">Auditoría</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Área usuaria</label>
+                    <select id="area-reporte">
+                        <option value="">Todas las áreas</option>
+                        <option value="Dirección Académica">Dirección Académica</option>
+                        <option value="Secretaría General">Secretaría General</option>
+                        <option value="Biblioteca Central">Biblioteca Central</option>
+                        <option value="Recursos Humanos">Recursos Humanos</option>
+                        <option value="Economía y Finanzas">Economía y Finanzas</option>
+                        <option value="Imagen Institucional">Imagen Institucional</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Desde</label>
+                    <input type="date" id="fecha-desde">
+                </div>
+
+                <div class="form-group">
+                    <label>Hasta</label>
+                    <input type="date" id="fecha-hasta">
+                </div>
+
+                <div class="form-group">
+                    <label>Formato</label>
+                    <select id="formato-reporte">
+                        <option value="PDF">PDF</option>
+                        <option value="Excel">Excel</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="estado-reporte">
+                        <option value="">Todos los estados</option>
+                        <option value="Validado">Validado</option>
+                        <option value="Observado">Observado</option>
+                        <option value="Pendiente">Pendiente</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-ghost" onclick="limpiarFormulario()">Limpiar filtros</button>
+                <button class="btn btn-verde" onclick="generarReporte()">Generar reporte</button>
+            </div>
+        </div>
+
+        <!-- TIPOS DE REPORTES -->
+        <div class="report-grid">
+            <div class="report-card">
+                <div class="report-icon">INV</div>
+                <div>
+                    <h3>Inventario general</h3>
+                    <p>Listado consolidado de sistemas registrados, áreas usuarias, tecnologías, estados y responsables.</p>
+                    <button class="btn btn-ghost btn-sm" onclick="generarRapido('Inventario general', 'PDF')">
+                        Generar PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-icon info">LOG</div>
+                <div>
+                    <h3>Auditoría y trazabilidad</h3>
+                    <p>Exportación de logs, cambios, accesos, validaciones, observaciones y eliminación lógica.</p>
+                    <button class="btn btn-ghost btn-sm" onclick="generarRapido('Auditoría y trazabilidad', 'PDF')">
+                        Generar PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-icon warning">EVI</div>
+                <div>
+                    <h3>Evidencias técnicas</h3>
+                    <p>Reporte de documentos, respaldos técnicos, certificados, repositorios y archivos registrados.</p>
+                    <button class="btn btn-ghost btn-sm" onclick="generarRapido('Evidencias técnicas', 'Excel')">
+                        Generar Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORIAL -->
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3>Historial de reportes generados</h3>
+                    <div class="desc">Consulta de reportes generados por el auditor o usuarios autorizados.</div>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <div class="search">
+                    <input type="text" id="search-input" placeholder="Buscar reporte, módulo, formato o usuario...">
+                </div>
+
+                <select id="filter-tipo">
+                    <option value="">Todos los reportes</option>
+                    <option value="Inventario general">Inventario general</option>
+                    <option value="Auditoría y trazabilidad">Auditoría y trazabilidad</option>
+                    <option value="Evidencias técnicas">Evidencias técnicas</option>
+                    <option value="Validaciones y observaciones">Validaciones y observaciones</option>
+                </select>
+
+                <select id="filter-formato">
+                    <option value="">Todos los formatos</option>
+                    <option value="PDF">PDF</option>
+                    <option value="Excel">Excel</option>
+                </select>
+
+                <select id="filter-estado">
+                    <option value="">Todos los estados</option>
+                    <option value="Generado">Generado</option>
+                    <option value="Descargado">Descargado</option>
+                    <option value="Pendiente">Pendiente</option>
+                </select>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Reporte</th>
+                            <th>Módulo</th>
+                            <th>Período</th>
+                            <th>Formato</th>
+                            <th>Generado por</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabla-reportes">
+                        <!-- JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <span id="contador-registros">Mostrando reportes generados</span>
+
+                <div class="page-actions">
+                    <button class="btn btn-ghost btn-sm">Anterior</button>
+                    <button class="page active">1</button>
+                    <button class="page">2</button>
+                    <button class="btn btn-ghost btn-sm">Siguiente</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/reportes.js"></script>
+</body>
+
+</html>
