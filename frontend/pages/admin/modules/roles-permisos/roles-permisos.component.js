@@ -404,6 +404,7 @@ function eliminarRol() {
                     }
                     // Recargar lista
                     cargarRoles();
+                    actualizarStatUsuariosConRol();
                     // Limpiar panel
                     document.getElementById('panel-roles').innerHTML = '<p class="empty">Selecciona un rol para ver sus permisos.</p>';
                     rolActualId = null;
@@ -422,8 +423,46 @@ function actualizarContadorRoles() {
 }
 
 // ============================================================
+// MÓDULOS CONTROLADOS: se toma de la misma lista MODULOS que
+// arma la matriz de permisos, en vez de un número fijo aparte
+// que se podía desincronizar si algún día cambia la lista.
+// ============================================================
+function actualizarStatModulosControlados() {
+    const el = document.getElementById('stat-modulos-controlados');
+    if (el) el.textContent = MODULOS.length;
+}
+
+// ============================================================
+// USUARIOS CON ROL ASIGNADO: cuenta, contra el backend, cuántos
+// usuarios tienen actualmente un rol asignado (rolId != null).
+// Un usuario puede quedar sin rol si el rol que tenía fue borrado.
+// ============================================================
+function actualizarStatUsuariosConRol() {
+    fetch(`${API_BASE}/usuarios`)
+        .then(res => manejarError(res))
+        .then(usuarios => {
+            const total = usuarios.length;
+            const conRol = usuarios.filter(u => u.rolId != null).length;
+            const porcentaje = total > 0 ? Math.round((conRol / total) * 100) : 0;
+
+            document.getElementById('stat-usuarios-con-rol').textContent = conRol;
+            const badge = document.getElementById('badge-usuarios-cubierto');
+            if (badge) badge.textContent = porcentaje + '% cubierto';
+        })
+        .catch(err => {
+            // Si falla, se deja en 0 en vez de mostrar un numero inventado.
+            console.error('Error calculando usuarios con rol asignado:', err);
+            document.getElementById('stat-usuarios-con-rol').textContent = '0';
+            const badge = document.getElementById('badge-usuarios-cubierto');
+            if (badge) badge.textContent = '0% cubierto';
+        });
+}
+
+// ============================================================
 // INICIALIZACIÓN
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
     cargarRoles();
+    actualizarStatModulosControlados();
+    actualizarStatUsuariosConRol();
 });
