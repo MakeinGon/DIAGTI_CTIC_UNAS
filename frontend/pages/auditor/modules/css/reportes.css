@@ -304,12 +304,6 @@ button {
     margin-bottom: 16px;
 }
 
-.content-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-}
-
 .stat-label {
     color: var(--muted);
     font-size: 12.5px;
@@ -323,10 +317,6 @@ button {
     font-weight: 800;
     margin: 6px 0 8px;
     color: var(--text);
-}
-
-.stat-num.text-small {
-    font-size: 22px;
 }
 
 .stat-num.accent {
@@ -429,6 +419,16 @@ button {
     color: #1e40af;
 }
 
+.report-icon.success {
+    background: #d4edda;
+    color: #166534;
+}
+
+.report-icon.danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
 .report-card h3 {
     font-size: 15px;
     margin-bottom: 6px;
@@ -439,6 +439,12 @@ button {
     font-size: 12.5px;
     line-height: 1.45;
     margin-bottom: 12px;
+}
+
+.report-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 /* ===== TOOLBAR ===== */
@@ -482,7 +488,7 @@ button {
     font: inherit;
     background: var(--surface);
     color: var(--text);
-    min-width: 130px;
+    min-width: 160px;
 }
 
 /* ===== TABLA ===== */
@@ -494,7 +500,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13.5px;
-    min-width: 980px;
+    min-width: 1080px;
 }
 
 thead th {
@@ -628,7 +634,6 @@ tbody tr:hover {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1100px) {
     .kpi-grid,
-    .content-grid,
     .report-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -679,7 +684,6 @@ tbody tr:hover {
 
 @media (max-width: 480px) {
     .kpi-grid,
-    .content-grid,
     .report-grid,
     .report-form {
         grid-template-columns: 1fr;

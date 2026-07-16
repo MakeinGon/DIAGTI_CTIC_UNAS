@@ -80,7 +80,7 @@
             <div>
                 <h2>Inventario General</h2>
                 <div class="hint">
-                    Consulta general de sistemas registrados en DIAGTI.
+                    Consulta general de registros de la tabla sistemas.
                 </div>
             </div>
         </div>
@@ -98,26 +98,26 @@
         <div class="kpi-grid">
             <div class="card kpi-card">
                 <div class="stat-label">Total sistemas</div>
-                <div class="stat-num">42</div>
+                <div class="stat-num" id="kpi-total">0</div>
                 <span class="badge status-info">Registrados</span>
             </div>
 
             <div class="card kpi-card">
-                <div class="stat-label">Validados</div>
-                <div class="stat-num accent">24</div>
-                <span class="badge status-success">Aprobados CTIC</span>
+                <div class="stat-label">Sistemas legacy</div>
+                <div class="stat-num accent" id="kpi-legacy">0</div>
+                <span class="badge status-warning">Obsolescencia</span>
             </div>
 
             <div class="card kpi-card">
-                <div class="stat-label">Observados</div>
-                <div class="stat-num">8</div>
-                <span class="badge status-warning">Pendientes de corrección</span>
+                <div class="stat-label">Riesgo alto/crítico</div>
+                <div class="stat-num" id="kpi-riesgo">0</div>
+                <span class="badge status-danger">Prioridad CTIC</span>
             </div>
 
             <div class="card kpi-card">
-                <div class="stat-label">Pendientes</div>
-                <div class="stat-num">4</div>
-                <span class="badge status-info">Sistemas pendientes</span>
+                <div class="stat-label">Contrato vigente</div>
+                <div class="stat-num" id="kpi-contrato">0</div>
+                <span class="badge status-success">Con soporte</span>
             </div>
         </div>
 
@@ -127,43 +127,45 @@
                 <div>
                     <h3>Consulta del inventario</h3>
                     <div class="desc">
-                        Lista de sistemas auditables con filtros por área, estado y tipo.
+                        Lista de sistemas auditables según los campos reales de la base de datos.
                     </div>
                 </div>
 
                 <div class="section-actions">
-                    <button class="btn btn-verde">Exportar Excel</button>
+                    <button class="btn btn-verde" onclick="exportarExcel()">Exportar Excel</button>
+                    <button class="btn btn-ghost" onclick="exportarPDF()">Exportar PDF</button>
                 </div>
             </div>
 
             <!-- FILTROS -->
             <div class="toolbar">
                 <div class="search">
-                    <input type="text" id="search-input" placeholder="Buscar por código, nombre, área o tecnología...">
+                    <input type="text" id="search-input" placeholder="Buscar por código, nombre, estado, riesgo o desarrollador...">
                 </div>
-
-                <select id="filter-area">
-                    <option value="">Todas las áreas</option>
-                    <option value="Dirección Académica">Dirección Académica</option>
-                    <option value="Secretaría General">Secretaría General</option>
-                    <option value="Biblioteca Central">Biblioteca Central</option>
-                    <option value="Recursos Humanos">Recursos Humanos</option>
-                    <option value="Economía y Finanzas">Economía y Finanzas</option>
-                    <option value="Imagen Institucional">Imagen Institucional</option>
-                </select>
 
                 <select id="filter-estado">
                     <option value="">Todos los estados</option>
-                    <option value="Observado">Observado</option>
-                    <option value="Validado">Validado</option>
-                    <option value="Pendiente">Pendiente</option>
+                    <option value="BORRADOR">Borrador</option>
+                    <option value="ENVIADO">Enviado</option>
+                    <option value="OBSERVADO">Observado</option>
+                    <option value="SUBSANADO">Subsanado</option>
+                    <option value="VALIDADO">Validado</option>
+                    <option value="RECHAZADO">Rechazado</option>
+                    <option value="CERRADO">Cerrado</option>
                 </select>
 
-                <select id="filter-tipo">
-                    <option value="">Todos los tipos</option>
-                    <option value="Web">Web</option>
-                    <option value="Desktop">Desktop</option>
-                    <option value="API">API</option>
+                <select id="filter-riesgo">
+                    <option value="">Todos los riesgos</option>
+                    <option value="BAJO">Bajo</option>
+                    <option value="MEDIO">Medio</option>
+                    <option value="ALTO">Alto</option>
+                    <option value="CRITICO">Crítico</option>
+                </select>
+
+                <select id="filter-legacy">
+                    <option value="">Legacy: Todos</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
                 </select>
             </div>
 
@@ -172,12 +174,14 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Código</th>
+                            <th>ID</th>
+                            <th>Código único</th>
                             <th>Sistema</th>
-                            <th>Área usuaria</th>
-                            <th>Tipo</th>
-                            <th>Tecnología</th>
-                            <th>Estado</th>
+                            <th>ID área</th>
+                            <th>ID tipo</th>
+                            <th>Estado flujo</th>
+                            <th>Nivel riesgo</th>
+                            <th>Legacy</th>
                             <th>Última actualización</th>
                             <th>Consulta</th>
                         </tr>
@@ -192,12 +196,8 @@
             <div class="pagination">
                 <span id="contador-registros">Mostrando registros del inventario</span>
 
-                <div class="page-actions">
-                    <button class="btn btn-ghost btn-sm">Anterior</button>
-                    <button class="page active">1</button>
-                    <button class="page">2</button>
-                    <button class="page">3</button>
-                    <button class="btn btn-ghost btn-sm">Siguiente</button>
+                <div class="page-actions" id="paginacion">
+                    <!-- JS -->
                 </div>
             </div>
         </div>
@@ -209,7 +209,7 @@
             <div class="modal-header">
                 <div>
                     <span class="modal-code" id="modal-codigo">SYS-001</span>
-                    <h3 id="modal-nombre">Sistema Académico</h3>
+                    <h3 id="modal-nombre">Sistema</h3>
                     <p id="modal-descripcion">Detalle del sistema seleccionado.</p>
                 </div>
 
@@ -223,100 +223,126 @@
             <div class="modal-body">
                 <div class="detail-grid">
                     <div class="detail-card">
-                        <h4>Información general</h4>
+                        <h4>Datos del sistema</h4>
 
                         <div class="detail-row">
-                            <span>Área usuaria</span>
+                            <span>ID sistema</span>
+                            <b id="modal-id">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Código único</span>
+                            <b id="modal-codigo-detalle">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>ID área usuaria</span>
                             <b id="modal-area">-</b>
                         </div>
 
                         <div class="detail-row">
-                            <span>Responsable funcional</span>
-                            <b id="modal-responsable">-</b>
-                        </div>
-
-                        <div class="detail-row">
-                            <span>Tipo de aplicativo</span>
+                            <span>ID tipo aplicativo</span>
                             <b id="modal-tipo">-</b>
                         </div>
 
                         <div class="detail-row">
-                            <span>Estado</span>
+                            <span>ID criticidad</span>
+                            <b id="modal-criticidad">-</b>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Responsables</h4>
+
+                        <div class="detail-row">
+                            <span>ID responsable funcional</span>
+                            <b id="modal-responsable-funcional">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>ID responsable técnico</span>
+                            <b id="modal-responsable-tecnico">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Desarrollador</span>
+                            <b id="modal-desarrollador">-</b>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Adquisición y soporte</h4>
+
+                        <div class="detail-row">
+                            <span>Forma de adquisición</span>
+                            <b id="modal-forma">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Año adquisición</span>
+                            <b id="modal-ano">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Contrato vigente</span>
+                            <b id="modal-contrato">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Vencimiento soporte</span>
+                            <b id="modal-vencimiento">-</b>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Estado, riesgo y migración</h4>
+
+                        <div class="detail-row">
+                            <span>Estado flujo</span>
                             <b id="modal-estado">-</b>
                         </div>
-                    </div>
-
-                    <div class="detail-card">
-                        <h4>Arquitectura y base de datos</h4>
 
                         <div class="detail-row">
-                            <span>Tecnología</span>
-                            <b id="modal-tecnologia">-</b>
+                            <span>Nivel riesgo</span>
+                            <b id="modal-riesgo">-</b>
                         </div>
 
                         <div class="detail-row">
-                            <span>Backend</span>
-                            <b id="modal-backend">-</b>
+                            <span>Prioridad migración</span>
+                            <b id="modal-prioridad">-</b>
                         </div>
 
                         <div class="detail-row">
-                            <span>Base de datos</span>
-                            <b id="modal-bd">-</b>
-                        </div>
-
-                        <div class="detail-row">
-                            <span>Repositorio</span>
-                            <b id="modal-repositorio">-</b>
-                        </div>
-                    </div>
-
-                    <div class="detail-card">
-                        <h4>Infraestructura</h4>
-
-                        <div class="detail-row">
-                            <span>Servidor</span>
-                            <b id="modal-servidor">-</b>
-                        </div>
-
-                        <div class="detail-row">
-                            <span>Ambiente</span>
-                            <b id="modal-ambiente">-</b>
-                        </div>
-
-                        <div class="detail-row">
-                            <span>Backup</span>
-                            <b id="modal-backup">-</b>
-                        </div>
-
-                        <div class="detail-row">
-                            <span>Última actualización</span>
-                            <b id="modal-fecha">-</b>
-                        </div>
-                    </div>
-
-                    <div class="detail-card">
-                        <h4>Seguridad y evidencias</h4>
-
-                        <div class="security-list" id="modal-seguridad">
-                            <!-- JS -->
+                            <span>Es legacy</span>
+                            <b id="modal-legacy">-</b>
                         </div>
                     </div>
                 </div>
 
                 <div class="detail-card full">
-                    <h4>Historial reciente</h4>
+                    <h4>Control temporal</h4>
 
-                    <div class="timeline" id="modal-historial">
-                        <!-- JS -->
+                    <div class="detail-row">
+                        <span>Fecha creación</span>
+                        <b id="modal-fecha-creacion">-</b>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Fecha actualización</span>
+                        <b id="modal-fecha-actualizacion">-</b>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Fecha eliminación</span>
+                        <b id="modal-fecha-eliminacion">-</b>
                     </div>
                 </div>
             </div>
 
             <div class="modal-footer">
                 <button class="btn btn-ghost" onclick="cerrarModalDetalle()">Cerrar</button>
-                <button class="btn btn-verde" onclick="alert('Ficha del sistema exportada correctamente.')">
-                    Exportar ficha
-                </button>
+                <button class="btn btn-verde" onclick="exportarFichaSistema()">Exportar ficha Excel</button>
+                <button class="btn btn-ghost" onclick="exportarFichaPDF()">Exportar ficha PDF</button>
             </div>
         </div>
     </div>

@@ -438,7 +438,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13.5px;
-    min-width: 1320px;
+    min-width: 980px;
 }
 
 thead th {
@@ -463,27 +463,64 @@ tbody tr:hover {
     background: #fafcfc;
 }
 
+.id-cell {
+    font-weight: 800;
+    color: var(--color-azul-ctic);
+}
+
 .user-cell b {
     display: block;
     font-size: 13.5px;
 }
 
-.user-cell span {
-    display: block;
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.value-cell {
-    max-width: 180px;
+.email-cell {
     color: var(--muted);
     font-size: 12.5px;
-    line-height: 1.35;
+}
+
+.desc-cell {
+    max-width: 360px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.4;
 }
 
 .ip-cell {
     font-family: monospace;
+    color: #344054;
+}
+
+.action-badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 700;
+    font-size: 12.5px;
+    white-space: nowrap;
+}
+
+.action-consulta {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.action-exportacion {
+    background: #d4edda;
+    color: #166534;
+}
+
+.action-fallido {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.action-eliminacion {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.action-default {
+    background: #f2f4f7;
     color: #344054;
 }
 
@@ -503,6 +540,7 @@ tbody tr:hover {
     display: flex;
     align-items: center;
     gap: 6px;
+    flex-wrap: wrap;
 }
 
 .page {
@@ -518,6 +556,17 @@ tbody tr:hover {
     background: var(--color-verde-ctic);
     border-color: var(--color-verde-ctic);
     color: #06231d;
+}
+
+.btn:disabled,
+.page:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.page:not(.active):hover {
+    background: var(--color-verde-light);
 }
 
 /* ===== BOTONES ===== */

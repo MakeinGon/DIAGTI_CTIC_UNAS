@@ -80,7 +80,7 @@
             <div>
                 <h2>Reportes de Auditoría</h2>
                 <div class="hint">
-                    Generación y consulta de reportes sobre inventario, trazabilidad, evidencias y validaciones.
+                    Generación de reportes PDF y Excel desde las tablas reales del sistema DIAGTI.
                 </div>
             </div>
         </div>
@@ -89,35 +89,37 @@
         <div class="readonly-box">
             <div>
                 <strong>Exportación controlada</strong>
-                <p>Los reportes generados quedan registrados en auditoría para mantener trazabilidad.</p>
+                <p>
+                    El auditor puede generar reportes en PDF y Excel para consulta. No modifica registros de la base de datos.
+                </p>
             </div>
-            <span class="badge status-secondary">PDF / Excel</span>
+            <span class="badge status-secondary">PDF y Excel</span>
         </div>
 
         <!-- KPIS -->
         <div class="kpi-grid">
             <div class="card kpi-card">
-                <div class="stat-label">Reportes generados</div>
-                <div class="stat-num">18</div>
-                <span class="badge status-info">Últimos 30 días</span>
+                <div class="stat-label">Tablas disponibles</div>
+                <div class="stat-num" id="kpi-tablas">5</div>
+                <span class="badge status-info">Fuentes BD</span>
             </div>
 
             <div class="card kpi-card">
-                <div class="stat-label">Inventario exportado</div>
-                <div class="stat-num accent">42</div>
-                <span class="badge status-success">Sistemas incluidos</span>
+                <div class="stat-label">Sistemas</div>
+                <div class="stat-num accent" id="kpi-sistemas">0</div>
+                <span class="badge status-success">Inventario</span>
             </div>
 
             <div class="card kpi-card">
-                <div class="stat-label">Reportes pendientes</div>
-                <div class="stat-num">3</div>
-                <span class="badge status-warning">Por revisar</span>
+                <div class="stat-label">Eventos auditoría</div>
+                <div class="stat-num" id="kpi-auditoria">0</div>
+                <span class="badge status-warning">Trazabilidad</span>
             </div>
 
             <div class="card kpi-card">
-                <div class="stat-label">Última exportación</div>
-                <div class="stat-num text-small">08/07</div>
-                <span class="badge status-secondary">Auditor CTIC</span>
+                <div class="stat-label">Exportaciones</div>
+                <div class="stat-num" id="kpi-exportaciones">0</div>
+                <span class="badge status-success">PDF y Excel</span>
             </div>
         </div>
 
@@ -126,7 +128,9 @@
             <div class="section-head">
                 <div>
                     <h3>Generar nuevo reporte</h3>
-                    <div class="desc">Selecciona los filtros y el formato de salida del reporte.</div>
+                    <div class="desc">
+                        Selecciona una tabla o módulo de información para exportar sus datos en PDF o Excel.
+                    </div>
                 </div>
             </div>
 
@@ -135,35 +139,11 @@
                     <label>Tipo de reporte</label>
                     <select id="tipo-reporte">
                         <option value="">Seleccionar tipo</option>
-                        <option value="Inventario general">Inventario general</option>
-                        <option value="Auditoría y trazabilidad">Auditoría y trazabilidad</option>
-                        <option value="Evidencias técnicas">Evidencias técnicas</option>
-                        <option value="Validaciones y observaciones">Validaciones y observaciones</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Módulo</label>
-                    <select id="modulo-reporte">
-                        <option value="">Todos los módulos</option>
-                        <option value="Inventario">Inventario</option>
-                        <option value="Seguridad">Seguridad</option>
-                        <option value="Evidencias">Evidencias</option>
-                        <option value="Validación">Validación</option>
-                        <option value="Auditoría">Auditoría</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Área usuaria</label>
-                    <select id="area-reporte">
-                        <option value="">Todas las áreas</option>
-                        <option value="Dirección Académica">Dirección Académica</option>
-                        <option value="Secretaría General">Secretaría General</option>
-                        <option value="Biblioteca Central">Biblioteca Central</option>
-                        <option value="Recursos Humanos">Recursos Humanos</option>
-                        <option value="Economía y Finanzas">Economía y Finanzas</option>
-                        <option value="Imagen Institucional">Imagen Institucional</option>
+                        <option value="sistemas">Inventario de sistemas</option>
+                        <option value="auditoria">Auditoría y trazabilidad</option>
+                        <option value="evidencias">Evidencias técnicas</option>
+                        <option value="validaciones">Validaciones</option>
+                        <option value="observaciones">Observaciones</option>
                     </select>
                 </div>
 
@@ -180,18 +160,8 @@
                 <div class="form-group">
                     <label>Formato</label>
                     <select id="formato-reporte">
-                        <option value="PDF">PDF</option>
                         <option value="Excel">Excel</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Estado</label>
-                    <select id="estado-reporte">
-                        <option value="">Todos los estados</option>
-                        <option value="Validado">Validado</option>
-                        <option value="Observado">Observado</option>
-                        <option value="Pendiente">Pendiente</option>
+                        <option value="PDF">PDF</option>
                     </select>
                 </div>
             </div>
@@ -205,13 +175,19 @@
         <!-- TIPOS DE REPORTES -->
         <div class="report-grid">
             <div class="report-card">
-                <div class="report-icon">INV</div>
+                <div class="report-icon">SIS</div>
                 <div>
-                    <h3>Inventario general</h3>
-                    <p>Listado consolidado de sistemas registrados, áreas usuarias, tecnologías, estados y responsables.</p>
-                    <button class="btn btn-ghost btn-sm" onclick="generarRapido('Inventario general', 'PDF')">
-                        Generar PDF
-                    </button>
+                    <h3>Inventario de sistemas</h3>
+                    <p>Exporta los campos principales de la tabla sistemas.</p>
+
+                    <div class="report-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('sistemas', 'Excel')">
+                            Excel
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('sistemas', 'PDF')">
+                            PDF
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -219,10 +195,16 @@
                 <div class="report-icon info">LOG</div>
                 <div>
                     <h3>Auditoría y trazabilidad</h3>
-                    <p>Exportación de logs, cambios, accesos, validaciones, observaciones y eliminación lógica.</p>
-                    <button class="btn btn-ghost btn-sm" onclick="generarRapido('Auditoría y trazabilidad', 'PDF')">
-                        Generar PDF
-                    </button>
+                    <p>Exporta eventos registrados en la tabla auditoria.</p>
+
+                    <div class="report-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('auditoria', 'Excel')">
+                            Excel
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('auditoria', 'PDF')">
+                            PDF
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -230,10 +212,50 @@
                 <div class="report-icon warning">EVI</div>
                 <div>
                     <h3>Evidencias técnicas</h3>
-                    <p>Reporte de documentos, respaldos técnicos, certificados, repositorios y archivos registrados.</p>
-                    <button class="btn btn-ghost btn-sm" onclick="generarRapido('Evidencias técnicas', 'Excel')">
-                        Generar Excel
-                    </button>
+                    <p>Exporta archivos, URLs y datos de evidencias asociadas a sistemas.</p>
+
+                    <div class="report-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('evidencias', 'Excel')">
+                            Excel
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('evidencias', 'PDF')">
+                            PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-icon success">VAL</div>
+                <div>
+                    <h3>Validaciones</h3>
+                    <p>Exporta estados, resultados y fechas de validación técnica.</p>
+
+                    <div class="report-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('validaciones', 'Excel')">
+                            Excel
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('validaciones', 'PDF')">
+                            PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-icon danger">OBS</div>
+                <div>
+                    <h3>Observaciones</h3>
+                    <p>Exporta observaciones, respuestas y fechas de subsanación.</p>
+
+                    <div class="report-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('observaciones', 'Excel')">
+                            Excel
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="generarRapido('observaciones', 'PDF')">
+                            PDF
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -243,34 +265,30 @@
             <div class="section-head">
                 <div>
                     <h3>Historial de reportes generados</h3>
-                    <div class="desc">Consulta de reportes generados por el auditor o usuarios autorizados.</div>
+                    <div class="desc">
+                        Historial local de exportaciones realizadas desde esta pantalla.
+                    </div>
                 </div>
             </div>
 
             <div class="toolbar">
                 <div class="search">
-                    <input type="text" id="search-input" placeholder="Buscar reporte, módulo, formato o usuario...">
+                    <input type="text" id="search-input" placeholder="Buscar por reporte, tabla, usuario o estado...">
                 </div>
 
                 <select id="filter-tipo">
                     <option value="">Todos los reportes</option>
-                    <option value="Inventario general">Inventario general</option>
-                    <option value="Auditoría y trazabilidad">Auditoría y trazabilidad</option>
-                    <option value="Evidencias técnicas">Evidencias técnicas</option>
-                    <option value="Validaciones y observaciones">Validaciones y observaciones</option>
-                </select>
-
-                <select id="filter-formato">
-                    <option value="">Todos los formatos</option>
-                    <option value="PDF">PDF</option>
-                    <option value="Excel">Excel</option>
+                    <option value="sistemas">Inventario de sistemas</option>
+                    <option value="auditoria">Auditoría y trazabilidad</option>
+                    <option value="evidencias">Evidencias técnicas</option>
+                    <option value="validaciones">Validaciones</option>
+                    <option value="observaciones">Observaciones</option>
                 </select>
 
                 <select id="filter-estado">
                     <option value="">Todos los estados</option>
                     <option value="Generado">Generado</option>
                     <option value="Descargado">Descargado</option>
-                    <option value="Pendiente">Pendiente</option>
                 </select>
             </div>
 
@@ -280,9 +298,10 @@
                         <tr>
                             <th>Fecha</th>
                             <th>Reporte</th>
-                            <th>Módulo</th>
+                            <th>Tabla origen</th>
                             <th>Período</th>
                             <th>Formato</th>
+                            <th>Registros</th>
                             <th>Generado por</th>
                             <th>Estado</th>
                             <th>Acción</th>

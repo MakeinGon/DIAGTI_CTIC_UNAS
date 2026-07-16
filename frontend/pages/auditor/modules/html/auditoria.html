@@ -51,7 +51,7 @@
             <a class="nav-item" href="reportes.html">
                 <span>
                     <span class="lbl">Reportes</span>
-                    <span class="sub">Excel</span>
+                    <span class="sub">PDF y Excel</span>
                 </span>
             </a>
         </nav>
@@ -80,7 +80,7 @@
             <div>
                 <h2>Auditoría del Sistema</h2>
                 <div class="hint">
-                    Consulta de logs, accesos, cambios, validaciones y exportaciones realizadas en DIAGTI.
+                    Consulta de eventos registrados en la tabla auditoría de DIAGTI.
                 </div>
             </div>
         </div>
@@ -90,7 +90,7 @@
             <div>
                 <strong>Registro histórico no editable</strong>
                 <p>
-                    Esta pantalla permite revisar eventos auditables del sistema. El auditor no puede modificar ni eliminar logs.
+                    Esta pantalla permite revisar eventos auditables. El auditor solo consulta la información registrada.
                 </p>
             </div>
             <span class="badge status-secondary">Solo consulta</span>
@@ -100,26 +100,26 @@
         <div class="kpi-grid">
             <div class="card kpi-card">
                 <div class="stat-label">Eventos registrados</div>
-                <div class="stat-num">1,248</div>
+                <div class="stat-num" id="kpi-total">0</div>
                 <span class="badge status-info">Historial general</span>
             </div>
 
             <div class="card kpi-card">
-                <div class="stat-label">Cambios críticos</div>
-                <div class="stat-num accent">36</div>
-                <span class="badge status-danger">Alta prioridad</span>
+                <div class="stat-label">Consultas</div>
+                <div class="stat-num accent" id="kpi-consultas">0</div>
+                <span class="badge status-success">Eventos de consulta</span>
             </div>
 
             <div class="card kpi-card">
                 <div class="stat-label">Intentos fallidos</div>
-                <div class="stat-num">12</div>
+                <div class="stat-num" id="kpi-fallidos">0</div>
                 <span class="badge status-warning">Accesos fallidos</span>
             </div>
 
             <div class="card kpi-card">
                 <div class="stat-label">Exportaciones</div>
-                <div class="stat-num">18</div>
-                <span class="badge status-success">Excel</span>
+                <div class="stat-num" id="kpi-exportaciones">0</div>
+                <span class="badge status-success">PDF y Excel</span>
             </div>
         </div>
 
@@ -127,52 +127,44 @@
         <div class="card">
             <div class="section-head">
                 <div>
-                    <h3>Consulta avanzada de eventos</h3>
+                    <h3>Consulta de eventos de auditoría</h3>
                     <div class="desc">
-                        Filtra registros por usuario, módulo, acción, estado o rango de fechas.
+                        Filtra registros por usuario, correo, módulo, acción, descripción, IP o rango de fechas.
                     </div>
                 </div>
 
                 <div class="section-actions">
                     <button class="btn btn-verde" onclick="exportarExcel()">Exportar Excel</button>
+                    <button class="btn btn-ghost" onclick="exportarPDF()">Exportar PDF</button>
                 </div>
             </div>
 
             <!-- FILTROS -->
             <div class="toolbar">
                 <div class="search">
-                    <input type="text" id="search-input" placeholder="Buscar por usuario, acción, módulo, entidad o IP...">
+                    <input type="text" id="search-input" placeholder="Buscar por usuario, correo, módulo, acción, descripción o IP...">
                 </div>
 
                 <select id="filter-modulo">
                     <option value="">Todos los módulos</option>
                     <option value="Inventario">Inventario</option>
-                    <option value="Seguridad">Seguridad</option>
-                    <option value="Validación">Validación</option>
-                    <option value="Evidencias">Evidencias</option>
+                    <option value="Auditoría">Auditoría</option>
                     <option value="Reportes">Reportes</option>
                     <option value="Acceso">Acceso</option>
+                    <option value="Sistemas">Sistemas</option>
+                    <option value="Seguridad">Seguridad</option>
+                    <option value="Evidencias">Evidencias</option>
                     <option value="Administración">Administración</option>
                 </select>
 
                 <select id="filter-accion">
                     <option value="">Todas las acciones</option>
-                    <option value="Actualización">Actualización</option>
-                    <option value="Registro">Registro</option>
-                    <option value="Observación">Observación</option>
+                    <option value="Consulta">Consulta</option>
                     <option value="Exportación">Exportación</option>
                     <option value="Intento fallido">Intento fallido</option>
                     <option value="Eliminación lógica">Eliminación lógica</option>
-                </select>
-
-                <select id="filter-estado">
-                    <option value="">Todos los estados</option>
-                    <option value="Correcto">Correcto</option>
-                    <option value="Registrado">Registrado</option>
-                    <option value="Observado">Observado</option>
-                    <option value="Fallido">Fallido</option>
-                    <option value="Crítico">Crítico</option>
-                    <option value="Consultado">Consultado</option>
+                    <option value="Registro">Registro</option>
+                    <option value="Actualización">Actualización</option>
                 </select>
 
                 <input type="date" id="filter-desde">
@@ -184,16 +176,14 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Fecha y hora</th>
                             <th>Usuario</th>
-                            <th>Rol</th>
+                            <th>Correo</th>
                             <th>Módulo</th>
                             <th>Acción</th>
-                            <th>Entidad afectada</th>
-                            <th>Valor anterior</th>
-                            <th>Valor nuevo</th>
+                            <th>Descripción</th>
                             <th>IP origen</th>
-                            <th>Estado</th>
                         </tr>
                     </thead>
 
@@ -203,15 +193,12 @@
                 </table>
             </div>
 
+            <!-- PAGINACIÓN FUNCIONAL -->
             <div class="pagination">
                 <span id="contador-registros">Mostrando eventos auditables</span>
 
-                <div class="page-actions">
-                    <button class="btn btn-ghost btn-sm">Anterior</button>
-                    <button class="page active">1</button>
-                    <button class="page">2</button>
-                    <button class="page">3</button>
-                    <button class="btn btn-ghost btn-sm">Siguiente</button>
+                <div class="page-actions" id="paginacion">
+                    <!-- JS -->
                 </div>
             </div>
         </div>
