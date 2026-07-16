@@ -21,7 +21,7 @@ public class CatalogoServiceImpl implements CatalogoService {
 
     @Override
     public List<CatalogoDTO> listarPorTipo(String tipo) {
-        return repository.findByTipoCatalogoAndEstadoTrueOrderByOrdenAsc(tipo)
+        return repository.findByTipoCatalogoOrderByOrdenAsc(tipo)
                 .stream().map(mapper::toDTO).collect(Collectors.toList());
     }
 

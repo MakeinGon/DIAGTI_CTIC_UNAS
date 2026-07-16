@@ -7,7 +7,12 @@ import java.util.Optional;
 
 public interface CatalogoRepository extends JpaRepository<CatalogoEntity, Long> {
 
-    // Solo devuelve ítems activos
+    // Trae TODOS los ítems del tipo (activos e inactivos), para que el admin
+    // pueda ver y reactivar los inactivos en vez de que "desaparezcan".
+    List<CatalogoEntity> findByTipoCatalogoOrderByOrdenAsc(String tipoCatalogo);
+
+    // Se mantiene por si en el futuro se necesita una lista filtrada
+    // (ej: para poblar selects de otras pantallas donde solo interesan los activos).
     List<CatalogoEntity> findByTipoCatalogoAndEstadoTrueOrderByOrdenAsc(String tipoCatalogo);
 
     Optional<CatalogoEntity> findByTipoCatalogoAndCodigo(String tipoCatalogo, String codigo);
