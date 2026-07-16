@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: diagti_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: diagti_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "Postgres123*"
+    ports:
+      - "5433:5432"
+    volumes:
+      - diagti_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  diagti_postgres_data:

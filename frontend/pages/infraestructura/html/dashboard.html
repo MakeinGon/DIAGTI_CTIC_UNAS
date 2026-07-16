@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | DIAGTI</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="brand"><img src="../assets/logo-unas.png" alt="Logo UNAS"><div><h1>UNAS</h1><p>Tingo María</p></div></div>
+    <div class="user-card"><div class="avatar">CR</div><div><strong>CARLOS ROJAS</strong><span>ÁREA DE INFRAESTRUCTURA</span></div></div>
+    <nav class="menu">
+      <p class="menu-title">INFRAESTRUCTURA</p>
+      <a class="menu-item active" href="dashboard.html"><strong>Dashboard</strong><span>Resumen general</span></a>
+      <a class="menu-item" href="mis-sistemas.html"><strong>Mis Sistemas</strong><span>Sistemas asignados</span></a>
+      <a class="menu-item" href="infraestructura.html"><strong>Infraestructura</strong><span>Registro técnico</span></a>
+      <a class="menu-item" href="historial.html"><strong>Historial</strong><span>Seguimiento</span></a>
+    </nav>
+    <!-- Botón Cerrar Sesión -->
+    <div class="sidebar-logout">
+      <button class="btn-logout" type="button" onclick="window.location.href='../../login/html/login.html'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        Cerrar Sesión
+      </button>
+    </div>
+    <div class="sidebar-footer">DIAGTI v2.0 · CTIC UNAS<br>Módulo de Infraestructura</div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header dashboard-header">
+      <div>
+        <h2>Dashboard de Infraestructura</h2>
+        <p>Seguimiento del registro técnico, validación y subsanación de los sistemas asignados.</p>
+      </div>
+      <a class="header-action" href="infraestructura.html">Registrar infraestructura</a>
+    </header>
+
+    <section class="stats-grid" aria-label="Indicadores principales">
+      <article class="stat-card">
+        <span class="stat-label">Sistemas asignados</span>
+        <strong id="kpiTotal">0</strong>
+        <small>Inventario bajo responsabilidad del área</small>
+      </article>
+      <article class="stat-card accent-new">
+        <span class="stat-label">Pendientes de registro</span>
+        <strong id="kpiPendientes">0</strong>
+        <small><span id="kpiNuevos">0</span> nuevos y <span id="kpiBorradores">0</span> borradores</small>
+      </article>
+      <article class="stat-card accent-observed">
+        <span class="stat-label">Requieren subsanación</span>
+        <strong id="kpiObservados">0</strong>
+        <small>Observaciones emitidas por el Validador CTIC</small>
+      </article>
+      <article class="stat-card accent-success">
+        <span class="stat-label">Validados</span>
+        <strong id="kpiValidados">0</strong>
+        <small>Registros técnicos aprobados</small>
+      </article>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel priority-panel">
+        <div class="panel-head">
+          <div><h3>Prioridades de atención</h3><p>Registros que requieren una acción del Área de Infraestructura.</p></div>
+          <a href="mis-sistemas.html">Ver todos</a>
+        </div>
+        <div class="priority-list" id="priorityList"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><div><h3>Distribución por estado</h3><p>Situación actual del flujo de trabajo.</p></div></div>
+        <div id="stateBars" class="state-bars"></div>
+      </article>
+    </section>
+
+    <section class="dashboard-grid lower-grid">
+      <article class="panel">
+        <div class="panel-head"><div><h3>Nivel de riesgo</h3><p>Clasificación de los sistemas asignados.</p></div></div>
+        <div id="riskSummary" class="risk-summary"></div>
+      </article>
+
+      <article class="panel flow-panel">
+        <div class="panel-head"><div><h3>Flujo del registro técnico</h3><p>Secuencia aplicada desde el registro hasta la aprobación.</p></div></div>
+        <div class="flow-line">
+          <span>Nuevo</span><b>→</b><span>Borrador</span><b>→</b><span>Enviado</span><b>→</b><span>Observado</span><b>→</b><span>Corregido</span><b>→</b><span>Enviado</span><b>→</b><span>Validado</span>
+        </div>
+        <div class="flow-note">
+          <strong>Lectura rápida:</strong> los sistemas nuevos y borradores se gestionan en Infraestructura; los observados se subsanan desde Mis Sistemas; los corregidos se revisan y reenvían a validación.
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
+<script src="../js/dashboard.js"></script>
+</body>
+</html>
