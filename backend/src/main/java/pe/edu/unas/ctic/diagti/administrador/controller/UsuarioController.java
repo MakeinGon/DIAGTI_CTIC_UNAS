@@ -8,6 +8,7 @@ import pe.edu.unas.ctic.diagti.administrador.dto.UsuarioDTO;
 import pe.edu.unas.ctic.diagti.administrador.service.UsuarioService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/usuarios")
@@ -37,6 +38,20 @@ public class UsuarioController {
                                                  @RequestBody UsuarioDTO dto,
                                                  @RequestParam Long rolId) {
         return ResponseEntity.ok(service.actualizar(dni, dto, rolId));
+    }
+
+    /**
+     * Toggle activo/inactivo (boton .toggle de la tabla). No requiere rolId
+     * ni el resto del formulario, solo el nuevo estado.
+     */
+    @PatchMapping("/{dni}/estado")
+    public ResponseEntity<UsuarioDTO> cambiarEstado(@PathVariable String dni,
+                                                     @RequestBody Map<String, Boolean> body) {
+        Boolean estado = body.get("estado");
+        if (estado == null) {
+            throw new IllegalArgumentException("Falta el campo 'estado' en el cuerpo de la peticion");
+        }
+        return ResponseEntity.ok(service.cambiarEstado(dni, estado));
     }
 
     @DeleteMapping("/{dni}")

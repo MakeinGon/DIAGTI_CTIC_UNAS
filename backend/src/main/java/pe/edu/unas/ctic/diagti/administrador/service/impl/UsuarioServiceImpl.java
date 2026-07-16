@@ -24,6 +24,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioMapper mapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UsuarioDTO> listar(String search, Long rolId, Boolean estado, String origen) {
         Specification<UsuarioEntity> spec = buildSpecification(search, rolId, estado, origen);
         return usuarioRepository.findAll(spec)
@@ -52,6 +53,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public UsuarioDTO crear(UsuarioDTO dto, Long rolId) {
         // Validaciones
+        if (dto.getNombreCompleto() == null || dto.getNombreCompleto().isBlank()) {
+            throw new RuntimeException("El nombre completo es obligatorio");
+        }
+        if (dto.getCorreo() == null || dto.getCorreo().isBlank()) {
+            throw new RuntimeException("El correo es obligatorio");
+        }
         if (dto.getDni() != null && usuarioRepository.existsByDni(dto.getDni())) {
             throw new RuntimeException("DNI ya registrado");
         }
@@ -85,6 +92,22 @@ public class UsuarioServiceImpl implements UsuarioService {
         UsuarioEntity entity = usuarioRepository.findByDni(dni)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        if (dto.getNombreCompleto() == null || dto.getNombreCompleto().isBlank()) {
+            throw new RuntimeException("El nombre completo es obligatorio");
+        }
+        if (dto.getCorreo() == null || dto.getCorreo().isBlank()) {
+            throw new RuntimeException("El correo es obligatorio");
+        }
+        if (!dto.getCorreo().equalsIgnoreCase(entity.getCorreo())
+                && usuarioRepository.existsByCorreo(dto.getCorreo())) {
+            throw new RuntimeException("Correo ya registrado por otro usuario");
+        }
+
+        // Actualizar nombre y apellido a partir del "nombre completo" del formulario
+        String[] nombreApellido = dto.getNombreCompleto().trim().split(" ", 2);
+        entity.setNombres(nombreApellido[0]);
+        entity.setApellidos(nombreApellido.length > 1 ? nombreApellido[1] : "");
+
         // Actualizar campos básicos (no se actualiza DNI)
         entity.setCorreo(dto.getCorreo());
         entity.setArea(dto.getArea());
@@ -106,7 +129,20 @@ public class UsuarioServiceImpl implements UsuarioService {
     public void eliminar(String dni) {
         UsuarioEntity entity = usuarioRepository.findByDni(dni)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        entity.setEstado(false);
-        usuarioRepository.save(entity);
+        // Se limpia la tabla puente usuarios_roles explicitamente antes de
+        // borrar: no depende de que la FK de la base de datos tenga
+        // ON DELETE CASCADE correctamente configurado.
+        usuarioRepository.desasignarRolesDelUsuario(entity.getIdUsuario());
+        usuarioRepository.delete(entity);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioDTO cambiarEstado(String dni, boolean estado) {
+        UsuarioEntity entity = usuarioRepository.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        entity.setEstado(estado);
+        entity = usuarioRepository.save(entity);
+        return mapper.toDTO(entity);
     }
 }

@@ -22,6 +22,7 @@ public class UsuarioMapper {
         dto.setArea(entity.getArea());
         if (entity.getRoles() != null && !entity.getRoles().isEmpty()) {
             RolEntity primerRol = entity.getRoles().iterator().next();
+            dto.setRolId(primerRol.getIdRol());
             dto.setRol(primerRol.getNombre());
             dto.setRoles(entity.getRoles().stream().map(RolEntity::getNombre).collect(Collectors.toList()));
         }

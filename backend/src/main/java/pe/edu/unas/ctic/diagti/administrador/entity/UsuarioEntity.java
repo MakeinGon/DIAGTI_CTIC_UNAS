@@ -1,12 +1,23 @@
 package pe.edu.unas.ctic.diagti.administrador.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+/**
+ * Ver el comentario en RolEntity: se evita @Data para no incluir la
+ * coleccion "roles" en equals/hashCode/toString y romper la recursion
+ * infinita Usuario -> roles -> Rol -> usuarios -> Usuario -> ...
+ */
+@Getter
+@Setter
+@ToString(exclude = "roles")
+@EqualsAndHashCode(of = "idUsuario")
 @Entity
 @Table(name = "usuarios")
 public class UsuarioEntity {
