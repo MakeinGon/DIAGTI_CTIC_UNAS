@@ -3,7 +3,7 @@
 /* ============================================================
    DIAGTI CTIC UNAS
    Módulo Directivo
-   Sidebar compartido
+   Sidebar compartido V1.4
 ============================================================ */
 
 
@@ -15,8 +15,8 @@ const DIRECTIVO_SIDEBAR = {
     storageKey: "sidebarCollapsed",
     mobileBreakpoint: 900,
 
-    defaultUser: "Director CTIC",
-    defaultRole: "Usuario Directivo"
+    defaultUser: "Brando Gabriel Benavides Vargas",
+    defaultRole: "Director CTIC"
 };
 
 
@@ -129,14 +129,14 @@ function renderizarSidebar(sidebarContainer) {
                         class="sidebar-user__name"
                         id="sidebar-user-name"
                     >
-                        Director CTIC
+                        Brando Gabriel Benavides Vargas
                     </strong>
 
                     <span
                         class="sidebar-user__role"
                         id="sidebar-user-role"
                     >
-                        Usuario Directivo
+                        Director CTIC
                     </span>
 
                 </div>
@@ -176,17 +176,7 @@ function renderizarSidebar(sidebarContainer) {
                         data-page="dashboard-riesgos.html"
                     >
                         <span class="sidebar-nav__text">
-                            Dashboard Riesgos
-                        </span>
-                    </a>
-
-                    <a
-                        href="dashboard-obsolescencia.html"
-                        class="sidebar-nav__link"
-                        data-page="dashboard-obsolescencia.html"
-                    >
-                        <span class="sidebar-nav__text">
-                            Dashboard Obsolescencia
+                            Riesgos
                         </span>
                     </a>
 
@@ -197,16 +187,6 @@ function renderizarSidebar(sidebarContainer) {
                     >
                         <span class="sidebar-nav__text">
                             Reportes Ejecutivos
-                        </span>
-                    </a>
-
-                    <a
-                        href="plan-modernizacion.html"
-                        class="sidebar-nav__link"
-                        data-page="plan-modernizacion.html"
-                    >
-                        <span class="sidebar-nav__text">
-                            Roadmap Migración
                         </span>
                     </a>
 
@@ -252,7 +232,7 @@ function renderizarSidebar(sidebarContainer) {
                 <footer class="sidebar-footer">
 
                     <span class="sidebar-footer__version">
-                        DIAGTI v1.0 · CTIC UNAS
+                        DIAGTI v1.4 · CTIC UNAS
                     </span>
 
                     <span class="sidebar-footer__module">

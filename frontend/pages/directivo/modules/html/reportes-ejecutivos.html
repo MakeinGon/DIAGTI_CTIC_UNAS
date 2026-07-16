@@ -10,11 +10,11 @@
          ESTILOS COMPARTIDOS
     ====================================================== -->
 <link href="../css/base.css" rel="stylesheet"/>
-<link href="../css/sidebar.css" rel="stylesheet"/>
+<link href="../css/sidebar.css?v=20260716-v1-4" rel="stylesheet"/>
 <!-- =====================================================
          ESTILO ESPECÍFICO DE LA PÁGINA
     ====================================================== -->
-<link href="../css/reportes-ejecutivos.css?v=20260712-2" rel="stylesheet"/>
+<link href="../css/reportes-ejecutivos.css?v=20260716-v1-4" rel="stylesheet"/>
 </head>
 <body>
 <!-- =====================================================
@@ -36,195 +36,16 @@
 <h1>
                     Reportes Ejecutivos
                 </h1>
-<p class="page-header__description">
-                    Centro de descarga y consulta de informes consolidados. Permite filtrar por periodos o áreas funcionales para generar resúmenes ejecutivos listos para presentaciones de alta dirección.
-                </p>
+<p class="page-header__description">Consulta y exportación de reportes ejecutivos del inventario, riesgos y validación de los sistemas de Infraestructura TI.</p>
 </div>
-<div class="page-header__status">
-<span class="badge badge-success">
-                    Descargas ejecutivas
-                </span>
-<small>
-                    PDF · Excel · vistas consolidadas
-                </small>
-</div>
+
 </header>
 <!-- =================================================
              1. CATÁLOGO DE REPORTES
         ================================================== -->
-<section aria-labelledby="titulo-catalogo-reportes" class="report-catalog" id="catalogo-reportes">
-<header class="section-heading">
-<span class="section-label">
-                    Catálogo
-                </span>
-<h2 id="titulo-catalogo-reportes">
-                    Centro de Reportes Ejecutivos
-                </h2>
-<p>
-                    Seleccione un reporte para consultarlo, filtrarlo y descargarlo en formatos ejecutivos.
-                </p>
-</header>
-<nav aria-label="Acceso a reportes ejecutivos" class="report-card-grid">
-<!-- Reporte 01 -->
-<a class="report-card" data-report-link="inventario" href="#reporte-inventario">
-<span class="report-card__number">
-                        01
-                    </span>
-<div class="report-card__content">
-<h3>
-                            Reporte General de Inventario
-                        </h3>
-<p>
-                            Sistemas registrados, áreas usuarias,
-                            criticidad, estado y responsables.
-                        </p>
-<span class="report-card__action">
-                            Ver reporte
-                        </span>
-</div>
-</a>
-<!-- Reporte 02 -->
-<a class="report-card" data-report-link="riesgos" href="#reporte-riesgos">
-<span class="report-card__number">
-                        02
-                    </span>
-<div class="report-card__content">
-<h3>
-                            Reporte de Riesgos
-                        </h3>
-<p>
-                            Sistemas con exposición operativa,
-                            técnica, de seguridad o continuidad.
-                        </p>
-<span class="report-card__action">
-                            Ver reporte
-                        </span>
-</div>
-</a>
-<!-- Reporte 03 -->
-<a class="report-card" data-report-link="obsolescencia" href="#reporte-obsolescencia">
-<span class="report-card__number">
-                        03
-                    </span>
-<div class="report-card__content">
-<h3>
-                            Reporte de Obsolescencia
-                        </h3>
-<p>
-                            Tecnologías antiguas, soporte vencido
-                            y necesidades de intervención tecnológica.
-                        </p>
-<span class="report-card__action">
-                            Ver reporte
-                        </span>
-</div>
-</a>
-<!-- Reporte 04 -->
-<a class="report-card" data-report-link="area" href="#reporte-area">
-<span class="report-card__number">
-                        04
-                    </span>
-<div class="report-card__content">
-<h3>
-                            Reporte por Área Usuaria
-                        </h3>
-<p>
-                            Distribución de sistemas, criticidad
-                            y pendientes por dependencia institucional.
-                        </p>
-<span class="report-card__action">
-                            Ver reporte
-                        </span>
-</div>
-</a>
-<!-- Reporte 05 -->
-<a class="report-card" data-report-link="validacion" href="#reporte-validacion">
-<span class="report-card__number">
-                        05
-                    </span>
-<div class="report-card__content">
-<h3>
-                            Reporte de Validación
-                        </h3>
-<p>
-                            Estado consolidado de sistemas aprobados,
-                            observados, rechazados y pendientes.
-                        </p>
-<span class="report-card__action">
-                            Ver reporte
-                        </span>
-</div>
-</a>
-</nav>
-</section>
 <!-- =================================================
              2. INDICADORES CONSOLIDADOS
         ================================================== -->
-<section aria-labelledby="titulo-indicadores-reportes" class="reports-summary">
-<div class="section-heading section-heading--hidden">
-<h2 id="titulo-indicadores-reportes">
-                    Indicadores consolidados
-                </h2>
-</div>
-<div class="kpi-grid">
-<!-- Total -->
-<article class="kpi-card">
-<div class="kpi-card__content">
-<span class="kpi-card__label">
-                            Total de Sistemas
-                        </span>
-<strong class="kpi-card__value">
-                            48
-                        </strong>
-<p class="kpi-card__description">
-                            Sistemas registrados en el inventario TI.
-                        </p>
-</div>
-</article>
-<!-- Riesgo -->
-<article class="kpi-card">
-<div class="kpi-card__content">
-<span class="kpi-card__label">
-                            Riesgo Alto
-                        </span>
-<strong class="kpi-card__value">
-                            9
-                        </strong>
-<p class="kpi-card__description">
-                            Sistemas que requieren atención prioritaria.
-                        </p>
-</div>
-</article>
-<!-- Soporte -->
-<article class="kpi-card">
-<div class="kpi-card__content">
-<span class="kpi-card__label">
-                            Soporte Vencido
-                        </span>
-<strong class="kpi-card__value">
-                            8
-                        </strong>
-<p class="kpi-card__description">
-                            Sistemas con condiciones de obsolescencia.
-                        </p>
-</div>
-</article>
-<!-- Revisados -->
-<article class="kpi-card">
-<div class="kpi-card__content">
-<span class="kpi-card__label">
-                            Revisados
-                        </span>
-<strong class="kpi-card__value">
-                            31
-                        </strong>
-<p class="kpi-card__description">
-                            24 aprobados y 7 observados.
-                        </p>
-</div>
-</article>
-</div>
-</section>
 <!-- =================================================
              3. CONTROLES DE CONSULTA
         ================================================== -->
@@ -257,12 +78,6 @@
 <option value="riesgos">
                             Riesgos
                         </option>
-<option value="obsolescencia">
-                            Obsolescencia
-                        </option>
-<option value="area">
-                            Área Usuaria
-                        </option>
 <option value="validacion">
                             Validación
                         </option>
@@ -273,32 +88,7 @@
 <label for="filter-report-area">
                         Área usuaria
                     </label>
-<select id="filter-report-area" name="area">
-<option value="">
-                            Todas las áreas
-                        </option>
-<option value="direccion-academica">
-                            Dirección Académica
-                        </option>
-<option value="registros-academicos">
-                            Registros Académicos
-                        </option>
-<option value="administracion">
-                            Administración
-                        </option>
-<option value="biblioteca-central">
-                            Biblioteca Central
-                        </option>
-<option value="investigacion">
-                            Investigación
-                        </option>
-<option value="secretaria-general">
-                            Secretaría General
-                        </option>
-<option value="otros">
-                            Otros
-                        </option>
-</select>
+<select id="filter-report-area" name="area"><option value="">Todas las áreas</option><option value="infraestructura-ti">Infraestructura TI</option></select>
 </div>
 <!-- Nivel de criticidad -->
 <div class="filter-group">
@@ -308,7 +98,7 @@
 <select id="filter-report-criticality" name="criticality">
 <option value="">
                             Todas
-                        </option>
+                        </option><option value="critica">Crítica</option>
 <option value="alta">
                             Alta
                         </option>
@@ -341,12 +131,19 @@
 </select>
 </div>
 <!-- Periodo -->
-<div class="filter-group">
-<label for="filter-report-period">
-                        Periodo
-                    </label>
-<select id="filter-report-period" name="period"><option value="">Todos los periodos</option><option value="2026">2026</option><option value="2025">2025</option></select>
+<fieldset class="report-date-range">
+<legend>Rango de fechas</legend>
+<div class="report-date-range__fields">
+<label>
+<span>Desde</span>
+<input id="filter-report-date-from" max="2026-12-31" min="2025-01-01" name="dateFrom" type="date" value="2025-01-01"/>
+</label>
+<label>
+<span>Hasta</span>
+<input id="filter-report-date-to" max="2026-12-31" min="2025-01-01" name="dateTo" type="date" value="2026-12-31"/>
+</label>
 </div>
+</fieldset>
 <!-- Acciones -->
 <div class="filter-actions">
 <button class="button button--primary" id="apply-report-filters" type="submit">
@@ -371,11 +168,7 @@
 <h2 id="titulo-reporte-inventario">
                         Reporte General de Inventario TI
                     </h2>
-<p class="section-description">
-                        Vista consolidada de sistemas registrados,
-                        áreas usuarias, criticidad, situación operativa
-                        y responsables institucionales.
-                    </p>
+<p class="section-description">Inventario consolidado con identificación, tipo, criticidad, estado de validación y situación operativa reportada.</p>
 </div>
 <div class="report-actions">
 <button class="button button--primary" data-action="export-pdf" data-report-id="reporte-inventario" type="button">
@@ -391,137 +184,8 @@
 <caption class="sr-only">
                         Reporte general del inventario de sistemas TI.
                     </caption>
-<thead>
-<tr>
-<th scope="col">
-                                Sistema
-                            </th>
-<th scope="col">
-                                Área Usuaria
-                            </th>
-<th scope="col">
-                                Criticidad
-                            </th>
-<th scope="col">
-                                Estado
-                            </th>
-<th scope="col">
-                                Responsable
-                            </th>
-</tr>
-</thead>
-<tbody>
-<!-- Sistema Académico -->
-<tr data-area="direccion-academica" data-criticality="alta" data-period="2026">
-<td>
-<strong>
-                                    Sistema Académico
-                                </strong>
-</td>
-<td>
-                                Dirección Académica
-                            </td>
-<td>
-<span class="badge badge-danger">
-                                    Alta
-                                </span>
-</td>
-<td>
-                                En producción
-                            </td>
-<td>
-                                Responsable Funcional
-                            </td>
-</tr>
-<!-- Sistema de Matrícula -->
-<tr data-area="registros-academicos" data-criticality="alta" data-period="2026">
-<td>
-<strong>
-                                    Sistema de Matrícula
-                                </strong>
-</td>
-<td>
-                                Registros Académicos
-                            </td>
-<td>
-<span class="badge badge-danger">
-                                    Alta
-                                </span>
-</td>
-<td>
-                                Revisión prioritaria
-                            </td>
-<td>
-                                Coordinador TI
-                            </td>
-</tr>
-<!-- Sistema Biblioteca -->
-<tr data-area="biblioteca-central" data-criticality="media" data-period="2026">
-<td>
-<strong>
-                                    Sistema Biblioteca
-                                </strong>
-</td>
-<td>
-                                Biblioteca Central
-                            </td>
-<td>
-<span class="badge badge-warning">
-                                    Media
-                                </span>
-</td>
-<td>
-                                Requiere actualización
-                            </td>
-<td>
-                                Administrador Biblioteca
-                            </td>
-</tr>
-<!-- Sistema Documentario -->
-<tr data-area="secretaria-general" data-criticality="media" data-period="2025">
-<td>
-<strong>
-                                    Sistema Documentario
-                                </strong>
-</td>
-<td>
-                                Secretaría General
-                            </td>
-<td>
-<span class="badge badge-warning">
-                                    Media
-                                </span>
-</td>
-<td>
-                                Operativo
-                            </td>
-<td>
-                                Secretaría General
-                            </td>
-</tr>
-<!-- Sistema de Pagos -->
-<tr data-area="administracion" data-criticality="alta" data-period="2026">
-<td>
-<strong>
-                                    Sistema de Pagos
-                                </strong>
-</td>
-<td>
-                                Administración
-                            </td>
-<td>
-<span class="badge badge-danger">
-                                    Alta
-                                </span>
-</td>
-<td>
-                                Observado
-                            </td>
-<td>
-                                Área Administrativa
-                            </td>
-</tr>
-</tbody>
+<thead><tr><th scope="col">Código</th><th scope="col">Sistema</th><th scope="col">Tipo de sistema</th><th scope="col">Criticidad</th><th scope="col">Estado de validación</th><th scope="col">Estado operativo</th></tr></thead>
+<tbody><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-MAT-01</strong></td><td><strong>Sistema de Matrícula</strong></td><td>VM Proxmox</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-success">Validado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-risk="alto"><td><strong>SIS-DOC-02</strong></td><td><strong>Documenta</strong></td><td>Docker</td><td><span class="badge badge-danger">Alto</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="critica" data-risk="alto"><td><strong>SIS-VEN-03</strong></td><td><strong>Registro de Ventas</strong></td><td>Servidor físico</td><td><span class="badge badge-danger">Crítica</span></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-BIB-04</strong></td><td><strong>Biblioteca Virtual</strong></td><td>VM Proxmox</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="baja" data-risk="bajo"><td><strong>SIS-RRH-05</strong></td><td><strong>Control de Personal</strong></td><td>Docker</td><td><span class="badge badge-success">Baja</span></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-MSA-06</strong></td><td><strong>Mesa de Servicios TI</strong></td><td>Sin registrar</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-risk="alto"><td><strong>SIS-PAG-07</strong></td><td><strong>Portal de Pagos</strong></td><td>VM Proxmox</td><td><span class="badge badge-danger">Alto</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-ADM-08</strong></td><td><strong>Gestión Administrativa</strong></td><td>Servidor físico</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-risk="alto"><td><strong>SIS-INV-09</strong></td><td><strong>Sistema de Investigación</strong></td><td>Docker</td><td><span class="badge badge-danger">Alto</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-COM-10</strong></td><td><strong>Comedor Universitario</strong></td><td>VM Proxmox</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr></tbody>
 </table>
 </div>
 </section>
@@ -538,11 +202,7 @@
 <h2 id="titulo-reporte-riesgos">
                         Reporte de Riesgos TI
                     </h2>
-<p class="section-description">
-                        Sistemas con condiciones que pueden afectar
-                        la continuidad, seguridad, operación,
-                        mantenimiento o trazabilidad técnica.
-                    </p>
+<p class="section-description">Riesgos y observaciones verificables asociados a los sistemas del Área de Infraestructura TI.</p>
 </div>
 <div class="report-actions">
 <button class="button button--primary" data-action="export-pdf" data-report-id="reporte-riesgos" type="button">
@@ -558,116 +218,8 @@
 <caption class="sr-only">
                         Reporte de riesgos de los sistemas TI institucionales.
                     </caption>
-<thead>
-<tr>
-<th scope="col">
-                                Sistema
-                            </th>
-<th scope="col">
-                                Condición de Riesgo
-                            </th>
-<th scope="col">
-                                Nivel
-                            </th>
-<th scope="col">
-                                Impacto
-                            </th>
-<th scope="col">
-                                Acción Recomendada
-                            </th>
-</tr>
-</thead>
-<tbody>
-<!-- Matrícula -->
-<tr data-period="2026" data-risk="alto">
-<td>
-<strong>
-                                    Sistema de Matrícula
-                                </strong>
-</td>
-<td>
-                                Continuidad operativa
-                            </td>
-<td>
-<span class="badge badge-danger">
-                                    Alto
-                                </span>
-</td>
-<td>
-                                Interrupción de procesos académicos.
-                            </td>
-<td>
-                                Revisar respaldo y plan de continuidad.
-                            </td>
-</tr>
-<!-- Pagos -->
-<tr data-period="2026" data-risk="alto">
-<td>
-<strong>
-                                    Sistema de Pagos
-                                </strong>
-</td>
-<td>
-                                Backup no documentado
-                            </td>
-<td>
-<span class="badge badge-danger">
-                                    Alto
-                                </span>
-</td>
-<td>
-                                Riesgo financiero y operativo.
-                            </td>
-<td>
-                                Formalizar la política de respaldo.
-                            </td>
-</tr>
-<!-- Biblioteca -->
-<tr data-period="2026" data-risk="medio">
-<td>
-<strong>
-                                    Sistema Biblioteca
-                                </strong>
-</td>
-<td>
-                                Dificultad de mantenimiento tecnológico
-                            </td>
-<td>
-<span class="badge badge-warning">
-                                    Medio
-                                </span>
-</td>
-<td>
-                                Incremento de dificultad para mantener
-                                y evolucionar la plataforma.
-                            </td>
-<td>
-                                Evaluar modernización.
-                            </td>
-</tr>
-<!-- Documentario -->
-<tr data-period="2025" data-risk="medio">
-<td>
-<strong>
-                                    Sistema Documentario
-                                </strong>
-</td>
-<td>
-                                Documentación incompleta
-                            </td>
-<td>
-<span class="badge badge-warning">
-                                    Medio
-                                </span>
-</td>
-<td>
-                                Falta de trazabilidad técnica.
-                            </td>
-<td>
-                                Completar el diagnóstico técnico.
-                            </td>
-</tr>
-</tbody>
+<thead><tr><th scope="col">Código del sistema</th><th scope="col">Riesgo</th><th scope="col">Categoría</th><th scope="col">Estado</th><th scope="col">Criticidad</th></tr></thead>
+<tbody><tr data-area="infraestructura-ti" data-criticality="critica" data-risk="alto"><td><strong>SIS-VEN-03</strong></td><td>Registro técnico pendiente de completar.</td><td>No reportada</td><td><span class="badge badge-neutral">Borrador</span></td><td><span class="badge badge-danger">Crítica</span></td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-11" data-risk="alto"><td><strong>SIS-DOC-02</strong></td><td>Falta adjuntar la evidencia del certificado SSL y explicar la política de backup.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-danger">Alta</span></td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-12" data-risk="alto"><td><strong>SIS-PAG-07</strong></td><td>La dirección IP pública registrada no coincide con el servidor desplegado. Adjunte una captura de la configuración de red.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-danger">Alta</span></td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-12" data-risk="medio"><td><strong>SIS-ADM-08</strong></td><td>No se evidenció el uso de copias de seguridad automáticas ni su frecuencia.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-warning">Media</span></td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-13" data-risk="alto"><td><strong>SIS-INV-09</strong></td><td>El dominio funciona sin certificado SSL/TLS vigente. Adjunte el certificado actualizado.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-danger">Alta</span></td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-13" data-risk="medio"><td><strong>SIS-COM-10</strong></td><td>Falta documentar el proxy reverso y el mecanismo CI/CD utilizado para producción.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-warning">Media</span></td></tr></tbody>
 </table>
 </div>
 </section>
@@ -675,309 +227,10 @@
              REPORTE 03
              OBSOLESCENCIA
         ================================================== -->
-<section aria-labelledby="titulo-reporte-obsolescencia" class="data-section report-section" data-report-section="obsolescencia" id="reporte-obsolescencia">
-<header class="section-header">
-<div>
-<span class="section-label">
-                        Reporte 03
-                    </span>
-<h2 id="titulo-reporte-obsolescencia">
-                        Reporte de Obsolescencia
-                    </h2>
-<p class="section-description">
-                        Sistemas con tecnologías antiguas, soporte vencido,
-                        soporte limitado o condiciones que requieren
-                        intervención tecnológica.
-                    </p>
-</div>
-<div class="report-actions">
-<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-obsolescencia" type="button">
-                        Exportar PDF
-                    </button>
-<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-obsolescencia" type="button">
-                        Exportar Excel (CSV)
-                    </button>
-</div>
-</header>
-<div class="table-responsive">
-<table class="data-table" id="table-report-obsolescence">
-<caption class="sr-only">
-                        Reporte de obsolescencia tecnológica
-                        de los sistemas institucionales.
-                    </caption>
-<thead>
-<tr>
-<th scope="col">
-                                Sistema
-                            </th>
-<th scope="col">
-                                Tecnología
-                            </th>
-<th scope="col">
-                                Año
-                            </th>
-<th scope="col">
-                                Estado de Soporte
-                            </th>
-<th scope="col">
-                                Recomendación
-                            </th>
-</tr>
-</thead>
-<tbody>
-<!-- Biblioteca -->
-<tr data-period="2026">
-<td>
-<strong>
-                                    Sistema Biblioteca
-                                </strong>
-</td>
-<td>
-                                PHP / MySQL antiguo
-                            </td>
-<td>
-                                2016
-                            </td>
-<td>
-<span class="badge badge-danger">
-                                    Vencido
-                                </span>
-</td>
-<td>
-                                Modernizar plataforma.
-                            </td>
-</tr>
-<!-- Reportes -->
-<tr data-period="2026">
-<td>
-<strong>
-                                    Sistema Reportes
-                                </strong>
-</td>
-<td>
-                                Servidor local
-                            </td>
-<td>
-                                2017
-                            </td>
-<td>
-<span class="badge badge-danger">
-                                    Sin soporte
-                                </span>
-</td>
-<td>
-                                Planificar migración.
-                            </td>
-</tr>
-<!-- Inventario -->
-<tr data-period="2026">
-<td>
-<strong>
-                                    Sistema Inventario
-                                </strong>
-</td>
-<td>
-                                Java antiguo
-                            </td>
-<td>
-                                2018
-                            </td>
-<td>
-<span class="badge badge-warning">
-                                    Limitado
-                                </span>
-</td>
-<td>
-                                Evaluar actualización.
-                            </td>
-</tr>
-<!-- Documentario -->
-<tr data-period="2025">
-<td>
-<strong>
-                                    Sistema Documentario
-                                </strong>
-</td>
-<td>
-                                Base de datos local
-                            </td>
-<td>
-                                2019
-                            </td>
-<td>
-<span class="badge badge-warning">
-                                    Revisar
-                                </span>
-</td>
-<td>
-                                Documentar infraestructura.
-                            </td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
 <!-- =================================================
              REPORTE 04
              ÁREAS USUARIAS
         ================================================== -->
-<section aria-labelledby="titulo-reporte-area" class="data-section report-section" data-report-section="area" id="reporte-area">
-<header class="section-header">
-<div>
-<span class="section-label">
-                        Reporte 04
-                    </span>
-<h2 id="titulo-reporte-area">
-                        Reporte por Área Usuaria
-                    </h2>
-<p class="section-description">
-                        Distribución del inventario por dependencia
-                        institucional, mostrando concentración de sistemas,
-                        criticidad y pendientes.
-                    </p>
-</div>
-<div class="report-actions">
-<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-area" type="button">
-                        Exportar PDF
-                    </button>
-<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-area" type="button">
-                        Exportar Excel (CSV)
-                    </button>
-</div>
-</header>
-<div class="table-responsive">
-<table class="data-table" id="table-report-areas">
-<caption class="sr-only">
-                        Reporte consolidado de sistemas por área usuaria.
-                    </caption>
-<thead>
-<tr>
-<th scope="col">
-                                Área Usuaria
-                            </th>
-<th scope="col">
-                                Sistemas
-                            </th>
-<th scope="col">
-                                Críticos
-                            </th>
-<th scope="col">
-                                Pendientes
-                            </th>
-<th scope="col">
-                                Responsable Funcional
-                            </th>
-</tr>
-</thead>
-<tbody>
-<tr data-area="direccion-academica" data-period="2026">
-<td>
-                                Dirección Académica
-                            </td>
-<td>
-                                14
-                            </td>
-<td>
-                                5
-                            </td>
-<td>
-                                3
-                            </td>
-<td>
-                                Coordinación Académica
-                            </td>
-</tr>
-<tr data-area="administracion" data-period="2026">
-<td>
-                                Administración
-                            </td>
-<td>
-                                11
-                            </td>
-<td>
-                                4
-                            </td>
-<td>
-                                2
-                            </td>
-<td>
-                                Jefatura Administrativa
-                            </td>
-</tr>
-<tr data-area="biblioteca-central" data-period="2026">
-<td>
-                                Biblioteca Central
-                            </td>
-<td>
-                                6
-                            </td>
-<td>
-                                1
-                            </td>
-<td>
-                                1
-                            </td>
-<td>
-                                Administrador Biblioteca
-                            </td>
-</tr>
-<tr data-area="investigacion" data-period="2025">
-<td>
-                                Investigación
-                            </td>
-<td>
-                                5
-                            </td>
-<td>
-                                1
-                            </td>
-<td>
-                                2
-                            </td>
-<td>
-                                Unidad de Investigación
-                            </td>
-</tr>
-<tr data-area="otros" data-period="2026">
-<td>
-                                Otros
-                            </td>
-<td>
-                                12
-                            </td>
-<td>
-                                1
-                            </td>
-<td>
-                                9
-                            </td>
-<td>
-                                Dependencias varias
-                            </td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<th scope="row">
-                                Total
-                            </th>
-<td>
-<strong>48</strong>
-</td>
-<td>
-<strong>12</strong>
-</td>
-<td>
-<strong>17</strong>
-</td>
-<td>
-                                —
-                            </td>
-</tr>
-</tfoot>
-</table>
-</div>
-</section>
 <!-- =================================================
              REPORTE 05
              VALIDACIÓN
@@ -985,16 +238,11 @@
 <section aria-labelledby="titulo-reporte-validacion" class="data-section report-section" data-report-section="validacion" id="reporte-validacion">
 <header class="section-header">
 <div>
-<span class="section-label">
-                        Reporte 05
-                    </span>
+<span class="section-label">Reporte 03</span>
 <h2 id="titulo-reporte-validacion">
                         Reporte de Validación
                     </h2>
-<p class="section-description">
-                        Resumen del avance de revisión técnica y funcional
-                        de los sistemas registrados en el inventario TI.
-                    </p>
+<p class="section-description">Estado de validación de los diez sistemas del Área de Infraestructura TI y fecha disponible del proceso.</p>
 </div>
 <div class="report-actions">
 <button class="button button--primary" data-action="export-pdf" data-report-id="reporte-validacion" type="button">
@@ -1011,109 +259,9 @@
                         Reporte consolidado del estado de validación
                         de los sistemas TI.
                     </caption>
-<thead>
-<tr>
-<th scope="col">
-                                Estado de Validación
-                            </th>
-<th scope="col">
-                                Cantidad
-                            </th>
-<th scope="col">
-                                Porcentaje
-                            </th>
-<th scope="col">
-                                Interpretación
-                            </th>
-</tr>
-</thead>
-<tbody>
-<!-- Aprobados -->
-<tr data-period="2026">
-<td>
-<span class="badge badge-success">
-                                    Aprobados
-                                </span>
-</td>
-<td>
-                                24
-                            </td>
-<td>
-                                50%
-                            </td>
-<td>
-                                Sistemas revisados sin observaciones críticas.
-                            </td>
-</tr>
-<!-- Observados -->
-<tr data-period="2026">
-<td>
-<span class="badge badge-warning">
-                                    Observados
-                                </span>
-</td>
-<td>
-                                7
-                            </td>
-<td>
-                                15%
-                            </td>
-<td>
-                                Requieren corrección o información adicional.
-                            </td>
-</tr>
-<!-- Rechazados -->
-<tr data-period="2026">
-<td>
-<span class="badge badge-danger">
-                                    Rechazados
-                                </span>
-</td>
-<td>
-                                0
-                            </td>
-<td>
-                                0%
-                            </td>
-<td>
-                                No se registran rechazos definitivos.
-                            </td>
-</tr>
-<!-- Pendientes -->
-<tr data-period="2025">
-<td>
-<span class="badge badge-neutral">
-                                    Pendientes
-                                </span>
-</td>
-<td>
-                                17
-                            </td>
-<td>
-                                35%
-                            </td>
-<td>
-                                Falta completar el diagnóstico
-                                o proceso de revisión.
-                            </td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<th scope="row">
-                                Total
-                            </th>
-<td>
-<strong>48</strong>
-</td>
-<td>
-<strong>100%</strong>
-</td>
-<td>
-                                Total del inventario institucional.
-                            </td>
-</tr>
-</tfoot>
+<thead><tr><th scope="col">Código</th><th scope="col">Sistema</th><th scope="col">Estado de validación</th><th scope="col">Fecha de validación</th><th scope="col">Área</th></tr></thead>
+<tbody><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-06" data-risk="medio"><td><strong>SIS-MAT-01</strong></td><td><strong>Sistema de Matrícula</strong></td><td><span class="badge badge-success">Validado</span></td><td>06/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-11" data-risk="alto"><td><strong>SIS-DOC-02</strong></td><td><strong>Documenta</strong></td><td><span class="badge badge-warning">Observado</span></td><td>11/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="critica" data-risk="alto"><td><strong>SIS-VEN-03</strong></td><td><strong>Registro de Ventas</strong></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportada</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-BIB-04</strong></td><td><strong>Biblioteca Virtual</strong></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportada</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="baja" data-risk="bajo"><td><strong>SIS-RRH-05</strong></td><td><strong>Control de Personal</strong></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportada</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-MSA-06</strong></td><td><strong>Mesa de Servicios TI</strong></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportada</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-12" data-risk="alto"><td><strong>SIS-PAG-07</strong></td><td><strong>Portal de Pagos</strong></td><td><span class="badge badge-warning">Observado</span></td><td>12/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-12" data-risk="medio"><td><strong>SIS-ADM-08</strong></td><td><strong>Gestión Administrativa</strong></td><td><span class="badge badge-warning">Observado</span></td><td>12/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-13" data-risk="alto"><td><strong>SIS-INV-09</strong></td><td><strong>Sistema de Investigación</strong></td><td><span class="badge badge-warning">Observado</span></td><td>13/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-13" data-risk="medio"><td><strong>SIS-COM-10</strong></td><td><strong>Comedor Universitario</strong></td><td><span class="badge badge-warning">Observado</span></td><td>13/07/2026</td><td>Infraestructura TI</td></tr></tbody>
+
 </table>
 </div>
 </section>
@@ -1133,10 +281,10 @@
 <!-- =====================================================
          JAVASCRIPT COMPARTIDO
     ====================================================== -->
-<script defer="" src="../js/sidebar.js?v=20260712-6"></script>
+<script defer="" src="../js/sidebar.js?v=20260716-v1-4"></script>
 <!-- =====================================================
          JAVASCRIPT ESPECÍFICO
     ====================================================== -->
-<script defer="" src="../js/reportes-ejecutivos.js?v=20260712-2"></script>
+<script defer="" src="../js/reportes-ejecutivos.js?v=20260716-v1-4"></script>
 </body>
 </html>
