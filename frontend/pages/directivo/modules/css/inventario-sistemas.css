@@ -1,0 +1,530 @@
+/* ============================================================
+   DIAGTI CTIC UNAS
+   Módulo Directivo
+   Inventario de Sistemas
+============================================================ */
+
+
+/* ============================================================
+   1. DISTRIBUCIÓN GENERAL
+============================================================ */
+
+.inventory-summary,
+.inventory-controls,
+.inventory-section {
+    margin-bottom: 26px;
+}
+
+
+/* ============================================================
+   2. RESUMEN DEL INVENTARIO
+============================================================ */
+
+.inventory-summary .kpi-card:nth-child(1) {
+    border-top-color: var(--color-primary);
+}
+
+
+.inventory-summary .kpi-card:nth-child(2) {
+    border-top-color: var(--color-danger);
+}
+
+
+.inventory-summary .kpi-card:nth-child(3) {
+    border-top-color: var(--color-warning);
+}
+
+
+.inventory-summary .kpi-card:nth-child(4) {
+    border-top-color: var(--color-info);
+}
+
+
+/* ============================================================
+   3. CONTROLES DEL INVENTARIO
+============================================================ */
+
+.inventory-controls {
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* Línea institucional superior */
+
+.inventory-controls::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 26px;
+    right: 26px;
+
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--color-primary),
+            var(--color-secondary)
+        );
+
+    border-radius:
+        0
+        0
+        var(--radius-pill)
+        var(--radius-pill);
+}
+
+
+/* ============================================================
+   4. FORMULARIO DE FILTROS
+============================================================ */
+
+.inventory-controls .filter-form {
+    padding-top: 3px;
+}
+
+
+/* Buscador principal */
+
+.inventory-controls .filter-group--search input {
+    padding-left: 14px;
+
+    background-color: #fbfdff;
+}
+
+
+/* Selects */
+
+.inventory-controls select {
+    background-color: var(--color-white);
+}
+
+
+/* ============================================================
+   5. ACCIONES DE FILTRADO
+============================================================ */
+
+.inventory-controls .filter-actions {
+    justify-content: flex-start;
+}
+
+
+.inventory-controls .filter-actions .button {
+    min-width: 120px;
+}
+
+
+/* ============================================================
+   6. SECCIÓN DE INVENTARIO
+============================================================ */
+
+.inventory-section {
+    position: relative;
+}
+
+
+/* Línea superior institucional */
+
+.inventory-section::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 26px;
+    right: 26px;
+
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--color-primary),
+            var(--color-secondary)
+        );
+
+    border-radius:
+        0
+        0
+        var(--radius-pill)
+        var(--radius-pill);
+}
+
+
+/* ============================================================
+   7. CONTADOR DE RESULTADOS
+============================================================ */
+
+.table-results {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+
+    padding: 8px 12px;
+
+    color: var(--color-text-secondary);
+    background-color: var(--color-primary-light);
+
+    border: 1px solid #c5dfef;
+    border-radius: var(--radius-pill);
+
+    font-size: 0.82rem;
+
+    white-space: nowrap;
+}
+
+
+.table-results strong {
+    color: var(--color-primary-dark);
+
+    font-size: 0.92rem;
+    font-weight: 800;
+}
+
+
+/* ============================================================
+   8. TABLA DEL INVENTARIO
+============================================================ */
+
+.inventory-table {
+    min-width: 1180px;
+}
+
+
+/* Sistema */
+
+.inventory-table th:nth-child(1),
+.inventory-table td:nth-child(1) {
+    min-width: 180px;
+}
+
+
+/* Área */
+
+.inventory-table th:nth-child(2),
+.inventory-table td:nth-child(2) {
+    min-width: 170px;
+}
+
+
+/* Responsable */
+
+.inventory-table th:nth-child(3),
+.inventory-table td:nth-child(3) {
+    min-width: 180px;
+}
+
+
+/* Criticidad */
+
+.inventory-table th:nth-child(4),
+.inventory-table td:nth-child(4) {
+    min-width: 105px;
+}
+
+
+/* Riesgo */
+
+.inventory-table th:nth-child(5),
+.inventory-table td:nth-child(5) {
+    min-width: 95px;
+}
+
+
+/* Obsolescencia */
+
+.inventory-table th:nth-child(6),
+.inventory-table td:nth-child(6) {
+    min-width: 165px;
+}
+
+
+/* Estado */
+
+.inventory-table th:nth-child(7),
+.inventory-table td:nth-child(7) {
+    min-width: 170px;
+}
+
+
+/* Acción */
+
+.inventory-table th:nth-child(8),
+.inventory-table td:nth-child(8) {
+    min-width: 110px;
+
+    text-align: center;
+}
+
+
+/* ============================================================
+   9. NOMBRE DEL SISTEMA
+============================================================ */
+
+.inventory-table td:first-child strong {
+    display: block;
+
+    color: var(--color-primary-dark);
+
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+
+/* ============================================================
+   10. FILAS DEL INVENTARIO
+============================================================ */
+
+.inventory-table tbody tr {
+    position: relative;
+}
+
+
+/*
+   Mejora visual ligera para sistemas
+   que requieren atención prioritaria.
+*/
+
+.inventory-table tbody tr[data-risk="alto"] {
+    background-color: #fffafa;
+}
+
+
+.inventory-table tbody tr[data-risk="alto"]:hover {
+    background-color: var(--color-danger-bg);
+}
+
+
+.inventory-table tbody tr[data-obsolescence="alta"] {
+    box-shadow:
+        inset 3px 0 0 var(--color-warning);
+}
+
+
+/* ============================================================
+   11. ESTADOS
+============================================================ */
+
+.inventory-table .status {
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   12. BOTÓN VER DETALLE
+============================================================ */
+
+.inventory-table .button--table-action {
+    width: 100%;
+    max-width: 105px;
+
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   13. ESTADO VACÍO DEL INVENTARIO
+============================================================ */
+
+.inventory-section .empty-state {
+    margin-top: 20px;
+}
+
+
+.inventory-section .empty-state h3 {
+    color: var(--color-primary-dark);
+}
+
+
+/* ============================================================
+   14. MEJORA DE DESPLAZAMIENTO HORIZONTAL
+============================================================ */
+
+.inventory-section .table-responsive {
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        var(--color-border-dark)
+        var(--color-surface-soft);
+}
+
+
+.inventory-section
+.table-responsive::-webkit-scrollbar {
+    height: 9px;
+}
+
+
+.inventory-section
+.table-responsive::-webkit-scrollbar-track {
+    background-color: var(--color-surface-soft);
+}
+
+
+.inventory-section
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-dark);
+
+    border-radius: var(--radius-pill);
+
+    border: 2px solid var(--color-surface-soft);
+}
+
+
+.inventory-section
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-primary);
+}
+
+
+/* ============================================================
+   15. ENCABEZADO FIJO DE TABLA
+============================================================ */
+
+.inventory-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+
+/* ============================================================
+   16. ENFOQUE VISUAL PARA FILAS FILTRADAS
+============================================================ */
+
+.inventory-table tbody tr.is-highlighted {
+    background-color: var(--color-primary-light);
+
+    box-shadow:
+        inset 4px 0 0 var(--color-primary);
+}
+
+
+/* ============================================================
+   17. TRANSICIÓN PARA FILTRADO POSTERIOR
+============================================================ */
+
+.inventory-table tbody tr {
+    transition:
+        background-color var(--transition-fast),
+        opacity var(--transition-fast);
+}
+
+
+/*
+   Clase preparada para el JavaScript específico.
+   No afecta la página hasta que JS la aplique.
+*/
+
+.inventory-table tbody tr.is-filtered-out {
+    display: none;
+}
+
+
+/* ============================================================
+   18. RESPONSIVE - TABLET
+============================================================ */
+
+@media (max-width: 1200px) {
+
+    .inventory-controls .filter-form {
+        grid-template-columns:
+            repeat(2, minmax(180px, 1fr));
+    }
+
+
+    .inventory-controls
+    .filter-group--search {
+        grid-column: span 2;
+    }
+
+
+    .inventory-controls
+    .filter-actions {
+        grid-column: span 2;
+    }
+
+}
+
+
+/* ============================================================
+   19. RESPONSIVE - MÓVIL
+============================================================ */
+
+@media (max-width: 760px) {
+
+    .inventory-controls .filter-form {
+        grid-template-columns: 1fr;
+    }
+
+
+    .inventory-controls
+    .filter-group--search,
+    .inventory-controls
+    .filter-actions {
+        grid-column: auto;
+    }
+
+
+    .inventory-controls
+    .filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+
+    .inventory-controls
+    .filter-actions .button {
+        width: 100%;
+    }
+
+
+    .table-results {
+        align-self: flex-start;
+    }
+
+}
+
+
+/* ============================================================
+   20. RESPONSIVE - MÓVIL PEQUEÑO
+============================================================ */
+
+@media (max-width: 480px) {
+
+    .inventory-controls::before,
+    .inventory-section::before {
+        right: 16px;
+        left: 16px;
+    }
+
+
+    .table-results {
+        width: 100%;
+
+        justify-content: center;
+
+        border-radius: var(--radius-md);
+    }
+
+}
+
+
+/* ============================================================
+   21. REDUCCIÓN DE MOVIMIENTO
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .inventory-table tbody tr {
+        transition: none;
+    }
+
+}

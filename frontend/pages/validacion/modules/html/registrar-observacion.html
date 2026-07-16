@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registrar Observación | DIAGTI - CTIC</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/registrar-observacion.css">
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+
+        <div>
+            <div class="brand">
+                <div class="logo">
+                    <img src="../assets/logo-unas.png" alt="UNAS">
+                </div>
+                <div>
+                    <h1>UNAS</h1>
+                    <small>CTIC - Tingo María</small>
+                </div>
+            </div>
+
+            <div class="sidebar-profile">
+                <div class="profile-avatar">VL</div>
+                <div class="profile-info">
+                    <div class="profile-name">Validador</div>
+                    <div class="profile-role">CTIC</div>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <div class="nav-label">VALIDACIÓN</div>
+
+                <a class="nav-item" href="dashboard.html">
+                    <span class="ic"><i class="fas fa-chart-pie"></i></span>
+                    <span>
+                        <span class="lbl">Dashboard</span>
+                        <span class="sub">Resumen General</span>
+                    </span>
+                </a>
+
+                <a class="nav-item" href="pendientes.html">
+                    <span class="ic"><i class="fas fa-clock"></i></span>
+                    <span>
+                        <span class="lbl">Pendientes</span>
+                        <span class="sub">Sistemas enviados</span>
+                    </span>
+                </a>
+
+                <a class="nav-item" href="historial.html">
+                    <span class="ic"><i class="fas fa-history"></i></span>
+                    <span>
+                        <span class="lbl">Historial</span>
+                        <span class="sub">Validaciones realizadas</span>
+                    </span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar Sesión
+            </button>
+            <div class="footer-divider"></div>
+            <div class="footer-version">
+                <span>DIAGIT v2.0 - CTIC UNAS</span>
+                <span class="version-sub">Módulo de administración interna</span>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ================= CONTENIDO ================= -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div>
+                <h2>
+                    <i class="fas fa-pen-to-square" id="icono-titulo" style="color: #ca8a04; margin-right: 10px;"></i>
+                    <span id="titulo-pagina">Registrar Observación</span>
+                </h2>
+                <div class="hint" id="descripcion-pagina">
+                    Registre observaciones, incidencias y recomendaciones para el sistema seleccionado.
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-volver" onclick="window.location.href='pendientes.html'">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver a Pendientes
+                </button>
+            </div>
+        </header>
+
+        <!-- HERO -->
+        <div class="hero-card" id="hero-card">
+            <div>
+                <span class="badge warning" id="badge-area">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    <span id="badge-area-text">OBSERVACIONES</span>
+                </span>
+                <h2 id="titulo-sistema">Cargando sistema...</h2>
+                <!-- Badge de área -->
+                <div id="area-badge-container" style="margin-top: 8px;">
+                    <span id="area-badge" class="badge-area">Cargando área...</span>
+                </div>
+                <p id="descripcion-area">Complete el formulario con información clara y detallada para facilitar el análisis.</p>
+            </div>
+            <div class="hero-pill" id="hero-pill">
+                <i class="fas fa-pen-to-square" id="hero-icono"></i>
+            </div>
+        </div>
+
+        <!-- FORMULARIO -->
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3><i class="fas fa-file-pen" style="color: #ca8a04;"></i> Nueva Observación</h3>
+                    <small>Complete todos los campos requeridos</small>
+                </div>
+                <span class="badge info"><i class="fas fa-plus"></i> Nuevo Registro</span>
+            </div>
+
+            <form id="observacion-form" class="observacion-form">
+
+                <div class="form-group">
+                    <label for="titulo">Título de la observación <span class="required">*</span></label>
+                    <input type="text" id="titulo" name="titulo" class="form-input"
+                        placeholder="Ej. Falta de validación en campos de entrada" maxlength="100" required>
+                    <small><i class="fas fa-info-circle"></i> Sea específico y conciso.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="detalle">Descripción detallada <span class="required">*</span></label>
+                    <textarea id="detalle" name="detalle" class="form-textarea" rows="6"
+                        placeholder="Describa el problema encontrado, su impacto y la recomendación correspondiente."
+                        required></textarea>
+                    <small><i class="fas fa-info-circle"></i> Incluya toda la información necesaria para facilitar la revisión.</small>
+                </div>
+
+                <!-- Campo oculto para el área -->
+                <input type="hidden" id="area-observacion" value="">
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-enviar" id="btn-enviar">
+                        <i class="fas fa-paper-plane" id="btn-icono"></i>
+                        <span id="btn-texto">Enviar Observación</span>
+                    </button>
+                    <button type="button" class="btn btn-volver" onclick="window.location.href='pendientes.html'">
+                        <i class="fas fa-arrow-left"></i>
+                        Cancelar
+                    </button>
+                </div>
+
+            </form>
+
+            <div id="mensaje-observacion" class="form-message"></div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="page-footer">
+            <div>DIAGIT - CTIC UNAS © 2026</div>
+            <div>Módulo de Validación · Registro de Observaciones</div>
+        </footer>
+
+    </main>
+
+    <script src="../js/registrar-observacion.js"></script>
+
+</body>
+
+</html>

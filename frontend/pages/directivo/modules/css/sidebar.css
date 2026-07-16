@@ -1,0 +1,1018 @@
+/* ============================================================
+   DIAGTI CTIC UNAS
+   Módulo Directivo
+   Sidebar compartido
+============================================================ */
+
+
+/* ============================================================
+   1. CONTENEDOR PRINCIPAL
+============================================================ */
+
+.sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+
+    width: var(--sidebar-width);
+    height: 100vh;
+
+    color: var(--color-white);
+
+    background:
+        linear-gradient(
+            180deg,
+            #0f75bc 0%,
+            #0d6dac 55%,
+            #0b5f99 100%
+        );
+
+    border-right:
+        1px solid rgba(255, 255, 255, 0.12);
+
+    box-shadow:
+        6px 0 24px rgba(11, 70, 110, 0.12);
+
+    transition:
+        width var(--transition-normal),
+        transform var(--transition-normal);
+
+    overflow: hidden;
+}
+
+
+/* ============================================================
+   2. ESTRUCTURA INTERNA
+============================================================ */
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 18px 16px 14px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        rgba(255, 255, 255, 0.25)
+        transparent;
+}
+
+
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color:
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: var(--radius-pill);
+}
+
+
+/* ============================================================
+   3. CABECERA INSTITUCIONAL
+============================================================ */
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    min-height: 58px;
+
+    padding: 4px 2px 14px;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.18);
+}
+
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+
+    min-width: 0;
+
+    gap: 11px;
+
+    text-decoration: none;
+    color: var(--color-white);
+}
+
+
+.sidebar-brand__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    background-color: var(--color-secondary);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.22);
+
+    border-radius: 12px;
+
+    color: var(--color-white);
+
+    font-size: 1rem;
+    font-weight: 800;
+
+    letter-spacing: 0.03em;
+
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.12);
+}
+
+
+/* Para cuando se use logo real */
+
+.sidebar-brand__logo img {
+    width: 100%;
+    height: 100%;
+
+    padding: 5px;
+
+    object-fit: contain;
+
+    border-radius: inherit;
+}
+
+
+.sidebar-brand__text {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+}
+
+
+.sidebar-brand__title {
+    color: var(--color-white);
+
+    font-size: 0.94rem;
+    font-weight: 800;
+
+    letter-spacing: 0.015em;
+}
+
+
+.sidebar-brand__subtitle {
+    margin-top: 3px;
+
+    color: rgba(255, 255, 255, 0.76);
+
+    font-size: 0.72rem;
+    font-weight: 500;
+}
+
+
+
+
+
+/* ============================================================
+   5. TARJETA DE USUARIO
+============================================================ */
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 16px;
+    padding: 13px;
+
+    background:
+        rgba(255, 255, 255, 0.11);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.16);
+
+    border-radius: 13px;
+}
+
+
+.sidebar-user__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    color: var(--color-white);
+    background-color: var(--color-secondary);
+
+    border:
+        2px solid rgba(255, 255, 255, 0.3);
+
+    border-radius: 50%;
+
+    font-size: 0.82rem;
+    font-weight: 800;
+
+    letter-spacing: 0.03em;
+}
+
+
+.sidebar-user__details {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    gap: 2px;
+
+    white-space: nowrap;
+}
+
+
+.sidebar-user__name {
+    overflow: hidden;
+
+    color: var(--color-white);
+
+    font-size: 0.86rem;
+    font-weight: 750;
+
+    text-overflow: ellipsis;
+}
+
+
+.sidebar-user__role {
+    overflow: hidden;
+
+    color:
+        rgba(255, 255, 255, 0.74);
+
+    font-size: 0.74rem;
+
+    text-overflow: ellipsis;
+}
+
+
+/* ============================================================
+   6. SECCIÓN DEL MÓDULO
+============================================================ */
+
+.sidebar-module {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+
+    min-height: 0;
+
+    margin-top: 19px;
+}
+
+
+.sidebar-module__title {
+    padding: 0 11px 9px;
+
+    color:
+        rgba(255, 255, 255, 0.63);
+
+    font-size: 0.68rem;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   7. NAVEGACIÓN PRINCIPAL
+============================================================ */
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+.sidebar-nav__link {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    min-height: 44px;
+
+    padding: 10px 13px;
+
+    color:
+        rgba(255, 255, 255, 0.92);
+
+    background-color: transparent;
+
+    border:
+        1px solid transparent;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-size: 0.86rem;
+    font-weight: 550;
+
+    white-space: nowrap;
+
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+
+.sidebar-nav__link:hover {
+    color: var(--color-white);
+
+    background-color:
+        rgba(255, 255, 255, 0.12);
+
+    border-color:
+        rgba(255, 255, 255, 0.1);
+
+    transform: translateX(2px);
+}
+
+
+.sidebar-nav__link.active,
+.sidebar-nav__link[aria-current="page"] {
+    color: var(--color-white);
+
+    background-color: var(--color-secondary);
+
+    border-color:
+        rgba(255, 255, 255, 0.17);
+
+    font-weight: 750;
+
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.12);
+}
+
+
+/* Indicador lateral de activo */
+
+.sidebar-nav__link.active::before,
+.sidebar-nav__link[aria-current="page"]::before {
+    content: "";
+
+    position: absolute;
+
+    top: 50%;
+    left: 5px;
+
+    width: 3px;
+    height: 19px;
+
+    background-color: var(--color-white);
+
+    border-radius: var(--radius-pill);
+
+    transform: translateY(-50%);
+}
+
+
+/* Texto de navegación */
+
+.sidebar-nav__text {
+    display: block;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* ============================================================
+   8. ZONA INFERIOR
+============================================================ */
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding-top: 17px;
+}
+
+
+/* Separador */
+
+.sidebar-divider {
+    width: 100%;
+    height: 1px;
+
+    margin-bottom: 13px;
+
+    background-color:
+        rgba(255, 255, 255, 0.2);
+}
+
+
+/* ============================================================
+   9. ACCIONES DE CUENTA
+============================================================ */
+
+.sidebar-account-nav {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+.sidebar-account-link,
+.sidebar-logout {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-height: 42px;
+
+    padding: 10px 13px;
+
+    color:
+        rgba(255, 255, 255, 0.9);
+
+    background-color: transparent;
+
+    border:
+        1px solid transparent;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+    text-align: left;
+
+    font-size: 0.84rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background-color var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast);
+}
+
+
+.sidebar-account-link:hover {
+    color: var(--color-white);
+
+    background-color:
+        rgba(255, 255, 255, 0.12);
+
+    border-color:
+        rgba(255, 255, 255, 0.1);
+}
+
+
+.sidebar-account-link.active,
+.sidebar-account-link[aria-current="page"] {
+    color: var(--color-white);
+
+    background-color: var(--color-secondary);
+
+    font-weight: 750;
+}
+
+
+.sidebar-logout {
+    justify-content: center;
+    gap: 9px;
+    min-height: 46px;
+    color: var(--color-white);
+    background: rgba(197, 48, 48, 0.88);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 8px 18px rgba(66, 17, 17, 0.16);
+    font-family: inherit;
+    font-weight: 800;
+    text-align: center;
+}
+
+.sidebar-logout__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.sidebar-logout:hover {
+    color: var(--color-white);
+    background: #a92323;
+    border-color: rgba(255, 255, 255, 0.34);
+    transform: translateY(-1px);
+}
+
+.sidebar-logout:active {
+    transform: translateY(0);
+}
+
+.sidebar-logout:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.38);
+    outline-offset: 2px;
+}
+
+
+/* ============================================================
+   11. PIE INSTITUCIONAL
+============================================================ */
+
+.sidebar-footer {
+    margin-top: 12px;
+    padding-top: 11px;
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.14);
+
+    color:
+        rgba(255, 255, 255, 0.58);
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+
+.sidebar-footer__version {
+    display: block;
+
+    font-size: 0.67rem;
+    font-weight: 650;
+
+    letter-spacing: 0.025em;
+}
+
+
+.sidebar-footer__module {
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 0.64rem;
+}
+
+
+/* ============================================================
+   12. SIDEBAR PLEGADO
+============================================================ */
+
+.sidebar-container.is-collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+
+/* Cabecera */
+
+.sidebar-container.is-collapsed .sidebar {
+    padding-right: 11px;
+    padding-left: 11px;
+}
+
+
+.sidebar-container.is-collapsed .sidebar-header {
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 8px;
+}
+
+
+.sidebar-container.is-collapsed .sidebar-brand {
+    justify-content: center;
+}
+
+
+.sidebar-container.is-collapsed .sidebar-brand__text {
+    display: none;
+}
+
+
+/* Usuario */
+
+.sidebar-container.is-collapsed .sidebar-user {
+    justify-content: center;
+
+    padding: 10px 6px;
+}
+
+
+.sidebar-container.is-collapsed
+.sidebar-user__details {
+    display: none;
+}
+
+
+/* Título módulo */
+
+.sidebar-container.is-collapsed
+.sidebar-module__title {
+    display: none;
+}
+
+
+/* Navegación funcional */
+
+.sidebar-container.is-collapsed
+.sidebar-nav__link {
+    justify-content: center;
+
+    min-height: 42px;
+
+    padding: 8px 5px;
+}
+
+
+.sidebar-container.is-collapsed
+.sidebar-nav__text {
+    width: 100%;
+
+    overflow: hidden;
+
+    font-size: 0;
+    text-align: center;
+}
+
+
+/*
+   Como el menú funcional no usa iconos,
+   se muestran abreviaturas al plegarse.
+*/
+
+.sidebar-container.is-collapsed
+.sidebar-nav__link::after {
+    color: var(--color-white);
+
+    font-size: 0.7rem;
+    font-weight: 800;
+
+    letter-spacing: 0.03em;
+}
+
+
+/* Resumen Ejecutivo */
+
+.sidebar-container.is-collapsed
+.sidebar-nav__link[data-page="resumen-ejecutivo.html"]::after {
+    content: "RE";
+}
+
+
+/* Inventario */
+
+.sidebar-container.is-collapsed
+.sidebar-nav__link[data-page="inventario-sistemas.html"]::after {
+    content: "IS";
+}
+
+
+/* Riesgos y Obsolescencia */
+
+.sidebar-container.is-collapsed
+.sidebar-nav__link[data-page="riesgos-obsolescencia.html"]::after {
+    content: "RO";
+}
+
+
+/* Plan de Modernización */
+
+.sidebar-container.is-collapsed
+.sidebar-nav__link[data-page="plan-modernizacion.html"]::after {
+    content: "PM";
+}
+
+
+/* Reportes Ejecutivos */
+
+.sidebar-container.is-collapsed
+.sidebar-nav__link[data-page="reportes-ejecutivos.html"]::after {
+    content: "RP";
+}
+
+
+/* Indicador activo en sidebar plegado */
+
+.sidebar-container.is-collapsed
+.sidebar-nav__link.active::before,
+.sidebar-container.is-collapsed
+.sidebar-nav__link[aria-current="page"]::before {
+    left: 3px;
+}
+
+
+/* Acciones de cuenta */
+
+.sidebar-container.is-collapsed
+.sidebar-account-link,
+.sidebar-container.is-collapsed
+.sidebar-logout {
+    justify-content: center;
+
+    padding-right: 5px;
+    padding-left: 5px;
+
+    font-size: 0;
+}
+
+
+.sidebar-container.is-collapsed
+.sidebar-account-link::after {
+    content: "CC";
+
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+
+.sidebar-container.is-collapsed
+.sidebar-logout::after {
+    content: "CS";
+
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+
+/* Fecha y pie */
+
+.sidebar-container.is-collapsed
+
+
+.sidebar-container.is-collapsed
+.sidebar-footer__module {
+    display: none;
+}
+
+
+.sidebar-container.is-collapsed
+.sidebar-footer__version {
+    font-size: 0.58rem;
+}
+
+
+/* ============================================================
+   13. OVERLAY MÓVIL
+============================================================ */
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 990;
+
+    background-color:
+        rgba(15, 23, 42, 0.5);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity var(--transition-normal),
+        visibility var(--transition-normal);
+}
+
+
+.sidebar-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* ============================================================
+   14. BOTÓN MÓVIL DE APERTURA
+============================================================ */
+
+.sidebar-mobile-toggle {
+    display: none;
+
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 980;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    color: var(--color-white);
+
+    background-color: var(--color-primary);
+
+    border: 0;
+    border-radius: 10px;
+
+    box-shadow: var(--shadow-md);
+
+    font-size: 1.15rem;
+
+    cursor: pointer;
+}
+
+
+/* ============================================================
+   15. RESPONSIVE
+============================================================ */
+
+@media (max-width: 900px) {
+
+    .sidebar-container,
+    .sidebar-container.is-collapsed {
+        width: min(
+            var(--sidebar-width),
+            calc(100vw - 48px)
+        );
+
+        transform: translateX(-100%);
+    }
+
+
+    .sidebar-container.is-mobile-open {
+        transform: translateX(0);
+    }
+
+
+    /*
+       En móvil el sidebar siempre muestra
+       el contenido completo aunque antes
+       estuviera plegado en escritorio.
+    */
+
+    .sidebar-container.is-collapsed
+    .sidebar-header {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-brand {
+        justify-content: flex-start;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-brand__text {
+        display: flex;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-user {
+        justify-content: flex-start;
+
+        padding: 13px;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-user__details {
+        display: flex;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-module__title {
+        display: block;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-nav__link {
+        justify-content: flex-start;
+
+        min-height: 44px;
+
+        padding: 10px 13px;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-nav__text {
+        width: auto;
+
+        font-size: 0.86rem;
+        text-align: left;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-nav__link::after {
+        content: none !important;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-account-link,
+    .sidebar-container.is-collapsed
+    .sidebar-logout {
+        justify-content: flex-start;
+
+        padding: 10px 13px;
+
+        font-size: 0.84rem;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-account-link::after,
+    .sidebar-container.is-collapsed
+    .sidebar-logout::after {
+        content: none;
+    }
+
+
+    .sidebar-container.is-collapsed
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-footer__module {
+        display: block;
+    }
+
+
+    .sidebar-container.is-collapsed
+    .sidebar-footer__version {
+        font-size: 0.67rem;
+    }
+
+
+    .sidebar-mobile-toggle {
+        display: inline-flex;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .sidebar-container,
+    .sidebar-container.is-collapsed {
+        width: calc(100vw - 28px);
+    }
+
+
+    .sidebar {
+        padding:
+            15px
+            14px
+            12px;
+    }
+
+}
+
+
+/* ============================================================
+   16. REDUCCIÓN DE MOVIMIENTO
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sidebar-container,
+    .sidebar-overlay,
+    .sidebar-nav__link,
+    .sidebar-toggle,
+    .sidebar-account-link,
+    .sidebar-logout {
+        transition: none;
+    }
+
+}
