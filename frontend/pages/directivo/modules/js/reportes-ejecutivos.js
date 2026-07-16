@@ -1,649 +1,208 @@
-'use strict';
+"use strict";
 
-/**
- * DIAGTI CTIC UNAS
- * Módulo Directivo · Reportes Ejecutivos
- *
- * Responsabilidades:
- * - Seleccionar uno o todos los reportes.
- * - Aplicar filtros únicamente a secciones con datos compatibles.
- * - Filtrar filas mediante los atributos data-* existentes en el HTML.
- * - Mostrar u ocultar secciones según los resultados.
- * - Mantener actualizado el total del reporte por área cuando se filtra.
- * - Mostrar el estado vacío cuando no existan coincidencias.
- * - Abrir la impresión del reporte seleccionado para permitir guardarlo
- *   como PDF mediante la funcionalidad nativa del navegador.
- *
- * Funciona con datos estáticos; PDF usa impresión del navegador y Excel se entrega como CSV compatible.
- */
+/* DIAGTI CTIC UNAS · Reportes Ejecutivos V1.4
+   Exporta únicamente el reporte solicitado y respeta los filtros visibles. */
 
 (() => {
-    const form = document.getElementById('reports-filter-form');
+    const form = document.getElementById("reports-filter-form");
+    const emptyState = document.getElementById("reports-empty-state");
+    const reportTypeFilter = document.getElementById("filter-report-type");
+    const areaFilter = document.getElementById("filter-report-area");
+    const criticalityFilter = document.getElementById("filter-report-criticality");
+    const riskFilter = document.getElementById("filter-report-risk");
+    const dateFromFilter = document.getElementById("filter-report-date-from");
+    const dateToFilter = document.getElementById("filter-report-date-to");
+    const reportSections = Array.from(document.querySelectorAll("[data-report-section]"));
 
-    const emptyState = document.getElementById(
-        'reports-empty-state'
-    );
-
-    const reportTypeFilter = document.getElementById(
-        'filter-report-type'
-    );
-
-    const areaFilter = document.getElementById(
-        'filter-report-area'
-    );
-
-    const criticalityFilter = document.getElementById(
-        'filter-report-criticality'
-    );
-
-    const riskFilter = document.getElementById(
-        'filter-report-risk'
-    );
-
-    const periodFilter = document.getElementById(
-        'filter-report-period'
-    );
-
-    const reportSections = Array.from(
-        document.querySelectorAll(
-            '[data-report-section]'
-        )
-    );
-
-    const exportButtons = Array.from(
-        document.querySelectorAll(
-            '[data-action="export-pdf"][data-report-id]'
-        )
-    );
-
-    const excelButtons = Array.from(
-        document.querySelectorAll(
-            '[data-action="export-excel"][data-report-id]'
-        )
-    );
-
-
-    if (
-        !form
-        || !emptyState
-        || !reportTypeFilter
-        || !areaFilter
-        || !criticalityFilter
-        || !riskFilter
-        || !periodFilter
-        || reportSections.length === 0
-    ) {
+    if (!form || !emptyState || !reportTypeFilter || !areaFilter || !criticalityFilter
+        || !riskFilter || !dateFromFilter || !dateToFilter || reportSections.length === 0) {
+        console.error("[DIAGTI] Faltan elementos requeridos en Reportes Ejecutivos.");
         return;
     }
 
-
-    const FILTER_DEFINITIONS = [
-        {
-            key: 'area',
-            datasetKey: 'area',
-            control: areaFilter
-        },
-        {
-            key: 'criticality',
-            datasetKey: 'criticality',
-            control: criticalityFilter
-        },
-        {
-            key: 'risk',
-            datasetKey: 'risk',
-            control: riskFilter
-        },
-        {
-            key: 'period',
-            datasetKey: 'period',
-            control: periodFilter
-        }
+    const FILTERS = [
+        { datasetKey: "area", control: areaFilter },
+        { datasetKey: "criticality", control: criticalityFilter },
+        { datasetKey: "risk", control: riskFilter }
     ];
 
+    const getRows = (section) => Array.from(section.querySelectorAll("tbody tr"));
 
-    /**
-     * Devuelve las filas del cuerpo
-     * de una sección de reporte.
-     *
-     * @param {HTMLElement} section
-     * @returns {HTMLTableRowElement[]}
-     */
-    const getSectionRows = (section) => {
-        return Array.from(
-            section.querySelectorAll('tbody tr')
-        );
+    const activeFilters = () => FILTERS
+        .map(({ datasetKey, control }) => ({ datasetKey, value: control.value }))
+        .filter(({ value }) => value !== "");
+
+    const supportsFilters = (rows, filters) => filters.every(({ datasetKey }) =>
+        rows.some((row) => Object.prototype.hasOwnProperty.call(row.dataset, datasetKey))
+    );
+
+    const matchesDateRange = (row) => {
+        const rowDate = row.dataset.date;
+        if (!rowDate) return true; // No se inventa una fecha inexistente.
+
+        const from = dateFromFilter.value || "2025-01-01";
+        const to = dateToFilter.value || "2026-12-31";
+        return rowDate >= from && rowDate <= to;
     };
 
+    const matchesFilters = (row, filters) =>
+        matchesDateRange(row)
+        && filters.every(({ datasetKey, value }) => row.dataset[datasetKey] === value);
 
-    /**
-     * Obtiene únicamente los filtros
-     * de filas que tienen un valor activo.
-     *
-     * @returns {Array}
-     */
-    const getActiveRowFilters = () => {
-        return FILTER_DEFINITIONS
-            .map((definition) => ({
-                key: definition.key,
+    const showAllRows = (rows) => rows.forEach((row) => { row.hidden = false; });
 
-                datasetKey:
-                    definition.datasetKey,
-
-                value:
-                    definition.control.value
-            }))
-
-            .filter(
-                (criterion) =>
-                    criterion.value !== ''
-            );
-    };
-
-
-    /**
-     * Comprueba que una sección tenga los metadatos
-     * necesarios para evaluar todos los filtros activos.
-     *
-     * Ejemplos del HTML actual:
-     *
-     * Inventario:
-     * - área
-     * - criticidad
-     *
-     * Riesgos:
-     * - nivel de riesgo
-     *
-     * Área usuaria:
-     * - área
-     *
-     * Una sección sin el dato necesario se oculta.
-     * No se inventan relaciones entre datos.
-     *
-     * @param {HTMLTableRowElement[]} rows
-     * @param {Array} activeFilters
-     * @returns {boolean}
-     */
-    const sectionSupportsFilters = (
-        rows,
-        activeFilters
-    ) => {
-
-        return activeFilters.every(
-            (criterion) => {
-
-                return rows.some((row) => {
-
-                    return Object.prototype
-                        .hasOwnProperty
-                        .call(
-                            row.dataset,
-                            criterion.datasetKey
-                        );
-                });
-            }
-        );
-    };
-
-
-    /**
-     * Comprueba si una fila cumple
-     * todos los filtros activos.
-     *
-     * @param {HTMLTableRowElement} row
-     * @param {Array} activeFilters
-     * @returns {boolean}
-     */
-    const rowMatchesFilters = (
-        row,
-        activeFilters
-    ) => {
-
-        return activeFilters.every(
-            (criterion) => {
-
-                return (
-                    row.dataset[
-                        criterion.datasetKey
-                    ]
-                    === criterion.value
-                );
-            }
-        );
-    };
-
-
-    /**
-     * Restaura la visibilidad
-     * de todas las filas.
-     *
-     * @param {HTMLTableRowElement[]} rows
-     */
-    const showAllRows = (rows) => {
-
-        rows.forEach((row) => {
-            row.hidden = false;
-        });
-    };
-
-
-    /**
-     * Recalcula el pie del Reporte por Área
-     * usando únicamente las filas visibles.
-     *
-     * Los valores se calculan a partir
-     * de los datos ya presentes en la tabla.
-     *
-     * @param {HTMLElement} section
-     */
-    const updateAreaReportTotals = (
-        section
-    ) => {
-
-        if (
-            section.dataset.reportSection
-            !== 'area'
-        ) {
-            return;
-        }
-
-
-        const visibleRows =
-            getSectionRows(section)
-                .filter(
-                    (row) => !row.hidden
-                );
-
-
-        const totals = visibleRows.reduce(
-
-            (accumulator, row) => {
-
-                const cells = row.cells;
-
-
-                accumulator.systems += Number(
-                    cells[1]?.textContent.trim()
-                    ?? 0
-                );
-
-
-                accumulator.critical += Number(
-                    cells[2]?.textContent.trim()
-                    ?? 0
-                );
-
-
-                accumulator.pending += Number(
-                    cells[3]?.textContent.trim()
-                    ?? 0
-                );
-
-
-                return accumulator;
-            },
-
-            {
-                systems: 0,
-                critical: 0,
-                pending: 0
-            }
-        );
-
-
-        const footerCells =
-            section.querySelectorAll(
-                'tfoot td'
-            );
-
-
-        if (footerCells.length < 3) {
-            return;
-        }
-
-
-        footerCells[0].textContent =
-            String(totals.systems);
-
-        footerCells[1].textContent =
-            String(totals.critical);
-
-        footerCells[2].textContent =
-            String(totals.pending);
-    };
-
-
-    /**
-     * Aplica:
-     *
-     * 1. Tipo de reporte.
-     * 2. Filtros compatibles.
-     * 3. Visibilidad de filas.
-     * 4. Visibilidad de secciones.
-     * 5. Estado vacío.
-     */
     const applyFilters = () => {
+        if (dateFromFilter.value && dateToFilter.value && dateFromFilter.value > dateToFilter.value) {
+            dateToFilter.value = dateFromFilter.value;
+        }
 
-        const selectedReportType =
-            reportTypeFilter.value;
+        const selectedType = reportTypeFilter.value;
+        const filters = activeFilters();
+        let visibleSections = 0;
 
+        reportSections.forEach((section) => {
+            const rows = getRows(section);
+            const typeMatches = selectedType === "" || section.dataset.reportSection === selectedType;
 
-        const activeRowFilters =
-            getActiveRowFilters();
-
-
-        let visibleSectionCount = 0;
-
-
-        reportSections.forEach(
-            (section) => {
-
-                const reportType =
-                    section.dataset
-                        .reportSection
-                    ?? '';
-
-
-                const rows =
-                    getSectionRows(section);
-
-
-                const matchesReportType = (
-                    selectedReportType === ''
-                    || reportType
-                        === selectedReportType
-                );
-
-
-                /*
-                 * La sección no corresponde
-                 * al tipo seleccionado.
-                 */
-
-                if (!matchesReportType) {
-
-                    showAllRows(rows);
-
-                    section.hidden = true;
-
-                    updateAreaReportTotals(
-                        section
-                    );
-
-                    return;
-                }
-
-
-                /*
-                 * La sección no dispone de
-                 * datos para evaluar los filtros.
-                 */
-
-                const supportsActiveFilters =
-                    sectionSupportsFilters(
-                        rows,
-                        activeRowFilters
-                    );
-
-
-                if (!supportsActiveFilters) {
-
-                    showAllRows(rows);
-
-                    section.hidden = true;
-
-                    updateAreaReportTotals(
-                        section
-                    );
-
-                    return;
-                }
-
-
-                let visibleRowCount = 0;
-
-
-                rows.forEach((row) => {
-
-                    const isVisible =
-                        rowMatchesFilters(
-                            row,
-                            activeRowFilters
-                        );
-
-
-                    row.hidden = !isVisible;
-
-
-                    if (isVisible) {
-                        visibleRowCount += 1;
-                    }
-                });
-
-
-                const hasVisibleRows =
-                    visibleRowCount > 0;
-
-
-                section.hidden =
-                    !hasVisibleRows;
-
-
-                if (hasVisibleRows) {
-                    visibleSectionCount += 1;
-                }
-
-
-                updateAreaReportTotals(
-                    section
-                );
+            if (!typeMatches || !supportsFilters(rows, filters)) {
+                showAllRows(rows);
+                section.hidden = true;
+                return;
             }
-        );
 
+            let visibleRows = 0;
+            rows.forEach((row) => {
+                const visible = matchesFilters(row, filters);
+                row.hidden = !visible;
+                if (visible) visibleRows += 1;
+            });
 
-        emptyState.hidden =
-            visibleSectionCount > 0;
+            section.hidden = visibleRows === 0;
+            if (visibleRows > 0) visibleSections += 1;
+        });
+
+        emptyState.hidden = visibleSections > 0;
     };
 
+    const cleanText = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
+    const slug = (value) => cleanText(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const today = () => new Date().toISOString().slice(0, 10);
 
-    /**
-     * Imprime únicamente el reporte indicado.
-     *
-     * El navegador abre su diálogo nativo
-     * de impresión.
-     *
-     * Desde ese diálogo el usuario puede
-     * seleccionar "Guardar como PDF".
-     *
-     * @param {string} reportId
-     */
-    const printReport = (reportId) => {
+    const visibleTableClone = (section) => {
+        const source = section.querySelector("table");
+        if (!source) return null;
+        const clone = source.cloneNode(true);
+        clone.querySelectorAll("tbody tr").forEach((row, index) => {
+            const original = source.querySelectorAll("tbody tr")[index];
+            if (original?.hidden) row.remove();
+        });
+        return clone;
+    };
 
-        const targetSection =
-            document.getElementById(
-                reportId
-            );
+    const reportFilterSummary = () => {
+        const values = [];
+        if (areaFilter.value) values.push(`Área: ${areaFilter.options[areaFilter.selectedIndex].text}`);
+        if (criticalityFilter.value) values.push(`Criticidad: ${criticalityFilter.options[criticalityFilter.selectedIndex].text}`);
+        if (riskFilter.value) values.push(`Nivel de riesgo: ${riskFilter.options[riskFilter.selectedIndex].text}`);
+        values.push(`Rango: ${dateFromFilter.value || "Sin inicio"} a ${dateToFilter.value || "Sin fin"}`);
+        return values.join(" · ");
+    };
 
-
-        if (!targetSection) {
+    const exportPdf = (section) => {
+        const table = visibleTableClone(section);
+        if (!table || table.querySelectorAll("tbody tr").length === 0) {
+            window.alert("No existen registros visibles para exportar.");
             return;
         }
 
-
-        /*
-         * Guardamos el estado de visibilidad
-         * actual para restaurarlo después.
-         */
-
-        const visibilitySnapshot =
-            reportSections.map(
-                (section) => ({
-                    section,
-                    hidden: section.hidden
-                })
-            );
-
-
-        /*
-         * Durante la impresión solamente
-         * queda visible el reporte solicitado.
-         */
-
-        reportSections.forEach(
-            (section) => {
-
-                section.hidden =
-                    section !== targetSection;
-            }
-        );
-
-
-        try {
-
-            window.print();
-
-        } finally {
-
-            /*
-             * Restauramos los filtros
-             * y visibilidad anteriores.
-             */
-
-            visibilitySnapshot.forEach(
-                ({
-                    section,
-                    hidden
-                }) => {
-
-                    section.hidden =
-                        hidden;
-                }
-            );
-        }
-    };
-
-
-    /* ========================================================
-       EVENTOS
-    ======================================================== */
-
-
-    form.addEventListener(
-        'submit',
-
-        (event) => {
-
-            event.preventDefault();
-
-            applyFilters();
-        }
-    );
-
-
-    form.addEventListener(
-        'reset',
-
-        () => {
-
-            /*
-             * reset se ejecuta antes de que el navegador
-             * termine de restaurar los controles.
-             */
-
-            window.requestAnimationFrame(
-                () => {
-                    applyFilters();
-                }
-            );
-        }
-    );
-
-
-    exportButtons.forEach(
-        (button) => {
-
-            button.addEventListener(
-                'click',
-
-                () => {
-
-                    const reportId =
-                        button.dataset.reportId;
-
-
-                    if (!reportId) {
-                        return;
-                    }
-
-
-                    printReport(
-                        reportId
-                    );
-                }
-            );
-        }
-    );
-
-
-    /*
-     * Estado inicial coherente
-     * con el HTML disponible.
-     */
-
-    applyFilters();
-
-
-    const sanitizeCsvCell = (value) => {
-        const normalized = String(value ?? '')
-            .replace(/\s+/g, ' ')
-            .trim();
-        return `"${normalized.replaceAll('"', '""')}"`;
-    };
-
-    const exportSectionAsCsv = (section) => {
-        const table = section.querySelector('table');
-        if (!table) {
+        const title = cleanText(section.querySelector("h2")?.textContent || "Reporte ejecutivo");
+        const description = cleanText(section.querySelector(".section-description")?.textContent || "");
+        const popup = window.open("", "_blank", "width=1100,height=760");
+        if (!popup) {
+            window.alert("El navegador bloqueó la ventana de exportación. Habilite las ventanas emergentes para este sitio.");
             return;
         }
 
-        const rows = Array.from(table.querySelectorAll('tr'))
+        try { popup.opener = null; } catch (_) { /* Navegador sin soporte */ }
+        popup.document.open();
+        popup.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${title}</title>
+        <style>
+            @page { size: A4 landscape; margin: 14mm; }
+            body { font-family: Arial, sans-serif; color: #172033; margin: 0; }
+            h1 { color: #0f639f; margin: 0 0 8px; font-size: 24px; }
+            p { margin: 4px 0; color: #4d5b6c; font-size: 12px; }
+            .meta { margin: 14px 0 18px; padding: 10px 12px; background: #f3f7fa; border: 1px solid #d8e2ea; border-radius: 8px; }
+            table { width: 100%; border-collapse: collapse; font-size: 11px; }
+            th, td { border: 1px solid #d8e2ea; padding: 8px; text-align: left; vertical-align: top; }
+            th { background: #e8f3f9; color: #07598e; }
+            .badge { font-weight: 700; }
+        </style></head><body>
+        <h1>${title}</h1><p>${description}</p>
+        <div class="meta"><strong>Generado:</strong> ${new Date().toLocaleString("es-PE")}<br>
+        <strong>Filtros:</strong> ${reportFilterSummary()}</div>
+        ${table.outerHTML}
+        <script>window.addEventListener('load',()=>{window.focus();window.print();});<\/script>
+        </body></html>`);
+        popup.document.close();
+    };
+
+    const csvCell = (value) => `"${cleanText(value).replaceAll('"', '""')}"`;
+
+    const exportCsv = (section) => {
+        const table = section.querySelector("table");
+        if (!table) return;
+
+        const rows = Array.from(table.querySelectorAll("tr"))
             .filter((row) => !row.hidden)
-            .map((row) => Array.from(row.querySelectorAll('th, td'))
-                .map((cell) => sanitizeCsvCell(cell.textContent))
-                .join(';'));
+            .map((row) => Array.from(row.querySelectorAll("th,td"))
+                .map((cell) => csvCell(cell.textContent))
+                .join(";"));
 
         if (rows.length <= 1) {
-            window.alert('No existen registros visibles para exportar.');
+            window.alert("No existen registros visibles para exportar.");
             return;
         }
 
-        const reportTitle = section.querySelector('h2')?.textContent?.trim()
-            || 'reporte-ejecutivo';
-        const fileName = reportTitle
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-|-$/g, '');
-
-        const content = `\uFEFF${rows.join('\n')}`;
-        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const title = section.querySelector("h2")?.textContent?.trim() || "reporte-ejecutivo";
+        const blob = new Blob([`\uFEFF${rows.join("\r\n")}`], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.download = `${fileName || 'reporte-ejecutivo'}-${new Date().toISOString().slice(0, 10)}.csv`;
+        link.download = `${slug(title) || "reporte-ejecutivo"}-${today()}.csv`;
         document.body.append(link);
         link.click();
         link.remove();
-        URL.revokeObjectURL(url);
+        window.setTimeout(() => URL.revokeObjectURL(url), 0);
     };
 
-    excelButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            const section = document.getElementById(button.dataset.reportId);
-            if (section) {
-                exportSectionAsCsv(section);
-            }
-        });
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        applyFilters();
     });
 
+    form.addEventListener("reset", () => {
+        window.requestAnimationFrame(applyFilters);
+    });
+
+    [dateFromFilter, dateToFilter].forEach((control) => {
+        control.addEventListener("change", applyFilters);
+    });
+
+    document.addEventListener("click", (event) => {
+        const pdfButton = event.target.closest('[data-action="export-pdf"][data-report-id]');
+        if (pdfButton) {
+            const section = document.getElementById(pdfButton.dataset.reportId);
+            if (section) exportPdf(section);
+            return;
+        }
+
+        const csvButton = event.target.closest('[data-action="export-excel"][data-report-id]');
+        if (csvButton) {
+            const section = document.getElementById(csvButton.dataset.reportId);
+            if (section) exportCsv(section);
+        }
+    });
+
+    applyFilters();
 })();
