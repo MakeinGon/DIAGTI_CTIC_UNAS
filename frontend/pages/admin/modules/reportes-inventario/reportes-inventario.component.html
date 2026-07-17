@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reportes e Inventario · DIAGTI CTIC</title>
+    <title>Reportes de Inventario · DIAGTI CTIC</title>
 
-    <!-- Estilos propios del módulo - TODO EN UN SOLO ARCHIVO -->
+    <!-- Estilos propios del módulo -->
     <link rel="stylesheet" href="reportes-inventario.component.css" />
+
+    <!-- Librería para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -76,7 +79,7 @@
 
         <!-- ===== BOTÓN CERRAR SESIÓN ===== -->
         <div class="sidebar-logout">
-            <button class="btn-logout" onclick="cerrarSesion()">
+            <button class="btn-logout" id="btnCerrarSesion">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>
@@ -99,9 +102,9 @@
             <div class="header">
                 <div class="header-content">
                     <div class="header-left">
-                        <h1>📊 Reportes e <span>Indicadores</span></h1>
-                        <p>Estadísticas y reportes del sistema de investigación</p>
-                        <span class="badge-version">v2.0 · 2026</span>
+                        <h1>📊 Reportes de <span>Inventario TI</span></h1>
+                        <p>Consulta, análisis y reportes del inventario institucional de sistemas</p>
+                        <span class="badge-version">RF-27 · RF-28 · RF-29 · v2.0</span>
                     </div>
                     <div class="header-right">
                         <span class="badge-live">
@@ -112,91 +115,105 @@
                 </div>
             </div>
 
-            <!-- CARDS DE ESTADÍSTICAS -->
+            <!-- CARDS DE ESTADÍSTICAS (INDICADORES GENERALES) -->
             <div class="cards-grid" id="statsReportes">
-                <div class="card">
-                    <div class="card-number">156</div>
-                    <div class="card-label">Proyectos Activos</div>
-                </div>
-                <div class="card verde">
-                    <div class="card-number">89</div>
-                    <div class="card-label">Tesis Registradas</div>
-                </div>
-                <div class="card azul">
-                    <div class="card-number">234</div>
-                    <div class="card-label">Trámites Realizados</div>
-                </div>
-                <div class="card amarillo">
-                    <div class="card-number">12</div>
-                    <div class="card-label">En Revisión</div>
-                </div>
+                <!-- Renderizado dinámico desde JS -->
             </div>
 
-            <!-- BOTONES DE EXPORTACIÓN -->
-            <div class="exportaciones">
-                <button class="btn-azul" onclick="generarReporte('proyectos')">📄 Reporte Proyectos</button>
-                <button class="btn-azul" onclick="generarReporte('tesis')">📈 Reporte Tesis</button>
-                <button class="btn-azul" onclick="generarReporte('tramites')">🔄 Reporte Trámites</button>
-                <button class="btn-verde" onclick="exportarPDF()">📋 Exportar PDF</button>
-                <button class="btn-verde" onclick="exportarExcel()">📊 Exportar Excel</button>
-            </div>
-
-            <!-- FILTROS -->
+            <!-- FILTROS AVANZADOS -->
             <div class="filtros">
                 <div class="filter-group">
                     <label class="filter-label">Buscar</label>
-                    <input type="text" placeholder="Buscar reporte..." id="buscarReporte" oninput="filtrarReportes()" />
+                    <input type="text" placeholder="Nombre, código o responsable..." id="buscarReporte" />
                 </div>
                 <div class="filter-group">
-                    <label class="filter-label">Categoría</label>
-                    <select id="filtroCategoria" onchange="filtrarReportes()">
-                        <option value="">Todas las categorías</option>
-                        <option value="Proyectos">Proyectos</option>
-                        <option value="Tesis">Tesis</option>
-                        <option value="Trámites">Trámites</option>
-                        <option value="Publicaciones">Publicaciones</option>
+                    <label class="filter-label">Área</label>
+                    <select id="filtroArea">
+                        <option value="">Todas</option>
+                        <!-- Dinámico -->
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Responsable</label>
+                    <select id="filtroResponsable">
+                        <option value="">Todos</option>
+                        <!-- Dinámico -->
                     </select>
                 </div>
                 <div class="filter-group">
                     <label class="filter-label">Estado</label>
-                    <select id="filtroEstado" onchange="filtrarReportes()">
-                        <option value="">Todos los estados</option>
-                        <option value="Activo">Activo</option>
-                        <option value="Completado">Completado</option>
+                    <select id="filtroEstado">
+                        <option value="">Todos</option>
+                        <option value="Validado">Validado</option>
                         <option value="Pendiente">Pendiente</option>
-                        <option value="Revisión">En Revisión</option>
+                        <option value="Observado">Observado</option>
+
                     </select>
                 </div>
+                <div class="filter-group">
+                    <label class="filter-label">Criticidad</label>
+                    <select id="filtroCriticidad">
+                        <option value="">Todas</option>
+                        <option value="Baja">Baja</option>
+                        <option value="Media">Media</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Crítica / Misión Crítica">Crítica / Misión Crítica</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Tipo</label>
+                    <select id="filtroTipo">
+                        <option value="">Todos</option>
+                        <option value="Web">Web</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="API">API</option>
+                        <option value="Móvil">Móvil</option>
+                        <option value="Legacy">Legacy</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Desde</label>
+                    <input type="date" id="filtroFechaDesde" />
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Hasta</label>
+                    <input type="date" id="filtroFechaHasta" />
+                </div>
                 <div class="filter-actions">
-                    <button class="btn-verde" onclick="filtrarReportes()">Filtrar</button>
-                    <button class="btn-outline" onclick="limpiarFiltros()">Limpiar</button>
+                    <button class="btn-verde" id="btnFiltrar">Filtrar</button>
+                    <button class="btn-outline" id="btnLimpiarFiltros">Limpiar</button>
+                    <button class="btn-azul" id="btnExportarCSV">📊 Exportar CSV</button>
+                    <button class="btn-azul" id="btnExportarPDF">📄 Exportar PDF</button>
                 </div>
             </div>
 
-            <!-- TABLA DE INDICADORES -->
+            <!-- TABLA DE SISTEMAS -->
             <div class="table-wrapper">
                 <div class="table-header">
                     <div class="table-header-left">
-                        <h3>📋 Resumen Institucional</h3>
-                        <span class="event-count" id="reporteCount">Total: 8</span>
+                        <h3>📋 Inventario de Sistemas</h3>
+                        <span class="event-count" id="sistemaCount">Total: 0</span>
                     </div>
                     <div class="table-header-right">
-                        <button class="btn-refresh" onclick="refrescarReportes()">🔄</button>
+                        <button class="btn-refresh" id="btnRefrescar">🔄</button>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>Indicador</th>
-                                <th>Categoría</th>
-                                <th>Valor</th>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Área</th>
+                                <th>Responsable</th>
                                 <th>Estado</th>
-                                <th>Última Actualización</th>
+                                <th>Criticidad</th>
+                                <th>Últ. Actualización</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tablaReportes">
-                            <!-- JS -->
+                        <tbody id="tablaSistemas">
+                            <!-- Renderizado dinámico desde JS -->
                         </tbody>
                     </table>
                 </div>
@@ -205,9 +222,9 @@
             <!-- PAGINACIÓN -->
             <div class="pagination-wrapper">
                 <div style="display:flex; justify-content:center; align-items:center; gap:1rem; padding:1rem; background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-                    <button id="btnAnterior" onclick="cambiarPagina(-1)" class="pagination-btn">◀ Anterior</button>
+                    <button id="btnAnterior" class="pagination-btn">◀ Anterior</button>
                     <span id="paginaInfo" style="color:var(--muted); font-size:0.9rem;">Página 1 de 1</span>
-                    <button id="btnSiguiente" onclick="cambiarPagina(1)" class="pagination-btn">Siguiente ▶</button>
+                    <button id="btnSiguiente" class="pagination-btn">Siguiente ▶</button>
                 </div>
             </div>
 
@@ -224,70 +241,41 @@
         </div>
     </main>
 
-      <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
-      <div class="logout-confirm-overlay" id="logout-confirm-overlay">
-        <div class="logout-confirm-box">
-          <div class="logout-confirm-header">
-            <h3>Cerrar sesión</h3>
-            <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
-          </div>
-          <div class="logout-confirm-body">
-            <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
-            <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
-          </div>
-          <div class="logout-confirm-footer">
-            <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
-            <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
-          </div>
+    <!-- ===================== MODAL: DETALLE DE SISTEMA ===================== -->
+    <div class="modal" id="modalDetalle" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalDetalleTitulo">📄 Detalle del Sistema</h3>
+                <button class="modal-close" id="btnCerrarDetalle">✖</button>
+            </div>
+            <div class="modal-body" id="detalleBody">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" id="btnCerrarDetalleFooter">Cerrar</button>
+            </div>
         </div>
-      </div>
+    </div>
 
+    <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+    <div class="logout-confirm-overlay" id="logout-confirm-overlay">
+        <div class="logout-confirm-box">
+            <div class="logout-confirm-header">
+                <h3>Cerrar sesión</h3>
+                <button class="logout-confirm-close" id="btnCancelarCerrarSesion1">✕</button>
+            </div>
+            <div class="logout-confirm-body">
+                <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+                <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+            </div>
+            <div class="logout-confirm-footer">
+                <button class="logout-confirm-btn-cancel" id="btnCancelarCerrarSesion2">Cancelar</button>
+                <button class="logout-confirm-btn-accept" id="btnConfirmarCerrarSesion">Sí, cerrar sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
     <script src="reportes-inventario.component.js"></script>
-    <script>
-        // Prevenir navegación a la página actual y doble clic
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPage = window.location.pathname.split('/').pop();
-            const navLinks = document.querySelectorAll('.nav-item');
-            
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href) {
-                    const linkPage = href.split('/').pop();
-                    
-                    if (linkPage === currentPage) {
-                        link.addEventListener('click', function(e) {
-                            e.preventDefault();
-                        });
-                    } else {
-                        let isClicked = false;
-                        link.addEventListener('click', function(e) {
-                            if (isClicked) {
-                                e.preventDefault();
-                                return;
-                            }
-                            isClicked = true;
-                            setTimeout(() => {
-                                isClicked = false;
-                            }, 500);
-                        });
-                    }
-                }
-            });
-        });
-
-        // Funciones placeholder
-        function filtrarReportes() { console.log('Filtrando reportes...'); }
-        function limpiarFiltros() { 
-            document.getElementById('buscarReporte').value = '';
-            document.getElementById('filtroCategoria').value = '';
-            document.getElementById('filtroEstado').value = '';
-            filtrarReportes();
-        }
-        function cambiarPagina(dir) { console.log('Cambiando página:', dir); }
-        function generarReporte(tipo) { alert('Generando reporte de ' + tipo + '...'); }
-        function exportarPDF() { alert('Exportando a PDF...'); }
-        function exportarExcel() { alert('Exportando a Excel...'); }
-        function refrescarReportes() { alert('Actualizando datos...'); }
-    </script>
 </body>
 </html>
