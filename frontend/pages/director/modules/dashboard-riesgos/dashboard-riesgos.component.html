@@ -157,14 +157,17 @@
 </header>
 <div class="analytics-table-wrap">
 <table class="analytics-table">
-<thead><tr>
-<th><button data-risk-sort="code">Código</button></th>
-<th><button data-risk-sort="title">Riesgo</button></th>
-<th><button data-risk-sort="area">Área</button></th>
-<th><button data-risk-sort="category">Categoría</button></th>
-<th><button data-risk-sort="level">Criticidad</button></th>
-<th>Estado</th><th>Acción</th>
-</tr></thead>
+<thead>
+    <tr>
+        <th><button data-risk-sort="code">Código</button></th>
+        <th><button data-risk-sort="title">Riesgo</button></th>
+        <th><button data-risk-sort="area">Área</button></th>
+        <th><button data-risk-sort="category">Categoría</button></th>
+        <th><button data-risk-sort="level">Nivel de riesgo</button></th>  <!-- ← CAMBIADO -->
+        <th>Estado</th>
+        <th>Acción</th>
+    </tr>
+</thead>
 <tbody id="risk-table-body"></tbody>
 </table>
 </div>

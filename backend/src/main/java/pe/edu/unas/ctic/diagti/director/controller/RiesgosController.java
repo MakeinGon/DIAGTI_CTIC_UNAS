@@ -19,7 +19,8 @@ public class RiesgosController {
     public List<RiesgoDTO> getRiesgos(
             @RequestParam(required = false) String area,
             @RequestParam(required = false) String nivel,
-            @RequestParam(required = false) String estado) {
-        return riesgosService.obtenerRiesgos(area, nivel, estado);
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) String categoria) {  // ← NUEVO parámetro
+        return riesgosService.obtenerRiesgos(area, nivel, estado, categoria);
     }
 }

@@ -145,7 +145,7 @@ public class ReportesServiceImpl implements ReportesService {
                 dto.setCriticidad(getCriticidadNombre(sistema));
                 dto.setArea(getAreaNombre(sistema));
                 dto.setFechaIso(riesgo.getDetectado());
-                dto.setRiesgoNivel(riesgo.getNivel()); // Para el nivel de riesgo en la tabla
+                dto.setRiesgoNivel(riesgo.getNivelTexto()); // Para el nivel de riesgo en la tabla
                 resultados.add(dto);
             }
         }
