@@ -8,5 +8,7 @@ public class ReporteValidacionDTO {
     private String nombre;
     private String estadoValidacion;
     private String fechaValidacion;
+    private String fechaValidacionIso;
     private String area;
+    private String criticidad;
 }

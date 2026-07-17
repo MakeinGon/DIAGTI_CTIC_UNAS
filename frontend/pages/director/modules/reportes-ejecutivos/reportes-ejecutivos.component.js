@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ---------- reportes-ejecutivos.js ---------- */
 "use strict";
 
+
+
 /* DIAGTI CTIC UNAS · Reportes Ejecutivos V1.4
    Exporta únicamente el reporte solicitado y respeta los filtros visibles. */
 
@@ -235,5 +237,159 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    applyFilters();
+    /* ============================================================
+       CONEXIÓN CON EL BACKEND
+       Se generan las filas <tr> de las 3 tablas con los MISMOS
+       atributos data-area / data-criticality / data-risk / data-date
+       que ya usan applyFilters(), exportPdf() y exportCsv() de arriba,
+       para no tener que tocar nada de esa lógica.
+       ============================================================ */
+    const API_BASE = "http://localhost:8080/api/director/reportes";
+
+    const capitalizar = (valor) => {
+        const texto = cleanText(valor).toLowerCase();
+        return texto ? texto.charAt(0).toUpperCase() + texto.slice(1) : texto;
+    };
+
+    // Criticidad -> nivel de riesgo (alto/medio/bajo), usado en las 3 tablas
+    const RIESGO_POR_CRITICIDAD = { CRITICA: "alto", ALTA: "alto", MEDIA: "medio", BAJA: "bajo" };
+
+    // Badge de criticidad: la tabla de Inventario usa la variante masculina
+    // ("Alto", "Medio") y la de Riesgos la variante femenina ("Alta", "Media"),
+    // igual que en el diseño original — se respeta tal cual.
+    const CRITICIDAD_BADGE_INVENTARIO = {
+        CRITICA: { texto: "Crítica", clase: "badge-danger" },
+        ALTA: { texto: "Alto", clase: "badge-danger" },
+        MEDIA: { texto: "Medio", clase: "badge-warning" },
+        BAJA: { texto: "Baja", clase: "badge-success" }
+    };
+    const CRITICIDAD_BADGE_RIESGOS = {
+        CRITICA: { texto: "Crítica", clase: "badge-danger" },
+        ALTA: { texto: "Alta", clase: "badge-danger" },
+        MEDIA: { texto: "Media", clase: "badge-warning" },
+        BAJA: { texto: "Baja", clase: "badge-success" }
+    };
+
+    const ESTADO_VALIDACION_BADGE = {
+        VALIDADO: { texto: "Validado", clase: "badge-success" },
+        OBSERVADO: { texto: "Observado", clase: "badge-warning" },
+        PENDIENTE: { texto: "Pendiente", clase: "badge-neutral" }
+    };
+
+    const ESTADO_RIESGO_BADGE = {
+        PENDIENTE: { texto: "Observado", clase: "badge-warning" },
+        SUBSANADA: { texto: "Subsanado", clase: "badge-success" },
+        SUBSANADO: { texto: "Subsanado", clase: "badge-success" }
+    };
+
+    const badgeHtml = (mapa, valorCrudo, fallbackClase = "badge-neutral") => {
+        const clave = cleanText(valorCrudo).toUpperCase();
+        const item = mapa[clave] || { texto: capitalizar(valorCrudo) || "Sin dato", clase: fallbackClase };
+        return `<span class="badge ${item.clase}">${item.texto}</span>`;
+    };
+
+    const crearFila = (celdasHtml, dataset) => {
+        const tr = document.createElement("tr");
+        Object.entries(dataset).forEach(([clave, valor]) => {
+            if (valor !== null && valor !== undefined && valor !== "") tr.dataset[clave] = valor;
+        });
+        tr.innerHTML = celdasHtml.join("");
+        return tr;
+    };
+
+    const pintarInventario = (items) => {
+        const tbody = document.querySelector("#table-report-inventory tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        items.forEach((item) => {
+            const criticidadClave = cleanText(item.criticidad).toUpperCase();
+            const fila = crearFila([
+                `<td><strong>${cleanText(item.codigo)}</strong></td>`,
+                `<td><strong>${cleanText(item.nombre)}</strong></td>`,
+                `<td>${cleanText(item.tipo) || "No especificado"}</td>`,
+                `<td>${badgeHtml(CRITICIDAD_BADGE_INVENTARIO, item.criticidad)}</td>`,
+                `<td>${badgeHtml(ESTADO_VALIDACION_BADGE, item.estadoValidacion)}</td>`,
+                `<td>${cleanText(item.estadoOperativo) || "No reportado"}</td>`
+            ], {
+                area: slug(item.area),
+                criticality: criticidadClave.toLowerCase(),
+                risk: RIESGO_POR_CRITICIDAD[criticidadClave] || ""
+            });
+            tbody.appendChild(fila);
+        });
+    };
+
+    const pintarRiesgos = (items) => {
+        const tbody = document.querySelector("#table-report-risks tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        items.forEach((item) => {
+            const criticidadClave = cleanText(item.criticidad).toUpperCase();
+            const fila = crearFila([
+                `<td><strong>${cleanText(item.codigoSistema)}</strong></td>`,
+                `<td>${cleanText(item.riesgo)}</td>`,
+                `<td>${cleanText(item.categoria) || "No reportada"}</td>`,
+                `<td>${badgeHtml(ESTADO_RIESGO_BADGE, item.estado)}</td>`,
+                `<td>${badgeHtml(CRITICIDAD_BADGE_RIESGOS, item.criticidad)}</td>`
+            ], {
+                area: slug(item.area),
+                criticality: criticidadClave.toLowerCase(),
+                risk: RIESGO_POR_CRITICIDAD[criticidadClave] || "",
+                date: item.fechaIso || ""
+            });
+            tbody.appendChild(fila);
+        });
+    };
+
+    const pintarValidacion = (items) => {
+        const tbody = document.querySelector("#table-report-validation tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        items.forEach((item) => {
+            const criticidadClave = cleanText(item.criticidad).toUpperCase();
+            const fila = crearFila([
+                `<td><strong>${cleanText(item.codigo)}</strong></td>`,
+                `<td><strong>${cleanText(item.nombre)}</strong></td>`,
+                `<td>${badgeHtml(ESTADO_VALIDACION_BADGE, item.estadoValidacion)}</td>`,
+                `<td>${cleanText(item.fechaValidacion) || "No reportada"}</td>`,
+                `<td>${cleanText(item.area)}</td>`
+            ], {
+                area: slug(item.area),
+                criticality: criticidadClave.toLowerCase(),
+                risk: RIESGO_POR_CRITICIDAD[criticidadClave] || "",
+                date: item.fechaValidacionIso || ""
+            });
+            tbody.appendChild(fila);
+        });
+    };
+
+    const mostrarErrorCarga = () => {
+        // Igual que en Roles/Catálogos/Usuarios: si el backend falla, las
+        // tablas quedan vacías (el estado "sin resultados" ya existente se
+        // encarga de avisar), sin bloquear la pantalla con un alert().
+        console.error("[DIAGTI] No se pudieron cargar los reportes desde el backend.");
+        [
+            "#table-report-inventory tbody",
+            "#table-report-risks tbody",
+            "#table-report-validation tbody"
+        ].forEach((selector) => {
+            const tbody = document.querySelector(selector);
+            if (tbody) tbody.innerHTML = "";
+        });
+    };
+
+    const cargarReportes = () => Promise.all([
+        fetch(`${API_BASE}/inventario`).then((r) => (r.ok ? r.json() : Promise.reject(r))),
+        fetch(`${API_BASE}/riesgos`).then((r) => (r.ok ? r.json() : Promise.reject(r))),
+        fetch(`${API_BASE}/validacion`).then((r) => (r.ok ? r.json() : Promise.reject(r)))
+    ])
+        .then(([inventario, riesgos, validacion]) => {
+            pintarInventario(inventario || []);
+            pintarRiesgos(riesgos || []);
+            pintarValidacion(validacion || []);
+        })
+        .catch(mostrarErrorCarga)
+        .finally(applyFilters);
+
+    cargarReportes();
 })();

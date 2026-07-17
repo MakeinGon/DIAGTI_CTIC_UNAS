@@ -3,6 +3,7 @@ package pe.edu.unas.ctic.diagti.director.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.unas.ctic.diagti.director.dto.ReporteInventarioDTO;
+import pe.edu.unas.ctic.diagti.director.dto.ReporteRiesgoDTO;
 import pe.edu.unas.ctic.diagti.director.dto.ReporteValidacionDTO;
 import pe.edu.unas.ctic.diagti.director.service.ReportesService;
 
@@ -28,5 +29,12 @@ public class ReportesController {
             @RequestParam(required = false) String area,
             @RequestParam(required = false) String estado) {
         return reportesService.obtenerValidacion(area, estado);
+    }
+
+    @GetMapping("/riesgos")
+    public List<ReporteRiesgoDTO> getRiesgos(
+            @RequestParam(required = false) String area,
+            @RequestParam(required = false) String criticidad) {
+        return reportesService.obtenerRiesgos(area, criticidad);
     }
 }

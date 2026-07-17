@@ -1,8 +1,10 @@
 package pe.edu.unas.ctic.diagti.director.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unas.ctic.diagti.director.dto.*;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.mapper.SistemaMapper;
@@ -30,15 +32,19 @@ public class DashboardServiceImpl implements DashboardService {
     );
 
     @Override
+    @Transactional(readOnly = true) // Mantiene la sesión activa
     public DashboardKpiDTO obtenerKpis() {
         List<SistemaEntity> todos = sistemaRepository.findAll();
+        // Inicializar colecciones perezosas para evitar LazyInitializationException
+        todos.forEach(s -> {
+            Hibernate.initialize(s.getValidaciones());
+            Hibernate.initialize(s.getObservaciones());
+        });
         DashboardKpiDTO kpi = new DashboardKpiDTO();
         kpi.setTotalSistemas(todos.size());
-
         long validados = todos.stream().filter(s -> "VALIDADO".equalsIgnoreCase(s.getEstadoValidacion())).count();
         long observados = todos.stream().filter(s -> "OBSERVADO".equalsIgnoreCase(s.getEstadoValidacion())).count();
         long pendientes = todos.size() - validados - observados;
-
         kpi.setValidados((int) validados);
         kpi.setObservados((int) observados);
         kpi.setPendientes((int) pendientes);
@@ -46,14 +52,15 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResumenValidacionDTO> obtenerResumenValidacion() {
         List<SistemaEntity> todos = sistemaRepository.findAll();
+        todos.forEach(s -> Hibernate.initialize(s.getValidaciones()));
         Map<String, Long> counts = todos.stream()
                 .collect(Collectors.groupingBy(
                         s -> s.getEstadoValidacion().toLowerCase(),
                         Collectors.counting()
                 ));
-
         return counts.entrySet().stream()
                 .map(e -> {
                     ResumenValidacionDTO dto = new ResumenValidacionDTO();
@@ -70,20 +77,19 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CriticidadDTO> obtenerCriticidades() {
         List<SistemaEntity> todos = sistemaRepository.findAll();
+        todos.forEach(s -> Hibernate.initialize(s.getValidaciones())); // opcional
         Map<String, Long> counts = todos.stream()
                 .collect(Collectors.groupingBy(
                         s -> s.getCriticidadNombre().toLowerCase(),
                         Collectors.counting()
                 ));
-
-        // Asegurar que todas las categorías estén presentes
         List<String> todasCriticidades = Arrays.asList("critica", "alta", "media", "baja");
         for (String nivel : todasCriticidades) {
             counts.putIfAbsent(nivel, 0L);
         }
-
         return counts.entrySet().stream()
                 .map(e -> {
                     CriticidadDTO dto = new CriticidadDTO();
@@ -96,10 +102,9 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SistemaResumenDTO> obtenerSistemasFiltrados(String area, String criticidad, String validacion, String busqueda) {
-        // Cambio clave: usar conjunción por defecto en lugar de Specification.where(null)
         Specification<SistemaEntity> spec = (root, query, cb) -> cb.conjunction();
-
         if (area != null && !area.isEmpty() && !"all".equals(area)) {
             spec = spec.and(SistemaSpecification.areaEquals(area));
         }
@@ -112,8 +117,13 @@ public class DashboardServiceImpl implements DashboardService {
         if (busqueda != null && !busqueda.isEmpty()) {
             spec = spec.and(SistemaSpecification.search(busqueda));
         }
-
-        return sistemaRepository.findAll(spec).stream()
+        List<SistemaEntity> sistemas = sistemaRepository.findAll(spec);
+        // Inicializar colecciones perezosas necesarias para el mapper
+        sistemas.forEach(s -> {
+            Hibernate.initialize(s.getValidaciones());
+            Hibernate.initialize(s.getObservaciones());
+        });
+        return sistemas.stream()
                 .map(sistemaMapper::toResumenDTO)
                 .collect(Collectors.toList());
     }
