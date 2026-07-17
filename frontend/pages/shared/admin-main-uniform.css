@@ -1,0 +1,257 @@
+/* Contenido principal uniforme basado en frontend/pages/admin/modules/*.component.css */
+:where(.main, .main-content, .content, .page-content, .dashboard-content) {
+    margin-left: 250px !important;
+    min-height: 100vh !important;
+    width: calc(100% - 250px) !important;
+    max-width: calc(100% - 250px) !important;
+    min-width: 0 !important;
+    padding: 26px 32px 60px !important;
+    background: #f3f6f6 !important;
+    color: #1f2a2e !important;
+    box-sizing: border-box !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+:where(.app-layout) > :where(.main, .main-content, .content, .page-content, .dashboard-content) {
+    margin-left: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.topbar, .header, .page-header, .dashboard-header, .section-header) {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    flex-wrap: wrap !important;
+    margin: 0 0 22px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(h1, h2, .page-title) {
+    margin: 0 0 4px !important;
+    color: #1f2a2e !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(h3, .section-title) {
+    margin: 0 !important;
+    color: #1f2a2e !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(p, .hint, .desc, .subtitle, .page-subtitle, .section-description) {
+    color: #64757a !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.hint, .desc, .subtitle, .page-subtitle, .section-description) {
+    margin-top: 3px !important;
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.grid, .kpi-grid, .stats-grid, .metrics-grid, .cards-grid, .dashboard-grid, .report-grid) {
+    gap: 16px !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.g4, .kpi-grid, .stats-grid) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.g3) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.g2) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.card, .kpi-card, .stat-card, .stats-card, .metric-card, .dashboard-card, .table-card, .panel, .report-card, .readonly-box, .filters-panel, .table-section) {
+    background: #fff !important;
+    border: 1px solid #dfe6e5 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 8px 24px rgba(15, 117, 188, .08) !important;
+    padding: 18px 20px !important;
+    color: #1f2a2e !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.stat-label, .kpi-label, .metric-label) {
+    color: #64757a !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: .03em !important;
+    text-transform: uppercase !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.stat-num, .stat-number, .kpi-value, .metric-value) {
+    margin: 6px 0 8px !important;
+    color: #1f2a2e !important;
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.section-head, .section-actions, .table-header) {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    margin-bottom: 14px !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.toolbar, .filters, .filter-row, .filtros, .filters-grid, .report-form) {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin: 0 0 16px !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.toolbar .search, .search, .filter-search) {
+    flex: 1 1 220px !important;
+    min-width: 220px !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(input, select, textarea) {
+    min-height: 40px !important;
+    border: 1px solid #dfe6e5 !important;
+    border-radius: 10px !important;
+    padding: 10px 12px !important;
+    background: #fff !important;
+    color: #1f2a2e !important;
+    font: inherit !important;
+    font-size: 13.5px !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(input:focus, select:focus, textarea:focus) {
+    border-color: #1abb9c !important;
+    box-shadow: 0 0 0 3px rgba(26, 185, 156, .15) !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.btn, .btn-verde, .btn-azul, .btn-outline, button:not(.btn-logout):not(.modal-close):not(.logout-confirm-close)) {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    min-height: 40px !important;
+    padding: 10px 16px !important;
+    border-radius: 4px !important;
+    border: 1px solid transparent !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    transition: filter .12s ease, transform .05s ease, background .15s ease !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.btn-verde, .btn-primary, .btn-success, button.primary) {
+    background: #1abb9c !important;
+    color: #fff !important;
+    border-color: #1abb9c !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.btn-verde:hover, .btn-primary:hover, .btn-success:hover, button.primary:hover) {
+    filter: brightness(1.05) !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.btn-outline, .btn-ghost, .btn.ghost, .btn.secondary) {
+    background: transparent !important;
+    color: #0f75bc !important;
+    border-color: #0f75bc !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.table-wrap, .table-wrapper, .table-container) {
+    overflow-x: auto !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) table {
+    width: 100% !important;
+    min-width: 640px;
+    border-collapse: collapse !important;
+    font-size: 13.5px !important;
+    color: #1f2a2e !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(thead, table thead) {
+    background: transparent !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(th, thead th) {
+    padding: 11px 12px !important;
+    border-bottom: 1px solid #dfe6e5 !important;
+    background: #f8fafa !important;
+    color: #64757a !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: .04em !important;
+    text-align: left !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(td, tbody td) {
+    padding: 12px !important;
+    border-bottom: 1px solid #eef2f2 !important;
+    vertical-align: middle !important;
+    color: #1f2a2e !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) tbody tr:hover {
+    background: #fafcfc !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+:where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.pagination, .page-actions, .pagination-controls) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    margin-top: 14px !important;
+}
+
+@media (max-width: 1050px) {
+    :where(.main, .main-content, .content, .page-content, .dashboard-content) {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 18px !important;
+    }
+
+    :where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.g4, .g3, .g2, .kpi-grid, .stats-grid) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    :where(.main, .main-content, .content, .page-content, .dashboard-content) {
+        padding: 16px !important;
+    }
+
+    :where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.g4, .g3, .g2, .kpi-grid, .stats-grid) {
+        grid-template-columns: 1fr;
+    }
+
+    :where(.main, .main-content, .content, .page-content, .dashboard-content) :where(.toolbar, .filters, .filter-row, .filtros, .filters-grid, .report-form) {
+        align-items: stretch !important;
+        flex-direction: column !important;
+    }
+
+    :where(.main, .main-content, .content, .page-content, .dashboard-content) :where(input, select, textarea, .btn, .btn-verde, .btn-azul, .btn-outline) {
+        width: 100% !important;
+    }
+}

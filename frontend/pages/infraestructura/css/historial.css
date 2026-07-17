@@ -1,4 +1,5 @@
 @import url("../../shared/admin-sidebar-uniform.css");
+@import url("../../shared/admin-main-uniform.css");
 
 
 :root{--blue:#1679b8;--blue-dark:#0f6fae;--green:#1fbea5;--bg:#f3f7f8;--line:#d9e2e6;--text:#10212b;--muted:#5f7480;--white:#fff;--danger:#c62828;--warning:#9a6700;--success:#087f4f}
@@ -169,4 +170,34 @@
     gap: 10px;
     padding: 16px 22px;
     border-top: 1px solid var(--border, #dfe6e5);
+}
+
+/* ===== INFRAESTRUCTURA: MENÚ VERTICAL COMO ADMIN ===== */
+.sidebar .menu,
+.sidebar .sidebar-nav,
+.sidebar .nav-section,
+.sidebar .nav-menu {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+.sidebar .menu-item,
+.sidebar .nav-link {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    width: 100% !important;
+    padding: 11px 12px !important;
+    border-radius: 10px !important;
+}
+
+.sidebar .menu-item strong,
+.sidebar .menu-item span,
+.sidebar .nav-link strong,
+.sidebar .nav-link span {
+    display: block !important;
+    width: 100% !important;
 }
