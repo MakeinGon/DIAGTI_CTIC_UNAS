@@ -1,178 +1,131 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Dashboard ejecutivo de riesgos tecnológicos del CTIC UNAS.">
-    <title>Dashboard Riesgos | DIAGTI CTIC UNAS</title>
-    <link rel="stylesheet" href="../css/base.css">
-    <link rel="stylesheet" href="../css/sidebar.css">
-    <link rel="stylesheet" href="../css/dashboard-riesgos.css?v=20260712-6">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Dashboard ejecutivo de riesgos tecnológicos del CTIC UNAS." name="description"/>
+<title>Riesgos | DIAGTI CTIC UNAS</title>
+<link href="../css/base.css" rel="stylesheet"/>
+<link href="../css/sidebar.css?v=20260716-v1-4" rel="stylesheet"/>
+<link href="../css/dashboard-riesgos.css?v=20260716-v1-4" rel="stylesheet"/>
 </head>
 <body>
-    <aside id="sidebar-container" class="sidebar-container" aria-label="Navegación principal"></aside>
-
-    <main class="main-content" id="main-content">
-        <header class="page-header analytics-page-header">
-            <div class="page-header__content">
-                <span class="section-label">Módulo Directivo</span>
-                <h1>Dashboard Riesgos</h1>
-                <p class="page-header__description">
-                    Panel preventivo para detectar posibles fallos, vulnerabilidades críticas y cuellos de botella
-                    en los flujos de validación mediante semáforos rojo, amarillo y verde.
+<aside aria-label="Navegación principal" class="sidebar-container" id="sidebar-container"></aside>
+<main class="main-content" id="main-content">
+<header class="page-header analytics-page-header">
+<div class="page-header__content">
+<span class="section-label">Módulo Directivo</span>
+<h1>Riesgos</h1>
+<p class="page-header__description">
+                    Panel preventivo para detectar posibles fallos y vulnerabilidades críticas mediante niveles de criticidad y seguimiento.
                 </p>
-            </div>
-            <div class="page-header__status">
-                <span class="badge badge-warning">Prevención y seguimiento</span>
-                <small id="risk-result-summary">Preparando información...</small>
-            </div>
-        </header>
-
-        <section class="analytics-filter-panel" aria-labelledby="risk-filter-title">
-            <div class="analytics-section-heading">
-                <div>
-                    <span class="section-label">Alcance del análisis</span>
-                    <h2 id="risk-filter-title">Filtros de riesgo</h2>
-                </div>
-                <button type="button" class="analytics-button analytics-button--secondary" id="risk-reset-filters">Restablecer</button>
-            </div>
-
-            <form class="analytics-filter-grid" id="risk-filter-form">
-                <label>Periodo
-                    <select id="risk-filter-period">
-                        <option value="2026-I">2026 · Primer semestre</option>
-                        <option value="2025-II">2025 · Segundo semestre</option>
-                    </select>
-                </label>
-                <label>Área funcional
+</div>
+<div class="page-header__status">
+<span class="badge badge-warning">Prevención y seguimiento</span>
+<small id="risk-result-summary">Preparando información...</small>
+</div>
+</header>
+<section aria-labelledby="risk-filter-title" class="analytics-filter-panel">
+<div class="analytics-section-heading">
+<div>
+<span class="section-label">Alcance del análisis</span>
+<h2 id="risk-filter-title">Filtros de riesgo</h2>
+</div>
+<button class="analytics-button analytics-button--secondary" id="risk-reset-filters" type="button">Restablecer</button>
+</div>
+<form class="analytics-filter-grid" id="risk-filter-form">
+<fieldset class="analytics-date-range">
+<legend>Rango de fechas</legend>
+<div class="analytics-date-range__fields">
+<label>
+<span>Desde</span>
+<input id="risk-filter-date-from" max="2026-12-31" min="2025-01-01" type="date" value="2025-01-01"/>
+</label>
+<label>
+<span>Hasta</span>
+<input id="risk-filter-date-to" max="2026-12-31" min="2025-01-01" type="date" value="2026-12-31"/>
+</label>
+</div>
+</fieldset>
+<label>Área funcional
                     <select id="risk-filter-area"><option value="all">Todas las áreas</option></select>
-                </label>
-                <label>Categoría
+</label>
+<label>Categoría
                     <select id="risk-filter-category"><option value="all">Todas las categorías</option></select>
-                </label>
-                <label>Semáforo
+</label>
+<label>Semáforo
                     <select id="risk-filter-level">
-                        <option value="all">Todos los niveles</option>
-                        <option value="critico">Rojo · Crítico</option>
-                        <option value="advertencia">Amarillo · Advertencia</option>
-                        <option value="controlado">Verde · Controlado</option>
-                    </select>
-                </label>
-                <label>Estado
+<option value="all">Todos los niveles</option>
+<option value="critico">Rojo · Crítico</option>
+<option value="advertencia">Amarillo · Advertencia</option>
+<option value="controlado">Verde · Controlado</option>
+</select>
+</label>
+<label>Estado
                     <select id="risk-filter-status">
-                        <option value="all">Todos los estados</option>
-                        <option value="abierto">Abierto</option>
-                        <option value="mitigacion">En mitigación</option>
-                        <option value="controlado">Controlado</option>
-                    </select>
-                </label>
-                <label class="analytics-filter-search">Buscar riesgo
-                    <input id="risk-filter-search" type="search" placeholder="Código, riesgo o responsable" autocomplete="off">
-                </label>
-            </form>
-            <div class="analytics-active-filters" id="risk-active-filters" aria-live="polite"></div>
-        </section>
+<option value="all">Todos los estados</option>
+<option value="abierto">Abierto</option>
+<option value="mitigacion">En mitigación</option>
+<option value="controlado">Controlado</option>
+</select>
+</label>
+<label class="analytics-filter-search">Buscar riesgo
+                    <input autocomplete="off" id="risk-filter-search" placeholder="Código, riesgo o área" type="search"/>
+</label>
+</form>
+<div aria-live="polite" class="analytics-active-filters" id="risk-active-filters"></div>
+</section>
+<section aria-live="polite" class="analytics-state" id="risk-loading">
+<div aria-hidden="true" class="analytics-spinner"></div>
+<p>Cargando el análisis de riesgos...</p>
+</section>
+<section class="analytics-state analytics-state--error" hidden="" id="risk-error" role="alert">
+<strong>No se pudo cargar el Dashboard de Riesgos.</strong>
+<p id="risk-error-message">Intente nuevamente.</p>
+<button class="analytics-button analytics-button--primary" id="risk-retry" type="button">Reintentar</button>
+</section>
+<section class="analytics-state" hidden="" id="risk-empty">
+<strong>No existen riesgos para los filtros aplicados.</strong>
+<p>Restablezca los filtros o espere a que se registren nuevos datos.</p>
+<button class="analytics-button analytics-button--secondary" id="risk-empty-reset" type="button">Restablecer filtros</button>
+</section>
+<div hidden="" id="risk-content">
 
-        <section id="risk-loading" class="analytics-state" aria-live="polite">
-            <div class="analytics-spinner" aria-hidden="true"></div>
-            <p>Cargando el análisis de riesgos...</p>
-        </section>
-
-        <section id="risk-error" class="analytics-state analytics-state--error" hidden role="alert">
-            <strong>No se pudo cargar el Dashboard de Riesgos.</strong>
-            <p id="risk-error-message">Intente nuevamente.</p>
-            <button type="button" class="analytics-button analytics-button--primary" id="risk-retry">Reintentar</button>
-        </section>
-
-        <section id="risk-empty" class="analytics-state" hidden>
-            <strong>No existen riesgos para los filtros aplicados.</strong>
-            <p>Restablezca los filtros o espere a que se registren nuevos datos.</p>
-            <button type="button" class="analytics-button analytics-button--secondary" id="risk-empty-reset">Restablecer filtros</button>
-        </section>
-
-        <div id="risk-content" hidden>
-            <section class="analytics-kpi-grid" aria-label="Indicadores de riesgo">
-                <button type="button" class="analytics-kpi analytics-kpi--danger" data-risk-level="critico">
-                    <span>Riesgos críticos</span><strong id="risk-kpi-critical">0</strong><small>Requieren intervención inmediata</small>
-                </button>
-                <button type="button" class="analytics-kpi analytics-kpi--warning" data-risk-flag="vulnerability">
-                    <span>Vulnerabilidades abiertas</span><strong id="risk-kpi-vulnerabilities">0</strong><small>Hallazgos técnicos sin cierre</small>
-                </button>
-                <button type="button" class="analytics-kpi analytics-kpi--danger" data-risk-flag="bottleneck">
-                    <span>Flujos bloqueados</span><strong id="risk-kpi-bottlenecks">0</strong><small>Cuellos de botella de validación</small>
-                </button>
-                <button type="button" class="analytics-kpi analytics-kpi--success" data-risk-level="controlado">
-                    <span>Riesgos controlados</span><strong id="risk-kpi-controlled">0</strong><small>Con medidas de control vigentes</small>
-                </button>
-            </section>
-
-            <section class="analytics-grid analytics-grid--two">
-                <article class="analytics-panel">
-                    <header class="analytics-panel__header">
-                        <div><span class="section-label">Semáforo preventivo</span><h2>Exposición general</h2><p>Distribución interactiva por nivel de riesgo.</p></div>
-                        <span class="analytics-counter" id="risk-total-counter">0 riesgos</span>
-                    </header>
-                    <div id="risk-traffic-light" class="risk-traffic-light" aria-live="polite"></div>
-                </article>
-
-                <article class="analytics-panel">
-                    <header class="analytics-panel__header">
-                        <div><span class="section-label">Matriz de riesgos</span><h2>Probabilidad × impacto</h2><p>Seleccione una celda para filtrar la tabla priorizada.</p></div>
-                    </header>
-                    <div id="risk-matrix" class="risk-matrix" aria-live="polite"></div>
-                </article>
-
-                <article class="analytics-panel">
-                    <header class="analytics-panel__header">
-                        <div><span class="section-label">Distribución</span><h2>Riesgos por categoría</h2><p>Seguridad, disponibilidad, infraestructura, continuidad y validación.</p></div>
-                    </header>
-                    <div id="risk-category-chart" class="analytics-bar-list" aria-live="polite"></div>
-                </article>
-
-                <article class="analytics-panel">
-                    <header class="analytics-panel__header">
-                        <div><span class="section-label">Flujos de validación</span><h2>Cuellos de botella</h2><p>Etapas con mayor cantidad de casos pendientes o bloqueados.</p></div>
-                    </header>
-                    <div id="risk-bottleneck-chart" class="analytics-bar-list" aria-live="polite"></div>
-                </article>
-            </section>
-
-            <section class="analytics-panel analytics-table-section" aria-labelledby="risk-table-title">
-                <header class="analytics-panel__header">
-                    <div><span class="section-label">Priorización</span><h2 id="risk-table-title">Registro de riesgos</h2><p>Ordenado inicialmente por severidad, probabilidad e impacto.</p></div>
-                    <label class="analytics-page-size">Filas
-                        <select id="risk-page-size"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option></select>
-                    </label>
-                </header>
-                <div class="analytics-table-wrap">
-                    <table class="analytics-table">
-                        <thead><tr>
-                            <th><button data-risk-sort="code">Código</button></th>
-                            <th><button data-risk-sort="title">Riesgo</button></th>
-                            <th><button data-risk-sort="area">Área</button></th>
-                            <th><button data-risk-sort="category">Categoría</button></th>
-                            <th><button data-risk-sort="level">Semáforo</button></th>
-                            <th>Prob.</th><th>Impacto</th><th>Estado</th><th>Responsable</th><th>Acción</th>
-                        </tr></thead>
-                        <tbody id="risk-table-body"></tbody>
-                    </table>
-                </div>
-                <footer class="analytics-pagination">
-                    <span id="risk-page-summary">Sin resultados</span>
-                    <div><button id="risk-prev-page" class="analytics-button analytics-button--secondary">Anterior</button><span id="risk-page-label">Página 1 de 1</span><button id="risk-next-page" class="analytics-button analytics-button--secondary">Siguiente</button></div>
-                </footer>
-            </section>
-        </div>
-
-        <dialog id="risk-detail-dialog" class="analytics-dialog">
-            <form method="dialog" class="analytics-dialog__surface">
-                <header><div><span class="section-label">Detalle preventivo</span><h2 id="risk-dialog-title">Riesgo</h2></div><button aria-label="Cerrar">×</button></header>
-                <div id="risk-dialog-content"></div>
-            </form>
-        </dialog>
-    </main>
-
-    <script src="../js/sidebar.js?v=20260712-6" defer></script>
-    <script src="../js/dashboard-riesgos.js?v=20260712-6" defer></script>
+<section aria-labelledby="risk-table-title" class="analytics-panel analytics-table-section">
+<header class="analytics-panel__header">
+<div><span class="section-label">Priorización</span><h2 id="risk-table-title">Registro de riesgos</h2><p>Ordenado inicialmente por criticidad y estado.</p></div>
+<label class="analytics-page-size">Filas
+                        <select id="risk-page-size"><option value="5">5</option><option selected="" value="10">10</option><option value="20">20</option></select>
+</label>
+</header>
+<div class="analytics-table-wrap">
+<table class="analytics-table">
+<thead><tr>
+<th><button data-risk-sort="code">Código</button></th>
+<th><button data-risk-sort="title">Riesgo</button></th>
+<th><button data-risk-sort="area">Área</button></th>
+<th><button data-risk-sort="category">Categoría</button></th>
+<th><button data-risk-sort="level">Criticidad</button></th>
+<th>Estado</th><th>Acción</th>
+</tr></thead>
+<tbody id="risk-table-body"></tbody>
+</table>
+</div>
+<footer class="analytics-pagination">
+<span id="risk-page-summary">Sin resultados</span>
+<div><button class="analytics-button analytics-button--secondary" id="risk-prev-page">Anterior</button><span id="risk-page-label">Página 1 de 1</span><button class="analytics-button analytics-button--secondary" id="risk-next-page">Siguiente</button></div>
+</footer>
+</section>
+</div>
+<dialog class="analytics-dialog" id="risk-detail-dialog">
+<form class="analytics-dialog__surface" method="dialog">
+<header><div><span class="section-label">Detalle preventivo</span><h2 id="risk-dialog-title">Riesgo</h2></div><button aria-label="Cerrar">×</button></header>
+<div id="risk-dialog-content"></div>
+</form>
+</dialog>
+</main>
+<script defer="" src="../js/sidebar.js?v=20260716-v1-4"></script>
+<script defer="" src="../js/dashboard-riesgos.js?v=20260716-v1-4"></script>
 </body>
 </html>
