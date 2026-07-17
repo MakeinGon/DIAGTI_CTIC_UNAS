@@ -602,10 +602,10 @@ function abrirVentanaPDF(html) {
 }
 
 function cerrarSesion() {
-    const confirmar = confirm("¿Deseas cerrar sesión?");
-
-    if (confirmar) {
-        alert("Sesión cerrada correctamente");
+    if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "../../../login/html/login.html";
     }
 }
 
