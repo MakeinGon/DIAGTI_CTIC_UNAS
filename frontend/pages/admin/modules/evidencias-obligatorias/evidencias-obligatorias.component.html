@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evidencias Obligatorias · DIAGTI CTIC</title>
+    <title>Administración de Evidencias · DIAGTI CTIC</title>
 
-    <!-- Estilos propios del módulo - TODO EN UN SOLO ARCHIVO -->
+    <!-- ===== ESTILOS ===== -->
     <link rel="stylesheet" href="evidencias-obligatorias.component.css" />
+
+    <!-- ===== LIBRERÍA PARA PDF ===== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -56,8 +59,8 @@
             </a>
             <a class="nav-item active" href="evidencias-obligatorias.component.html">
                 <span>
-                    <span class="lbl">Evidencias Obligatorias</span>
-                    <span class="sub">Documentación técnica</span>
+                    <span class="lbl">Administración de Evidencias</span>
+                    <span class="sub">Consulta y supervisión</span>
                 </span>
             </a>
             <a class="nav-item" href="../reportes-inventario/reportes-inventario.component.html">
@@ -76,7 +79,7 @@
 
         <!-- ===== BOTÓN CERRAR SESIÓN ===== -->
         <div class="sidebar-logout">
-            <button class="btn-logout" onclick="cerrarSesion()">
+            <button class="btn-logout" id="btnCerrarSesion">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>
@@ -91,251 +94,168 @@
             Módulo de administración interna
         </div>
     </aside>
+
     <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
     <main class="main-content">
         <!-- HEADER -->
         <div class="header">
-            <h1>📎 Evidencias <span>Obligatorias</span></h1>
-            <p>Gestión de documentos, archivos y evidencias técnicas requeridas por sistema</p>
-            <span class="badge-version">RF-14 · RF-15 · DIAGTI v2.0</span>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>📎 Administración de <span>Evidencias</span></h1>
+                    <p>Consulta, supervisión y seguimiento de evidencias técnicas</p>
+                    <span class="badge-version">RF-14 · RF-15 · v2.0</span>
+                </div>
+                <div class="header-right">
+                    <span class="badge-live">
+                        <span class="pulse-dot"></span>
+                        En Vivo
+                    </span>
+                </div>
+            </div>
         </div>
 
-        <!-- ESTADÍSTICAS -->
+        <!-- ESTADÍSTICAS CON ESTADOS REALES -->
         <div class="cards-grid" id="statsEvidencias">
-            <div class="card">
-                <div class="card-number">12</div>
-                <div class="card-label">Total Evidencias</div>
-            </div>
-            <div class="card verde">
-                <div class="card-number">8</div>
-                <div class="card-label">Completas</div>
-            </div>
-            <div class="card amarillo">
-                <div class="card-number">3</div>
-                <div class="card-label">Pendientes</div>
-            </div>
-            <div class="card rojo">
-                <div class="card-number">1</div>
-                <div class="card-label">Vencidas</div>
-            </div>
+            <!-- Renderizado dinámico desde JS -->
         </div>
 
-        <!-- FILTROS Y TOOLBAR -->
+        <!-- FILTROS Y ACCIONES ADMINISTRATIVAS -->
         <div class="toolbar">
             <div class="filter-group">
-                <input type="text" id="buscarEvidencia" placeholder="🔍 Buscar por sistema o tipo..." oninput="filtrarEvidencias()">
+                <input type="text" id="buscarEvidencia" placeholder="🔍 Buscar por sistema, módulo o responsable..." />
             </div>
             <div class="filter-group">
-                <select id="filtroTipo" onchange="filtrarEvidencias()">
-                    <option value="">Todos los tipos</option>
-                    <option value="PDF">PDF</option>
-                    <option value="DOC">DOC</option>
-                    <option value="DOCX">DOCX</option>
-                    <option value="URL">URL</option>
-                    <option value="Imagen">Imagen</option>
-                    <option value="Otro">Otro</option>
+                <select id="filtroModulo">
+                    <option value="">Todos los módulos</option>
+                    <!-- Se llenan dinámicamente -->
                 </select>
             </div>
             <div class="filter-group">
-                <select id="filtroEstado" onchange="filtrarEvidencias()">
+                <select id="filtroResponsable">
+                    <option value="">Todos los responsables</option>
+                    <!-- Se llenan dinámicamente -->
+                </select>
+            </div>
+            <div class="filter-group">
+                <select id="filtroEstado">
                     <option value="">Todos los estados</option>
-                    <option value="Completa">Completa</option>
+                    <option value="Borrador">Borrador</option>
                     <option value="Pendiente">Pendiente</option>
-                    <option value="Vencida">Vencida</option>
+                    <option value="Observado">Observado</option>
+                    <option value="Validado">Validado</option>
                 </select>
             </div>
-            <button class="btn-verde" onclick="nuevaEvidencia()">➕ Nueva Evidencia</button>
-            <button class="btn-azul" onclick="exportarEvidencias()">📊 Exportar</button>
+            <div class="filter-actions">
+                <button class="btn-verde" id="btnFiltrar">Filtrar</button>
+                <button class="btn-outline" id="btnLimpiarFiltros">Limpiar</button>
+                <button class="btn-azul" id="btnExportarCSV">📊 Exportar CSV</button>
+                <button class="btn-azul" id="btnExportarPDF">📄 Exportar PDF</button>
+            </div>
         </div>
 
         <!-- TABLA DE EVIDENCIAS -->
         <div class="table-wrapper">
             <div class="table-header">
-                <h3>📋 Listado de evidencias obligatorias</h3>
-                <span class="event-count" id="evidenciaCount">Total: 4</span>
+                <div class="table-header-left">
+                    <h3>📋 Listado de evidencias</h3>
+                    <span class="event-count" id="evidenciaCount">Total: 0</span>
+                </div>
+                <div class="table-header-right">
+                    <button class="btn-refresh" id="btnRefrescar">🔄</button>
+                </div>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sistema</th>
-                        <th>Tipo</th>
-                        <th>Archivo/URL</th>
-                        <th>Estado</th>
-                        <th>Subido por</th>
-                        <th>Fecha</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaEvidencias">
-                    <tr>
-                        <td><span class="sistema-tag">DIAGTI</span></td>
-                        <td>PDF</td>
-                        <td><a href="#" class="file-link">manual_usuario.pdf</a></td>
-                        <td><span class="badge-estado completa">Completa</span></td>
-                        <td>Johan Vela</td>
-                        <td>2026-07-05</td>
-                        <td>
-                            <button class="btn-icon">👁️</button>
-                            <button class="btn-icon">✏️</button>
-                            <button class="btn-icon">🗑️</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span class="sistema-tag">SIGA</span></td>
-                        <td>DOCX</td>
-                        <td><a href="#" class="file-link">informe_siga.docx</a></td>
-                        <td><span class="badge-estado pendiente">Pendiente</span></td>
-                        <td>Maria Torres</td>
-                        <td>2026-07-04</td>
-                        <td>
-                            <button class="btn-icon">👁️</button>
-                            <button class="btn-icon">✏️</button>
-                            <button class="btn-icon">🗑️</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span class="sistema-tag">SIGA</span></td>
-                        <td>URL</td>
-                        <td><a href="#" class="file-link">https://docs.google.com/...</a></td>
-                        <td><span class="badge-estado vencida">Vencida</span></td>
-                        <td>Carlos Ruiz</td>
-                        <td>2026-06-28</td>
-                        <td>
-                            <button class="btn-icon">👁️</button>
-                            <button class="btn-icon">✏️</button>
-                            <button class="btn-icon">🗑️</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span class="sistema-tag">DIAGTI</span></td>
-                        <td>Imagen</td>
-                        <td><a href="#" class="file-link">captura_pantalla.png</a></td>
-                        <td><span class="badge-estado completa">Completa</span></td>
-                        <td>Johan Vela</td>
-                        <td>2026-07-03</td>
-                        <td>
-                            <button class="btn-icon">👁️</button>
-                            <button class="btn-icon">✏️</button>
-                            <button class="btn-icon">🗑️</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sistema</th>
+                            <th>Módulo / Área</th>
+                            <th>Responsable</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaEvidencias">
+                        <!-- Renderizado dinámico desde JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        <div class="pagination-wrapper">
+            <div style="display:flex; justify-content:center; align-items:center; gap:1rem; padding:1rem; background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow);">
+                <button id="btnAnterior" class="pagination-btn">◀ Anterior</button>
+                <span id="paginaInfo" style="color:var(--muted); font-size:0.9rem;">Página 1 de 1</span>
+                <button id="btnSiguiente" class="pagination-btn">Siguiente ▶</button>
+            </div>
         </div>
 
         <!-- FOOTER -->
         <footer>
-            &copy; 2026 CTIC · DIAGTI · Sistema de Inventario y Diagnóstico TI
+            <div class="footer-content">
+                <p>&copy; 2026 CTIC · DIAGTI v2.0 · Sistema de Inventario y Diagnóstico TI</p>
+                <div class="footer-right">
+                    <span class="footer-badge">Solo consulta</span>
+                    <span class="footer-badge">v2.0</span>
+                </div>
+            </div>
         </footer>
     </main>
 
-    <!-- MODAL PARA NUEVA EVIDENCIA -->
-    <div class="modal" id="modalEvidencia" style="display:none;">
+    <!-- ===================== MODAL: DETALLE DE EVIDENCIA ===================== -->
+    <div class="modal" id="modalDetalle" style="display:none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>📎 Registrar Nueva Evidencia</h3>
-                <button class="modal-close" onclick="cerrarModal()">✖</button>
+                <h3 id="modalDetalleTitulo">📄 Detalle de Evidencia</h3>
+                <button class="modal-close" id="btnCerrarDetalle">✖</button>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Sistema asociado *</label>
-                    <select id="sistemaSelect" class="form-control">
-                        <option value="">Seleccionar sistema...</option>
-                        <option value="DIAGTI">DIAGTI</option>
-                        <option value="SIGA">SIGA</option>
-                        <option value="SIAF">SIAF</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Tipo de evidencia *</label>
-                    <select id="tipoEvidenciaSelect" class="form-control">
-                        <option value="PDF">PDF</option>
-                        <option value="DOC">DOC</option>
-                        <option value="DOCX">DOCX</option>
-                        <option value="URL">URL</option>
-                        <option value="Imagen">Imagen</option>
-                        <option value="Otro">Otro</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Archivo o URL *</label>
-                    <input type="text" id="archivoInput" class="form-control" placeholder="Ej: https://... o nombre_archivo.pdf" />
-                </div>
-                <div class="form-group">
-                    <label>Descripción</label>
-                    <textarea id="descripcionInput" class="form-control" rows="2" placeholder="Descripción opcional..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="obligatoriaCheck" checked />
-                        Obligatoria para validación
-                    </label>
-                </div>
+            <div class="modal-body" id="detalleBody">
+                <!-- Contenido dinámico -->
             </div>
             <div class="modal-footer">
-                <button class="btn-outline" onclick="cerrarModal()">Cancelar</button>
-                <button class="btn-verde" onclick="guardarEvidencia()">💾 Guardar</button>
+                <button class="btn-outline" id="btnCerrarDetalleFooter">Cerrar</button>
             </div>
         </div>
     </div>
 
-      <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
-      <div class="logout-confirm-overlay" id="logout-confirm-overlay">
-        <div class="logout-confirm-box">
-          <div class="logout-confirm-header">
-            <h3>Cerrar sesión</h3>
-            <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
-          </div>
-          <div class="logout-confirm-body">
-            <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
-            <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
-          </div>
-          <div class="logout-confirm-footer">
-            <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
-            <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
-          </div>
+    <!-- ===================== MODAL: HISTORIAL ===================== -->
+    <div class="modal" id="modalHistorial" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📜 Historial de Cambios</h3>
+                <button class="modal-close" id="btnCerrarHistorial">✖</button>
+            </div>
+            <div class="modal-body" id="historialBody">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" id="btnCerrarHistorialFooter">Cerrar</button>
+            </div>
         </div>
-      </div>
+    </div>
 
+    <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+    <div class="logout-confirm-overlay" id="logout-confirm-overlay">
+        <div class="logout-confirm-box">
+            <div class="logout-confirm-header">
+                <h3>Cerrar sesión</h3>
+                <button class="logout-confirm-close" id="btnCancelarCerrarSesion">✕</button>
+            </div>
+            <div class="logout-confirm-body">
+                <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+                <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+            </div>
+            <div class="logout-confirm-footer">
+                <button class="logout-confirm-btn-cancel" id="btnCancelarCerrarSesion2">Cancelar</button>
+                <button class="logout-confirm-btn-accept" id="btnConfirmarCerrarSesion">Sí, cerrar sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
     <script src="evidencias-obligatorias.component.js"></script>
-    <script>
-        // Prevenir navegación a la página actual y doble clic
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPage = window.location.pathname.split('/').pop();
-            const navLinks = document.querySelectorAll('.nav-item');
-            
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href) {
-                    const linkPage = href.split('/').pop();
-                    
-                    if (linkPage === currentPage) {
-                        link.addEventListener('click', function(e) {
-                            e.preventDefault();
-                        });
-                    } else {
-                        let isClicked = false;
-                        link.addEventListener('click', function(e) {
-                            if (isClicked) {
-                                e.preventDefault();
-                                return;
-                            }
-                            isClicked = true;
-                            setTimeout(() => {
-                                isClicked = false;
-                            }, 500);
-                        });
-                    }
-                }
-            });
-        });
-
-        // Funciones placeholder para el módulo
-        function filtrarEvidencias() { console.log('Filtrando...'); }
-        function nuevaEvidencia() { document.getElementById('modalEvidencia').style.display = 'flex'; }
-        function cerrarModal() { document.getElementById('modalEvidencia').style.display = 'none'; }
-        function guardarEvidencia() { alert('Evidencia guardada'); cerrarModal(); }
-        function exportarEvidencias() { alert('Exportando evidencias...'); }
-    </script>
 </body>
 </html>
