@@ -108,22 +108,10 @@ public class SistemaEntity {
     }
 
     public String getCriticidadNombre() {
-        if (idCriticidad == null) return "MEDIA";
-        // Aquí deberías hacer un join con catalogos para obtener el nombre real.
-        // Por simplicidad, mapeamos según el ID (ajusta según tus datos).
-        // Si tienes un repositorio de catalogos, podrías inyectarlo.
-        // Pero como es un helper, lo dejamos con valores fijos de ejemplo.
-        return switch (idCriticidad.intValue()) {
-            case 1 -> "CRITICA";
-            case 2 -> "ALTA";
-            case 3 -> "MEDIA";
-            default -> "BAJA";
-        };
-    }
-
-    public String getAreaUsuarioNombre() {
-        // Similar, deberías obtener del catálogo de áreas.
-        // Por ahora devolvemos un valor fijo.
-        return "Infraestructura TI";
+        if (idCriticidad == null) return "No especificada";
+        // Como no tenemos el repositorio aquí, vamos a usar un enfoque diferente:
+        // El mapper o el servicio se encargará de obtener el nombre.
+        // Por ahora, devolvemos un valor por defecto, pero el mapper lo sobrescribirá.
+        return "No especificada";
     }
 }

@@ -4,9 +4,7 @@
    ============================================================ */
 
 /* ============================================================
-   CERRAR SESIÓN — mismo comportamiento que el panel Administrador
-   (el sidebar ahora es HTML estático por página, igual que admin;
-   ya no hace falta generarlo ni inyectarlo por JS)
+   CERRAR SESIÓN
 ============================================================ */
 function cerrarSesion() {
     document.getElementById('logout-confirm-overlay').classList.add('open');
@@ -31,10 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ---------- reportes-ejecutivos.js ---------- */
 "use strict";
 
-
-
-/* DIAGTI CTIC UNAS · Reportes Ejecutivos V1.4
-   Exporta únicamente el reporte solicitado y respeta los filtros visibles. */
+/* DIAGTI CTIC UNAS · Reportes Ejecutivos V1.5 */
 
 (() => {
     const form = document.getElementById("reports-filter-form");
@@ -43,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const areaFilter = document.getElementById("filter-report-area");
     const criticalityFilter = document.getElementById("filter-report-criticality");
     const riskFilter = document.getElementById("filter-report-risk");
+    const validationStatusFilter = document.getElementById("filter-report-validation-status");
     const dateFromFilter = document.getElementById("filter-report-date-from");
     const dateToFilter = document.getElementById("filter-report-date-to");
     const reportSections = Array.from(document.querySelectorAll("[data-report-section]"));
@@ -53,10 +49,269 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    const API_BASE = "http://localhost:8080/api/director/reportes";
+
+    const cleanText = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
+    const slug = (value) => cleanText(value)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+    const capitalizar = (valor) => {
+        const texto = cleanText(valor).toLowerCase();
+        return texto ? texto.charAt(0).toUpperCase() + texto.slice(1) : texto;
+    };
+    const today = () => new Date().toISOString().slice(0, 10);
+
+    function cargarCatalogosFiltros() {
+        // Áreas
+        fetch(`${API_BASE}/catalogos/areas`)
+            .then(res => res.json())
+            .then(data => {
+                const select = areaFilter;
+                if (!select) return;
+                const primeraOpcion = select.options[0];
+                select.innerHTML = '';
+                if (primeraOpcion) select.appendChild(primeraOpcion);
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = slug(item.valor);
+                    option.textContent = item.valor;
+                    select.appendChild(option);
+                });
+            })
+            .catch(err => console.error("Error cargando áreas:", err));
+
+        // Criticidades
+        fetch(`${API_BASE}/catalogos/criticidades`)
+            .then(res => res.json())
+            .then(data => {
+                const select = criticalityFilter;
+                if (!select) return;
+                const primeraOpcion = select.options[0];
+                select.innerHTML = '';
+                if (primeraOpcion) select.appendChild(primeraOpcion);
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = slug(item.valor);
+                    option.textContent = item.valor;
+                    select.appendChild(option);
+                });
+            })
+            .catch(err => console.error("Error cargando criticidades:", err));
+
+        // Niveles de riesgo
+        fetch(`${API_BASE}/catalogos/riesgos`)
+            .then(res => res.json())
+            .then(data => {
+                const select = riskFilter;
+                if (!select) return;
+                const primeraOpcion = select.options[0];
+                select.innerHTML = '';
+                if (primeraOpcion) select.appendChild(primeraOpcion);
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = slug(item.valor);
+                    option.textContent = item.valor;
+                    select.appendChild(option);
+                });
+            })
+            .catch(err => console.error("Error cargando niveles de riesgo:", err));
+
+        // Estados de validación
+        fetch(`${API_BASE}/catalogos/estados-validacion`)
+            .then(res => res.json())
+            .then(data => {
+                const select = validationStatusFilter;
+                if (!select) return;
+                const primeraOpcion = select.options[0];
+                select.innerHTML = '';
+                if (primeraOpcion) select.appendChild(primeraOpcion);
+                const estadosRelevantes = ['VALIDADO', 'OBSERVADO', 'PENDIENTE', 'RECHAZADO', 'ENVIADO', 'SUBSANADO'];
+                data.forEach(item => {
+                    const valorUpper = item.valor.toUpperCase();
+                    if (estadosRelevantes.includes(valorUpper)) {
+                        const option = document.createElement('option');
+                        option.value = slug(item.valor);
+                        option.textContent = item.valor;
+                        select.appendChild(option);
+                    }
+                });
+            })
+            .catch(err => console.error("Error cargando estados de validación:", err));
+    }
+
+    // MAPAS Y BADGES
+    const RIESGO_POR_CRITICIDAD = { CRITICA: "alto", ALTA: "alto", MEDIA: "medio", BAJA: "bajo" };
+
+    const CRITICIDAD_BADGE_INVENTARIO = {
+        CRITICA: { texto: "Crítica", clase: "badge-danger" },
+        ALTA: { texto: "Alto", clase: "badge-danger" },
+        MEDIA: { texto: "Medio", clase: "badge-warning" },
+        BAJA: { texto: "Baja", clase: "badge-success" }
+    };
+
+    const NIVEL_RIESGO_BADGE = {
+        BAJO: { texto: "Bajo", clase: "badge-success" },
+        MEDIO: { texto: "Medio", clase: "badge-warning" },
+        ALTO: { texto: "Alto", clase: "badge-danger" },
+        CRITICO: { texto: "Crítico", clase: "badge-danger" }
+    };
+
+    const ESTADO_VALIDACION_BADGE = {
+        VALIDADO: { texto: "Validado", clase: "badge-success" },
+        OBSERVADO: { texto: "Observado", clase: "badge-warning" },
+        PENDIENTE: { texto: "Pendiente", clase: "badge-neutral" },
+        RECHAZADO: { texto: "Rechazado", clase: "badge-danger" },
+        ENVIADO: { texto: "Enviado", clase: "badge-info" },
+        BORRADOR: { texto: "Borrador", clase: "badge-neutral" },
+        SUBSANADO: { texto: "Subsanado", clase: "badge-info" }
+    };
+
+    const ESTADO_RIESGO_BADGE = {
+        ABIERTO: { texto: "Abierto", clase: "badge-warning" },
+        EN_MITIGACION: { texto: "En mitigación", clase: "badge-info" },
+        CONTROLADO: { texto: "Controlado", clase: "badge-success" },
+        PENDIENTE: { texto: "Pendiente", clase: "badge-warning" },
+        SUBSANADO: { texto: "Subsanado", clase: "badge-success" }
+    };
+
+    const badgeHtml = (mapa, valorCrudo, fallbackClase = "badge-neutral") => {
+        const clave = cleanText(valorCrudo).toUpperCase();
+        const item = mapa[clave] || { texto: capitalizar(valorCrudo) || "Sin dato", clase: fallbackClase };
+        return `<span class="badge ${item.clase}">${item.texto}</span>`;
+    };
+
+    const crearFila = (celdasHtml, dataset) => {
+        const tr = document.createElement("tr");
+        Object.entries(dataset).forEach(([clave, valor]) => {
+            if (valor !== null && valor !== undefined && valor !== "") tr.dataset[clave] = valor;
+        });
+        tr.innerHTML = celdasHtml.join("");
+        return tr;
+    };
+
+    // PINTADO DE TABLAS
+    const pintarInventario = (items, catalogos) => {
+        const tbody = document.querySelector("#table-report-inventory tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        const areaMap = {};
+        if (catalogos && catalogos.areas) {
+            catalogos.areas.forEach(a => areaMap[a.id] = a.valor);
+        }
+
+        items.forEach((item) => {
+            const nombreArea = item.idAreaUsuario ? areaMap[item.idAreaUsuario] : item.area;
+            const criticidadClave = cleanText(item.criticidad).toUpperCase();
+
+            const fila = crearFila([
+                `<td><strong>${cleanText(item.codigo)}</strong></td>`,
+                `<td><strong>${cleanText(item.nombre)}</strong></td>`,
+                `<td>${cleanText(item.tipo) || "No especificado"}</td>`,
+                `<td>${badgeHtml(CRITICIDAD_BADGE_INVENTARIO, item.criticidad)}</td>`,
+                `<td>${badgeHtml(ESTADO_VALIDACION_BADGE, item.estadoValidacion)}</td>`,
+                `<td>${cleanText(item.estadoOperativo) || "No reportado"}</td>`
+            ], {
+                area: slug(nombreArea || item.area || ""),
+                criticality: criticidadClave.toLowerCase(),
+                risk: RIESGO_POR_CRITICIDAD[criticidadClave] || "",
+                validation: slug(item.estadoValidacion)
+            });
+            tbody.appendChild(fila);
+        });
+    };
+
+    const pintarRiesgos = (items) => {
+        const tbody = document.querySelector("#table-report-risks tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        items.forEach((item) => {
+            const nivelClave = cleanText(item.riesgoNivel || "MEDIO").toUpperCase();
+            const fila = crearFila([
+                `<td><strong>${cleanText(item.codigoSistema)}</strong></td>`,
+                `<td>${cleanText(item.riesgo)}</td>`,
+                `<td>${cleanText(item.categoria) || "No reportada"}</td>`,
+                `<td>${badgeHtml(NIVEL_RIESGO_BADGE, item.riesgoNivel)}</td>`,
+                `<td>${badgeHtml(ESTADO_RIESGO_BADGE, item.estado)}</td>`,
+                `<td>${cleanText(item.area)}</td>`
+            ], {
+                area: slug(item.area || ""),
+                risk: nivelClave.toLowerCase(),
+                date: item.fechaIso || ""
+            });
+            tbody.appendChild(fila);
+        });
+    };
+
+    const pintarValidacion = (items) => {
+        const tbody = document.querySelector("#table-report-validation tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        items.forEach((item) => {
+            const fila = crearFila([
+                `<td><strong>${cleanText(item.codigo)}</strong></td>`,
+                `<td><strong>${cleanText(item.nombre)}</strong></td>`,
+                `<td>${badgeHtml(ESTADO_VALIDACION_BADGE, item.estadoValidacion)}</td>`,
+                `<td>${cleanText(item.fechaValidacion) || "No reportada"}</td>`,
+                `<td>${cleanText(item.area)}</td>`
+            ], {
+                area: slug(item.area || ""),
+                date: item.fechaValidacionIso || "",
+                validation: slug(item.estadoValidacion)
+            });
+            tbody.appendChild(fila);
+        });
+    };
+
+    const mostrarErrorCarga = () => {
+        console.error("[DIAGTI] No se pudieron cargar los reportes desde el backend.");
+        [
+            "#table-report-inventory tbody",
+            "#table-report-risks tbody",
+            "#table-report-validation tbody"
+        ].forEach((selector) => {
+            const tbody = document.querySelector(selector);
+            if (tbody) tbody.innerHTML = "";
+        });
+    };
+
+    // CARGA DE REPORTES
+    const cargarReportes = () => {
+        cargarCatalogosFiltros();
+
+        const urlInventario = `${API_BASE}/inventario?area=${areaFilter.value || ''}&criticidad=${criticalityFilter.value || ''}`;
+        const urlRiesgos = `${API_BASE}/riesgos?area=${areaFilter.value || ''}&criticidad=${criticalityFilter.value || ''}`;
+        const urlValidacion = `${API_BASE}/validacion?area=${areaFilter.value || ''}&estado=${validationStatusFilter.value || ''}`;
+
+        Promise.all([
+            fetch(urlInventario).then((r) => (r.ok ? r.json() : Promise.reject(r))),
+            fetch(urlRiesgos).then((r) => (r.ok ? r.json() : Promise.reject(r))),
+            fetch(urlValidacion).then((r) => (r.ok ? r.json() : Promise.reject(r))),
+            fetch(`${API_BASE}/catalogos/areas`).then((r) => (r.ok ? r.json() : Promise.reject(r)))
+        ])
+        .then(([inventario, riesgos, validacion, areas]) => {
+            const catalogos = { areas };
+            pintarInventario(inventario || [], catalogos);
+            pintarRiesgos(riesgos || []);
+            pintarValidacion(validacion || []);
+            applyFilters();
+        })
+        .catch((error) => {
+            console.error("Error cargando reportes:", error);
+            mostrarErrorCarga();
+            applyFilters();
+        });
+    };
+
+    // FILTROS
     const FILTERS = [
         { datasetKey: "area", control: areaFilter },
         { datasetKey: "criticality", control: criticalityFilter },
-        { datasetKey: "risk", control: riskFilter }
+        { datasetKey: "risk", control: riskFilter },
+        { datasetKey: "validation", control: validationStatusFilter }
     ];
 
     const getRows = (section) => Array.from(section.querySelectorAll("tbody tr"));
@@ -71,16 +326,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const matchesDateRange = (row) => {
         const rowDate = row.dataset.date;
-        if (!rowDate) return true; // No se inventa una fecha inexistente.
-
+        if (!rowDate) return true;
         const from = dateFromFilter.value || "2025-01-01";
         const to = dateToFilter.value || "2026-12-31";
         return rowDate >= from && rowDate <= to;
     };
 
     const matchesFilters = (row, filters) =>
-        matchesDateRange(row)
-        && filters.every(({ datasetKey, value }) => row.dataset[datasetKey] === value);
+        matchesDateRange(row) &&
+        filters.every(({ datasetKey, value }) => row.dataset[datasetKey] === value);
 
     const showAllRows = (rows) => rows.forEach((row) => { row.hidden = false; });
 
@@ -117,11 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
         emptyState.hidden = visibleSections > 0;
     };
 
-    const cleanText = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
-    const slug = (value) => cleanText(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    const today = () => new Date().toISOString().slice(0, 10);
-
+    // EXPORTACIÓN
     const visibleTableClone = (section) => {
         const source = section.querySelector("table");
         if (!source) return null;
@@ -135,9 +385,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const reportFilterSummary = () => {
         const values = [];
-        if (areaFilter.value) values.push(`Área: ${areaFilter.options[areaFilter.selectedIndex].text}`);
-        if (criticalityFilter.value) values.push(`Criticidad: ${criticalityFilter.options[criticalityFilter.selectedIndex].text}`);
-        if (riskFilter.value) values.push(`Nivel de riesgo: ${riskFilter.options[riskFilter.selectedIndex].text}`);
+        if (areaFilter.value) values.push(`Área: ${areaFilter.options[areaFilter.selectedIndex]?.text || areaFilter.value}`);
+        if (criticalityFilter.value) values.push(`Criticidad: ${criticalityFilter.options[criticalityFilter.selectedIndex]?.text || criticalityFilter.value}`);
+        if (riskFilter.value) values.push(`Nivel de riesgo: ${riskFilter.options[riskFilter.selectedIndex]?.text || riskFilter.value}`);
+        if (validationStatusFilter.value) values.push(`Estado de validación: ${validationStatusFilter.options[validationStatusFilter.selectedIndex]?.text || validationStatusFilter.value}`);
         values.push(`Rango: ${dateFromFilter.value || "Sin inicio"} a ${dateToFilter.value || "Sin fin"}`);
         return values.join(" · ");
     };
@@ -180,8 +431,6 @@ document.addEventListener('DOMContentLoaded', function() {
         popup.document.close();
     };
 
-    const csvCell = (value) => `"${cleanText(value).replaceAll('"', '""')}"`;
-
     const exportCsv = (section) => {
         const table = section.querySelector("table");
         if (!table) return;
@@ -189,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const rows = Array.from(table.querySelectorAll("tr"))
             .filter((row) => !row.hidden)
             .map((row) => Array.from(row.querySelectorAll("th,td"))
-                .map((cell) => csvCell(cell.textContent))
+                .map((cell) => `"${cleanText(cell.textContent).replaceAll('"', '""')}"`)
                 .join(";"));
 
         if (rows.length <= 1) {
@@ -209,6 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.setTimeout(() => URL.revokeObjectURL(url), 0);
     };
 
+    // EVENT LISTENERS
     form.addEventListener("submit", (event) => {
         event.preventDefault();
         applyFilters();
@@ -219,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     [dateFromFilter, dateToFilter].forEach((control) => {
-        control.addEventListener("change", applyFilters);
+        if (control) control.addEventListener("change", applyFilters);
     });
 
     document.addEventListener("click", (event) => {
@@ -237,159 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    /* ============================================================
-       CONEXIÓN CON EL BACKEND
-       Se generan las filas <tr> de las 3 tablas con los MISMOS
-       atributos data-area / data-criticality / data-risk / data-date
-       que ya usan applyFilters(), exportPdf() y exportCsv() de arriba,
-       para no tener que tocar nada de esa lógica.
-       ============================================================ */
-    const API_BASE = "http://localhost:8080/api/director/reportes";
-
-    const capitalizar = (valor) => {
-        const texto = cleanText(valor).toLowerCase();
-        return texto ? texto.charAt(0).toUpperCase() + texto.slice(1) : texto;
-    };
-
-    // Criticidad -> nivel de riesgo (alto/medio/bajo), usado en las 3 tablas
-    const RIESGO_POR_CRITICIDAD = { CRITICA: "alto", ALTA: "alto", MEDIA: "medio", BAJA: "bajo" };
-
-    // Badge de criticidad: la tabla de Inventario usa la variante masculina
-    // ("Alto", "Medio") y la de Riesgos la variante femenina ("Alta", "Media"),
-    // igual que en el diseño original — se respeta tal cual.
-    const CRITICIDAD_BADGE_INVENTARIO = {
-        CRITICA: { texto: "Crítica", clase: "badge-danger" },
-        ALTA: { texto: "Alto", clase: "badge-danger" },
-        MEDIA: { texto: "Medio", clase: "badge-warning" },
-        BAJA: { texto: "Baja", clase: "badge-success" }
-    };
-    const CRITICIDAD_BADGE_RIESGOS = {
-        CRITICA: { texto: "Crítica", clase: "badge-danger" },
-        ALTA: { texto: "Alta", clase: "badge-danger" },
-        MEDIA: { texto: "Media", clase: "badge-warning" },
-        BAJA: { texto: "Baja", clase: "badge-success" }
-    };
-
-    const ESTADO_VALIDACION_BADGE = {
-        VALIDADO: { texto: "Validado", clase: "badge-success" },
-        OBSERVADO: { texto: "Observado", clase: "badge-warning" },
-        PENDIENTE: { texto: "Pendiente", clase: "badge-neutral" }
-    };
-
-    const ESTADO_RIESGO_BADGE = {
-        PENDIENTE: { texto: "Observado", clase: "badge-warning" },
-        SUBSANADA: { texto: "Subsanado", clase: "badge-success" },
-        SUBSANADO: { texto: "Subsanado", clase: "badge-success" }
-    };
-
-    const badgeHtml = (mapa, valorCrudo, fallbackClase = "badge-neutral") => {
-        const clave = cleanText(valorCrudo).toUpperCase();
-        const item = mapa[clave] || { texto: capitalizar(valorCrudo) || "Sin dato", clase: fallbackClase };
-        return `<span class="badge ${item.clase}">${item.texto}</span>`;
-    };
-
-    const crearFila = (celdasHtml, dataset) => {
-        const tr = document.createElement("tr");
-        Object.entries(dataset).forEach(([clave, valor]) => {
-            if (valor !== null && valor !== undefined && valor !== "") tr.dataset[clave] = valor;
-        });
-        tr.innerHTML = celdasHtml.join("");
-        return tr;
-    };
-
-    const pintarInventario = (items) => {
-        const tbody = document.querySelector("#table-report-inventory tbody");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-        items.forEach((item) => {
-            const criticidadClave = cleanText(item.criticidad).toUpperCase();
-            const fila = crearFila([
-                `<td><strong>${cleanText(item.codigo)}</strong></td>`,
-                `<td><strong>${cleanText(item.nombre)}</strong></td>`,
-                `<td>${cleanText(item.tipo) || "No especificado"}</td>`,
-                `<td>${badgeHtml(CRITICIDAD_BADGE_INVENTARIO, item.criticidad)}</td>`,
-                `<td>${badgeHtml(ESTADO_VALIDACION_BADGE, item.estadoValidacion)}</td>`,
-                `<td>${cleanText(item.estadoOperativo) || "No reportado"}</td>`
-            ], {
-                area: slug(item.area),
-                criticality: criticidadClave.toLowerCase(),
-                risk: RIESGO_POR_CRITICIDAD[criticidadClave] || ""
-            });
-            tbody.appendChild(fila);
-        });
-    };
-
-    const pintarRiesgos = (items) => {
-        const tbody = document.querySelector("#table-report-risks tbody");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-        items.forEach((item) => {
-            const criticidadClave = cleanText(item.criticidad).toUpperCase();
-            const fila = crearFila([
-                `<td><strong>${cleanText(item.codigoSistema)}</strong></td>`,
-                `<td>${cleanText(item.riesgo)}</td>`,
-                `<td>${cleanText(item.categoria) || "No reportada"}</td>`,
-                `<td>${badgeHtml(ESTADO_RIESGO_BADGE, item.estado)}</td>`,
-                `<td>${badgeHtml(CRITICIDAD_BADGE_RIESGOS, item.criticidad)}</td>`
-            ], {
-                area: slug(item.area),
-                criticality: criticidadClave.toLowerCase(),
-                risk: RIESGO_POR_CRITICIDAD[criticidadClave] || "",
-                date: item.fechaIso || ""
-            });
-            tbody.appendChild(fila);
-        });
-    };
-
-    const pintarValidacion = (items) => {
-        const tbody = document.querySelector("#table-report-validation tbody");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-        items.forEach((item) => {
-            const criticidadClave = cleanText(item.criticidad).toUpperCase();
-            const fila = crearFila([
-                `<td><strong>${cleanText(item.codigo)}</strong></td>`,
-                `<td><strong>${cleanText(item.nombre)}</strong></td>`,
-                `<td>${badgeHtml(ESTADO_VALIDACION_BADGE, item.estadoValidacion)}</td>`,
-                `<td>${cleanText(item.fechaValidacion) || "No reportada"}</td>`,
-                `<td>${cleanText(item.area)}</td>`
-            ], {
-                area: slug(item.area),
-                criticality: criticidadClave.toLowerCase(),
-                risk: RIESGO_POR_CRITICIDAD[criticidadClave] || "",
-                date: item.fechaValidacionIso || ""
-            });
-            tbody.appendChild(fila);
-        });
-    };
-
-    const mostrarErrorCarga = () => {
-        // Igual que en Roles/Catálogos/Usuarios: si el backend falla, las
-        // tablas quedan vacías (el estado "sin resultados" ya existente se
-        // encarga de avisar), sin bloquear la pantalla con un alert().
-        console.error("[DIAGTI] No se pudieron cargar los reportes desde el backend.");
-        [
-            "#table-report-inventory tbody",
-            "#table-report-risks tbody",
-            "#table-report-validation tbody"
-        ].forEach((selector) => {
-            const tbody = document.querySelector(selector);
-            if (tbody) tbody.innerHTML = "";
-        });
-    };
-
-    const cargarReportes = () => Promise.all([
-        fetch(`${API_BASE}/inventario`).then((r) => (r.ok ? r.json() : Promise.reject(r))),
-        fetch(`${API_BASE}/riesgos`).then((r) => (r.ok ? r.json() : Promise.reject(r))),
-        fetch(`${API_BASE}/validacion`).then((r) => (r.ok ? r.json() : Promise.reject(r)))
-    ])
-        .then(([inventario, riesgos, validacion]) => {
-            pintarInventario(inventario || []);
-            pintarRiesgos(riesgos || []);
-            pintarValidacion(validacion || []);
-        })
-        .catch(mostrarErrorCarga)
-        .finally(applyFilters);
-
+    // INICIALIZACIÓN
     cargarReportes();
+
 })();

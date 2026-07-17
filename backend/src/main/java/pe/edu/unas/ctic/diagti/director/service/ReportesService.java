@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ReportesService {
     List<ReporteInventarioDTO> obtenerInventario(String area, String criticidad);
-    List<ReporteValidacionDTO> obtenerValidacion(String area, String estado);
+    List<ReporteValidacionDTO> obtenerValidacion(String area, String estado, String validationStatus);
     List<ReporteRiesgoDTO> obtenerRiesgos(String area, String criticidad);
 }

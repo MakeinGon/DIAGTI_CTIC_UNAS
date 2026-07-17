@@ -71,270 +71,269 @@
         Módulo Directivo
     </div>
 </aside>
+
 <!-- =====================================================
          CONTENIDO PRINCIPAL
     ====================================================== -->
 <main class="main-content" id="main-content">
-<!-- =================================================
+    <!-- =================================================
              CABECERA
         ================================================== -->
-<header class="page-header">
-<div class="page-header__content">
-<span class="section-label">
-                    Módulo Directivo
-                </span>
-<h1>
-                    Reportes Ejecutivos
-                </h1>
-<p class="page-header__description">Consulta y exportación de reportes ejecutivos del inventario, riesgos y validación de los sistemas de Infraestructura TI.</p>
-</div>
+    <header class="page-header">
+        <div class="page-header__content">
+            <span class="section-label">
+                Módulo Directivo
+            </span>
+            <h1>
+                Reportes Ejecutivos
+            </h1>
+            <p class="page-header__description">Consulta y exportación de reportes ejecutivos del inventario, riesgos y validación de los sistemas de Infraestructura TI.</p>
+        </div>
+    </header>
 
-</header>
-<!-- =================================================
-             1. CATÁLOGO DE REPORTES
-        ================================================== -->
-<!-- =================================================
-             2. INDICADORES CONSOLIDADOS
-        ================================================== -->
-<!-- =================================================
+    <!-- =================================================
              3. CONTROLES DE CONSULTA
         ================================================== -->
-<section aria-labelledby="titulo-controles-reportes" class="report-controls" id="controles-reportes">
-<header class="section-heading">
-<span class="section-label">
-                    Consulta
-                </span>
-<h2 id="titulo-controles-reportes">
-                    Filtros de Reportes
-                </h2>
-<p>
-                    Seleccione los criterios de consulta para preparar
-                    la visualización de los reportes ejecutivos.
-                </p>
-</header>
-<form class="filter-form" id="reports-filter-form">
-<!-- Tipo de reporte -->
-<div class="filter-group">
-<label for="filter-report-type">
-                        Tipo de reporte
-                    </label>
-<select id="filter-report-type" name="reportType">
-<option value="">
-                            Todos los reportes
-                        </option>
-<option value="inventario">
-                            Inventario General
-                        </option>
-<option value="riesgos">
-                            Riesgos
-                        </option>
-<option value="validacion">
-                            Validación
-                        </option>
-</select>
-</div>
-<!-- Área -->
-<div class="filter-group">
-<label for="filter-report-area">
-                        Área usuaria
-                    </label>
-<select id="filter-report-area" name="area"><option value="">Todas las áreas</option><option value="infraestructura-ti">Infraestructura TI</option></select>
-</div>
-<!-- Nivel de criticidad -->
-<div class="filter-group">
-<label for="filter-report-criticality">
-                        Criticidad
-                    </label>
-<select id="filter-report-criticality" name="criticality">
-<option value="">
-                            Todas
-                        </option><option value="critica">Crítica</option>
-<option value="alta">
-                            Alta
-                        </option>
-<option value="media">
-                            Media
-                        </option>
-<option value="baja">
-                            Baja
-                        </option>
-</select>
-</div>
-<!-- Nivel de riesgo -->
-<div class="filter-group">
-<label for="filter-report-risk">
-                        Nivel de riesgo
-                    </label>
-<select id="filter-report-risk" name="risk">
-<option value="">
-                            Todos
-                        </option>
-<option value="alto">
-                            Alto
-                        </option>
-<option value="medio">
-                            Medio
-                        </option>
-<option value="bajo">
-                            Bajo
-                        </option>
-</select>
-</div>
-<!-- Periodo -->
-<fieldset class="report-date-range">
-<legend>Rango de fechas</legend>
-<div class="report-date-range__fields">
-<label>
-<span>Desde</span>
-<input id="filter-report-date-from" max="2026-12-31" min="2025-01-01" name="dateFrom" type="date" value="2025-01-01"/>
-</label>
-<label>
-<span>Hasta</span>
-<input id="filter-report-date-to" max="2026-12-31" min="2025-01-01" name="dateTo" type="date" value="2026-12-31"/>
-</label>
-</div>
-</fieldset>
-<!-- Acciones -->
-<div class="filter-actions">
-<button class="button button--primary" id="apply-report-filters" type="submit">
-                        Aplicar filtros
-                    </button>
-<button class="button button--secondary" id="clear-report-filters" type="reset">
-                        Limpiar
-                    </button>
-</div>
-</form>
-</section>
-<!-- =================================================
-             REPORTE 01
-             INVENTARIO GENERAL
-        ================================================== -->
-<section aria-labelledby="titulo-reporte-inventario" class="data-section report-section" data-report-section="inventario" id="reporte-inventario">
-<header class="section-header">
-<div>
-<span class="section-label">
-                        Reporte 01
-                    </span>
-<h2 id="titulo-reporte-inventario">
-                        Reporte General de Inventario TI
-                    </h2>
-<p class="section-description">Inventario consolidado con identificación, tipo, criticidad, estado de validación y situación operativa reportada.</p>
-</div>
-<div class="report-actions">
-<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-inventario" type="button">
-                        Exportar PDF
-                    </button>
-<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-inventario" type="button">
-                        Exportar Excel (CSV)
-                    </button>
-</div>
-</header>
-<div class="table-responsive">
-<table class="data-table" id="table-report-inventory">
-<caption class="sr-only">
-                        Reporte general del inventario de sistemas TI.
-                    </caption>
-<thead><tr><th scope="col">Código</th><th scope="col">Sistema</th><th scope="col">Tipo de sistema</th><th scope="col">Criticidad</th><th scope="col">Estado de validación</th><th scope="col">Estado operativo</th></tr></thead>
-<tbody></tbody>
-</table>
-</div>
-</section>
-<!-- =================================================
-             REPORTE 02
-             RIESGOS
-        ================================================== -->
-<section aria-labelledby="titulo-reporte-riesgos" class="data-section report-section" data-report-section="riesgos" id="reporte-riesgos">
-<header class="section-header">
-<div>
-<span class="section-label">
-                        Reporte 02
-                    </span>
-<h2 id="titulo-reporte-riesgos">
-                        Reporte de Riesgos TI
-                    </h2>
-<p class="section-description">Riesgos y observaciones verificables asociados a los sistemas del Área de Infraestructura TI.</p>
-</div>
-<div class="report-actions">
-<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-riesgos" type="button">
-                        Exportar PDF
-                    </button>
-<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-riesgos" type="button">
-                        Exportar Excel (CSV)
-                    </button>
-</div>
-</header>
-<div class="table-responsive">
-<table class="data-table" id="table-report-risks">
-<caption class="sr-only">
-                        Reporte de riesgos de los sistemas TI institucionales.
-                    </caption>
-<thead><tr><th scope="col">Código del sistema</th><th scope="col">Riesgo</th><th scope="col">Categoría</th><th scope="col">Estado</th><th scope="col">Criticidad</th></tr></thead>
-<tbody></tbody>
-</table>
-</div>
-</section>
-<!-- =================================================
-             REPORTE 03
-             OBSOLESCENCIA
-        ================================================== -->
-<!-- =================================================
-             REPORTE 04
-             ÁREAS USUARIAS
-        ================================================== -->
-<!-- =================================================
-             REPORTE 05
-             VALIDACIÓN
-        ================================================== -->
-<section aria-labelledby="titulo-reporte-validacion" class="data-section report-section" data-report-section="validacion" id="reporte-validacion">
-<header class="section-header">
-<div>
-<span class="section-label">Reporte 03</span>
-<h2 id="titulo-reporte-validacion">
-                        Reporte de Validación
-                    </h2>
-<p class="section-description">Estado de validación de los diez sistemas del Área de Infraestructura TI y fecha disponible del proceso.</p>
-</div>
-<div class="report-actions">
-<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-validacion" type="button">
-                        Exportar PDF
-                    </button>
-<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-validacion" type="button">
-                        Exportar Excel (CSV)
-                    </button>
-</div>
-</header>
-<div class="table-responsive">
-<table class="data-table" id="table-report-validation">
-<caption class="sr-only">
-                        Reporte consolidado del estado de validación
-                        de los sistemas TI.
-                    </caption>
-<thead><tr><th scope="col">Código</th><th scope="col">Sistema</th><th scope="col">Estado de validación</th><th scope="col">Fecha de validación</th><th scope="col">Área</th></tr></thead>
-<tbody></tbody>
+    <section aria-labelledby="titulo-controles-reportes" class="report-controls" id="controles-reportes">
+        <header class="section-heading">
+            <span class="section-label">
+                Consulta
+            </span>
+            <h2 id="titulo-controles-reportes">
+                Filtros de Reportes
+            </h2>
+            <p>
+                Seleccione los criterios de consulta para preparar
+                la visualización de los reportes ejecutivos.
+            </p>
+        </header>
+        <form class="filter-form" id="reports-filter-form">
+            <!-- Tipo de reporte -->
+            <div class="filter-group">
+                <label for="filter-report-type">
+                    Tipo de reporte
+                </label>
+                <select id="filter-report-type" name="reportType">
+                    <option value="">Todos los reportes</option>
+                    <option value="inventario">Inventario General</option>
+                    <option value="riesgos">Riesgos</option>
+                    <option value="validacion">Validación</option>
+                </select>
+            </div>
 
-</table>
-</div>
-</section>
-<!-- =================================================
+            <!-- Área usuaria -->
+            <div class="filter-group">
+                <label for="filter-report-area">
+                    Área usuaria
+                </label>
+                <select id="filter-report-area" name="area">
+                    <option value="">Todas las áreas</option>
+                </select>
+            </div>
+
+            <!-- Criticidad -->
+            <div class="filter-group">
+                <label for="filter-report-criticality">
+                    Criticidad
+                </label>
+                <select id="filter-report-criticality" name="criticality">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+
+            <!-- Nivel de riesgo -->
+            <div class="filter-group">
+                <label for="filter-report-risk">
+                    Nivel de riesgo
+                </label>
+                <select id="filter-report-risk" name="risk">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+
+            <!-- Estado de validación (NUEVO) -->
+            <div class="filter-group">
+                <label for="filter-report-validation-status">
+                    Estado de validación
+                </label>
+                <select id="filter-report-validation-status" name="validationStatus">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+
+            <!-- Periodo -->
+            <fieldset class="report-date-range">
+                <legend>Rango de fechas</legend>
+                <div class="report-date-range__fields">
+                    <label>
+                        <span>Desde</span>
+                        <input id="filter-report-date-from" max="2026-12-31" min="2025-01-01" name="dateFrom" type="date" value="2025-01-01"/>
+                    </label>
+                    <label>
+                        <span>Hasta</span>
+                        <input id="filter-report-date-to" max="2026-12-31" min="2025-01-01" name="dateTo" type="date" value="2026-12-31"/>
+                    </label>
+                </div>
+            </fieldset>
+
+            <!-- Acciones -->
+            <div class="filter-actions">
+                <button class="button button--primary" id="apply-report-filters" type="submit">
+                    Aplicar filtros
+                </button>
+                <button class="button button--secondary" id="clear-report-filters" type="reset">
+                    Limpiar
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- =================================================
+             REPORTE 01 - INVENTARIO GENERAL
+        ================================================== -->
+    <section aria-labelledby="titulo-reporte-inventario" class="data-section report-section" data-report-section="inventario" id="reporte-inventario">
+        <header class="section-header">
+            <div>
+                <span class="section-label">
+                    Reporte 01
+                </span>
+                <h2 id="titulo-reporte-inventario">
+                    Reporte General de Inventario TI
+                </h2>
+                <p class="section-description">Inventario consolidado con identificación, tipo, criticidad, estado de validación y situación operativa reportada.</p>
+            </div>
+            <div class="report-actions">
+                <button class="button button--primary" data-action="export-pdf" data-report-id="reporte-inventario" type="button">
+                    Exportar PDF
+                </button>
+                <button class="button button--secondary" data-action="export-excel" data-report-id="reporte-inventario" type="button">
+                    Exportar Excel (CSV)
+                </button>
+            </div>
+        </header>
+        <div class="table-responsive">
+            <table class="data-table" id="table-report-inventory">
+                <caption class="sr-only">
+                    Reporte general del inventario de sistemas TI.
+                </caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Código</th>
+                        <th scope="col">Sistema</th>
+                        <th scope="col">Tipo de sistema</th>
+                        <th scope="col">Criticidad</th>
+                        <th scope="col">Estado de validación</th>
+                        <th scope="col">Estado operativo</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =================================================
+             REPORTE 02 - RIESGOS
+        ================================================== -->
+    <section aria-labelledby="titulo-reporte-riesgos" class="data-section report-section" data-report-section="riesgos" id="reporte-riesgos">
+        <header class="section-header">
+            <div>
+                <span class="section-label">
+                    Reporte 02
+                </span>
+                <h2 id="titulo-reporte-riesgos">
+                    Reporte de Riesgos TI
+                </h2>
+                <p class="section-description">Riesgos identificados por sistema, nivel de riesgo y estado actual.</p>
+            </div>
+            <div class="report-actions">
+                <button class="button button--primary" data-action="export-pdf" data-report-id="reporte-riesgos" type="button">
+                    Exportar PDF
+                </button>
+                <button class="button button--secondary" data-action="export-excel" data-report-id="reporte-riesgos" type="button">
+                    Exportar Excel (CSV)
+                </button>
+            </div>
+        </header>
+        <div class="table-responsive">
+            <table class="data-table" id="table-report-risks">
+                <caption class="sr-only">
+                    Reporte de riesgos de los sistemas TI institucionales.
+                </caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Código</th>
+                        <th scope="col">Riesgo</th>
+                        <th scope="col">Categoría</th>
+                        <th scope="col">Nivel de riesgo</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Área</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =================================================
+             REPORTE 03 - VALIDACIÓN
+        ================================================== -->
+    <section aria-labelledby="titulo-reporte-validacion" class="data-section report-section" data-report-section="validacion" id="reporte-validacion">
+        <header class="section-header">
+            <div>
+                <span class="section-label">Reporte 03</span>
+                <h2 id="titulo-reporte-validacion">
+                    Reporte de Validación
+                </h2>
+                <p class="section-description">Estado de validación de los sistemas del Área de Infraestructura TI y fecha disponible del proceso.</p>
+            </div>
+            <div class="report-actions">
+                <button class="button button--primary" data-action="export-pdf" data-report-id="reporte-validacion" type="button">
+                    Exportar PDF
+                </button>
+                <button class="button button--secondary" data-action="export-excel" data-report-id="reporte-validacion" type="button">
+                    Exportar Excel (CSV)
+                </button>
+            </div>
+        </header>
+        <div class="table-responsive">
+            <table class="data-table" id="table-report-validation">
+                <caption class="sr-only">
+                    Reporte consolidado del estado de validación
+                    de los sistemas TI.
+                </caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Código</th>
+                        <th scope="col">Sistema</th>
+                        <th scope="col">Estado de validación</th>
+                        <th scope="col">Fecha de validación</th>
+                        <th scope="col">Área</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =================================================
              ESTADO VACÍO PARA FILTROS
         ================================================== -->
-<div class="empty-state" hidden="" id="reports-empty-state">
-<h2>
-                No se encontraron reportes
-            </h2>
-<p>
-                No existen vistas que coincidan con los criterios
-                de consulta seleccionados.
-            </p>
-</div>
+    <div class="empty-state" hidden="" id="reports-empty-state">
+        <h2>
+            No se encontraron reportes
+        </h2>
+        <p>
+            No existen vistas que coincidan con los criterios
+            de consulta seleccionados.
+        </p>
+    </div>
 </main>
+
 <!-- =====================================================
-         JAVASCRIPT COMPARTIDO
-    ====================================================== -->
-<!-- =====================================================
-         JAVASCRIPT ESPECÍFICO
+         JAVASCRIPT
     ====================================================== -->
 <script src="reportes-ejecutivos.component.js"></script>
+
 <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
 <div class="logout-confirm-overlay" id="logout-confirm-overlay">
     <div class="logout-confirm-box">
@@ -352,5 +351,6 @@
         </div>
     </div>
 </div>
+
 </body>
 </html>

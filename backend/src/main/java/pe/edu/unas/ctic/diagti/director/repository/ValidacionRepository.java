@@ -5,5 +5,5 @@ import pe.edu.unas.ctic.diagti.director.entity.ValidacionEntity;
 import java.util.List;
 
 public interface ValidacionRepository extends JpaRepository<ValidacionEntity, Long> {
-    List<ValidacionEntity> findByIdSistema(Long idSistema);
+    List<ValidacionEntity> findByIdSistema(Long idSistema);  // ← Agregar este método
 }

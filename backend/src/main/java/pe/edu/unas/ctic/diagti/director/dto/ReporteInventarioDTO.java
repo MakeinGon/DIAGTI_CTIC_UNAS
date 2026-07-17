@@ -11,4 +11,5 @@ public class ReporteInventarioDTO {
     private String criticidad;
     private String estadoValidacion;
     private String estadoOperativo;
+    private Long idAreaUsuario;  
 }

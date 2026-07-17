@@ -1,22 +1,46 @@
 package pe.edu.unas.ctic.diagti.director.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
+import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
 import pe.edu.unas.ctic.diagti.director.dto.RiesgoDTO;
+import pe.edu.unas.ctic.diagti.director.entity.SeguridadEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.entity.ValidacionEntity;
-import pe.edu.unas.ctic.diagti.director.entity.SeguridadEntity;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class RiesgoMapper {
 
+    private final CatalogoRepository catalogoRepository;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    /**
+     * Obtiene el nombre del área desde el catálogo usando el id_area_usuario
+     */
+    private String getAreaNombre(SistemaEntity sistema) {
+        if (sistema == null || sistema.getIdAreaUsuario() == null) {
+            return "No especificada";
+        }
+        try {
+            return catalogoRepository.findById(sistema.getIdAreaUsuario())
+                    .map(CatalogoEntity::getValor)
+                    .orElse("No especificada");
+        } catch (Exception e) {
+            return "No especificada";
+        }
+    }
 
     public List<RiesgoDTO> calcularRiesgos(SistemaEntity sistema, List<ValidacionEntity> validaciones, List<SeguridadEntity> seguridades) {
         List<RiesgoDTO> riesgos = new ArrayList<>();
+        
+        String nombreArea = getAreaNombre(sistema);
+        // String nombreCriticidad = getCriticidadNombre(sistema); ← ELIMINADA porque no se usa
 
         // 1. Riesgo por validación observada o rechazada
         if (validaciones != null) {
@@ -25,10 +49,10 @@ public class RiesgoMapper {
                     RiesgoDTO riesgo = new RiesgoDTO();
                     riesgo.setCodigo(sistema.getCodigoUnico());
                     riesgo.setTitulo("Validación " + v.getEstadoValidacion().toLowerCase() + " - " + sistema.getNombre());
-                    riesgo.setArea(sistema.getAreaUsuarioNombre());
+                    riesgo.setArea(nombreArea);
                     riesgo.setCategoria("Validación");
-                    riesgo.setNivel("advertencia");
-                    riesgo.setEstado("abierto");
+                    riesgo.setNivel("MEDIO");
+                    riesgo.setEstado("PENDIENTE");
                     riesgo.setEtapa(v.getEstadoValidacion());
                     riesgo.setResponsable("Validador CTIC");
                     if (v.getFechaValidacion() != null) {
@@ -49,10 +73,10 @@ public class RiesgoMapper {
                 RiesgoDTO riesgo = new RiesgoDTO();
                 riesgo.setCodigo(sistema.getCodigoUnico());
                 riesgo.setTitulo("Falta SSL/TLS - " + sistema.getNombre());
-                riesgo.setArea(sistema.getAreaUsuarioNombre());
+                riesgo.setArea(nombreArea);
                 riesgo.setCategoria("Seguridad");
-                riesgo.setNivel("critico");
-                riesgo.setEstado("abierto");
+                riesgo.setNivel("CRITICO");
+                riesgo.setEstado("ABIERTO");
                 riesgo.setEtapa("Revisión de seguridad");
                 riesgo.setResponsable("Seguridad TI");
                 if (sistema.getFechaCreacion() != null) {
@@ -70,10 +94,10 @@ public class RiesgoMapper {
             RiesgoDTO riesgo = new RiesgoDTO();
             riesgo.setCodigo(sistema.getCodigoUnico());
             riesgo.setTitulo("Contrato sin vigencia - " + sistema.getNombre());
-            riesgo.setArea(sistema.getAreaUsuarioNombre());
+            riesgo.setArea(nombreArea);
             riesgo.setCategoria("Contractual");
-            riesgo.setNivel("advertencia");
-            riesgo.setEstado("abierto");
+            riesgo.setNivel("MEDIO");
+            riesgo.setEstado("ABIERTO");
             riesgo.setEtapa("Gestión contractual");
             riesgo.setResponsable("Administración");
             if (sistema.getFechaCreacion() != null) {
@@ -90,10 +114,10 @@ public class RiesgoMapper {
             RiesgoDTO riesgo = new RiesgoDTO();
             riesgo.setCodigo(sistema.getCodigoUnico());
             riesgo.setTitulo("Sistema legacy - " + sistema.getNombre());
-            riesgo.setArea(sistema.getAreaUsuarioNombre());
+            riesgo.setArea(nombreArea);
             riesgo.setCategoria("Obsolescencia");
-            riesgo.setNivel("critico");
-            riesgo.setEstado("abierto");
+            riesgo.setNivel("CRITICO");
+            riesgo.setEstado("ABIERTO");
             riesgo.setEtapa("Migración");
             riesgo.setResponsable("Área de Desarrollo");
             if (sistema.getFechaCreacion() != null) {
@@ -111,10 +135,10 @@ public class RiesgoMapper {
                 RiesgoDTO riesgo = new RiesgoDTO();
                 riesgo.setCodigo(sistema.getCodigoUnico());
                 riesgo.setTitulo("Registro en borrador prolongado - " + sistema.getNombre());
-                riesgo.setArea(sistema.getAreaUsuarioNombre());
+                riesgo.setArea(nombreArea);
                 riesgo.setCategoria("Proceso");
-                riesgo.setNivel("advertencia");
-                riesgo.setEstado("abierto");
+                riesgo.setNivel("MEDIO");
+                riesgo.setEstado("ABIERTO");
                 riesgo.setEtapa("Borrador");
                 riesgo.setResponsable("Área de Desarrollo");
                 riesgo.setDetectado(sistema.getFechaCreacion().format(DATE_FORMAT));

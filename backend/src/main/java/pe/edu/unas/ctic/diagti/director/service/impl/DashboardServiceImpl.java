@@ -5,6 +5,8 @@ import org.hibernate.Hibernate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
+import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
 import pe.edu.unas.ctic.diagti.director.dto.*;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.mapper.SistemaMapper;
@@ -23,6 +25,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     private final SistemaRepository sistemaRepository;
     private final SistemaMapper sistemaMapper;
+    private final CatalogoRepository catalogoRepository;
 
     private static final Map<String, String> CRITICIDAD_COLORS = Map.of(
             "critica", "#cf2d35",
@@ -31,20 +34,54 @@ public class DashboardServiceImpl implements DashboardService {
             "baja", "#1abb9c"
     );
 
+    /**
+     * Obtiene el nombre del área desde el catálogo usando el id_area_usuario
+     */
+    private String getAreaNombre(SistemaEntity sistema) {
+        if (sistema == null || sistema.getIdAreaUsuario() == null) {
+            return "No especificada";
+        }
+        try {
+            return catalogoRepository.findById(sistema.getIdAreaUsuario())
+                    .map(CatalogoEntity::getValor)
+                    .orElse("No especificada");
+        } catch (Exception e) {
+            return "No especificada";
+        }
+    }
+
+    /**
+     * Obtiene el nombre de la criticidad desde el catálogo usando el id_criticidad
+     */
+    private String getCriticidadNombre(SistemaEntity sistema) {
+        if (sistema == null || sistema.getIdCriticidad() == null) {
+            return "No especificada";
+        }
+        try {
+            return catalogoRepository.findById(sistema.getIdCriticidad())
+                    .map(CatalogoEntity::getValor)
+                    .orElse("No especificada");
+        } catch (Exception e) {
+            return "No especificada";
+        }
+    }
+
     @Override
-    @Transactional(readOnly = true) // Mantiene la sesión activa
+    @Transactional(readOnly = true)
     public DashboardKpiDTO obtenerKpis() {
         List<SistemaEntity> todos = sistemaRepository.findAll();
-        // Inicializar colecciones perezosas para evitar LazyInitializationException
         todos.forEach(s -> {
             Hibernate.initialize(s.getValidaciones());
             Hibernate.initialize(s.getObservaciones());
         });
+        
         DashboardKpiDTO kpi = new DashboardKpiDTO();
         kpi.setTotalSistemas(todos.size());
+        
         long validados = todos.stream().filter(s -> "VALIDADO".equalsIgnoreCase(s.getEstadoValidacion())).count();
         long observados = todos.stream().filter(s -> "OBSERVADO".equalsIgnoreCase(s.getEstadoValidacion())).count();
         long pendientes = todos.size() - validados - observados;
+        
         kpi.setValidados((int) validados);
         kpi.setObservados((int) observados);
         kpi.setPendientes((int) pendientes);
@@ -56,11 +93,13 @@ public class DashboardServiceImpl implements DashboardService {
     public List<ResumenValidacionDTO> obtenerResumenValidacion() {
         List<SistemaEntity> todos = sistemaRepository.findAll();
         todos.forEach(s -> Hibernate.initialize(s.getValidaciones()));
+        
         Map<String, Long> counts = todos.stream()
                 .collect(Collectors.groupingBy(
                         s -> s.getEstadoValidacion().toLowerCase(),
                         Collectors.counting()
                 ));
+        
         return counts.entrySet().stream()
                 .map(e -> {
                     ResumenValidacionDTO dto = new ResumenValidacionDTO();
@@ -80,16 +119,18 @@ public class DashboardServiceImpl implements DashboardService {
     @Transactional(readOnly = true)
     public List<CriticidadDTO> obtenerCriticidades() {
         List<SistemaEntity> todos = sistemaRepository.findAll();
-        todos.forEach(s -> Hibernate.initialize(s.getValidaciones())); // opcional
+        
         Map<String, Long> counts = todos.stream()
                 .collect(Collectors.groupingBy(
-                        s -> s.getCriticidadNombre().toLowerCase(),
+                        s -> getCriticidadNombre(s).toLowerCase(),
                         Collectors.counting()
                 ));
+        
         List<String> todasCriticidades = Arrays.asList("critica", "alta", "media", "baja");
         for (String nivel : todasCriticidades) {
             counts.putIfAbsent(nivel, 0L);
         }
+        
         return counts.entrySet().stream()
                 .map(e -> {
                     CriticidadDTO dto = new CriticidadDTO();
@@ -105,11 +146,9 @@ public class DashboardServiceImpl implements DashboardService {
     @Transactional(readOnly = true)
     public List<SistemaResumenDTO> obtenerSistemasFiltrados(String area, String criticidad, String validacion, String busqueda) {
         Specification<SistemaEntity> spec = (root, query, cb) -> cb.conjunction();
-        if (area != null && !area.isEmpty() && !"all".equals(area)) {
-            spec = spec.and(SistemaSpecification.areaEquals(area));
-        }
+        
         if (criticidad != null && !criticidad.isEmpty() && !"all".equals(criticidad)) {
-            spec = spec.and(SistemaSpecification.criticidadEquals(criticidad));
+            spec = spec.and((root, query, cb) -> cb.conjunction());
         }
         if (validacion != null && !validacion.isEmpty() && !"all".equals(validacion)) {
             spec = spec.and(SistemaSpecification.validacionEquals(validacion));
@@ -117,12 +156,27 @@ public class DashboardServiceImpl implements DashboardService {
         if (busqueda != null && !busqueda.isEmpty()) {
             spec = spec.and(SistemaSpecification.search(busqueda));
         }
+        
         List<SistemaEntity> sistemas = sistemaRepository.findAll(spec);
-        // Inicializar colecciones perezosas necesarias para el mapper
         sistemas.forEach(s -> {
             Hibernate.initialize(s.getValidaciones());
             Hibernate.initialize(s.getObservaciones());
         });
+        
+        // Filtrar por área en memoria (porque el área es un valor del catálogo)
+        if (area != null && !area.isEmpty() && !"all".equals(area)) {
+            sistemas = sistemas.stream()
+                    .filter(s -> area.equalsIgnoreCase(getAreaNombre(s)))
+                    .collect(Collectors.toList());
+        }
+        
+        // Filtrar por criticidad en memoria
+        if (criticidad != null && !criticidad.isEmpty() && !"all".equals(criticidad)) {
+            sistemas = sistemas.stream()
+                    .filter(s -> criticidad.equalsIgnoreCase(getCriticidadNombre(s)))
+                    .collect(Collectors.toList());
+        }
+        
         return sistemas.stream()
                 .map(sistemaMapper::toResumenDTO)
                 .collect(Collectors.toList());

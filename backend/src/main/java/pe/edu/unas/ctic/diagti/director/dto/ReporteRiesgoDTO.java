@@ -5,10 +5,11 @@ import lombok.Data;
 @Data
 public class ReporteRiesgoDTO {
     private String codigoSistema;
-    private String riesgo; // descripción del riesgo
+    private String riesgo;
     private String categoria;
-    private String estado; // estado del riesgo
-    private String criticidad;
+    private String riesgoNivel;  // BAJO, MEDIO, ALTO, CRITICO
+    private String estado;
+    private String criticidad;   // Académico, Financiero, RRHH, etc.
     private String area;
-    private String fechaIso; // yyyy-MM-dd, para el filtro de rango de fechas
+    private String fechaIso;
 }

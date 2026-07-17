@@ -1,27 +1,62 @@
 package pe.edu.unas.ctic.diagti.director.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
+import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
 import pe.edu.unas.ctic.diagti.director.dto.SistemaResumenDTO;
-import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.entity.ObservacionEntity;
-
-import java.util.Comparator;
+import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 
 @Component
+@RequiredArgsConstructor
 public class SistemaMapper {
+
+    private final CatalogoRepository catalogoRepository;
+
+    /**
+     * Obtiene el nombre del área desde el catálogo usando el id_area_usuario
+     */
+    private String getAreaNombre(SistemaEntity entity) {
+        if (entity == null || entity.getIdAreaUsuario() == null) {
+            return "No especificada";
+        }
+        try {
+            return catalogoRepository.findById(entity.getIdAreaUsuario())
+                    .map(CatalogoEntity::getValor)
+                    .orElse("No especificada");
+        } catch (Exception e) {
+            return "No especificada";
+        }
+    }
+
+    /**
+     * Obtiene el nombre de la criticidad desde el catálogo usando el id_criticidad
+     */
+    private String getCriticidadNombre(SistemaEntity entity) {
+        if (entity == null || entity.getIdCriticidad() == null) {
+            return "No especificada";
+        }
+        try {
+            return catalogoRepository.findById(entity.getIdCriticidad())
+                    .map(CatalogoEntity::getValor)
+                    .orElse("No especificada");
+        } catch (Exception e) {
+            return "No especificada";
+        }
+    }
 
     public SistemaResumenDTO toResumenDTO(SistemaEntity entity) {
         if (entity == null) return null;
+        
         SistemaResumenDTO dto = new SistemaResumenDTO();
         dto.setCodigo(entity.getCodigoUnico());
         dto.setNombre(entity.getNombre());
-        dto.setArea(entity.getAreaUsuarioNombre());
-        // Tipo: podrías obtenerlo de catálogos, por ahora placeholder
+        dto.setArea(getAreaNombre(entity));
         dto.setTipo("No especificado");
-        // Exposición: podrías obtenerla de infraestructura
         dto.setExposicion("No registrada");
         dto.setValidacion(entity.getEstadoValidacion().toLowerCase());
-        dto.setCriticidad(entity.getCriticidadNombre().toLowerCase());
+        dto.setCriticidad(getCriticidadNombre(entity).toLowerCase());
 
         // Alerta: primera observación pendiente (si existe)
         if (entity.getObservaciones() != null && !entity.getObservaciones().isEmpty()) {
