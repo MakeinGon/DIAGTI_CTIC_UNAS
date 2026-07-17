@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario · Auditor · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="../css/inventario.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>CTIC – Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">AC</div>
+            <div class="profile-info">
+                <div class="profile-name">Auditor CTIC</div>
+                <div class="profile-role">Auditor / OCI</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Auditoría</div>
+
+        <nav class="nav">
+            <a class="nav-item active" href="inventario.html">
+                <span>
+                    <span class="lbl">Inventario</span>
+                    <span class="sub">Consulta general</span>
+                </span>
+            </a>
+
+            <a class="nav-item" href="auditoria.html">
+                <span>
+                    <span class="lbl">Auditoría</span>
+                    <span class="sub">Logs y trazabilidad</span>
+                </span>
+            </a>
+
+            <a class="nav-item" href="reportes.html">
+                <span>
+                    <span class="lbl">Reportes</span>
+                    <span class="sub">PDF y Excel</span>
+                </span>
+            </a>
+        </nav>
+
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v1.0 · CTIC UNAS<br>
+            Módulo de auditoría interna
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h2>Inventario General</h2>
+                <div class="hint">
+                    Consulta general de registros de la tabla sistemas.
+                </div>
+            </div>
+        </div>
+
+        <!-- AVISO SOLO LECTURA -->
+        <div class="readonly-box">
+            <div>
+                <strong>Modo auditor activo</strong>
+                <p>Esta pantalla permite consultar información registrada, pero no crear, editar ni eliminar registros.</p>
+            </div>
+            <span class="badge status-secondary">Solo lectura</span>
+        </div>
+
+        <!-- KPIS -->
+        <div class="kpi-grid">
+            <div class="card kpi-card">
+                <div class="stat-label">Total sistemas</div>
+                <div class="stat-num" id="kpi-total">0</div>
+                <span class="badge status-info">Registrados</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Sistemas legacy</div>
+                <div class="stat-num accent" id="kpi-legacy">0</div>
+                <span class="badge status-warning">Obsolescencia</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Riesgo alto/crítico</div>
+                <div class="stat-num" id="kpi-riesgo">0</div>
+                <span class="badge status-danger">Prioridad CTIC</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Contrato vigente</div>
+                <div class="stat-num" id="kpi-contrato">0</div>
+                <span class="badge status-success">Con soporte</span>
+            </div>
+        </div>
+
+        <!-- TABLA INVENTARIO -->
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3>Consulta del inventario</h3>
+                    <div class="desc">
+                        Lista de sistemas auditables según los campos reales de la base de datos.
+                    </div>
+                </div>
+
+                <div class="section-actions">
+                    <button class="btn btn-verde" onclick="exportarExcel()">Exportar Excel</button>
+                    <button class="btn btn-ghost" onclick="exportarPDF()">Exportar PDF</button>
+                </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="toolbar">
+                <div class="search">
+                    <input type="text" id="search-input" placeholder="Buscar por código, nombre, estado, riesgo o desarrollador...">
+                </div>
+
+                <select id="filter-estado">
+                    <option value="">Todos los estados</option>
+                    <option value="BORRADOR">Borrador</option>
+                    <option value="ENVIADO">Enviado</option>
+                    <option value="OBSERVADO">Observado</option>
+                    <option value="SUBSANADO">Subsanado</option>
+                    <option value="VALIDADO">Validado</option>
+                    <option value="RECHAZADO">Rechazado</option>
+                    <option value="CERRADO">Cerrado</option>
+                </select>
+
+                <select id="filter-riesgo">
+                    <option value="">Todos los riesgos</option>
+                    <option value="BAJO">Bajo</option>
+                    <option value="MEDIO">Medio</option>
+                    <option value="ALTO">Alto</option>
+                    <option value="CRITICO">Crítico</option>
+                </select>
+
+                <select id="filter-legacy">
+                    <option value="">Legacy: Todos</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <!-- TABLA -->
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Código único</th>
+                            <th>Sistema</th>
+                            <th>ID área</th>
+                            <th>ID tipo</th>
+                            <th>Estado flujo</th>
+                            <th>Nivel riesgo</th>
+                            <th>Legacy</th>
+                            <th>Última actualización</th>
+                            <th>Consulta</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabla-inventario">
+                        <!-- JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <span id="contador-registros">Mostrando registros del inventario</span>
+
+                <div class="page-actions" id="paginacion">
+                    <!-- JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL DETALLE SISTEMA -->
+    <div class="modal-overlay" id="modal-detalle">
+        <div class="modal-detalle">
+            <div class="modal-header">
+                <div>
+                    <span class="modal-code" id="modal-codigo">SYS-001</span>
+                    <h3 id="modal-nombre">Sistema</h3>
+                    <p id="modal-descripcion">Detalle del sistema seleccionado.</p>
+                </div>
+
+                <button class="modal-close" onclick="cerrarModalDetalle()">×</button>
+            </div>
+
+            <div class="modal-badges" id="modal-badges">
+                <!-- JS -->
+            </div>
+
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <h4>Datos del sistema</h4>
+
+                        <div class="detail-row">
+                            <span>ID sistema</span>
+                            <b id="modal-id">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Código único</span>
+                            <b id="modal-codigo-detalle">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>ID área usuaria</span>
+                            <b id="modal-area">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>ID tipo aplicativo</span>
+                            <b id="modal-tipo">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>ID criticidad</span>
+                            <b id="modal-criticidad">-</b>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Responsables</h4>
+
+                        <div class="detail-row">
+                            <span>ID responsable funcional</span>
+                            <b id="modal-responsable-funcional">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>ID responsable técnico</span>
+                            <b id="modal-responsable-tecnico">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Desarrollador</span>
+                            <b id="modal-desarrollador">-</b>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Adquisición y soporte</h4>
+
+                        <div class="detail-row">
+                            <span>Forma de adquisición</span>
+                            <b id="modal-forma">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Año adquisición</span>
+                            <b id="modal-ano">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Contrato vigente</span>
+                            <b id="modal-contrato">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Vencimiento soporte</span>
+                            <b id="modal-vencimiento">-</b>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Estado, riesgo y migración</h4>
+
+                        <div class="detail-row">
+                            <span>Estado flujo</span>
+                            <b id="modal-estado">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Nivel riesgo</span>
+                            <b id="modal-riesgo">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Prioridad migración</span>
+                            <b id="modal-prioridad">-</b>
+                        </div>
+
+                        <div class="detail-row">
+                            <span>Es legacy</span>
+                            <b id="modal-legacy">-</b>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-card full">
+                    <h4>Control temporal</h4>
+
+                    <div class="detail-row">
+                        <span>Fecha creación</span>
+                        <b id="modal-fecha-creacion">-</b>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Fecha actualización</span>
+                        <b id="modal-fecha-actualizacion">-</b>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Fecha eliminación</span>
+                        <b id="modal-fecha-eliminacion">-</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="cerrarModalDetalle()">Cerrar</button>
+                <button class="btn btn-verde" onclick="exportarFichaSistema()">Exportar ficha Excel</button>
+                <button class="btn btn-ghost" onclick="exportarFichaPDF()">Exportar ficha PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/inventario.js"></script>
+</body>
+
+</html>
