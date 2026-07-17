@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Validar Sistema | DIAGTI - CTIC</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/validar-informacion.css">
+
+    <style>
+        /* ==========================================
+           ESTILOS PARA VALIDAR SISTEMA
+           ========================================== */
+
+        .main {
+            padding: 24px 32px 40px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .topbar h2 {
+            margin: 0 0 3px;
+            font-size: 20px;
+        }
+
+        .topbar .hint {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .hero-card {
+            padding: 20px 24px;
+            border-left: 6px solid var(--color-verde-ctic);
+            background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hero-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 10px 0 6px;
+        }
+
+        .hero-card .subtitle {
+            font-size: 13.5px;
+            color: var(--muted);
+            line-height: 1.6;
+            max-width: 80%;
+        }
+
+        .hero-pill {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--color-verde-ctic), var(--color-verde-dark));
+            box-shadow: 0 8px 24px rgba(26, 187, 156, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .section-head h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .section-head small {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 2px;
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .g2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .badge {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .01em;
+        }
+
+        .badge.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            transition: .25s;
+            padding: 14px 16px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 3px;
+        }
+
+        .stat-card.critical::before {
+            background: #dc2626;
+        }
+        .stat-card.high::before {
+            background: #ea580c;
+        }
+        .stat-card.medium::before {
+            background: #ca8a04;
+        }
+        .stat-card.low::before {
+            background: #16a34a;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            margin-bottom: 6px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 2px 0 8px;
+            color: var(--text);
+        }
+
+        .stat-card.critical .stat-number {
+            color: #dc2626;
+        }
+        .stat-card.high .stat-number {
+            color: #ea580c;
+        }
+        .stat-card.medium .stat-number {
+            color: #ca8a04;
+        }
+        .stat-card.low .stat-number {
+            color: #16a34a;
+        }
+
+        /* Evidencias */
+        .evidencia-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg);
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+
+        .evidencia-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .evidencia-nombre {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Historial */
+        .historial-item {
+            display: grid;
+            grid-template-columns: 90px 90px 1fr 100px;
+            gap: 10px;
+            padding: 8px 12px;
+            background: var(--bg);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            align-items: center;
+        }
+
+        .historial-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .historial-item .fecha {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .historial-item .comentario {
+            color: var(--text);
+        }
+
+        .historial-item .validador {
+            color: var(--muted);
+            font-size: 12px;
+            text-align: right;
+        }
+
+        /* Formulario de validación */
+        .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-group label .required {
+            color: #dc2626;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group textarea:focus {
+            border-color: var(--color-verde-ctic);
+            outline: none;
+        }
+
+        .form-group textarea.error {
+            border-color: #dc2626;
+        }
+
+        .form-group small {
+            font-size: 12px;
+            color: var(--muted);
+            display: block;
+            margin-top: 4px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .form-actions .btn {
+            flex: 1;
+            justify-content: center;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-actions .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-verde {
+            background: var(--color-verde-ctic);
+            color: white;
+        }
+
+        .btn-verde:hover {
+            background: var(--color-verde-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-observar {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .btn-observar:hover {
+            background: #fde68a;
+            transform: translateY(-2px);
+        }
+
+        .btn-rechazar {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-rechazar:hover {
+            background: #fecaca;
+            transform: translateY(-2px);
+        }
+
+        .btn-volver {
+            background: #eef2f7;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-volver:hover {
+            background: #dde6ee;
+            transform: translateY(-2px);
+        }
+
+        .form-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .form-message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border-left: 4px solid #16a34a;
+        }
+
+        .form-message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #dc2626;
+        }
+
+        .form-message.info {
+            display: block;
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .form-message.warning {
+            display: block;
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #ca8a04;
+        }
+
+        .resumen-validacion {
+            margin-top: 14px;
+            padding: 14px 18px;
+            background: var(--bg);
+            border-radius: 10px;
+            border-left: 5px solid var(--color-verde-ctic);
+            display: none;
+        }
+
+        .resumen-validacion.show {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .resumen-validacion .resumen-titulo {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .resumen-validacion .resumen-detalles {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .resumen-validacion .resumen-detalles strong {
+            color: var(--text);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .page-footer {
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+        }
+
+        .loading-spinner i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 16px;
+            color: var(--color-azul-ctic);
+        }
+
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            border-radius: 10px;
+            padding: 14px 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            max-width: 400px;
+            min-width: 280px;
+            animation: slideInRight 0.4s ease;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .g2 {
+                grid-template-columns: 1fr;
+            }
+            .hero-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero-card .subtitle {
+                max-width: 100%;
+            }
+            .hero-pill {
+                margin-top: 12px;
+            }
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .topbar .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .form-actions .btn {
+                width: 100%;
+            }
+            .historial-item {
+                grid-template-columns: 1fr;
+                gap: 4px;
+                text-align: center;
+            }
+            .historial-item .validador {
+                text-align: center;
+            }
+            .resumen-validacion .resumen-detalles {
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+        }
+
+        /* ==========================================
+           SIDEBAR
+           ========================================== */
+
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            background-color: var(--color-azul-ctic);
+            color: white;
+            padding: 16px 16px 12px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            padding: 0 2px;
+            flex-shrink: 0;
+        }
+
+        .brand .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            font-size: 13px;
+            letter-spacing: .5px;
+            overflow: hidden;
+            flex: none;
+        }
+
+        .brand .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand h1 {
+            font-size: 15px;
+            margin: 0;
+            color: #fff;
+            letter-spacing: .2px;
+        }
+
+        .brand small {
+            color: #cfe4f2;
+            font-size: 10px;
+        }
+
+        .sidebar-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 4px 2px 16px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+        }
+
+        .sidebar-profile .profile-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            flex: none;
+            background: var(--color-verde-ctic);
+            color: #06231d;
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: .3px;
+            border: 2px solid rgba(255, 255, 255, .55);
+        }
+
+        .sidebar-profile .profile-info {
+            min-width: 0;
+        }
+
+        .sidebar-profile .profile-name {
+            font-weight: 800;
+            font-size: 11px;
+            line-height: 1.3;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+        }
+
+        .sidebar-profile .profile-role {
+            margin-top: 2px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #bcdcf0;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #bcdcf0;
+            margin: 4px 6px 8px;
+            flex-shrink: 0;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 3px;
+            min-height: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            color: #e7f1f8;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: background .15s ease;
+            flex-shrink: 0;
+        }
+
+        .nav-item .ic {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, .12);
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            flex: none;
+        }
+
+        .nav-item .lbl {
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .nav-item .sub {
+            display: block;
+            font-weight: 400;
+            font-size: 10px;
+            color: #bcdcf0;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, .12);
+        }
+
+        .nav-item.active {
+            background: var(--color-verde-ctic);
+            color: #06231d;
+        }
+
+        .nav-item.active .sub {
+            color: rgba(6, 35, 29, .65);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.18);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0;
+            padding-bottom: 2px;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 9px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.06);
+            color: #e7f1f8;
+            font-weight: 600;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.25s ease;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.35);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-logout:active {
+            transform: translateY(1px);
+        }
+
+        .btn-logout i {
+            font-size: 13px;
+            opacity: 0.8;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 0;
+            flex-shrink: 0;
+        }
+
+        .footer-version {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 0 2px;
+            flex-shrink: 0;
+        }
+
+        .footer-version span {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.3;
+            letter-spacing: 0.2px;
+        }
+
+        .version-sub {
+            font-size: 9px !important;
+            opacity: 0.6;
+            color: rgba(255, 255, 255, 0.35) !important;
+        }
+
+        .main {
+            margin-left: 230px;
+            min-height: 100vh;
+        }
+
+        /* ==========================================
+           ESTILOS MODAL RECHAZO
+           ========================================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 60, 90, 0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: min(520px, 100%);
+            max-height: 90vh;
+            overflow: auto;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+            padding: 0;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            background: #fee2e2;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #991b1b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header .btn-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #991b1b;
+            padding: 0 4px;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 16px;
+        }
+
+        .modal-body .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .modal-body .form-group label .required {
+            color: #dc2626;
+        }
+
+        .modal-body .form-group select,
+        .modal-body .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        .modal-body .form-group select:focus,
+        .modal-body .form-group textarea:focus {
+            border-color: var(--color-verde-ctic);
+            outline: none;
+        }
+
+        .modal-body .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-body .form-group small {
+            font-size: 12px;
+            color: var(--muted);
+            display: block;
+            margin-top: 4px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+            justify-content: center;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-footer .btn-confirmar {
+            background: #dc2626;
+            color: white;
+        }
+
+        .modal-footer .btn-confirmar:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .modal-footer .btn-cancelar {
+            background: #eef2f7;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .modal-footer .btn-cancelar:hover {
+            background: #dde6ee;
+            transform: translateY(-2px);
+        }
+
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            border-radius: 10px;
+            padding: 14px 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            max-width: 400px;
+            min-width: 280px;
+            animation: slideInRight 0.4s ease;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+
+        <div>
+            <div class="brand">
+                <div class="logo">
+                    <img src="../assets/logo-unas.png" alt="UNAS">
+                </div>
+                <div>
+                    <h1>UNAS</h1>
+                    <small>CTIC - Tingo María</small>
+                </div>
+            </div>
+
+            <div class="sidebar-profile">
+                <div class="profile-avatar">VL</div>
+                <div class="profile-info">
+                    <div class="profile-name">Validador</div>
+                    <div class="profile-role">CTIC</div>
+                </div>
+            </div>
+
+            <!-- ===== MENÚ SIMPLIFICADO (SOLO 3 ITEMS) ===== -->
+            <nav class="nav">
+                <div class="nav-label">VALIDACIÓN</div>
+
+                <a class="nav-item" href="dashboard.html">
+                    <span class="ic"><i class="fas fa-chart-pie"></i></span>
+                    <span>
+                        <span class="lbl">Dashboard</span>
+                        <span class="sub">Resumen General</span>
+                    </span>
+                </a>
+
+                <a class="nav-item" href="pendientes.html">
+                    <span class="ic"><i class="fas fa-clock"></i></span>
+                    <span>
+                        <span class="lbl">Pendientes</span>
+                        <span class="sub">Sistemas enviados</span>
+                    </span>
+                </a>
+
+                <a class="nav-item" href="historial.html">
+                    <span class="ic"><i class="fas fa-history"></i></span>
+                    <span>
+                        <span class="lbl">Historial</span>
+                        <span class="sub">Validaciones realizadas</span>
+                    </span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar Sesión
+            </button>
+            <div class="footer-divider"></div>
+            <div class="footer-version">
+                <span>DIAGIT v2.0 - CTIC UNAS</span>
+                <span class="version-sub">Módulo de administración interna</span>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ================= CONTENIDO ================= -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div>
+                <h2>
+                    <i class="fas fa-shield-check" style="color: var(--color-verde-ctic); margin-right: 10px;"></i>
+                    Validar Sistema
+                </h2>
+                <div class="hint">
+                    Revisa la información del sistema y emite el resultado de la validación.
+                </div>
+            </div>
+            <button class="btn btn-volver" onclick="window.location.href='pendientes.html'">
+                <i class="fas fa-arrow-left"></i>
+                Volver a Pendientes
+            </button>
+        </header>
+
+        <!-- HERO -->
+        <div class="hero-card" id="hero-card">
+            <div>
+                <span class="badge info"><i class="fas fa-info-circle"></i> VALIDACIÓN</span>
+                <h2 id="titulo-sistema">Cargando sistema...</h2>
+                <p class="subtitle">Verifica que la información registrada sea correcta antes de aprobar o solicitar observaciones.</p>
+            </div>
+            <div class="hero-pill">
+                <i class="fas fa-shield-check"></i>
+            </div>
+        </div>
+
+        <!-- ESTADÍSTICAS -->
+        <div class="grid g2">
+            <div class="card stat-card medium">
+                <div class="stat-label"><i class="fas fa-clock"></i> Estado actual</div>
+                <div class="stat-number" id="estado-actual">--</div>
+            </div>
+            <div class="card stat-card high">
+                <div class="stat-label"><i class="fas fa-calendar"></i> Fecha de solicitud</div>
+                <div class="stat-number" id="fecha-solicitud">--</div>
+            </div>
+        </div>
+
+        <!-- EVIDENCIAS -->
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3><i class="fas fa-file" style="color: var(--color-verde-ctic);"></i> Evidencias Obligatorias</h3>
+                    <small>Documentos requeridos para la validación del sistema</small>
+                </div>
+                <span class="badge info"><i class="fas fa-info-circle"></i> RF-15</span>
+            </div>
+            <div id="evidencias-container">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Cargando evidencias...</span>
+                </div>
+            </div>
+            <div style="margin-top:12px;padding:10px 14px;background:#dbeafe;border-radius:8px;font-size:12px;color:#1e40af;">
+                <i class="fas fa-info-circle"></i>
+                <strong>Nota:</strong> Los sistemas con criticidad <strong>Crítica o Alta</strong> no pueden ser aprobados sin todas las evidencias obligatorias.
+            </div>
+        </div>
+
+        <!-- HISTORIAL -->
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3><i class="fas fa-history" style="color: var(--color-verde-ctic);"></i> Historial de Validaciones</h3>
+                    <small>Validaciones anteriores del sistema</small>
+                </div>
+                <span class="badge info"><i class="fas fa-info-circle"></i> RNF-19</span>
+            </div>
+            <div id="historial-container">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Cargando historial...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCIONES -->
+        <div class="card" style="border-top:4px solid var(--color-verde-ctic);">
+            <div class="section-head">
+                <div>
+                    <h3><i class="fas fa-arrows-spin" style="color: var(--color-verde-ctic);"></i> Acción de Validación</h3>
+                    <small>Selecciona la acción correspondiente y escribe tu comentario.</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="comentario-validacion">
+                    <i class="fas fa-comment" style="color: var(--color-verde-ctic);"></i>
+                    Comentario de validación <span class="required">*</span>
+                </label>
+                <textarea id="comentario-validacion" rows="4" placeholder="Escribe aquí tu comentario... Describa el motivo de su decisión."></textarea>
+                <small><i class="fas fa-info-circle"></i> El comentario es obligatorio y debe tener al menos 5 caracteres.</small>
+            </div>
+
+            <div class="form-actions">
+                <button id="btn-aprobar" class="btn btn-verde">
+                    <i class="fas fa-circle-check"></i> Aprobar
+                </button>
+                <button id="btn-observar" class="btn btn-observar">
+                    <i class="fas fa-circle-exclamation"></i> Observar
+                </button>
+                <!-- ====== BOTÓN RECHAZAR CON onclick ====== -->
+                <button id="btn-rechazar" class="btn btn-rechazar" onclick="abrirModalRechazo()">
+                    <i class="fas fa-ban"></i> Rechazar
+                </button>
+            </div>
+
+            <div id="mensaje-validacion" class="form-message"></div>
+
+            <div id="resumen-validacion" class="resumen-validacion">
+                <div class="resumen-titulo">📋 Resumen de la validación</div>
+                <div class="resumen-detalles">
+                    <span>Estado: <strong id="resumen-estado">--</strong></span>
+                    <span>Validador: <strong id="resumen-validador">--</strong></span>
+                    <span>Fecha: <strong id="resumen-fecha">--</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="page-footer">
+            <div>DIAGIT - CTIC UNAS © 2026</div>
+            <div>Módulo de Validación · Validar Sistema</div>
+        </footer>
+
+    </main>
+
+    <script src="../js/validar-informacion.js"></script>
+
+    <!-- ==========================================
+         MODAL DE RECHAZO
+         ========================================== -->
+    <div id="modal-rechazo" class="modal-overlay">
+        <div class="modal-content">
+            
+            <!-- Header -->
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-ban" style="color: #dc2626;"></i>
+                    Rechazar Sistema                </h3>
+                <button class="btn-close" onclick="cerrarModalRechazo()">×</button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <p style="color: var(--muted); font-size: 14px; margin-bottom: 18px;">
+                    <i class="fas fa-info-circle" style="color: #dc2626;"></i>
+                    Estás a punto de <strong style="color: #991b1b;">rechazar</strong> este sistema. Esta acción es <strong>definitiva</strong> y no se puede deshacer.
+                </p>
+
+                <div class="form-group">
+                    <label for="motivo-rechazo">
+                        Motivo del rechazo <span class="required">*</span>
+                    </label>
+                    <select id="motivo-rechazo">
+                        <option value="">Seleccione un motivo...</option>
+                        <option value="No cumple requisitos mínimos">No cumple requisitos mínimos</option>
+                        <option value="Riesgo crítico de seguridad">Riesgo crítico de seguridad</option>
+                        <option value="Documentación insuficiente">Documentación insuficiente</option>
+                        <option value="No cumple estándares técnicos">No cumple estándares técnicos</option>
+                        <option value="Arquitectura incorrecta">Arquitectura incorrecta</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="detalle-rechazo">
+                        Descripción detallada <span class="required">*</span>
+                    </label>
+                    <textarea id="detalle-rechazo" rows="4" placeholder="Describa detalladamente el motivo del rechazo..."></textarea>
+                    <small><i class="fas fa-info-circle"></i> Sea específico y claro. El responsable debe entender por qué se rechaza.</small>
+                </div>
+
+                <div class="modal-footer">
+                    <button onclick="confirmarRechazo()" class="btn btn-confirmar">
+                        <i class="fas fa-check"></i> Confirmar Rechazo
+                    </button>
+                    <button onclick="cerrarModalRechazo()" class="btn btn-cancelar">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

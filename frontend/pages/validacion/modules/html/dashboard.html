@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard de Validación | CTIC UNAS</title>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body>
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+
+        <!-- Logo -->
+        <div>
+            <div class="brand">
+                <div class="logo">
+                    <img src="../assets/logo-unas.png" alt="UNAS">
+                </div>
+                <div>
+                    <h1>UNAS</h1>
+                    <small>CTIC - Tingo María</small>
+                </div>
+            </div>
+
+            <!-- Perfil -->
+            <div class="sidebar-profile">
+                <div class="profile-avatar">VL</div>
+                <div class="profile-info">
+                    <div class="profile-name">Validador</div>
+                    <div class="profile-role">CTIC</div>
+                </div>
+            </div>
+
+            <!-- Menú -->
+            <nav class="nav">
+                <div class="nav-label">VALIDACIÓN</div>
+
+                <a class="nav-item active" href="dashboard.html">
+                    <span class="ic"><i class="fas fa-chart-pie"></i></span>
+                    <span>
+                        <span class="lbl">Dashboard</span>
+                        <span class="sub">Resumen General</span>
+                    </span>
+                </a>
+
+                <a class="nav-item" href="pendientes.html">
+                    <span class="ic"><i class="fas fa-clock"></i></span>
+                    <span>
+                        <span class="lbl">Pendientes</span>
+                        <span class="sub">Sistemas enviados</span>
+                    </span>
+                </a>
+
+                <a class="nav-item" href="historial.html">
+                    <span class="ic"><i class="fas fa-history"></i></span>
+                    <span>
+                        <span class="lbl">Historial</span>
+                        <span class="sub">Validaciones realizadas</span>
+                    </span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <button class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar Sesión
+            </button>
+            <div class="footer-divider"></div>
+            <div class="footer-version">
+                <span>DIAGIT v2.0 - CTIC UNAS</span>
+                <span class="version-sub">Módulo de administración interna</span>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ===================== CONTENIDO ===================== -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div>
+                <h2>
+                    <i class="fas fa-chart-line" style="color: var(--color-verde-ctic); margin-right: 10px;"></i>
+                    Dashboard de Validación
+                </h2>
+                <div class="hint">
+                    Resumen ejecutivo de la gestión de validación y seguimiento de sistemas.
+                </div>
+            </div>
+            <button class="btn btn-verde" id="btn-actualizar">
+                <i class="fas fa-rotate-right"></i>
+                Actualizar Vista
+            </button>
+        </div>
+
+        <!-- HERO -->
+        <div class="card hero-card">
+            <div>
+                <span class="badge info">
+                    <i class="fas fa-info-circle"></i> Panel Principal
+                </span>
+                <h2 style="margin-top:12px;">
+                    Estado General de Validaciones
+                </h2>
+                <p>
+                    Visualiza el estado actual de los procesos de validación,
+                    sistemas pendientes, tiempos de atención e indicadores
+                    generales del módulo.
+                </p>
+            </div>
+            <div class="hero-pill">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
+
+        <!-- TARJETAS (3 columnas) -->
+        <div class="grid g3">
+            <!-- Pendientes -->
+            <article class="card stat-card critical">
+                <div class="stat-header">
+                    <span class="stat-title">
+                        Sistemas Pendientes
+                    </span>
+                    <i class="fas fa-clock stat-icon"></i>
+                </div>
+                <div class="stat-number" id="stats-pendientes">
+                    --
+                </div>
+                <div class="stat-label">
+                    Requieren atención inmediata
+                </div>
+            </article>
+
+            <!-- En Subsanación -->
+            <article class="card stat-card high">
+                <div class="stat-header">
+                    <span class="stat-title">
+                        En Subsanación
+                    </span>
+                    <i class="fas fa-file-circle-check stat-icon"></i>
+                </div>
+                <div class="stat-number" id="stats-subsanacion">
+                    --
+                </div>
+                <div class="stat-label">
+                    Expedientes con observaciones
+                </div>
+            </article>
+
+            <!-- Validados -->
+            <article class="card stat-card low">
+                <div class="stat-header">
+                    <span class="stat-title">
+                        Validados
+                    </span>
+                    <i class="fas fa-check-circle stat-icon"></i>
+                </div>
+                <div class="stat-number" id="stats-validados">
+                    --
+                </div>
+                <div class="stat-label">
+                    Sistemas validados correctamente
+                </div>
+            </article>
+        </div>
+
+        <!-- INDICADORES DE GESTIÓN -->
+        <div class="grid g2">
+
+            <!-- Indicadores -->
+            <section class="card">
+                <div class="card-header">
+                    <h3>
+                        <i class="fas fa-chart-simple" style="color: var(--color-verde-ctic);"></i>
+                        Indicadores de Gestión
+                    </h3>
+                </div>
+                <div class="legend-list">
+                    <div class="legend-item">
+                        <div class="legend-left">
+                            <span class="dot critical"></span>
+                            <span>
+                                Pendientes
+                            </span>
+                        </div>
+                        <strong id="ind-pendientes">
+                            --
+                        </strong>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-left">
+                            <span class="dot high"></span>
+                            <span>
+                                En Subsanación
+                            </span>
+                        </div>
+                        <strong id="ind-subsanacion">
+                            --
+                        </strong>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-left">
+                            <span class="dot low"></span>
+                            <span>
+                                Validados
+                            </span>
+                        </div>
+                        <strong id="ind-validados">
+                            --
+                        </strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gráfico -->
+            <section class="card">
+                <div class="card-header">
+                    <h3>
+                        <i class="fas fa-chart-bar" style="color: var(--color-verde-ctic);"></i>
+                        Tiempo de Atención
+                    </h3>
+                </div>
+                <div class="chart-placeholder">
+                    <div class="chart-icon">
+                        <i class="fas fa-chart-column"></i>
+                    </div>
+                    <h4>
+                        Gráfico de Barras
+                    </h4>
+                    <p>
+                        Aquí se mostrará el gráfico de tiempos
+                        de atención cuando se conecte el módulo
+                        con el backend.
+                    </p>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- PIE DE PÁGINA -->
+        <footer class="page-footer">
+            <div>
+                DIAGIT - CTIC UNAS © 2026
+            </div>
+            <div>
+                Dashboard de Validación
+            </div>
+        </footer>
+
+    </main>
+
+    <script type="module" src="../js/dashboard.js"></script>
+
+</body>
+
+</html>

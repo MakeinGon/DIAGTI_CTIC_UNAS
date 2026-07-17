@@ -2,6 +2,8 @@
 \i DataBase/modules/usuarios.sql
 \i DataBase/modules/usuarios_roles.sql
 \i DataBase/modules/auditoria.sql
+\i DataBase/modules/permisos.sql      -- NUEVO
+
 
 -- Tu Módulo: Inventario de Sistemas (¡Activados!)
 \i DataBase/modules/catalogos.sql

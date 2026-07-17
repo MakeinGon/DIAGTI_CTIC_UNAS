@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Reportes ejecutivos consolidados del inventario de sistemas TI del CTIC UNAS." name="description"/>
+<title>Reportes Ejecutivos | DIAGTI CTIC UNAS</title>
+<link href="reportes-ejecutivos.component.css?v=3" rel="stylesheet"/>
+</head>
+<body>
+<!-- =====================================================
+         SIDEBAR COMPARTIDO
+    ====================================================== -->
+<!-- ===================== SIDEBAR (igual al panel Administrador) ===================== -->
+<aside class="sidebar">
+    <div class="brand">
+        <div class="logo">
+            <img src="../../../admin/modules/assets/logo-unas.png"  alt="Universidad Agraria de la Selva - UNAS">
+        </div>
+        <div>
+            <h1>UNAS</h1>
+            <small>Tingo María</small>
+        </div>
+    </div>
+
+    <div class="sidebar-profile">
+        <div class="profile-avatar">DC</div>
+        <div class="profile-info">
+            <div class="profile-name">Brando Gabriel Benavides Vargas</div>
+            <div class="profile-role">Director CTIC</div>
+        </div>
+    </div>
+
+    <div class="nav-label">Módulo Directivo</div>
+
+    <nav class="nav">
+            <a class="nav-item" href="../resumen-ejecutivo/resumen-ejecutivo.component.html">
+                <span>
+                    <span class="lbl">Dashboard Ejecutivo</span>
+                    <span class="sub">Resumen estratégico</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../dashboard-riesgos/dashboard-riesgos.component.html">
+                <span>
+                    <span class="lbl">Riesgos</span>
+                    <span class="sub">Registro de riesgos</span>
+                </span>
+            </a>
+            <a class="nav-item active" href="reportes-ejecutivos.component.html">
+                <span>
+                    <span class="lbl">Reportes Ejecutivos</span>
+                    <span class="sub">Estadísticas y análisis</span>
+                </span>
+            </a>
+    </nav>
+
+    <div class="sidebar-logout">
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Cerrar Sesión
+        </button>
+    </div>
+
+    <div class="sidebar-footer">
+        DIAGTI v2.0 · CTIC UNAS<br>
+        Módulo Directivo
+    </div>
+</aside>
+<!-- =====================================================
+         CONTENIDO PRINCIPAL
+    ====================================================== -->
+<main class="main-content" id="main-content">
+<!-- =================================================
+             CABECERA
+        ================================================== -->
+<header class="page-header">
+<div class="page-header__content">
+<span class="section-label">
+                    Módulo Directivo
+                </span>
+<h1>
+                    Reportes Ejecutivos
+                </h1>
+<p class="page-header__description">Consulta y exportación de reportes ejecutivos del inventario, riesgos y validación de los sistemas de Infraestructura TI.</p>
+</div>
+
+</header>
+<!-- =================================================
+             1. CATÁLOGO DE REPORTES
+        ================================================== -->
+<!-- =================================================
+             2. INDICADORES CONSOLIDADOS
+        ================================================== -->
+<!-- =================================================
+             3. CONTROLES DE CONSULTA
+        ================================================== -->
+<section aria-labelledby="titulo-controles-reportes" class="report-controls" id="controles-reportes">
+<header class="section-heading">
+<span class="section-label">
+                    Consulta
+                </span>
+<h2 id="titulo-controles-reportes">
+                    Filtros de Reportes
+                </h2>
+<p>
+                    Seleccione los criterios de consulta para preparar
+                    la visualización de los reportes ejecutivos.
+                </p>
+</header>
+<form class="filter-form" id="reports-filter-form">
+<!-- Tipo de reporte -->
+<div class="filter-group">
+<label for="filter-report-type">
+                        Tipo de reporte
+                    </label>
+<select id="filter-report-type" name="reportType">
+<option value="">
+                            Todos los reportes
+                        </option>
+<option value="inventario">
+                            Inventario General
+                        </option>
+<option value="riesgos">
+                            Riesgos
+                        </option>
+<option value="validacion">
+                            Validación
+                        </option>
+</select>
+</div>
+<!-- Área -->
+<div class="filter-group">
+<label for="filter-report-area">
+                        Área usuaria
+                    </label>
+<select id="filter-report-area" name="area"><option value="">Todas las áreas</option><option value="infraestructura-ti">Infraestructura TI</option></select>
+</div>
+<!-- Nivel de criticidad -->
+<div class="filter-group">
+<label for="filter-report-criticality">
+                        Criticidad
+                    </label>
+<select id="filter-report-criticality" name="criticality">
+<option value="">
+                            Todas
+                        </option><option value="critica">Crítica</option>
+<option value="alta">
+                            Alta
+                        </option>
+<option value="media">
+                            Media
+                        </option>
+<option value="baja">
+                            Baja
+                        </option>
+</select>
+</div>
+<!-- Nivel de riesgo -->
+<div class="filter-group">
+<label for="filter-report-risk">
+                        Nivel de riesgo
+                    </label>
+<select id="filter-report-risk" name="risk">
+<option value="">
+                            Todos
+                        </option>
+<option value="alto">
+                            Alto
+                        </option>
+<option value="medio">
+                            Medio
+                        </option>
+<option value="bajo">
+                            Bajo
+                        </option>
+</select>
+</div>
+<!-- Periodo -->
+<fieldset class="report-date-range">
+<legend>Rango de fechas</legend>
+<div class="report-date-range__fields">
+<label>
+<span>Desde</span>
+<input id="filter-report-date-from" max="2026-12-31" min="2025-01-01" name="dateFrom" type="date" value="2025-01-01"/>
+</label>
+<label>
+<span>Hasta</span>
+<input id="filter-report-date-to" max="2026-12-31" min="2025-01-01" name="dateTo" type="date" value="2026-12-31"/>
+</label>
+</div>
+</fieldset>
+<!-- Acciones -->
+<div class="filter-actions">
+<button class="button button--primary" id="apply-report-filters" type="submit">
+                        Aplicar filtros
+                    </button>
+<button class="button button--secondary" id="clear-report-filters" type="reset">
+                        Limpiar
+                    </button>
+</div>
+</form>
+</section>
+<!-- =================================================
+             REPORTE 01
+             INVENTARIO GENERAL
+        ================================================== -->
+<section aria-labelledby="titulo-reporte-inventario" class="data-section report-section" data-report-section="inventario" id="reporte-inventario">
+<header class="section-header">
+<div>
+<span class="section-label">
+                        Reporte 01
+                    </span>
+<h2 id="titulo-reporte-inventario">
+                        Reporte General de Inventario TI
+                    </h2>
+<p class="section-description">Inventario consolidado con identificación, tipo, criticidad, estado de validación y situación operativa reportada.</p>
+</div>
+<div class="report-actions">
+<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-inventario" type="button">
+                        Exportar PDF
+                    </button>
+<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-inventario" type="button">
+                        Exportar Excel (CSV)
+                    </button>
+</div>
+</header>
+<div class="table-responsive">
+<table class="data-table" id="table-report-inventory">
+<caption class="sr-only">
+                        Reporte general del inventario de sistemas TI.
+                    </caption>
+<thead><tr><th scope="col">Código</th><th scope="col">Sistema</th><th scope="col">Tipo de sistema</th><th scope="col">Criticidad</th><th scope="col">Estado de validación</th><th scope="col">Estado operativo</th></tr></thead>
+<tbody><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-MAT-01</strong></td><td><strong>Sistema de Matrícula</strong></td><td>VM Proxmox</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-success">Validado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-risk="alto"><td><strong>SIS-DOC-02</strong></td><td><strong>Documenta</strong></td><td>Docker</td><td><span class="badge badge-danger">Alto</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="critica" data-risk="alto"><td><strong>SIS-VEN-03</strong></td><td><strong>Registro de Ventas</strong></td><td>Servidor físico</td><td><span class="badge badge-danger">Crítica</span></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-BIB-04</strong></td><td><strong>Biblioteca Virtual</strong></td><td>VM Proxmox</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="baja" data-risk="bajo"><td><strong>SIS-RRH-05</strong></td><td><strong>Control de Personal</strong></td><td>Docker</td><td><span class="badge badge-success">Baja</span></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-MSA-06</strong></td><td><strong>Mesa de Servicios TI</strong></td><td>Sin registrar</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-risk="alto"><td><strong>SIS-PAG-07</strong></td><td><strong>Portal de Pagos</strong></td><td>VM Proxmox</td><td><span class="badge badge-danger">Alto</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-ADM-08</strong></td><td><strong>Gestión Administrativa</strong></td><td>Servidor físico</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-risk="alto"><td><strong>SIS-INV-09</strong></td><td><strong>Sistema de Investigación</strong></td><td>Docker</td><td><span class="badge badge-danger">Alto</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-COM-10</strong></td><td><strong>Comedor Universitario</strong></td><td>VM Proxmox</td><td><span class="badge badge-warning">Medio</span></td><td><span class="badge badge-warning">Observado</span></td><td>No reportado</td></tr></tbody>
+</table>
+</div>
+</section>
+<!-- =================================================
+             REPORTE 02
+             RIESGOS
+        ================================================== -->
+<section aria-labelledby="titulo-reporte-riesgos" class="data-section report-section" data-report-section="riesgos" id="reporte-riesgos">
+<header class="section-header">
+<div>
+<span class="section-label">
+                        Reporte 02
+                    </span>
+<h2 id="titulo-reporte-riesgos">
+                        Reporte de Riesgos TI
+                    </h2>
+<p class="section-description">Riesgos y observaciones verificables asociados a los sistemas del Área de Infraestructura TI.</p>
+</div>
+<div class="report-actions">
+<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-riesgos" type="button">
+                        Exportar PDF
+                    </button>
+<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-riesgos" type="button">
+                        Exportar Excel (CSV)
+                    </button>
+</div>
+</header>
+<div class="table-responsive">
+<table class="data-table" id="table-report-risks">
+<caption class="sr-only">
+                        Reporte de riesgos de los sistemas TI institucionales.
+                    </caption>
+<thead><tr><th scope="col">Código del sistema</th><th scope="col">Riesgo</th><th scope="col">Categoría</th><th scope="col">Estado</th><th scope="col">Criticidad</th></tr></thead>
+<tbody><tr data-area="infraestructura-ti" data-criticality="critica" data-risk="alto"><td><strong>SIS-VEN-03</strong></td><td>Registro técnico pendiente de completar.</td><td>No reportada</td><td><span class="badge badge-neutral">Borrador</span></td><td><span class="badge badge-danger">Crítica</span></td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-11" data-risk="alto"><td><strong>SIS-DOC-02</strong></td><td>Falta adjuntar la evidencia del certificado SSL y explicar la política de backup.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-danger">Alta</span></td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-12" data-risk="alto"><td><strong>SIS-PAG-07</strong></td><td>La dirección IP pública registrada no coincide con el servidor desplegado. Adjunte una captura de la configuración de red.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-danger">Alta</span></td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-12" data-risk="medio"><td><strong>SIS-ADM-08</strong></td><td>No se evidenció el uso de copias de seguridad automáticas ni su frecuencia.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-warning">Media</span></td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-13" data-risk="alto"><td><strong>SIS-INV-09</strong></td><td>El dominio funciona sin certificado SSL/TLS vigente. Adjunte el certificado actualizado.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-danger">Alta</span></td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-13" data-risk="medio"><td><strong>SIS-COM-10</strong></td><td>Falta documentar el proxy reverso y el mecanismo CI/CD utilizado para producción.</td><td>No reportada</td><td><span class="badge badge-warning">Observado</span></td><td><span class="badge badge-warning">Media</span></td></tr></tbody>
+</table>
+</div>
+</section>
+<!-- =================================================
+             REPORTE 03
+             OBSOLESCENCIA
+        ================================================== -->
+<!-- =================================================
+             REPORTE 04
+             ÁREAS USUARIAS
+        ================================================== -->
+<!-- =================================================
+             REPORTE 05
+             VALIDACIÓN
+        ================================================== -->
+<section aria-labelledby="titulo-reporte-validacion" class="data-section report-section" data-report-section="validacion" id="reporte-validacion">
+<header class="section-header">
+<div>
+<span class="section-label">Reporte 03</span>
+<h2 id="titulo-reporte-validacion">
+                        Reporte de Validación
+                    </h2>
+<p class="section-description">Estado de validación de los diez sistemas del Área de Infraestructura TI y fecha disponible del proceso.</p>
+</div>
+<div class="report-actions">
+<button class="button button--primary" data-action="export-pdf" data-report-id="reporte-validacion" type="button">
+                        Exportar PDF
+                    </button>
+<button class="button button--secondary" data-action="export-excel" data-report-id="reporte-validacion" type="button">
+                        Exportar Excel (CSV)
+                    </button>
+</div>
+</header>
+<div class="table-responsive">
+<table class="data-table" id="table-report-validation">
+<caption class="sr-only">
+                        Reporte consolidado del estado de validación
+                        de los sistemas TI.
+                    </caption>
+<thead><tr><th scope="col">Código</th><th scope="col">Sistema</th><th scope="col">Estado de validación</th><th scope="col">Fecha de validación</th><th scope="col">Área</th></tr></thead>
+<tbody><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-06" data-risk="medio"><td><strong>SIS-MAT-01</strong></td><td><strong>Sistema de Matrícula</strong></td><td><span class="badge badge-success">Validado</span></td><td>06/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-11" data-risk="alto"><td><strong>SIS-DOC-02</strong></td><td><strong>Documenta</strong></td><td><span class="badge badge-warning">Observado</span></td><td>11/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="critica" data-risk="alto"><td><strong>SIS-VEN-03</strong></td><td><strong>Registro de Ventas</strong></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportada</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-BIB-04</strong></td><td><strong>Biblioteca Virtual</strong></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportada</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="baja" data-risk="bajo"><td><strong>SIS-RRH-05</strong></td><td><strong>Control de Personal</strong></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportada</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-risk="medio"><td><strong>SIS-MSA-06</strong></td><td><strong>Mesa de Servicios TI</strong></td><td><span class="badge badge-neutral">Pendiente</span></td><td>No reportada</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-12" data-risk="alto"><td><strong>SIS-PAG-07</strong></td><td><strong>Portal de Pagos</strong></td><td><span class="badge badge-warning">Observado</span></td><td>12/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-12" data-risk="medio"><td><strong>SIS-ADM-08</strong></td><td><strong>Gestión Administrativa</strong></td><td><span class="badge badge-warning">Observado</span></td><td>12/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="alta" data-date="2026-07-13" data-risk="alto"><td><strong>SIS-INV-09</strong></td><td><strong>Sistema de Investigación</strong></td><td><span class="badge badge-warning">Observado</span></td><td>13/07/2026</td><td>Infraestructura TI</td></tr><tr data-area="infraestructura-ti" data-criticality="media" data-date="2026-07-13" data-risk="medio"><td><strong>SIS-COM-10</strong></td><td><strong>Comedor Universitario</strong></td><td><span class="badge badge-warning">Observado</span></td><td>13/07/2026</td><td>Infraestructura TI</td></tr></tbody>
+
+</table>
+</div>
+</section>
+<!-- =================================================
+             ESTADO VACÍO PARA FILTROS
+        ================================================== -->
+<div class="empty-state" hidden="" id="reports-empty-state">
+<h2>
+                No se encontraron reportes
+            </h2>
+<p>
+                No existen vistas que coincidan con los criterios
+                de consulta seleccionados.
+            </p>
+</div>
+</main>
+<!-- =====================================================
+         JAVASCRIPT COMPARTIDO
+    ====================================================== -->
+<!-- =====================================================
+         JAVASCRIPT ESPECÍFICO
+    ====================================================== -->
+<script src="reportes-ejecutivos.component.js"></script>
+<!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+<div class="logout-confirm-overlay" id="logout-confirm-overlay">
+    <div class="logout-confirm-box">
+        <div class="logout-confirm-header">
+            <h3>Cerrar sesión</h3>
+            <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
+        </div>
+        <div class="logout-confirm-body">
+            <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+            <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+        </div>
+        <div class="logout-confirm-footer">
+            <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
+            <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

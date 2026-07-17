@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Roles y Permisos · Panel Administrador · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="roles-permisos.component.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">JV</div>
+            <div class="profile-info">
+                <div class="profile-name">Johan Alberto Vela Arevalo</div>
+                <div class="profile-role">Administrador</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Administración</div>
+
+        <nav class="nav">
+            <a class="nav-item" href="../gestion-usuarios/gestion-usuarios.component.html">
+                <span>
+                    <span class="lbl">Gestión de Usuarios</span>
+                    <span class="sub">Cuentas y accesos</span>
+                </span>
+            </a>
+            <a class="nav-item active" href="roles-permisos.component.html">
+                <span>
+                    <span class="lbl">Roles y Permisos</span>
+                    <span class="sub">Perfiles de acceso</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../gestion-catalogos/gestion-catalogos.component.html">
+                <span>
+                    <span class="lbl">Gestión de Catálogos</span>
+                    <span class="sub">Listas maestras</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../evidencias-obligatorias/evidencias-obligatorias.component.html">
+                <span>
+                    <span class="lbl">Evidencias Obligatorias</span>
+                    <span class="sub">Documentación técnica</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../reportes-inventario/reportes-inventario.component.html">
+                <span>
+                    <span class="lbl">Reportes de Inventario</span>
+                    <span class="sub">Estadísticas y análisis</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../auditoria-trazabilidad/auditoria-trazabilidad.component.html">
+                <span>
+                    <span class="lbl">Auditoría y Trazabilidad</span>
+                    <span class="sub">Historial y seguimiento</span>
+                </span>
+            </a>
+        </nav>
+
+        <!-- ===== BOTÓN CERRAR SESIÓN ===== -->
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v2.0 · CTIC UNAS<br>
+            Módulo de administración interna
+        </div>
+    </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h2>Gestión de Roles y Permisos</h2>
+        <div class="hint">Define qué puede hacer cada rol dentro de los módulos del sistema.</div>
+      </div>
+    </div>
+
+    <div class="grid g3">
+      <div class="card"><div class="stat-label">Roles del sistema</div><div class="stat-num" id="stat-total-roles">0</div><span class="badge brand">Personalizables</span></div>
+      <div class="card"><div class="stat-label">Módulos controlados</div><div class="stat-num accent" id="stat-modulos-controlados">9</div><span class="badge info">Con permisos</span></div>
+      <div class="card"><div class="stat-label">Usuarios con rol asignado</div><div class="stat-num" id="stat-usuarios-con-rol">0</div><span class="badge low" id="badge-usuarios-cubierto">0% cubierto</span></div>
+    </div>
+
+    <div class="split" style="margin-top:16px">
+      <!-- Lista de roles -->
+      <div class="card">
+        <div class="section-head" style="margin-bottom:10px">
+          <h3 style="font-size:14.5px">Roles</h3>
+        </div>
+        <div class="list-select" id="lista-roles">
+          <!-- Se llena dinámicamente desde el backend (cargarRoles() en roles-permisos.component.js) -->
+        </div>
+        <button class="btn secondary" style="width:100%;justify-content:center;margin-top:12px" onclick="abrirNuevoRol()">+ Nuevo rol</button>
+      </div>
+
+      <!-- Matriz de permisos: se genera dinámicamente al seleccionar un rol (generarVistaRol() en roles-permisos.component.js) -->
+      <div class="card" id="panel-roles">
+        <p class="empty">Selecciona un rol para ver sus permisos.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===================== MODAL: NUEVO / EDITAR ROL ===================== -->
+  <div class="modal-overlay" id="modal-rol">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="rol-modal-titulo">Nuevo rol</h3>
+        <button class="modal-close" onclick="cerrarModal('modal-rol')">✕</button>
+      </div>
+      <div class="modal-body">
+        <label>Nombre del rol</label>
+        <input type="text" id="input-rol-nombre" placeholder="Ej. Coordinador de Seguridad">
+        <label>Descripción</label>
+        <textarea id="textarea-rol-desc" placeholder="Describe el alcance y responsabilidad de este rol..."></textarea>
+        <label>Basado en rol existente (opcional)</label>
+        <select class="form" id="select-rol-base"><option>Ninguno — permisos en blanco</option><option>Validador Técnico</option><option>Auditor</option><option>Área de Desarrollo</option></select>
+        <p class="field-hint">Los permisos por módulo se configuran luego desde la matriz de permisos del rol.</p>
+        <p class="form-error" id="rol-form-error"></p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn secondary" onclick="cerrarModal('modal-rol')">Cancelar</button>
+        <button class="btn btn-verde" id="rol-btn-guardar" onclick="guardarRol()">Crear rol</button>
+      </div>
+    </div>
+  </div>
+  <!-- ===================== MODAL: CONFIRMACIÓN GENÉRICA (eliminar, etc.) ===================== -->
+  <div class="modal-overlay" id="modal-confirmar">
+    <div class="modal" style="width:min(420px,100%)">
+      <div class="modal-head">
+        <h3 id="confirmar-titulo">Confirmar acción</h3>
+        <button class="modal-close" onclick="cerrarModal('modal-confirmar')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmar-mensaje" style="margin:6px 0 4px;color:var(--text);font-size:14px"></p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn secondary" onclick="cerrarModal('modal-confirmar')">Cancelar</button>
+        <button class="btn danger" id="confirmar-btn-aceptar">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+    <div class="logout-confirm-overlay" id="logout-confirm-overlay">
+      <div class="logout-confirm-box">
+        <div class="logout-confirm-header">
+          <h3>Cerrar sesión</h3>
+          <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
+        </div>
+        <div class="logout-confirm-body">
+          <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+          <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+        </div>
+        <div class="logout-confirm-footer">
+          <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
+          <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+
+  <script src="roles-permisos.component.js"></script>
+</body>
+</html>
