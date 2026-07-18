@@ -31,7 +31,14 @@ public class DashboardServiceImpl implements DashboardService {
             "critica", "#cf2d35",
             "alta", "#e49a18",
             "media", "#4f7fa4",
-            "baja", "#1abb9c"
+            "baja", "#1abb9c",
+            // Colores para los niveles del catálogo de criticidad
+            "academico", "#cf2d35",
+            "financiero", "#e49a18",
+            "rrhh", "#4f7fa4",
+            "administrativo", "#1abb9c",
+            "misional", "#8b5cf6",
+            "estrategico", "#f59e0b"
     );
 
     /**
@@ -52,6 +59,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     /**
      * Obtiene el nombre de la criticidad desde el catálogo usando el id_criticidad
+     * NOTA: Esto devuelve "Académico", "Financiero", "RRHH", etc.
      */
     private String getCriticidadNombre(SistemaEntity sistema) {
         if (sistema == null || sistema.getIdCriticidad() == null) {
@@ -120,18 +128,21 @@ public class DashboardServiceImpl implements DashboardService {
     public List<CriticidadDTO> obtenerCriticidades() {
         List<SistemaEntity> todos = sistemaRepository.findAll();
         
+        // IMPORTANTE: Usar getCriticidadNombre() que consulta el catálogo de criticidades reales
         Map<String, Long> counts = todos.stream()
                 .collect(Collectors.groupingBy(
                         s -> getCriticidadNombre(s).toLowerCase(),
                         Collectors.counting()
                 ));
         
-        List<String> todasCriticidades = Arrays.asList("critica", "alta", "media", "baja");
+        // Asegurar que todas las categorías de criticidad estén presentes
+        List<String> todasCriticidades = Arrays.asList("academico", "financiero", "rrhh", "administrativo", "misional", "estrategico");
         for (String nivel : todasCriticidades) {
             counts.putIfAbsent(nivel, 0L);
         }
         
         return counts.entrySet().stream()
+                .filter(e -> e.getValue() > 0) // Solo mostrar las que tienen al menos 1
                 .map(e -> {
                     CriticidadDTO dto = new CriticidadDTO();
                     dto.setNivel(e.getKey());
@@ -147,12 +158,6 @@ public class DashboardServiceImpl implements DashboardService {
     public List<SistemaResumenDTO> obtenerSistemasFiltrados(String area, String criticidad, String validacion, String busqueda) {
         Specification<SistemaEntity> spec = (root, query, cb) -> cb.conjunction();
         
-        if (criticidad != null && !criticidad.isEmpty() && !"all".equals(criticidad)) {
-            spec = spec.and((root, query, cb) -> cb.conjunction());
-        }
-        if (validacion != null && !validacion.isEmpty() && !"all".equals(validacion)) {
-            spec = spec.and(SistemaSpecification.validacionEquals(validacion));
-        }
         if (busqueda != null && !busqueda.isEmpty()) {
             spec = spec.and(SistemaSpecification.search(busqueda));
         }
@@ -163,17 +168,24 @@ public class DashboardServiceImpl implements DashboardService {
             Hibernate.initialize(s.getObservaciones());
         });
         
-        // Filtrar por área en memoria (porque el área es un valor del catálogo)
+        // Filtrar por área en memoria
         if (area != null && !area.isEmpty() && !"all".equals(area)) {
             sistemas = sistemas.stream()
                     .filter(s -> area.equalsIgnoreCase(getAreaNombre(s)))
                     .collect(Collectors.toList());
         }
         
-        // Filtrar por criticidad en memoria
+        // Filtrar por criticidad en memoria (usando el nombre real de la criticidad)
         if (criticidad != null && !criticidad.isEmpty() && !"all".equals(criticidad)) {
             sistemas = sistemas.stream()
                     .filter(s -> criticidad.equalsIgnoreCase(getCriticidadNombre(s)))
+                    .collect(Collectors.toList());
+        }
+        
+        // Filtrar por validación en memoria
+        if (validacion != null && !validacion.isEmpty() && !"all".equals(validacion)) {
+            sistemas = sistemas.stream()
+                    .filter(s -> validacion.equalsIgnoreCase(s.getEstadoValidacion()))
                     .collect(Collectors.toList());
         }
         

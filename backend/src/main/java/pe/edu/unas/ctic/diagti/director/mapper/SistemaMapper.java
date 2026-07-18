@@ -32,6 +32,7 @@ public class SistemaMapper {
 
     /**
      * Obtiene el nombre de la criticidad desde el catálogo usando el id_criticidad
+     * NOTA: Esto devuelve "Académico", "Financiero", "RRHH", etc.
      */
     private String getCriticidadNombre(SistemaEntity entity) {
         if (entity == null || entity.getIdCriticidad() == null) {
@@ -56,6 +57,7 @@ public class SistemaMapper {
         dto.setTipo("No especificado");
         dto.setExposicion("No registrada");
         dto.setValidacion(entity.getEstadoValidacion().toLowerCase());
+        // Usar getCriticidadNombre() para obtener el nombre real de la criticidad
         dto.setCriticidad(getCriticidadNombre(entity).toLowerCase());
 
         // Alerta: primera observación pendiente (si existe)

@@ -1649,7 +1649,7 @@ img {
 .criticality-chart { display: grid; gap: 12px; }
 .criticality-row {
     display: grid;
-    grid-template-columns: 100px minmax(180px, 1fr) 112px;
+    grid-template-columns: 130px minmax(180px, 1fr) 112px;
     align-items: center;
     gap: 14px;
     width: 100%;
@@ -1661,20 +1661,58 @@ img {
     border-radius: 10px;
     text-align: left;
 }
-.criticality-row:hover { background: var(--color-surface-soft); }
-.criticality-row.is-active { border-color: var(--color-primary); background: var(--color-primary-light); }
-.criticality-row__label { font-weight: 800; }
-.criticality-row__track { overflow: hidden; height: 22px; background: #edf1f5; border-radius: 999px; }
-.criticality-row__bar { display: block; min-width: 4px; height: 100%; border-radius: inherit; transition: width 260ms ease; }
-.criticality-row__value { text-align: right; font-weight: 800; white-space: nowrap; }
-.criticality-row__value small { display: block; color: var(--color-text-muted); font-weight: 600; }
+
+.criticality-row:hover {
+    background: var(--color-surface-soft);
+}
+
+.criticality-row.is-active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+}
+
+.criticality-row__label {
+    font-weight: 800;
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+.criticality-row__track {
+    overflow: hidden;
+    height: 22px;
+    background: #edf1f5;
+    border-radius: 999px;
+}
+
+.criticality-row__bar {
+    display: block;
+    min-width: 4px;
+    height: 100%;
+    border-radius: inherit;
+    transition: width 260ms ease;
+}
+
+.criticality-row__value {
+    text-align: right;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.criticality-row__value small {
+    display: block;
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
 
 .executive-table-tools { display: flex; align-items: center; gap: 8px; }
 .executive-table-tools label { margin: 0; }
 .executive-table-tools select { width: 82px; min-height: 40px; }
 .executive-table-responsive { overflow-x: auto; border: 1px solid var(--color-border); border-radius: 12px; }
-.executive-table { width: 100%; min-width: 980px; border-collapse: collapse; }
-.executive-table th,
+.executive-table {
+    width: 100%;
+    min-width: 1100px;  /* ← Aumentar de 980px a 1100px */
+    border-collapse: collapse;
+}.executive-table th,
 .executive-table td {
     padding: 13px 14px;
     border-bottom: 1px solid var(--color-border);
