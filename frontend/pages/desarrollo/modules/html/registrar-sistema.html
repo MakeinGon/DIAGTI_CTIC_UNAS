@@ -539,6 +539,23 @@
         </div>
     </main>
 
+    <div class="logout-confirm-overlay" id="logout-confirm-overlay" data-login-url="../../../login/html/login.html">
+        <div class="logout-confirm-box">
+            <div class="logout-confirm-header">
+                <h3>Cerrar sesión</h3>
+                <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
+            </div>
+            <div class="logout-confirm-body">
+                <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+                <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+            </div>
+            <div class="logout-confirm-actions">
+                <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
+                <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../js/registrar-sistema.js"></script>
 </body>
 

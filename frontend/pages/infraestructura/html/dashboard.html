@@ -20,7 +20,7 @@
     </nav>
     <!-- Botón Cerrar Sesión -->
     <div class="sidebar-logout">
-      <button class="btn-logout" type="button" onclick="window.location.href='../../login/html/login.html'">
+      <button class="btn-logout" type="button" onclick="cerrarSesion()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
           <polyline points="16 17 21 12 16 7"></polyline>
@@ -97,6 +97,23 @@
     </section>
   </main>
 </div>
+<div class="logout-confirm-overlay" id="logout-confirm-overlay" data-login-url="../../login/html/login.html">
+  <div class="logout-confirm-box">
+    <div class="logout-confirm-header">
+      <h3>Cerrar sesión</h3>
+      <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
+    </div>
+    <div class="logout-confirm-body">
+      <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+      <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+    </div>
+    <div class="logout-confirm-actions">
+      <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
+      <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+    </div>
+  </div>
+</div>
 <script src="../js/dashboard.js"></script>
+<script src="../../shared/logout-modal.js"></script>
 </body>
 </html>

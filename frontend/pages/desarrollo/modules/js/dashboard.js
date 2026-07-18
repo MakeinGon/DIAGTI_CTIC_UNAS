@@ -3,12 +3,27 @@
 // ============================================================
 
 function cerrarSesion() {
-    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = "../../../login/html/login.html";
-    }
+    document.getElementById('logout-confirm-overlay')?.classList.add('open');
 }
+
+function cancelarCerrarSesion() {
+    document.getElementById('logout-confirm-overlay')?.classList.remove('open');
+}
+
+function confirmarCerrarSesion() {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "../../../login/html/login.html";
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const overlay = document.getElementById('logout-confirm-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) cancelarCerrarSesion();
+        });
+    }
+});
 
 function getSistemas() {
     const stored = localStorage.getItem('diagti_sistemas');
