@@ -42,9 +42,19 @@ const VALIDATION_LABELS = Object.freeze({
     validado: "Validado",
     observado: "Observado",
     pendiente: "Pendiente",
+    borrador: "Borrador",
+    enviado: "Enviado",
+    rechazado: "Rechazado",
+    subsanado: "Subsanado",
+    cerrado: "Cerrado",
     VALIDADO: "Validado",
     OBSERVADO: "Observado",
-    PENDIENTE: "Pendiente"
+    PENDIENTE: "Pendiente",
+    BORRADOR: "Borrador",
+    ENVIADO: "Enviado",
+    RECHAZADO: "Rechazado",
+    SUBSANADO: "Subsanado",
+    CERRADO: "Cerrado"
 });
 
 const CRITICALITY_LABELS = Object.freeze({
@@ -193,6 +203,30 @@ function cargarCriticidadesFiltro() {
             });
         })
         .catch(err => console.error("Error cargando criticidades:", err));
+}
+
+/* ============================================================
+   CARGA DE ESTADOS DE VALIDACIÓN PARA FILTRO (NUEVO)
+============================================================ */
+function cargarEstadosValidacionFiltro() {
+    const select = elements.validation;
+    if (!select) return;
+
+    fetch(`${API_BASE_REPORTES}/catalogos/estados-validacion`)
+        .then(res => res.json())
+        .then(data => {
+            const primeraOpcion = select.options[0];
+            select.innerHTML = '';
+            if (primeraOpcion) select.appendChild(primeraOpcion);
+            
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = slug(item.valor);
+                option.textContent = item.valor;
+                select.appendChild(option);
+            });
+        })
+        .catch(err => console.error("Error cargando estados de validación:", err));
 }
 
 function cargarKPIs() {
@@ -349,7 +383,6 @@ function renderValidationChart() {
 function renderCriticalityChart() {
     console.log("[DIAGTI] Renderizando gráfico de criticidad con datos:", criticidadesData);
     
-    // Definir todas las categorías de criticidad que existen en el catálogo
     const TODAS_CRITICIDADES = [
         { key: 'academico', label: 'Académico', color: '#cf2d35' },
         { key: 'financiero', label: 'Financiero', color: '#e49a18' },
@@ -359,7 +392,6 @@ function renderCriticalityChart() {
         { key: 'estrategico', label: 'Estratégico', color: '#f59e0b' }
     ];
 
-    // Obtener conteos desde criticidadesData o sistemasData
     let counts = {};
     if (criticidadesData && criticidadesData.length > 0) {
         criticidadesData.forEach(item => {
@@ -373,7 +405,6 @@ function renderCriticalityChart() {
         });
     }
 
-    // Asegurar que todas las categorías tengan al menos 0
     TODAS_CRITICIDADES.forEach(({ key }) => {
         if (!(key in counts)) {
             counts[key] = 0;
@@ -383,7 +414,6 @@ function renderCriticalityChart() {
     const total = Object.values(counts).reduce((sum, val) => sum + val, 0);
     const maxValue = Math.max(1, ...TODAS_CRITICIDADES.map(c => counts[c.key] || 0));
 
-    // Construir el gráfico con TODAS las categorías
     elements.criticalityChart.innerHTML = TODAS_CRITICIDADES.map(({ key, label, color }) => {
         const count = counts[key] || 0;
         const width = (count / maxValue) * 100;
@@ -692,6 +722,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     cargarAreasFiltro();
     cargarCriticidadesFiltro();
+    cargarEstadosValidacionFiltro();  // ← NUEVO
 
     try {
         await Promise.all([

@@ -76,7 +76,7 @@ public class SistemaEntity {
     @Column(name = "fecha_eliminacion")
     private LocalDateTime fechaEliminacion;
 
-    // Relaciones (opcional, pero útiles para consultas)
+    // Relaciones
     @OneToMany(mappedBy = "sistema", fetch = FetchType.LAZY)
     private List<ValidacionEntity> validaciones;
 
@@ -95,11 +95,27 @@ public class SistemaEntity {
     @OneToMany(mappedBy = "sistema", fetch = FetchType.LAZY)
     private List<EvidenciaEntity> evidencias;
 
-
-    // Métodos helper para obtener estados calculados
+    /**
+     * Obtiene el estado de validación del sistema
+     * PRIORIDAD: 1. estado_flujo (si es válido), 2. última validación
+     */
     public String getEstadoValidacion() {
-        if (validaciones == null || validaciones.isEmpty()) return "PENDIENTE";
-        // Tomar la última validación por fecha
+        // 1. Si el sistema tiene un estado_flujo definido y es válido, usarlo
+        if (estadoFlujo != null && !estadoFlujo.isEmpty()) {
+            // Lista de estados válidos del catálogo
+            String[] estadosValidos = {"BORRADOR", "ENVIADO", "OBSERVADO", "SUBSANADO", 
+                                       "VALIDADO", "RECHAZADO", "CERRADO", "PENDIENTE"};
+            for (String estado : estadosValidos) {
+                if (estado.equalsIgnoreCase(estadoFlujo)) {
+                    return estadoFlujo.toUpperCase();
+                }
+            }
+        }
+        
+        // 2. Si no tiene estado_flujo válido, usar la última validación
+        if (validaciones == null || validaciones.isEmpty()) {
+            return "PENDIENTE";
+        }
         ValidacionEntity ultima = validaciones.stream()
                 .max((v1, v2) -> v1.getFechaValidacion().compareTo(v2.getFechaValidacion()))
                 .orElse(null);
@@ -108,10 +124,12 @@ public class SistemaEntity {
     }
 
     public String getCriticidadNombre() {
-        if (idCriticidad == null) return "No especificada";
-        // Como no tenemos el repositorio aquí, vamos a usar un enfoque diferente:
-        // El mapper o el servicio se encargará de obtener el nombre.
-        // Por ahora, devolvemos un valor por defecto, pero el mapper lo sobrescribirá.
-        return "No especificada";
+        if (idCriticidad == null) return "NO ESPECIFICADA";
+        return "NO ESPECIFICADA";
+    }
+
+    public String getAreaUsuarioNombre() {
+        if (idAreaUsuario == null) return "NO ESPECIFICADA";
+        return "NO ESPECIFICADA";
     }
 }

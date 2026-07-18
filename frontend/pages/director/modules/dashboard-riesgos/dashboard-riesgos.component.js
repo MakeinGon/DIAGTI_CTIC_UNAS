@@ -45,7 +45,10 @@ const RISK_LABELS = Object.freeze({
     status: { 
         abierto: "Abierto", 
         mitigacion: "En mitigación", 
-        controlado: "Controlado" 
+        controlado: "Controlado",
+        pendiente: "Pendiente",
+        subsanado: "Subsanado",
+        cerrado: "Cerrado"
     },
     probability: { 1: "Baja", 2: "Media", 3: "Alta" },
     impact: { 1: "Bajo", 2: "Medio", 3: "Alto" }

@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ---------- reportes-ejecutivos.js ---------- */
 "use strict";
 
-/* DIAGTI CTIC UNAS · Reportes Ejecutivos V1.5 */
+/* DIAGTI CTIC UNAS · Reportes Ejecutivos V1.5
+   Con carga dinámica de catálogos desde el backend. */
 
 (() => {
     const form = document.getElementById("reports-filter-form");
@@ -49,8 +50,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    /* ============================================================
+       CONFIGURACIÓN DE API
+    ============================================================ */
     const API_BASE = "http://localhost:8080/api/director/reportes";
 
+    /* ============================================================
+       FUNCIONES AUXILIARES
+    ============================================================ */
     const cleanText = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
     const slug = (value) => cleanText(value)
         .normalize("NFD")
@@ -64,6 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     const today = () => new Date().toISOString().slice(0, 10);
 
+    /* ============================================================
+       CARGA DE CATÁLOGOS PARA FILTROS
+    ============================================================ */
     function cargarCatalogosFiltros() {
         // Áreas
         fetch(`${API_BASE}/catalogos/areas`)
@@ -118,31 +128,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             })
             .catch(err => console.error("Error cargando niveles de riesgo:", err));
+    }
 
-        // Estados de validación
+    /* ============================================================
+       CARGA DE ESTADOS DE VALIDACIÓN PARA FILTROS (NUEVO)
+    ============================================================ */
+    function cargarEstadosValidacionFiltro() {
+        const select = validationStatusFilter;
+        if (!select) return;
+
         fetch(`${API_BASE}/catalogos/estados-validacion`)
             .then(res => res.json())
             .then(data => {
-                const select = validationStatusFilter;
-                if (!select) return;
                 const primeraOpcion = select.options[0];
                 select.innerHTML = '';
                 if (primeraOpcion) select.appendChild(primeraOpcion);
-                const estadosRelevantes = ['VALIDADO', 'OBSERVADO', 'PENDIENTE', 'RECHAZADO', 'ENVIADO', 'SUBSANADO'];
+                
                 data.forEach(item => {
-                    const valorUpper = item.valor.toUpperCase();
-                    if (estadosRelevantes.includes(valorUpper)) {
-                        const option = document.createElement('option');
-                        option.value = slug(item.valor);
-                        option.textContent = item.valor;
-                        select.appendChild(option);
-                    }
+                    const option = document.createElement('option');
+                    option.value = slug(item.valor);
+                    option.textContent = item.valor;
+                    select.appendChild(option);
                 });
             })
             .catch(err => console.error("Error cargando estados de validación:", err));
     }
 
-    // MAPAS Y BADGES
+    /* ============================================================
+       MAPAS Y BADGES
+    ============================================================ */
     const RIESGO_POR_CRITICIDAD = { CRITICA: "alto", ALTA: "alto", MEDIA: "medio", BAJA: "bajo" };
 
     const CRITICIDAD_BADGE_INVENTARIO = {
@@ -163,10 +177,20 @@ document.addEventListener('DOMContentLoaded', function() {
         VALIDADO: { texto: "Validado", clase: "badge-success" },
         OBSERVADO: { texto: "Observado", clase: "badge-warning" },
         PENDIENTE: { texto: "Pendiente", clase: "badge-neutral" },
-        RECHAZADO: { texto: "Rechazado", clase: "badge-danger" },
-        ENVIADO: { texto: "Enviado", clase: "badge-info" },
         BORRADOR: { texto: "Borrador", clase: "badge-neutral" },
-        SUBSANADO: { texto: "Subsanado", clase: "badge-info" }
+        ENVIADO: { texto: "Enviado", clase: "badge-info" },
+        RECHAZADO: { texto: "Rechazado", clase: "badge-danger" },
+        SUBSANADO: { texto: "Subsanado", clase: "badge-info" },
+        CERRADO: { texto: "Cerrado", clase: "badge-neutral" },
+        // Versión en minúsculas por si acaso
+        validado: { texto: "Validado", clase: "badge-success" },
+        observado: { texto: "Observado", clase: "badge-warning" },
+        pendiente: { texto: "Pendiente", clase: "badge-neutral" },
+        borrador: { texto: "Borrador", clase: "badge-neutral" },
+        enviado: { texto: "Enviado", clase: "badge-info" },
+        rechazado: { texto: "Rechazado", clase: "badge-danger" },
+        subsanado: { texto: "Subsanado", clase: "badge-info" },
+        cerrado: { texto: "Cerrado", clase: "badge-neutral" }
     };
 
     const ESTADO_RIESGO_BADGE = {
@@ -192,7 +216,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return tr;
     };
 
-    // PINTADO DE TABLAS
+    /* ============================================================
+       PINTADO DE TABLAS
+    ============================================================ */
     const pintarInventario = (items, catalogos) => {
         const tbody = document.querySelector("#table-report-inventory tbody");
         if (!tbody) return;
@@ -278,9 +304,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // CARGA DE REPORTES
+    /* ============================================================
+       CARGA DE REPORTES
+    ============================================================ */
     const cargarReportes = () => {
+        // Cargar catálogos para los filtros
         cargarCatalogosFiltros();
+        cargarEstadosValidacionFiltro();  // ← NUEVO
 
         const urlInventario = `${API_BASE}/inventario?area=${areaFilter.value || ''}&criticidad=${criticalityFilter.value || ''}`;
         const urlRiesgos = `${API_BASE}/riesgos?area=${areaFilter.value || ''}&criticidad=${criticalityFilter.value || ''}`;
@@ -306,7 +336,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // FILTROS
+    /* ============================================================
+       FILTROS
+    ============================================================ */
     const FILTERS = [
         { datasetKey: "area", control: areaFilter },
         { datasetKey: "criticality", control: criticalityFilter },
@@ -371,7 +403,9 @@ document.addEventListener('DOMContentLoaded', function() {
         emptyState.hidden = visibleSections > 0;
     };
 
-    // EXPORTACIÓN
+    /* ============================================================
+       EXPORTACIÓN
+    ============================================================ */
     const visibleTableClone = (section) => {
         const source = section.querySelector("table");
         if (!source) return null;
@@ -458,7 +492,9 @@ document.addEventListener('DOMContentLoaded', function() {
         window.setTimeout(() => URL.revokeObjectURL(url), 0);
     };
 
-    // EVENT LISTENERS
+    /* ============================================================
+       EVENT LISTENERS
+    ============================================================ */
     form.addEventListener("submit", (event) => {
         event.preventDefault();
         applyFilters();
@@ -468,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.requestAnimationFrame(applyFilters);
     });
 
-    [dateFromFilter, dateToFilter].forEach((control) => {
+    [dateFromFilter, dateToFilter, validationStatusFilter].forEach((control) => {
         if (control) control.addEventListener("change", applyFilters);
     });
 
@@ -487,7 +523,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // INICIALIZACIÓN
+    /* ============================================================
+       INICIALIZACIÓN
+    ============================================================ */
     cargarReportes();
 
 })();

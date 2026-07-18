@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
             password: 'auditor456',
             rol: 'auditor',
             nombre: 'Carlos Ruiz',
-            redirect: '../../auditor/modules/auditoria-trazabilidad/auditoria-trazabilidad.component.html'
+            redirect: '../../auditor/modules/html/auditoria.html'
         },
         // DESARROLLO
         '2022-11111': {
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
             password: 'directivo321',
             rol: 'directivo',
             nombre: 'María Gómez',
-            redirect: '../../directivo/modules/reportes-inventario/reportes-inventario.component.html'
+            redirect: '../../director/modules/resumen-ejecutivo/resumen-ejecutivo.component.html'
         },
         // FUNCIONAL
         '2024-33333': {
