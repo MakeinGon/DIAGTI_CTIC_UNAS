@@ -26,13 +26,11 @@ async function cargarEvidencias() {
     isLoading = true;
     
     try {
-        // Obtener filtros
         const busqueda = document.getElementById('buscarEvidencia')?.value || '';
         const modulo = document.getElementById('filtroModulo')?.value || '';
         const responsable = document.getElementById('filtroResponsable')?.value || '';
         const estado = document.getElementById('filtroEstado')?.value || '';
         
-        // Construir URL con filtros
         let url = `${API_BASE}?`;
         const params = [];
         if (busqueda) params.push(`busqueda=${encodeURIComponent(busqueda)}`);
@@ -41,7 +39,6 @@ async function cargarEvidencias() {
         if (estado) params.push(`estado=${encodeURIComponent(estado)}`);
         url += params.join('&');
         
-        // Si no hay filtros, quitar el '?'
         if (params.length === 0) url = API_BASE;
         
         const response = await fetch(url);
@@ -50,13 +47,8 @@ async function cargarEvidencias() {
         evidencias = await response.json();
         evidenciasFiltradas = [...evidencias];
         
-        // Cargar estadísticas
         await cargarStats();
-        
-        // Llenar filtros dinámicos
         llenarFiltrosDinamicos();
-        
-        // Renderizar tabla
         paginaActual = 1;
         renderTabla();
         
@@ -103,6 +95,7 @@ function renderStats(stats) {
     const total = stats.total || 0;
     const activa = stats.activa || 0;
     const inactiva = stats.inactiva || 0;
+    const pendiente = total - activa - inactiva;
     
     container.innerHTML = `
         <div class="card azul">
@@ -112,6 +105,10 @@ function renderStats(stats) {
         <div class="card verde">
             <div class="card-number">${activa}</div>
             <div class="card-label">Activas</div>
+        </div>
+        <div class="card amarillo">
+            <div class="card-number">${pendiente}</div>
+            <div class="card-label">Pendientes</div>
         </div>
         <div class="card rojo">
             <div class="card-number">${inactiva}</div>
@@ -143,11 +140,19 @@ function renderTabla() {
     }
 
     tbody.innerHTML = datosPagina.map(e => {
-        const estadoLower = (e.estado || '').toLowerCase();
         let badgeClase = 'secondary';
-        if (estadoLower === 'activa' || estadoLower === 'validado') badgeClase = 'success';
-        else if (estadoLower === 'inactiva' || estadoLower === 'observado') badgeClase = 'danger';
-        else if (estadoLower === 'pendiente') badgeClase = 'warning';
+        let estadoMostrar = e.estado || 'N/A';
+        
+        if (e.estado === 'ACTIVA') {
+            badgeClase = 'success';
+            estadoMostrar = 'Activa';
+        } else if (e.estado === 'INACTIVA') {
+            badgeClase = 'danger';
+            estadoMostrar = 'Inactiva';
+        } else if (e.estado === 'PENDIENTE') {
+            badgeClase = 'warning';
+            estadoMostrar = 'Pendiente';
+        }
         
         return `
             <tr>
@@ -155,7 +160,7 @@ function renderTabla() {
                 <td>${e.modulo || '—'}</td>
                 <td>${e.responsable || '—'}</td>
                 <td><span class="badge badge-info">${e.tipo || 'N/A'}</span></td>
-                <td><span class="badge badge-${badgeClase}">${e.estado || 'N/A'}</span></td>
+                <td><span class="badge badge-${badgeClase}">${estadoMostrar}</span></td>
                 <td>${e.fecha || 'N/A'}</td>
                 <td style="text-align:center; white-space:nowrap;">
                     <button class="btn-icon btn-ver" data-id="${e.id}" title="Ver detalle" style="margin:0 3px; padding:6px 8px; background:#f0f4f8; border-radius:6px; cursor:pointer;">👁️</button>
@@ -170,7 +175,6 @@ function renderTabla() {
 }
 
 function llenarFiltrosDinamicos() {
-    // Módulos únicos desde los datos
     const modulos = [...new Set(evidencias.map(e => e.modulo).filter(Boolean))].sort();
     const selectModulo = document.getElementById('filtroModulo');
     if (selectModulo) {
@@ -182,7 +186,6 @@ function llenarFiltrosDinamicos() {
         selectModulo.value = currentValue;
     }
 
-    // Responsables únicos desde los datos
     const responsables = [...new Set(evidencias.map(e => e.responsable).filter(Boolean))].sort();
     const selectResponsable = document.getElementById('filtroResponsable');
     if (selectResponsable) {
@@ -306,8 +309,16 @@ async function verDetalle(id) {
     }
 }
 
+// ============================================================
+// DESCARGA INDIVIDUAL CON HTML2PDF
+// ============================================================
+
+// ============================================================
+// DESCARGA INDIVIDUAL EN FORMATO .TXT
+// ============================================================
+
 function descargarEvidencia(archivo) {
-    if (!archivo) {
+    if (!archivo || archivo === 'Sin archivo' || archivo === '—') {
         alert('⚠️ No hay archivo asociado para descargar.');
         return;
     }
@@ -317,25 +328,178 @@ function descargarEvidencia(archivo) {
         return;
     }
 
-    // Simular descarga de un archivo de ejemplo
+    try {
+        const ev = evidencias.find(e => e.archivo === archivo);
+        if (!ev) {
+            alert('❌ No se encontró la evidencia.');
+            return;
+        }
+
+        // Generar el contenido en formato .txt
+        const contenidoTXT = generarTXTIndividual(ev);
+        
+        // Crear y descargar el archivo .txt
+        const blob = new Blob([contenidoTXT], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const nombreArchivo = `${ev.sistema || 'evidencia'}_${new Date().toISOString().split('T')[0]}.txt`;
+        link.download = nombreArchivo;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        alert(`✅ Evidencia descargada correctamente como:\n📄 ${nombreArchivo}`);
+
+    } catch (error) {
+        console.error('❌ Error al descargar:', error);
+        alert('❌ Error al descargar la evidencia: ' + error.message);
+    }
+}
+
+function generarTXTIndividual(ev) {
+    const fecha = new Date().toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    const linea = '='.repeat(52);
+    const lineaSep = '-'.repeat(52);
+
+    let estadoTexto = 'Activa';
+    if (ev.estado === 'INACTIVA') estadoTexto = 'Inactiva';
+    else if (ev.estado === 'PENDIENTE') estadoTexto = 'Pendiente';
+
+    return `
+${linea}
+        REPORTE DE EVIDENCIA - DIAGTI
+${linea}
+
+Detalle de evidencia técnica
+Generado: ${fecha}
+
+${lineaSep}
+SISTEMA:          ${ev.sistema || 'No especificado'}
+MÓDULO / ÁREA:    ${ev.modulo || 'No especificado'}
+RESPONSABLE:      ${ev.responsable || 'No especificado'}
+TIPO:             ${ev.tipo || 'No especificado'}
+ESTADO:           ${estadoTexto}
+FECHA DE CARGA:   ${ev.fecha || 'No especificado'}
+ARCHIVO:          ${ev.archivo || 'No especificado'}
+${lineaSep}
+
+DESCRIPCIÓN:
+${ev.descripcion || 'Sin descripción registrada.'}
+
+${lineaSep}
+Firmado por: DIAGTI
+${linea}
+`;
+}
+
+function generarHTMLIndividual(ev, archivo) {
+    const fecha = new Date().toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    let estadoClase = 'success';
+    let estadoTexto = 'Activa';
+    if (ev.estado === 'INACTIVA') {
+        estadoClase = 'danger';
+        estadoTexto = 'Inactiva';
+    } else if (ev.estado === 'PENDIENTE') {
+        estadoClase = 'warning';
+        estadoTexto = 'Pendiente';
+    }
+
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Evidencia - DIAGTI</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', Arial, sans-serif; }
+            body { padding: 30px; background: white; }
+            .header { text-align: center; padding-bottom: 20px; border-bottom: 3px solid #0f75bc; margin-bottom: 20px; }
+            .header h1 { font-size: 22px; color: #0f75bc; }
+            .header p { color: #666; font-size: 14px; margin-top: 5px; }
+            .header .fecha { color: #888; font-size: 12px; margin-top: 5px; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 30px; margin: 20px 0; }
+            .info-item { display: flex; border-bottom: 1px solid #e5e7eb; padding: 8px 0; }
+            .info-item .label { font-weight: 600; color: #374151; width: 130px; flex-shrink: 0; }
+            .info-item .value { color: #1f2937; }
+            .badge { padding: 2px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block; }
+            .badge-success { background: #dcfce7; color: #166534; }
+            .badge-warning { background: #fef9c3; color: #854d0e; }
+            .badge-danger { background: #fee2e2; color: #991b1b; }
+            .footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #ddd; color: #999; font-size: 11px; }
+            .footer span { color: #0f75bc; font-weight: 600; }
+            .desc-box { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-top: 10px; border-left: 3px solid #0f75bc; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>📎 Reporte de Evidencia - DIAGTI</h1>
+            <p>Detalle de evidencia técnica</p>
+            <div class="fecha">Generado: ${fecha}</div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item"><span class="label">Sistema</span><span class="value">${ev.sistema || 'Desconocido'}</span></div>
+            <div class="info-item"><span class="label">Módulo / Área</span><span class="value">${ev.modulo || 'N/A'}</span></div>
+            <div class="info-item"><span class="label">Responsable</span><span class="value">${ev.responsable || 'N/A'}</span></div>
+            <div class="info-item"><span class="label">Tipo</span><span class="value">${ev.tipo || 'N/A'}</span></div>
+            <div class="info-item"><span class="label">Estado</span><span class="value"><span class="badge badge-${estadoClase}">${estadoTexto}</span></span></div>
+            <div class="info-item"><span class="label">Fecha de carga</span><span class="value">${ev.fecha || 'N/A'}</span></div>
+            <div class="info-item" style="grid-column: span 2;"><span class="label">Archivo original</span><span class="value">${archivo}</span></div>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <strong style="display: block; margin-bottom: 5px;">📝 Descripción</strong>
+            <div class="desc-box">${ev.descripcion || 'Sin descripción registrada.'}</div>
+        </div>
+
+        <div class="footer">
+            DIAGTI v2.0 · <span>CTIC UNAS</span> · ${new Date().getFullYear()}
+        </div>
+    </body>
+    </html>
+    `;
+}
+
+function descargarPDFSimple(ev, archivo) {
     const contenido = `📎 EVIDENCIA - DIAGTI\n\n` +
-                     `Archivo: ${archivo}\n` +
-                     `Descargado desde el sistema DIAGTI\n` +
-                     `Fecha: ${new Date().toLocaleString('es-PE')}\n\n` +
-                     `---\nDIAGTI v2.0 · CTIC UNAS`;
+        `Sistema: ${ev?.sistema || 'Desconocido'}\n` +
+        `Módulo/Área: ${ev?.modulo || 'N/A'}\n` +
+        `Responsable: ${ev?.responsable || 'N/A'}\n` +
+        `Tipo: ${ev?.tipo || 'N/A'}\n` +
+        `Estado: ${ev?.estado || 'N/A'}\n` +
+        `Fecha: ${ev?.fecha || 'N/A'}\n` +
+        `Archivo: ${archivo}\n` +
+        `Descripción: ${ev?.descripcion || 'Sin descripción'}\n\n` +
+        `---\nDIAGTI v2.0 · CTIC UNAS`;
 
     const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = archivo;
+    link.download = `${archivo.split('.')[0] || 'evidencia'}.txt`;
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-
-    alert(`✅ Archivo "${archivo}" descargado correctamente.`);
+    alert(`✅ Archivo descargado como TXT.`);
 }
 
 // ============================================================
@@ -387,6 +551,204 @@ function exportarCSV() {
     alert(`✅ CSV exportado correctamente (${datos.length} registros)`);
 }
 
+function exportarPDF() {
+    try {
+        const datos = evidenciasFiltradas.length > 0 ? evidenciasFiltradas : evidencias;
+        if (datos.length === 0) {
+            alert('⚠️ No hay datos para exportar');
+            return;
+        }
+
+        if (typeof html2pdf === 'undefined') {
+            alert('❌ La librería html2pdf no está cargada. Verifica que el script esté incluido en el HTML.');
+            return;
+        }
+
+        const contenido = generarHTMLReportePDF(datos);
+        
+        const opt = {
+            margin: [10, 10, 10, 10],
+            filename: `evidencias_${new Date().toISOString().split('T')[0]}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        const loading = document.createElement('div');
+        loading.id = 'pdfLoading';
+        loading.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 9999;
+            text-align: center;
+            font-size: 18px;
+            font-family: 'Inter', Arial, sans-serif;
+        `;
+        loading.innerHTML = `
+            <div style="font-size: 3rem; margin-bottom: 10px;">📄</div>
+            <strong>Generando PDF...</strong>
+            <br>
+            <small style="color: #6b7280; font-size: 14px;">Por favor espera</small>
+            <div style="margin-top: 15px; width: 200px; height: 4px; background: #e5e7eb; border-radius: 2px; margin-left: auto; margin-right: auto; overflow: hidden;">
+                <div style="width: 40%; height: 100%; background: #1abb9c; border-radius: 2px; animation: loadingBar 1s ease-in-out infinite;"></div>
+            </div>
+        `;
+        document.body.appendChild(loading);
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes loadingBar {
+                0% { width: 10%; margin-left: 0; }
+                50% { width: 70%; margin-left: 30%; }
+                100% { width: 10%; margin-left: 90%; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        html2pdf()
+            .set(opt)
+            .from(contenido)
+            .save()
+            .then(() => {
+                const el = document.getElementById('pdfLoading');
+                if (el) el.remove();
+                alert(`✅ PDF exportado correctamente\n📄 ${datos.length} registros`);
+            })
+            .catch((error) => {
+                const el = document.getElementById('pdfLoading');
+                if (el) el.remove();
+                console.error('Error al generar PDF:', error);
+                alert('❌ Error al generar el PDF. Verifica la consola para más detalles.');
+            });
+
+    } catch (error) {
+        console.error('❌ Error al exportar PDF:', error);
+        alert('❌ Error al exportar PDF: ' + error.message);
+    }
+}
+
+function generarHTMLReportePDF(datos) {
+    const fecha = new Date().toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const total = datos.length;
+    const activas = datos.filter(e => e.estado === 'ACTIVA').length;
+    const pendientes = datos.filter(e => e.estado === 'PENDIENTE').length;
+    const inactivas = datos.filter(e => e.estado === 'INACTIVA').length;
+
+    let html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Reporte de Evidencias - DIAGTI</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', Arial, sans-serif; }
+            body { padding: 20px; background: white; }
+            .header { text-align: center; padding-bottom: 20px; border-bottom: 3px solid #0f75bc; margin-bottom: 20px; }
+            .header h1 { font-size: 22px; color: #0f75bc; }
+            .header p { color: #666; font-size: 14px; margin-top: 5px; }
+            .header .fecha { color: #888; font-size: 12px; margin-top: 5px; }
+            
+            .stats { display: flex; justify-content: space-around; background: #f5f6fa; padding: 12px; border-radius: 8px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+            .stats span { font-size: 13px; font-weight: 500; }
+            .stats .num { font-weight: 700; color: #0f75bc; }
+            .stats .num.green { color: #1abb9c; }
+            .stats .num.yellow { color: #f59e0b; }
+            .stats .num.red { color: #ef4444; }
+            
+            table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; }
+            th { background: #0f75bc; color: white; padding: 8px 6px; text-align: left; }
+            td { padding: 6px; border-bottom: 1px solid #e0e0e0; }
+            tr:nth-child(even) { background: #f8f9fa; }
+            .badge { padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; display: inline-block; }
+            .badge-success { background: #dcfce7; color: #166534; }
+            .badge-warning { background: #fef9c3; color: #854d0e; }
+            .badge-danger { background: #fee2e2; color: #991b1b; }
+            
+            .footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #ddd; color: #999; font-size: 11px; }
+            .footer span { color: #0f75bc; font-weight: 600; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>📎 Reporte de Evidencias - DIAGTI</h1>
+            <p>Administración de evidencias técnicas del sistema</p>
+            <div class="fecha">Generado: ${fecha}</div>
+        </div>
+        
+        <div class="stats">
+            <span>📊 Total: <span class="num">${total}</span></span>
+            <span>✅ Activas: <span class="num green">${activas}</span></span>
+            <span>⏳ Pendientes: <span class="num yellow">${pendientes}</span></span>
+            <span>❌ Inactivas: <span class="num red">${inactivas}</span></span>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Sistema</th>
+                    <th>Módulo / Área</th>
+                    <th>Responsable</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Archivo</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    datos.forEach(e => {
+        let badgeClase = 'badge-success';
+        let estadoTexto = 'Activa';
+        if (e.estado === 'INACTIVA') {
+            badgeClase = 'badge-danger';
+            estadoTexto = 'Inactiva';
+        } else if (e.estado === 'PENDIENTE') {
+            badgeClase = 'badge-warning';
+            estadoTexto = 'Pendiente';
+        }
+        
+        html += `
+            <tr>
+                <td><strong>${e.sistema || ''}</strong></td>
+                <td>${e.modulo || '—'}</td>
+                <td>${e.responsable || '—'}</td>
+                <td>${e.tipo || 'N/A'}</td>
+                <td><span class="badge ${badgeClase}">${estadoTexto}</span></td>
+                <td>${e.fecha || ''}</td>
+                <td>${e.archivo || ''}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+        </table>
+        
+        <div class="footer">
+            DIAGTI v2.0 · <span>CTIC UNAS</span> · ${new Date().getFullYear()}
+        </div>
+    </body>
+    </html>
+    `;
+    
+    return html;
+}
+
 // ============================================================
 // CERRAR SESIÓN
 // ============================================================
@@ -412,7 +774,6 @@ function confirmarCerrarSesion() {
 // ============================================================
 
 function mostrarError(mensaje) {
-    // Mostrar error en la tabla
     const tbody = document.getElementById('tablaEvidencias');
     if (tbody) {
         tbody.innerHTML = `
@@ -429,20 +790,19 @@ function mostrarError(mensaje) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('📎 Módulo de Administración de Evidencias iniciando...');
 
-    // === EVENTOS ===
     document.getElementById('btnFiltrar')?.addEventListener('click', filtrarEvidencias);
     document.getElementById('btnLimpiarFiltros')?.addEventListener('click', limpiarFiltros);
     document.getElementById('buscarEvidencia')?.addEventListener('keyup', function(e) {
         if (e.key === 'Enter') filtrarEvidencias();
     });
     document.getElementById('btnExportarCSV')?.addEventListener('click', exportarCSV);
+    document.getElementById('btnExportarPDF')?.addEventListener('click', exportarPDF);
     document.getElementById('btnRefrescar')?.addEventListener('click', function() {
         cargarEvidencias();
     });
     document.getElementById('btnAnterior')?.addEventListener('click', function() { cambiarPagina(-1); });
     document.getElementById('btnSiguiente')?.addEventListener('click', function() { cambiarPagina(1); });
 
-    // Delegación de eventos para botones de la tabla
     document.getElementById('tablaEvidencias')?.addEventListener('click', function(e) {
         const btn = e.target.closest('button');
         if (!btn) return;
@@ -456,7 +816,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Cerrar modales
     document.getElementById('btnCerrarDetalle')?.addEventListener('click', function() {
         document.getElementById('modalDetalle').style.display = 'none';
     });
@@ -467,7 +826,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) this.style.display = 'none';
     });
 
-    // Cerrar sesión
     document.getElementById('btnCerrarSesion')?.addEventListener('click', cerrarSesion);
     document.getElementById('btnCancelarCerrarSesion')?.addEventListener('click', cancelarCerrarSesion);
     document.getElementById('btnCancelarCerrarSesion2')?.addEventListener('click', cancelarCerrarSesion);
@@ -476,7 +834,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) cancelarCerrarSesion();
     });
 
-    // Cargar datos iniciales
     cargarEvidencias();
 
     console.log('✅ Módulo de Evidencias inicializado correctamente');
