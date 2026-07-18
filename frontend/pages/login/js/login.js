@@ -29,6 +29,61 @@ document.addEventListener('DOMContentLoaded', function() {
     let isSubmitting = false;
 
     // ============================================
+    // USUARIOS Y ROLES (SIMULACIÓN)
+    // ============================================
+    const usuarios = {
+        // ADMINISTRADOR
+        '2020-12345': {
+            password: 'admin123',
+            rol: 'admin',
+            nombre: 'Johan Alberto Vela Arevalo',
+            redirect: '../../admin/modules/gestion-usuarios/gestion-usuarios.component.html'
+        },
+        // AUDITOR
+        '2021-67890': {
+            password: 'auditor456',
+            rol: 'auditor',
+            nombre: 'Carlos Ruiz',
+            redirect: '../../auditor/modules/auditoria-trazabilidad/auditoria-trazabilidad.component.html'
+        },
+        // DESARROLLO
+        '2022-11111': {
+            password: 'desarrollo789',
+            rol: 'desarrollo',
+            nombre: 'Juan Pérez',
+            redirect: '../../desarrollo/modules/evidencias-obligatorias/evidencias-obligatorias.component.html'
+        },
+        // DIRECTIVO
+        '2023-22222': {
+            password: 'directivo321',
+            rol: 'directivo',
+            nombre: 'María Gómez',
+            redirect: '../../directivo/modules/reportes-inventario/reportes-inventario.component.html'
+        },
+        // FUNCIONAL
+        '2024-33333': {
+            password: 'funcional654',
+            rol: 'funcional',
+            nombre: 'Laura García',
+            redirect: '../../funcional/modules/gestion-catalogos/gestion-catalogos.component.html'
+        },
+        // INFRAESTRUCTURA
+        '2025-44444': {
+            password: 'infra987',
+            rol: 'infraestructura',
+            nombre: 'Ana Torres',
+            redirect: '../../infraestructura/modules/roles-permisos/roles-permisos.component.html'
+        },
+        // VALIDACION
+        '2026-55555': {
+            password: 'validacion111',
+            rol: 'validacion',
+            nombre: 'Roberto Díaz',
+            redirect: '../../validacion/modules/evidencias-obligatorias/evidencias-obligatorias.component.html'
+        }
+    };
+
+    // ============================================
     // CAPTCHA
     // ============================================
     function generarCaptcha() {
@@ -58,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // VALIDACIONES
     // ============================================
     function validarCodigo(codigo) {
-        const regex = /^\d{4}-\d{4,6}$/;
+        const regex = /^\d{4}-\d{5}$/;
         return regex.test(codigo);
     }
 
@@ -152,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ============================================
-    // ENVIAR FORMULARIO
+    // ENVIAR FORMULARIO - CON REDIRECCIÓN POR ROL
     // ============================================
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -206,43 +261,66 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Simular envío
+        // ============================================
+        // AUTENTICACIÓN POR ROL
+        // ============================================
+        const usuario = usuarios[codigo];
+        
+        if (!usuario || usuario.password !== password) {
+            mostrarError('Usuario o contraseña incorrectos');
+            marcarError(codigoInput);
+            marcarError(passwordInput);
+            actualizarCaptcha();
+            passwordInput.value = '';
+            passwordInput.focus();
+            return;
+        }
+
+        // Guardar datos de sesión
+        const sessionData = {
+            codigo: codigo,
+            rol: usuario.rol,
+            nombre: usuario.nombre,
+            loginTime: new Date().toISOString()
+        };
+        localStorage.setItem('diagti_session', JSON.stringify(sessionData));
+        sessionStorage.setItem('diagti_session', JSON.stringify(sessionData));
+
+        // Mostrar feedback de éxito
         isSubmitting = true;
         loginBtn.disabled = true;
-        btnText.textContent = 'Verificando...';
-        btnSpinner.style.display = 'inline-block';
+        btnText.textContent = `Bienvenido ${usuario.nombre}`;
+        btnSpinner.style.display = 'none';
+        loginBtn.style.background = '#1abb9c';
 
+        // Redirigir según el rol
         setTimeout(function() {
-            const credencialesValidas = {
-                '2020-12345': 'admin123',
-                '2021-67890': 'user456',
-                '2022-11111': 'test789'
-            };
+            window.location.href = usuario.redirect;
+        }, 1200);
 
-            if (credencialesValidas[codigo] === password) {
-                btnText.textContent = 'Acceso concedido';
-                loginBtn.style.background = '#1abb9c';
-                setTimeout(function() {
-                    window.location.href = '../../admin/modules/gestion-usuarios/gestion-usuarios.component.html';
-                }, 800);
-            } else {
-                mostrarError('Usuario o contraseña incorrectos');
-                marcarError(codigoInput);
-                marcarError(passwordInput);
-                isSubmitting = false;
-                loginBtn.disabled = false;
-                btnText.textContent = 'Ingresar al Sistema';
-                btnSpinner.style.display = 'none';
-                loginBtn.style.background = '';
-                actualizarCaptcha();
-                passwordInput.value = '';
-                passwordInput.focus();
-            }
-        }, 1500);
     });
 
     // ============================================
-    // EVENTOS
+    // VERIFICAR SESIÓN ACTIVA
+    // ============================================
+    function verificarSesion() {
+        const session = localStorage.getItem('diagti_session');
+        if (session) {
+            try {
+                const data = JSON.parse(session);
+                // Si hay sesión activa, redirigir automáticamente
+                const usuario = usuarios[data.codigo];
+                if (usuario) {
+                    window.location.href = usuario.redirect;
+                }
+            } catch (e) {
+                localStorage.removeItem('diagti_session');
+            }
+        }
+    }
+
+    // ============================================
+    // EVENTOS ADICIONALES
     // ============================================
     captchaInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
@@ -273,5 +351,12 @@ document.addEventListener('DOMContentLoaded', function() {
     actualizarCaptcha();
     codigoInput.focus();
 
+    // Verificar si ya hay sesión activa
+    verificarSesion();
+
     console.log('Login DIAGTI CTIC UNAS inicializado');
-}); 
+    console.log('Usuarios disponibles:');
+    Object.keys(usuarios).forEach(key => {
+        console.log(`  ${key} → ${usuarios[key].rol} (${usuarios[key].nombre})`);
+    });
+});
