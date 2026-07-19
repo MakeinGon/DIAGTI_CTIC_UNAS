@@ -7,4 +7,5 @@ public class EvidenciaStatsDTO {
     private Long total;
     private Long activa;
     private Long inactiva;
+    private Long pendiente;
 }

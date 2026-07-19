@@ -76,6 +76,20 @@ public class SistemaEntity {
     @Column(name = "fecha_eliminacion")
     private LocalDateTime fechaEliminacion;
 
+    // ============================================
+    // ✅ AGREGAR ESTOS MÉTODOS
+    // ============================================
+    @PrePersist
+    protected void onCreate() {
+        fechaCreacion = LocalDateTime.now();
+        fechaActualizacion = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        fechaActualizacion = LocalDateTime.now();
+    }
+
     // Relaciones
     @OneToMany(mappedBy = "sistema", fetch = FetchType.LAZY)
     private List<ValidacionEntity> validaciones;
@@ -95,14 +109,10 @@ public class SistemaEntity {
     @OneToMany(mappedBy = "sistema", fetch = FetchType.LAZY)
     private List<EvidenciaEntity> evidencias;
 
-    /**
-     * Obtiene el estado de validación del sistema
-     * PRIORIDAD: 1. estado_flujo (si es válido), 2. última validación
-     */
+    // ... el resto de métodos existentes ...
+    
     public String getEstadoValidacion() {
-        // 1. Si el sistema tiene un estado_flujo definido y es válido, usarlo
         if (estadoFlujo != null && !estadoFlujo.isEmpty()) {
-            // Lista de estados válidos del catálogo
             String[] estadosValidos = {"BORRADOR", "ENVIADO", "OBSERVADO", "SUBSANADO", 
                                        "VALIDADO", "RECHAZADO", "CERRADO", "PENDIENTE"};
             for (String estado : estadosValidos) {
@@ -112,7 +122,6 @@ public class SistemaEntity {
             }
         }
         
-        // 2. Si no tiene estado_flujo válido, usar la última validación
         if (validaciones == null || validaciones.isEmpty()) {
             return "PENDIENTE";
         }

@@ -104,7 +104,6 @@
                     <div class="header-left">
                         <h1>📊 Reportes de <span>Inventario TI</span></h1>
                         <p>Consulta, análisis y reportes del inventario institucional de sistemas</p>
-                        <span class="badge-version">RF-27 · RF-28 · RF-29 · v2.0</span>
                     </div>
                     <div class="header-right">
                         <span class="badge-live">
@@ -126,18 +125,16 @@
                     <label class="filter-label">Buscar</label>
                     <input type="text" placeholder="Nombre, código o responsable..." id="buscarReporte" />
                 </div>
-                <div class="filter-group">
+                    <div class="filter-group">
                     <label class="filter-label">Área</label>
                     <select id="filtroArea">
                         <option value="">Todas</option>
-                        <!-- Dinámico -->
                     </select>
                 </div>
                 <div class="filter-group">
                     <label class="filter-label">Responsable</label>
                     <select id="filtroResponsable">
                         <option value="">Todos</option>
-                        <!-- Dinámico -->
                     </select>
                 </div>
                 <div class="filter-group">
@@ -160,17 +157,7 @@
                         <option value="Crítica / Misión Crítica">Crítica / Misión Crítica</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label class="filter-label">Tipo</label>
-                    <select id="filtroTipo">
-                        <option value="">Todos</option>
-                        <option value="Web">Web</option>
-                        <option value="Desktop">Desktop</option>
-                        <option value="API">API</option>
-                        <option value="Móvil">Móvil</option>
-                        <option value="Legacy">Legacy</option>
-                    </select>
-                </div>
+            
                 <div class="filter-group">
                     <label class="filter-label">Desde</label>
                     <input type="date" id="filtroFechaDesde" />

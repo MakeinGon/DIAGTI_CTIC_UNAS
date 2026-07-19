@@ -76,19 +76,31 @@ public class EvidenciaServiceImpl implements EvidenciaService {
         List<Object[]> counts = evidenciaRepository.countByEstado();
         Long activa = 0L;
         Long inactiva = 0L;
+        Long pendiente = 0L;
+        
         for (Object[] count : counts) {
             if (count.length >= 2) {
                 String estado = (String) count[0];
                 Long cantidad = (Long) count[1];
                 if ("ACTIVA".equalsIgnoreCase(estado)) {
                     activa = cantidad;
-                } else {
+                } else if ("INACTIVA".equalsIgnoreCase(estado)) {
                     inactiva = cantidad;
+                } else if ("PENDIENTE".equalsIgnoreCase(estado)) {
+                    pendiente = cantidad;
                 }
             }
         }
+        
         stats.setActiva(activa);
         stats.setInactiva(inactiva);
+        stats.setPendiente(pendiente);  // ← AGREGAR
+        
+        // Si no hay pendiente en la BD, calcularlo
+        if (pendiente == 0) {
+            stats.setPendiente(stats.getTotal() - activa - inactiva);
+        }
+        
         return stats;
     }
 

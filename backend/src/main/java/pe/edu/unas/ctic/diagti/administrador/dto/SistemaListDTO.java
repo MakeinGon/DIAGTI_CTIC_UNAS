@@ -12,4 +12,6 @@ public class SistemaListDTO {
     private String estado;
     private String criticidad;
     private String fechaActualizacion;
+    private String criticidadNombre;
+
 }

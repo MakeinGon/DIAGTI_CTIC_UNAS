@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import pe.edu.unas.ctic.diagti.administrador.dto.EvidenciaSimpleDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.SistemaDetalleDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.SistemaListDTO;
+import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
+import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
 import pe.edu.unas.ctic.diagti.administrador.repository.EvidenciaRepository;
+import pe.edu.unas.ctic.diagti.administrador.repository.UsuarioRepository;
 import pe.edu.unas.ctic.diagti.administrador.service.SistemaAdminService;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.repository.SistemaRepository;
@@ -21,6 +24,8 @@ public class SistemaAdminServiceImpl implements SistemaAdminService {
 
     private final SistemaRepository sistemaRepository;
     private final EvidenciaRepository evidenciaRepository;
+    private final CatalogoRepository catalogoRepository;
+    private final UsuarioRepository usuarioRepository;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
@@ -78,19 +83,58 @@ public class SistemaAdminServiceImpl implements SistemaAdminService {
                 .count();
     }
 
+    // ------------------------------------------------------------
+    // RESOLUCIÓN DE LLAVES FORÁNEAS (catálogos y usuarios)
+    // ------------------------------------------------------------
+
+    private String resolverValorCatalogo(Long idCatalogo, String etiquetaPorDefecto) {
+        if (idCatalogo == null) return etiquetaPorDefecto;
+        return catalogoRepository.findById(idCatalogo)
+                .map(CatalogoEntity::getValor)
+                .orElse(etiquetaPorDefecto);
+    }
+
+    private String resolverNombreUsuario(Long idUsuario) {
+        if (idUsuario == null) return null;
+        return usuarioRepository.findById(idUsuario)
+                .map(u -> (u.getNombres() + " " + u.getApellidos()).trim())
+                .orElse(null);
+    }
+
+    private String resolverResponsable(SistemaEntity entity) {
+        // Prioridad: responsable funcional, luego responsable técnico
+        String funcional = resolverNombreUsuario(entity.getIdResponsableFuncional());
+        if (funcional != null && !funcional.isEmpty()) {
+            return funcional;
+        }
+        String tecnico = resolverNombreUsuario(entity.getIdResponsableTecnico());
+        if (tecnico != null && !tecnico.isEmpty()) {
+            return tecnico;
+        }
+        return "Sin responsable";
+    }
+
     private SistemaListDTO toListDTO(SistemaEntity entity) {
         SistemaListDTO dto = new SistemaListDTO();
         dto.setId(entity.getIdSistema());
         dto.setCodigo(entity.getCodigoUnico() != null ? entity.getCodigoUnico() : "N/A");
         dto.setNombre(entity.getNombre() != null ? entity.getNombre() : "Sin nombre");
-        dto.setArea("Área no definida");
-        dto.setResponsable("Sin responsable");
+        dto.setArea(resolverValorCatalogo(entity.getIdAreaUsuario(), "Área no definida"));
+        dto.setResponsable(resolverResponsable(entity));
         dto.setEstado(entity.getEstadoFlujo() != null ? entity.getEstadoFlujo() : "N/A");
+        
+        // Nivel de riesgo (para el badge de riesgo)
         dto.setCriticidad(entity.getNivelRiesgo() != null ? entity.getNivelRiesgo() : "No definida");
+        
+        // ✅ NUEVO: Criticidad real desde el catálogo
+        dto.setCriticidadNombre(resolverValorCatalogo(entity.getIdCriticidad(), "No especificada"));
+        
         if (entity.getFechaActualizacion() != null) {
             dto.setFechaActualizacion(entity.getFechaActualizacion().format(DATE_FORMAT));
+        } else if (entity.getFechaCreacion() != null) {
+            dto.setFechaActualizacion(entity.getFechaCreacion().format(DATE_FORMAT));
         } else {
-            dto.setFechaActualizacion("");
+            dto.setFechaActualizacion("N/A");
         }
         return dto;
     }
@@ -100,10 +144,12 @@ public class SistemaAdminServiceImpl implements SistemaAdminService {
         dto.setId(entity.getIdSistema());
         dto.setCodigo(entity.getCodigoUnico() != null ? entity.getCodigoUnico() : "N/A");
         dto.setNombre(entity.getNombre() != null ? entity.getNombre() : "Sin nombre");
-        dto.setArea("Área no definida");
-        dto.setResponsable("Sin responsable");
+        dto.setArea(resolverValorCatalogo(entity.getIdAreaUsuario(), "Área no definida"));
+        dto.setResponsable(resolverResponsable(entity));
         dto.setEstado(entity.getEstadoFlujo() != null ? entity.getEstadoFlujo() : "N/A");
         dto.setCriticidad(entity.getNivelRiesgo() != null ? entity.getNivelRiesgo() : "No definida");
+        dto.setTipo(resolverValorCatalogo(entity.getIdTipoAplicativo(), "No especificado"));
+        dto.setHeredado(Boolean.TRUE.equals(entity.getEsLegacy()));
         if (entity.getFechaActualizacion() != null) {
             dto.setFechaActualizacion(entity.getFechaActualizacion().format(DATE_FORMAT));
         } else {

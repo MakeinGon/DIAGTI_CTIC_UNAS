@@ -12,6 +12,7 @@ public class SistemaDetalleDTO {
     private String responsable;
     private String estado;
     private String criticidad;
+    private String criticidadNombre;
     private String tipo;
     private List<String> tecnologias;
     private Boolean heredado;
