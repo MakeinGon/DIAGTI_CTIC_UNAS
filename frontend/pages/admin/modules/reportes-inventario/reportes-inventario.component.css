@@ -658,30 +658,50 @@ button {
 .badge-estado {
     display: inline-block;
     border-radius: 999px;
-    padding: 4px 10px;
+    padding: 4px 12px;
     font-size: 11.5px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: .01em;
 }
 
-.badge-estado.activo {
-    background: var(--low-bg);
-    color: var(--low-tx);
+.badge-estado.borrador {
+    background: #f3f4f6;
+    color: #374151;
 }
 
-.badge-estado.completado {
-    background: var(--color-verde-light);
-    color: var(--color-verde-dark);
+.badge-estado.enviado {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-estado.observado {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-estado.subsanado {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.badge-estado.validado {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-estado.rechazado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-estado.cerrado {
+    background: #e5e7eb;
+    color: #4b5563;
 }
 
 .badge-estado.pendiente {
-    background: var(--med-bg);
-    color: var(--med-tx);
-}
-
-.badge-estado.revision {
-    background: var(--high-bg);
-    color: var(--high-tx);
+    background: #fef9c3;
+    color: #854d0e;
 }
 
 /* Badge de categoría */
@@ -1188,4 +1208,71 @@ button {
 .table-wrapper td:last-child .btn-icon.btn-exportar-sistema:hover {
     background: var(--color-verde-ctic);
     color: white;
+}
+
+/* ============================================
+   BADGES DE CRITICIDAD (nivel de importancia)
+   ============================================ */
+.badge-criticidad {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .01em;
+}
+
+.badge-criticidad.academico {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-criticidad.financiero {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-criticidad.rrhh {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.badge-criticidad.administrativo {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-criticidad.misional {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
+.badge-criticidad.estrategico {
+    background: #fce7f3;
+    color: #9d174d;
+}
+
+.badge-criticidad.bajo {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-criticidad.medio {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.badge-criticidad.alto {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.badge-criticidad.critico {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-criticidad.no-especificada {
+    background: #f3f4f6;
+    color: #6b7280;
 }

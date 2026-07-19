@@ -97,13 +97,12 @@
 
     <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
     <main class="main-content">
-        <!-- HEADER -->
+       <!-- HEADER -->
         <div class="header">
             <div class="header-content">
                 <div class="header-left">
                     <h1>📎 Administración de <span>Evidencias</span></h1>
                     <p>Consulta, supervisión y seguimiento de evidencias técnicas</p>
-                    <span class="badge-version">RF-14 · RF-15 · v2.0</span>
                 </div>
                 <div class="header-right">
                     <span class="badge-live">
@@ -119,6 +118,7 @@
             <!-- Renderizado dinámico desde JS -->
         </div>
 
+        <!-- FILTROS Y ACCIONES ADMINISTRATIVAS -->
         <!-- FILTROS Y ACCIONES ADMINISTRATIVAS -->
         <div class="toolbar">
             <div class="filter-group">
@@ -137,12 +137,12 @@
                 </select>
             </div>
             <div class="filter-group">
+                <label class="filter-label">Estado</label>
                 <select id="filtroEstado">
                     <option value="">Todos los estados</option>
-                    <option value="Borrador">Borrador</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Observado">Observado</option>
-                    <option value="Validado">Validado</option>
+                    <option value="ACTIVA">Activa</option>
+                    <option value="PENDIENTE">Pendiente</option>
+                    <option value="INACTIVA">Inactiva</option>
                 </select>
             </div>
             <div class="filter-actions">

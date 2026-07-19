@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nombre: 'Carlos Ruiz',
             dni: '74331380',
             redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/auditor/modules/html/inventario.html'
+
         },
         // DESARROLLO
         '71234567': {
@@ -71,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nombre: 'María Gómez',
             dni: '72345678',
             redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/directivo/modules/html/dashboard-riesgos.html'
+
         },
         // FUNCIONAL
         '73456789': {

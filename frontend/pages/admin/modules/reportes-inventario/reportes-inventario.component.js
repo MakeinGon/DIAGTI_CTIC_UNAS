@@ -1,10 +1,11 @@
 // ============================================================
-// CONFIGURACIÓN INICIAL
+// CONFIGURACIÓN API
 // ============================================================
-const STORAGE_KEY = 'sistemas_diagti';
+const API_BASE = 'http://localhost:8080/api/admin';
+const API_REPORTES = 'http://localhost:8080/api/director/reportes';
 
 // ============================================================
-// DATOS MOCK - SISTEMAS (CON EVIDENCIAS ASOCIADAS)
+// DATOS - SISTEMAS (CONECTADO AL BACKEND)
 // ============================================================
 let sistemas = [];
 let sistemasFiltrados = [];
@@ -12,127 +13,233 @@ let paginaActual = 1;
 const ITEMS_POR_PAGINA = 5;
 
 // ============================================================
-// CARGA Y PERSISTENCIA
+// CATÁLOGOS (CARGADOS DINÁMICAMENTE DESDE EL BACKEND)
 // ============================================================
-function cargarDatos() {
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            sistemas = JSON.parse(stored);
-            console.log(`📊 ${sistemas.length} sistemas cargados desde localStorage`);
-        } else {
-            sistemas = [
-                {
-                    id: 1, codigo: 'SYS-001', nombre: 'Sistema Académico', area: 'Registro',
-                    responsable: 'Juan Pérez', estado: 'Validado', criticidad: 'Alta',
-                    tipo: 'Web', fechaActualizacion: '2026-07-10',
-                    tecnologias: ['PHP', 'MySQL', 'Laravel'], heredado: false,
-                    evidencias: [
-                        { nombre: 'manual_tecnico.pdf', tipo: 'PDF', fecha: '2026-07-10' },
-                        { nombre: 'captura_interfaz.png', tipo: 'Imagen', fecha: '2026-07-09' }
-                    ]
-                },
-                {
-                    id: 2, codigo: 'SYS-002', nombre: 'Sistema Financiero', area: 'Finanzas',
-                    responsable: 'María Gómez', estado: 'Pendiente', criticidad: 'Crítica / Misión Crítica',
-                    tipo: 'Desktop', fechaActualizacion: '2026-07-09',
-                    tecnologias: ['Java', 'PostgreSQL', 'Spring Boot'], heredado: false,
-                    evidencias: [
-                        { nombre: 'contrato_servicio.pdf', tipo: 'PDF', fecha: '2026-07-08' },
-                        { nombre: 'diagrama_arquitectura.png', tipo: 'Imagen', fecha: '2026-07-07' }
-                    ]
-                },
-                {
-                    id: 3, codigo: 'SYS-003', nombre: 'Portal Web', area: 'Comunicaciones',
-                    responsable: 'Carlos Ruiz', estado: 'Validado', criticidad: 'Media',
-                    tipo: 'Web', fechaActualizacion: '2026-07-08',
-                    tecnologias: ['Python', 'Django', 'PostgreSQL'], heredado: false,
-                    evidencias: [
-                        { nombre: 'documentacion_api.pdf', tipo: 'PDF', fecha: '2026-07-06' }
-                    ]
-                },
-                {
-                    id: 4, codigo: 'SYS-004', nombre: 'Sistema Heredado', area: 'Infraestructura',
-                    responsable: 'Ana Torres', estado: 'Observado', criticidad: 'Baja',
-                    tipo: 'Legacy', fechaActualizacion: '2026-07-07',
-                    tecnologias: ['COBOL', 'DB2', 'Mainframe'], heredado: true,
-                    evidencias: [
-                        { nombre: 'informe_legacy.pdf', tipo: 'PDF', fecha: '2026-07-05' },
-                        { nombre: 'captura_mainframe.png', tipo: 'Imagen', fecha: '2026-07-04' }
-                    ]
-                },
+let catalogos = {
+    criticidades: [],
+    areas: [],
+    estados: [],
+    tipos: []
+};
 
-                {
-                    id: 6, codigo: 'SYS-006', nombre: 'CRM', area: 'Ventas',
-                    responsable: 'Laura García', estado: 'Validado', criticidad: 'Media',
-                    tipo: 'Web', fechaActualizacion: '2026-07-05',
-                    tecnologias: ['JavaScript', 'MongoDB', 'Node.js'], heredado: false,
-                    evidencias: [
-                        { nombre: 'manual_usuario_crm.pdf', tipo: 'PDF', fecha: '2026-07-03' }
-                    ]
-                },
+// ============================================================
+// ✅ FUNCIONES DE NORMALIZACIÓN
+// ============================================================
 
-                {
-                    id: 8, codigo: 'SYS-008', nombre: 'Sistema de Recursos Humanos', area: 'Administración',
-                    responsable: 'Patricia López', estado: 'Validado', criticidad: 'Alta',
-                    tipo: 'Web', fechaActualizacion: '2026-07-03',
-                    tecnologias: ['PHP', 'MySQL', 'CodeIgniter'], heredado: false,
-                    evidencias: [
-                        { nombre: 'manual_rrhh.pdf', tipo: 'PDF', fecha: '2026-07-01' },
-                        { nombre: 'organigrama.png', tipo: 'Imagen', fecha: '2026-06-30' }
-                    ]
-                }
-            ];
-            guardarDatos();
-            console.log('📦 Datos mock inicializados');
-        }
-        sistemasFiltrados = [...sistemas];
-    } catch (error) {
-        console.error('❌ Error al cargar datos:', error);
-        sistemas = [];
-        sistemasFiltrados = [];
-    }
+function normalizarEstado(estado) {
+    if (!estado) return 'Pendiente';
+    const map = {
+        'BORRADOR': 'Borrador',
+        'ENVIADO': 'Enviado',
+        'OBSERVADO': 'Observado',
+        'SUBSANADO': 'Subsanado',
+        'VALIDADO': 'Validado',
+        'RECHAZADO': 'Rechazado',
+        'CERRADO': 'Cerrado',
+        'PENDIENTE': 'Pendiente',
+        'EN_REVISION': 'Pendiente',
+        'EN_REVISIÓN': 'Pendiente',
+        'ACTIVO': 'Validado'
+    };
+    
+    const estadoUpper = estado.toUpperCase();
+    return map[estadoUpper] || estado;
 }
 
-function guardarDatos() {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(sistemas));
-        console.log('💾 Datos guardados en localStorage');
-    } catch (error) {
-        console.error('❌ Error al guardar datos:', error);
+function normalizarCriticidad(criticidad) {
+    if (!criticidad) return 'Baja';
+    const map = {
+        'BAJO': 'Baja',
+        'MEDIO': 'Media',
+        'ALTO': 'Alta',
+        'CRITICO': 'Crítica'
+    };
+    return map[criticidad.toUpperCase()] || criticidad;
+}
+
+function badgeEstado(estado) {
+    const estadoNormalizado = normalizarEstado(estado);
+    const map = {
+        'Borrador': 'secondary',
+        'Enviado': 'info',
+        'Observado': 'warning',
+        'Subsanado': 'info',
+        'Validado': 'success',
+        'Rechazado': 'danger',
+        'Cerrado': 'secondary',
+        'Pendiente': 'warning'
+    };
+    return map[estadoNormalizado] || 'info';
+}
+
+function badgeCriticidad(criticidad) {
+    const critNormalizada = normalizarCriticidad(criticidad);
+    const map = {
+        'Baja': 'success',
+        'Media': 'warning',
+        'Alta': 'danger',
+        'Crítica': 'danger'
+    };
+    return map[critNormalizada] || 'info';
+}
+
+// ============================================================
+// UTILIDAD DE MANEJO DE ERRORES DE FETCH
+// ============================================================
+function manejarError(res) {
+    if (!res.ok) {
+        return res.json().catch(() => ({})).then(err => {
+            throw new Error(err.message || `Error ${res.status} en la petición`);
+        });
     }
+    if (res.status === 204) return null;
+    return res.json();
+}
+
+// ============================================================
+// CARGA DE CATÁLOGOS DESDE EL BACKEND
+// ============================================================
+function cargarCatalogos() {
+    console.log('📚 Cargando catálogos desde el backend...');
+    
+    // Cargar criticidades
+    return fetch(`${API_REPORTES}/catalogos/criticidades`)
+        .then(res => manejarError(res))
+        .then(data => {
+            catalogos.criticidades = data || [];
+            console.log('📚 Criticidades cargadas:', catalogos.criticidades.length, 'opciones');
+        })
+        .then(() => {
+            // Cargar estados de levantamiento
+            return fetch(`${API_REPORTES}/catalogos/estados-validacion`)
+                .then(res => manejarError(res))
+                .then(data => {
+                    catalogos.estados = data || [];
+                    console.log('📚 Estados cargados:', catalogos.estados.length, 'opciones');
+                });
+        })
+        .catch(error => {
+            console.error('❌ Error al cargar catálogos:', error);
+            // Valores por defecto si falla
+            catalogos.criticidades = [
+                { valor: 'Académico' },
+                { valor: 'Financiero' },
+                { valor: 'RRHH' },
+                { valor: 'Administrativo' },
+                { valor: 'Misional' },
+                { valor: 'Estratégico' }
+            ];
+            catalogos.estados = [
+                { valor: 'Borrador' },
+                { valor: 'Enviado' },
+                { valor: 'Observado' },
+                { valor: 'Subsanado' },
+                { valor: 'Validado' },
+                { valor: 'Rechazado' },
+                { valor: 'Cerrado' },
+                { valor: 'Pendiente' }
+            ];
+            console.log('📚 Usando catálogos por defecto');
+        });
+}
+
+// ============================================================
+// CARGA DE DATOS DESDE EL BACKEND
+// ============================================================
+function cargarDatos() {
+    // Primero cargar los catálogos, luego los sistemas
+    return cargarCatalogos()
+        .then(() => {
+            return fetch(`${API_BASE}/sistemas`)
+                .then(res => manejarError(res))
+                .then(data => {
+                    console.log('📊 Datos CRUDOS del backend:', data);
+                    
+                    sistemas = (data || []).map(s => ({
+                        id: s.id,
+                        codigo: s.codigo || 'N/A',
+                        nombre: s.nombre || 'Sin nombre',
+                        area: s.area || 'N/A',
+                        responsable: s.responsable || 'Sin responsable',
+                        estado: s.estado || 'Pendiente',
+                        nivelRiesgo: s.criticidad || 'BAJO',
+                        criticidadNombre: s.criticidadNombre || s.criticidad || 'No especificada',
+                        tipo: s.tipo || 'No especificado',
+                        fechaActualizacion: s.fechaActualizacion || 'N/A',
+                        tecnologias: s.tecnologias || [],
+                        heredado: s.heredado || false,
+                        evidencias: s.evidencias || [],
+                        _detalleCargado: false
+                    }));
+                    
+                    sistemasFiltrados = [...sistemas];
+                    
+                    console.log('📊 Sistemas PROCESADOS:', sistemas);
+                    console.log(`📊 ${sistemas.length} sistemas cargados desde el backend`);
+                    
+                    // Renderizar todo
+                    renderStats();
+                    renderTabla();
+                    llenarFiltros();
+                });
+        })
+        .catch(error => {
+            console.error('❌ Error al cargar datos:', error);
+            sistemas = [];
+            sistemasFiltrados = [];
+            renderStats();
+            renderTabla();
+            alert('⚠️ No se pudo conectar con el servidor.');
+        });
+}
+
+// ============================================================
+// CARGA DE DETALLE (tipo, tecnologías, heredado, evidencias)
+// ============================================================
+function obtenerDetalleSistema(id) {
+    const local = sistemas.find(s => s.id === id);
+    if (local && local._detalleCargado) {
+        return Promise.resolve(local);
+    }
+
+    return fetch(`${API_BASE}/sistemas/${id}`)
+        .then(res => manejarError(res))
+        .then(detalle => {
+            if (!detalle) return local || null;
+            if (local) {
+                local.tipo = detalle.tipo;
+                local.tecnologias = detalle.tecnologias || [];
+                local.heredado = detalle.heredado || false;
+                local.evidencias = detalle.evidencias || [];
+                local._detalleCargado = true;
+                return local;
+            }
+            return { ...detalle, _detalleCargado: true };
+        })
+        .catch(error => {
+            console.error('❌ Error al cargar el detalle del sistema:', error);
+            alert('⚠️ No se pudo obtener el detalle del sistema desde el servidor.');
+            return local || null;
+        });
 }
 
 // ============================================================
 // FUNCIONES DE RENDERIZADO
 // ============================================================
 
-function badgeEstado(estado) {
-    const map = {
-        'Validado': 'success',
-        'Pendiente': 'warning',
-        'Observado': 'warning'
-    };
-    return map[estado] || 'info';
-}
-
-function badgeCriticidad(criticidad) {
-    const map = {
-        'Baja': 'success',
-        'Media': 'warning',
-        'Alta': 'danger',
-        'Crítica / Misión Crítica': 'danger'
-    };
-    return map[criticidad] || 'info';
-}
-
 function renderStats() {
     try {
         const total = sistemas.length;
-        const activos = sistemas.filter(s => s.estado === 'Validado' || s.estado === 'En revisión').length;
-        const enMantenimiento = sistemas.filter(s => s.estado === 'En revisión').length;
-        const observados = sistemas.filter(s => s.estado === 'Observado').length;
-        const validados = sistemas.filter(s => s.estado === 'Validado').length;
+        const validados = sistemas.filter(s => normalizarEstado(s.estado) === 'Validado').length;
+        const observados = sistemas.filter(s => normalizarEstado(s.estado) === 'Observado').length;
+        // ✅ SOLO contar el estado exacto "Pendiente" del catálogo
+        const pendientes = sistemas.filter(s => normalizarEstado(s.estado) === 'Pendiente').length;
+        // ✅ Enviados (estado "Enviado" del catálogo)
+        const enviados = sistemas.filter(s => normalizarEstado(s.estado) === 'Enviado').length;
+        // ✅ Borradores (estado "Borrador" del catálogo)
+        const borradores = sistemas.filter(s => normalizarEstado(s.estado) === 'Borrador').length;
+        // ✅ Cerrados (estado "Cerrado" del catálogo)
+        const cerrados = sistemas.filter(s => normalizarEstado(s.estado) === 'Cerrado').length;
 
         const container = document.getElementById('statsReportes');
         if (!container) return;
@@ -142,22 +249,20 @@ function renderStats() {
                 <div class="card-label">Total Sistemas</div>
             </div>
             <div class="card verde">
-                <div class="card-number">${activos}</div>
-                <div class="card-label">Activos</div>
-            </div>
-            <div class="card amarillo">
-                <div class="card-number">${enMantenimiento}</div>
-                <div class="card-label">En mantenimiento</div>
+                <div class="card-number">${validados}</div>
+                <div class="card-label">Validados</div>
             </div>
             <div class="card rojo">
                 <div class="card-number">${observados}</div>
                 <div class="card-label">Observados</div>
             </div>
-            <div class="card verde">
-                <div class="card-number">${validados}</div>
-                <div class="card-label">Validados</div>
+            <div class="card amarillo">
+                <div class="card-number">${pendientes}</div>
+                <div class="card-label">Pendientes</div>
             </div>
         `;
+        
+        console.log('📊 Estadísticas:', { total, validados, observados, pendientes, enviados, borradores, cerrados });
     } catch (error) {
         console.error('❌ Error al renderizar estadísticas:', error);
     }
@@ -165,14 +270,20 @@ function renderStats() {
 
 function renderTabla() {
     try {
+        console.log('🔄 Ejecutando renderTabla()...');
+        console.log('📊 sistemasFiltrados:', sistemasFiltrados);
+        
         const tbody = document.getElementById('tablaSistemas');
-        if (!tbody) return;
+        if (!tbody) {
+            console.error('❌ No se encontró el elemento tablaSistemas');
+            return;
+        }
 
         const inicio = (paginaActual - 1) * ITEMS_POR_PAGINA;
         const fin = inicio + ITEMS_POR_PAGINA;
         const datosPagina = sistemasFiltrados.slice(inicio, fin);
 
-        if (datosPagina.length === 0) {
+        if (!datosPagina || datosPagina.length === 0) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="8" style="text-align:center;padding:3rem;color:#999;">
@@ -186,29 +297,38 @@ function renderTabla() {
             return;
         }
 
-        // ✅ CORREGIDO: 8 columnas para coincidir con el thead
-        tbody.innerHTML = datosPagina.map(s => `
-            <tr>
-                <td><strong>${s.codigo}</strong></td>
-                <td>${s.nombre}</td>
-                <td>${s.area}</td>
-                <td>${s.responsable}</td>
-                <td><span class="badge badge-${badgeEstado(s.estado)}">${s.estado}</span></td>
-                <td><span class="badge badge-${badgeCriticidad(s.criticidad)}">${s.criticidad}</span></td>
-                <td>${s.fechaActualizacion || 'N/A'}</td>
-                <td style="text-align:center; white-space:nowrap;">
-                    <button class="btn-icon btn-ver" data-id="${s.id}" title="Ver detalle" style="margin:0 3px; padding:6px 8px; background:#f0f4f8; border-radius:6px;">👁️</button>
-                    <button class="btn-icon btn-exportar-sistema" data-id="${s.id}" title="Exportar sistema (PDF/Excel)" style="margin:0 3px; padding:6px 8px; background:#f0f4f8; border-radius:6px;">📤</button>
-                </td>
-            </tr>
-        `).join('');
+        let html = '';
+        datosPagina.forEach(s => {
+            const estadoNormalizado = normalizarEstado(s.estado);
+            const criticidadMostrar = s.criticidadNombre || 'No especificada';
+            const nivelRiesgo = s.nivelRiesgo || 'BAJO';
+            
+            html += `
+                <tr>
+                    <td><strong>${s.codigo || 'N/A'}</strong></td>
+                    <td>${s.nombre || 'Sin nombre'}</td>
+                    <td>${s.area || 'N/A'}</td>
+                    <td>${s.responsable || 'Sin responsable'}</td>
+                    <td><span class="badge-estado ${estadoNormalizado.toLowerCase()}">${estadoNormalizado}</span></td>
+                    <td><span class="badge-criticidad ${nivelRiesgo.toLowerCase()}">${criticidadMostrar}</span></td>
+                    <td>${s.fechaActualizacion || 'N/A'}</td>
+                    <td style="text-align:center; white-space:nowrap;">
+                        <button class="btn-icon btn-ver" data-id="${s.id}" title="Ver detalle">👁️</button>
+                        <button class="btn-icon btn-exportar-sistema" data-id="${s.id}" title="Exportar sistema">📤</button>
+                    </td>
+                </tr>
+            `;
+        });
 
+        tbody.innerHTML = html;
         document.getElementById('sistemaCount').textContent = `Total: ${sistemasFiltrados.length}`;
         actualizarPaginacion();
-
         asignarDelegacionEventos();
+        
+        console.log('✅ renderTabla() completado con', datosPagina.length, 'filas');
     } catch (error) {
         console.error('❌ Error al renderizar tabla:', error);
+        console.error('❌ Stack trace:', error.stack);
     }
 }
 
@@ -265,23 +385,56 @@ function cambiarPagina(delta) {
 }
 
 // ============================================================
-// FILTROS
+// FILTROS - CARGADOS DINÁMICAMENTE DESDE CATÁLOGOS
 // ============================================================
 
 function llenarFiltros() {
-    const areas = [...new Set(sistemas.map(s => s.area))].sort();
+    console.log('🔄 Llenando filtros con datos de catálogos...');
+    
+    // 1. Áreas (desde los sistemas)
+    const areas = [...new Set(sistemas.map(s => s.area))].filter(a => a && a !== 'N/A').sort();
     const selectArea = document.getElementById('filtroArea');
     if (selectArea) {
         selectArea.innerHTML = '<option value="">Todas</option>';
         areas.forEach(a => selectArea.innerHTML += `<option value="${a}">${a}</option>`);
+        console.log('📚 Filtro de áreas actualizado con:', areas.length, 'opciones');
     }
 
-    const responsables = [...new Set(sistemas.map(s => s.responsable))].sort();
+    // 2. Responsables (desde los sistemas)
+    const responsables = [...new Set(sistemas.map(s => s.responsable))].filter(r => r && r !== 'Sin responsable').sort();
     const selectResp = document.getElementById('filtroResponsable');
     if (selectResp) {
         selectResp.innerHTML = '<option value="">Todos</option>';
         responsables.forEach(r => selectResp.innerHTML += `<option value="${r}">${r}</option>`);
+        console.log('📚 Filtro de responsables actualizado con:', responsables.length, 'opciones');
     }
+
+    // 3. ✅ CRITICIDADES (desde el catálogo del backend)
+    const selectCriticidad = document.getElementById('filtroCriticidad');
+    if (selectCriticidad) {
+        selectCriticidad.innerHTML = '<option value="">Todas</option>';
+        catalogos.criticidades.forEach(c => {
+            const valor = c.valor || c.nombre || c.codigo;
+            if (valor) {
+                selectCriticidad.innerHTML += `<option value="${valor}">${valor}</option>`;
+            }
+        });
+        console.log('📚 Filtro de criticidades actualizado con:', catalogos.criticidades.length, 'opciones');
+    }
+
+    // 4. ✅ ESTADOS (desde el catálogo del backend)
+    const selectEstado = document.getElementById('filtroEstado');
+    if (selectEstado) {
+        selectEstado.innerHTML = '<option value="">Todos</option>';
+        catalogos.estados.forEach(e => {
+            const valor = e.valor || e.nombre || e.codigo;
+            if (valor) {
+                selectEstado.innerHTML += `<option value="${valor}">${valor}</option>`;
+            }
+        });
+        console.log('📚 Filtro de estados actualizado con:', catalogos.estados.length, 'opciones');
+    }
+
 }
 
 function filtrarReportes() {
@@ -291,38 +444,38 @@ function filtrarReportes() {
         const responsable = document.getElementById('filtroResponsable')?.value || '';
         const estado = document.getElementById('filtroEstado')?.value || '';
         const criticidad = document.getElementById('filtroCriticidad')?.value || '';
-        const tipo = document.getElementById('filtroTipo')?.value || '';
         const fechaDesde = document.getElementById('filtroFechaDesde')?.value || '';
         const fechaHasta = document.getElementById('filtroFechaHasta')?.value || '';
 
         sistemasFiltrados = sistemas.filter(s => {
-            const matchBusqueda = s.nombre.toLowerCase().includes(busqueda) ||
-                                 s.codigo.toLowerCase().includes(busqueda) ||
-                                 s.responsable.toLowerCase().includes(busqueda);
+            const matchBusqueda = s.nombre?.toLowerCase().includes(busqueda) ||
+                                 s.codigo?.toLowerCase().includes(busqueda) ||
+                                 s.responsable?.toLowerCase().includes(busqueda);
             const matchArea = area === '' || s.area === area;
             const matchResponsable = responsable === '' || s.responsable === responsable;
-            const matchEstado = estado === '' || s.estado === estado;
-            const matchCriticidad = criticidad === '' || s.criticidad === criticidad;
-            const matchTipo = tipo === '' || s.tipo === tipo;
+            const matchEstado = estado === '' || normalizarEstado(s.estado) === estado;
+            const matchCriticidad = criticidad === '' || s.criticidadNombre === criticidad;
+            
             let matchFecha = true;
-            if (fechaDesde && s.fechaActualizacion) {
+            if (fechaDesde && s.fechaActualizacion && s.fechaActualizacion !== 'N/A') {
                 matchFecha = matchFecha && s.fechaActualizacion >= fechaDesde;
             }
-            if (fechaHasta && s.fechaActualizacion) {
+            if (fechaHasta && s.fechaActualizacion && s.fechaActualizacion !== 'N/A') {
                 matchFecha = matchFecha && s.fechaActualizacion <= fechaHasta;
             }
-            return matchBusqueda && matchArea && matchResponsable && matchEstado && matchCriticidad && matchTipo && matchFecha;
+            return matchBusqueda && matchArea && matchResponsable && matchEstado && matchCriticidad && matchFecha;
         });
 
         paginaActual = 1;
         renderTabla();
+        console.log('🔍 Filtro aplicado:', sistemasFiltrados.length, 'resultados');
     } catch (error) {
         console.error('❌ Error al filtrar:', error);
     }
 }
 
 function limpiarFiltros() {
-    const inputs = ['buscarReporte', 'filtroArea', 'filtroResponsable', 'filtroEstado', 'filtroCriticidad', 'filtroTipo', 'filtroFechaDesde', 'filtroFechaHasta'];
+    const inputs = ['buscarReporte', 'filtroArea', 'filtroResponsable', 'filtroEstado', 'filtroCriticidad', 'filtroFechaDesde', 'filtroFechaHasta'];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -330,6 +483,7 @@ function limpiarFiltros() {
     sistemasFiltrados = [...sistemas];
     paginaActual = 1;
     renderTabla();
+    console.log('🧹 Filtros limpiados');
 }
 
 // ============================================================
@@ -337,12 +491,16 @@ function limpiarFiltros() {
 // ============================================================
 
 function verSistema(id) {
-    const s = sistemas.find(s => s.id === id);
-    if (!s) {
-        alert('Sistema no encontrado.');
-        return;
-    }
+    obtenerDetalleSistema(id).then(s => {
+        if (!s) {
+            alert('Sistema no encontrado.');
+            return;
+        }
+        pintarDetalleSistema(s);
+    });
+}
 
+function pintarDetalleSistema(s) {
     const body = document.getElementById('detalleBody');
     if (!body) {
         console.error('❌ No se encontró el elemento detalleBody');
@@ -353,39 +511,42 @@ function verSistema(id) {
     if (s.evidencias && s.evidencias.length > 0) {
         evidenciasHtml = s.evidencias.map(ev =>
             `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #f3f4f6; padding:6px 0; font-size:13px;">
-                <span>📎 ${ev.nombre}</span>
-                <span style="color:#6b7280;">${ev.tipo} · ${ev.fecha}</span>
+                <span>📎 ${ev.nombre || 'Sin nombre'}</span>
+                <span style="color:#6b7280;">${ev.tipo || 'N/A'} · ${ev.fecha || 'N/A'}</span>
             </div>`
         ).join('');
     } else {
         evidenciasHtml = '<span style="color:#9ca3af;">No hay evidencias registradas</span>';
     }
 
+    const estadoNormalizado = normalizarEstado(s.estado);
+    const criticidadMostrar = s.criticidadNombre || s.nivelRiesgo || 'No especificada';
+
     body.innerHTML = `
         <div style="display:flex; flex-direction:column; gap:10px; padding:4px 0;">
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
                 <span style="font-weight:600; color:#374151; width:120px;">Código</span>
-                <span style="color:#1f2937;">${s.codigo}</span>
+                <span style="color:#1f2937;">${s.codigo || 'N/A'}</span>
             </div>
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
                 <span style="font-weight:600; color:#374151; width:120px;">Nombre</span>
-                <span style="color:#1f2937;">${s.nombre}</span>
+                <span style="color:#1f2937;">${s.nombre || 'Sin nombre'}</span>
             </div>
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
                 <span style="font-weight:600; color:#374151; width:120px;">Área</span>
-                <span style="color:#1f2937;">${s.area}</span>
+                <span style="color:#1f2937;">${s.area || 'N/A'}</span>
             </div>
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
                 <span style="font-weight:600; color:#374151; width:120px;">Responsable</span>
-                <span style="color:#1f2937;">${s.responsable}</span>
+                <span style="color:#1f2937;">${s.responsable || 'Sin responsable'}</span>
             </div>
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
                 <span style="font-weight:600; color:#374151; width:120px;">Estado</span>
-                <span style="color:#1f2937;"><span class="badge badge-${badgeEstado(s.estado)}">${s.estado}</span></span>
+                <span style="color:#1f2937;"><span class="badge badge-${badgeEstado(s.estado)}">${estadoNormalizado}</span></span>
             </div>
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
                 <span style="font-weight:600; color:#374151; width:120px;">Criticidad</span>
-                <span style="color:#1f2937;"><span class="badge badge-${badgeCriticidad(s.criticidad)}">${s.criticidad}</span></span>
+                <span style="color:#1f2937;"><span class="badge badge-${badgeCriticidad(s.nivelRiesgo)}">${criticidadMostrar}</span></span>
             </div>
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
                 <span style="font-weight:600; color:#374151; width:120px;">Tipo</span>
@@ -412,7 +573,7 @@ function verSistema(id) {
         </div>
     `;
 
-    document.getElementById('modalDetalleTitulo').textContent = `📄 Detalle: ${s.nombre}`;
+    document.getElementById('modalDetalleTitulo').textContent = `📄 Detalle: ${s.nombre || 'Sistema'}`;
     const modal = document.getElementById('modalDetalle');
     if (modal) {
         modal.style.display = 'flex';
@@ -426,25 +587,26 @@ function verSistema(id) {
 // ============================================================
 
 function mostrarOpcionesExportacion(id) {
-    const s = sistemas.find(s => s.id === id);
-    if (!s) {
-        alert('Sistema no encontrado.');
-        return;
-    }
+    obtenerDetalleSistema(id).then(s => {
+        if (!s) {
+            alert('Sistema no encontrado.');
+            return;
+        }
 
-    const opcion = confirm(
-        `📤 Exportar sistema: ${s.nombre}\n\n` +
-        `Selecciona el formato:\n` +
-        `✅ "Aceptar" → Exportar a PDF\n` +
-        `❌ "Cancelar" → Exportar a Excel (CSV)\n\n` +
-        `¿Exportar a PDF?`
-    );
+        const opcion = confirm(
+            `📤 Exportar sistema: ${s.nombre}\n\n` +
+            `Selecciona el formato:\n` +
+            `✅ "Aceptar" → Exportar a PDF\n` +
+            `❌ "Cancelar" → Exportar a Excel (CSV)\n\n` +
+            `¿Exportar a PDF?`
+        );
 
-    if (opcion) {
-        exportarSistemaPDF(id);
-    } else {
-        exportarSistemaExcel(id);
-    }
+        if (opcion) {
+            exportarSistemaPDF(id);
+        } else {
+            exportarSistemaExcel(id);
+        }
+    });
 }
 
 function exportarSistemaPDF(id) {
@@ -494,11 +656,14 @@ function generarHTMLReporteIndividual(s) {
     let evidenciasHtml = '';
     if (s.evidencias && s.evidencias.length > 0) {
         evidenciasHtml = s.evidencias.map(ev =>
-            `<tr><td>${ev.nombre}</td><td>${ev.tipo}</td><td>${ev.fecha}</td></tr>`
+            `<tr><td>${ev.nombre || 'Sin nombre'}</td><td>${ev.tipo || 'N/A'}</td><td>${ev.fecha || 'N/A'}</td></tr>`
         ).join('');
     } else {
         evidenciasHtml = '<tr><td colspan="3" style="text-align:center;">No hay evidencias</td></tr>';
     }
+
+    const estadoNormalizado = normalizarEstado(s.estado);
+    const badgeEstadoClass = badgeEstado(s.estado);
 
     return `
     <!DOCTYPE html>
@@ -524,6 +689,7 @@ function generarHTMLReporteIndividual(s) {
         .badge-warning { background:#fef9c3; color:#854d0e; }
         .badge-danger { background:#fee2e2; color:#991b1b; }
         .badge-info { background:#dbeafe; color:#1e40af; }
+        .badge-secondary { background:#e5e7eb; color:#374151; }
     </style>
     </head>
     <body>
@@ -538,8 +704,8 @@ function generarHTMLReporteIndividual(s) {
             <div class="info-item"><span class="label">Nombre</span><span class="value">${s.nombre}</span></div>
             <div class="info-item"><span class="label">Área</span><span class="value">${s.area}</span></div>
             <div class="info-item"><span class="label">Responsable</span><span class="value">${s.responsable}</span></div>
-            <div class="info-item"><span class="label">Estado</span><span class="value"><span class="badge badge-${badgeEstado(s.estado)}">${s.estado}</span></span></div>
-            <div class="info-item"><span class="label">Criticidad</span><span class="value"><span class="badge badge-${badgeCriticidad(s.criticidad)}">${s.criticidad}</span></span></div>
+            <div class="info-item"><span class="label">Estado</span><span class="value"><span class="badge badge-${badgeEstadoClass}">${estadoNormalizado}</span></span></div>
+            <div class="info-item"><span class="label">Criticidad</span><span class="value"><span class="badge badge-${badgeCriticidad(s.nivelRiesgo)}">${s.criticidadNombre || s.nivelRiesgo}</span></span></div>
             <div class="info-item"><span class="label">Tipo</span><span class="value">${s.tipo || 'N/A'}</span></div>
             <div class="info-item"><span class="label">Heredado</span><span class="value">${s.heredado ? 'Sí' : 'No'}</span></div>
             <div class="info-item"><span class="label">Tecnologías</span><span class="value">${s.tecnologias ? s.tecnologias.join(', ') : 'N/A'}</span></div>
@@ -569,8 +735,8 @@ function exportarSistemaExcel(id) {
         s.nombre,
         s.area,
         s.responsable,
-        s.estado,
-        s.criticidad,
+        normalizarEstado(s.estado),
+        s.criticidadNombre || s.nivelRiesgo,
         s.tipo || '',
         s.tecnologias ? s.tecnologias.join('; ') : '',
         s.heredado ? 'Sí' : 'No',
@@ -620,8 +786,8 @@ function exportarCSV() {
             s.nombre,
             s.area,
             s.responsable,
-            s.estado,
-            s.criticidad,
+            normalizarEstado(s.estado),
+            s.criticidadNombre || s.nivelRiesgo,
             s.tipo || '',
             s.tecnologias ? s.tecnologias.join('; ') : '',
             s.heredado ? 'Sí' : 'No',
@@ -734,6 +900,7 @@ function generarHTMLReporteGeneral(datos) {
         .badge-warning { background:#fef9c3; color:#854d0e; }
         .badge-danger { background:#fee2e2; color:#991b1b; }
         .badge-info { background:#dbeafe; color:#1e40af; }
+        .badge-secondary { background:#e5e7eb; color:#374151; }
     </style>
     </head>
     <body>
@@ -744,10 +911,10 @@ function generarHTMLReporteGeneral(datos) {
         </div>
         <div class="stats">
             <span>📊 Total: <span class="num">${datos.length}</span></span>
-            <span>✅ Activos: <span class="num">${datos.filter(s => s.estado === 'Validado' || s.estado === 'En revisión').length}</span></span>
-            <span>🔄 Mantenimiento: <span class="num">${datos.filter(s => s.estado === 'En revisión').length}</span></span>
-            <span>👀 Observados: <span class="num">${datos.filter(s => s.estado === 'Observado').length}</span></span>
-            <span>✔️ Validados: <span class="num">${datos.filter(s => s.estado === 'Validado').length}</span></span>
+            <span>✅ Validados: <span class="num">${datos.filter(s => normalizarEstado(s.estado) === 'Validado').length}</span></span>
+            <span>🔄 En revisión: <span class="num">${datos.filter(s => normalizarEstado(s.estado) === 'En revisión').length}</span></span>
+            <span>👀 Observados: <span class="num">${datos.filter(s => normalizarEstado(s.estado) === 'Observado').length}</span></span>
+            <span>📝 Pendientes: <span class="num">${datos.filter(s => normalizarEstado(s.estado) === 'Pendiente').length}</span></span>
         </div>
         <table>
             <thead>
@@ -756,14 +923,16 @@ function generarHTMLReporteGeneral(datos) {
             <tbody>
     `;
     datos.forEach(s => {
+        const estadoNormalizado = normalizarEstado(s.estado);
+        const badgeClass = badgeEstado(s.estado);
         html += `
             <tr>
                 <td>${s.codigo}</td>
                 <td><strong>${s.nombre}</strong></td>
                 <td>${s.area}</td>
                 <td>${s.responsable}</td>
-                <td><span class="badge badge-${badgeEstado(s.estado)}">${s.estado}</span></td>
-                <td><span class="badge badge-${badgeCriticidad(s.criticidad)}">${s.criticidad}</span></td>
+                <td><span class="badge badge-${badgeClass}">${estadoNormalizado}</span></td>
+                <td><span class="badge badge-${badgeCriticidad(s.nivelRiesgo)}">${s.criticidadNombre || s.nivelRiesgo}</span></td>
                 <td>${s.tipo || ''}</td>
                 <td>${s.fechaActualizacion || ''}</td>
             </tr>
@@ -808,9 +977,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('📊 Módulo de Reportes de Inventario iniciando...');
 
         cargarDatos();
-        llenarFiltros();
-        renderStats();
-        renderTabla();
 
         // === EVENTOS DE FILTROS Y BOTONES PRINCIPALES ===
         const btnFiltrar = document.getElementById('btnFiltrar');
@@ -832,16 +998,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const btnExportarPDF = document.getElementById('btnExportarPDF');
         if (btnExportarPDF) btnExportarPDF.addEventListener('click', exportarPDF);
 
-        // ✅ BOTÓN REFRESCAR - CORREGIDO
         const btnRefrescar = document.getElementById('btnRefrescar');
         if (btnRefrescar) {
             btnRefrescar.addEventListener('click', function() {
-                console.log('🔄 Refrescando datos...');
-                sistemasFiltrados = [...sistemas];
-                paginaActual = 1;
-                renderTabla();
-                renderStats();
-                alert('🔄 Datos actualizados correctamente');
+                console.log('🔄 Refrescando datos desde el backend...');
+                cargarDatos();
             });
         }
 
@@ -896,7 +1057,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         console.log('✅ Módulo inicializado correctamente');
-        console.log(`📊 ${sistemas.length} sistemas cargados`);
 
     } catch (error) {
         console.error('❌ Error en la inicialización:', error);

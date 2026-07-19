@@ -6,11 +6,13 @@ services:
     environment:
       POSTGRES_DB: diagti_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "Postgres123*"
+      POSTGRES_PASSWORD: Postgres123*
     ports:
       - "5433:5432"
     volumes:
       - diagti_postgres_data:/var/lib/postgresql/data
+      - ./DataBase:/docker-entrypoint-initdb.d/DataBase
+      - ./init.sql:/docker-entrypoint-initdb.d/00-init.sql
 
 volumes:
   diagti_postgres_data:

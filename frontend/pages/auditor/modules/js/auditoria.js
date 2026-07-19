@@ -602,11 +602,17 @@ function abrirVentanaPDF(html) {
 }
 
 function cerrarSesion() {
-    const confirmar = confirm("¿Deseas cerrar sesión?");
+    document.getElementById("logout-confirm-overlay")?.classList.add("open");
+}
 
-    if (confirmar) {
-        alert("Sesión cerrada correctamente");
-    }
+function cancelarCerrarSesion() {
+    document.getElementById("logout-confirm-overlay")?.classList.remove("open");
+}
+
+function confirmarCerrarSesion() {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "../../../login/html/login.html";
 }
 
 searchInput.addEventListener("input", filtrarAuditoria);
@@ -614,5 +620,17 @@ filterModulo.addEventListener("change", filtrarAuditoria);
 filterAccion.addEventListener("change", filtrarAuditoria);
 filterDesde.addEventListener("change", filtrarAuditoria);
 filterHasta.addEventListener("change", filtrarAuditoria);
+
+document.addEventListener("DOMContentLoaded", function () {
+    const overlay = document.getElementById("logout-confirm-overlay");
+
+    if (overlay) {
+        overlay.addEventListener("click", function (e) {
+            if (e.target === overlay) {
+                cancelarCerrarSesion();
+            }
+        });
+    }
+});
 
 renderAuditoria(logsAuditoria);

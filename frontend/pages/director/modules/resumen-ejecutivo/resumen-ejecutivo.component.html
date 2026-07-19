@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Dashboard ejecutivo del inventario y diagnóstico TI del CTIC UNAS." name="description"/>
+<title>Dashboard Ejecutivo | DIAGTI CTIC UNAS</title>
+<link href="resumen-ejecutivo.component.css?v=3" rel="stylesheet"/>
+</head>
+<body>
+<!-- ===================== SIDEBAR ===================== -->
+<aside class="sidebar">
+    <div class="brand">
+        <div class="logo">
+            <img src="../../../admin/modules/assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS">
+        </div>
+        <div>
+            <h1>UNAS</h1>
+            <small>Tingo María</small>
+        </div>
+    </div>
+
+    <div class="sidebar-profile">
+        <div class="profile-avatar">DC</div>
+        <div class="profile-info">
+            <div class="profile-name">Brando Gabriel Benavides Vargas</div>
+            <div class="profile-role">Director CTIC</div>
+        </div>
+    </div>
+
+    <div class="nav-label">Módulo Directivo</div>
+
+    <nav class="nav">
+        <a class="nav-item active" href="resumen-ejecutivo.component.html">
+            <span>
+                <span class="lbl">Dashboard Ejecutivo</span>
+                <span class="sub">Resumen estratégico</span>
+            </span>
+        </a>
+        <a class="nav-item" href="../dashboard-riesgos/dashboard-riesgos.component.html">
+            <span>
+                <span class="lbl">Riesgos</span>
+                <span class="sub">Registro de riesgos</span>
+            </span>
+        </a>
+        <a class="nav-item" href="../reportes-ejecutivos/reportes-ejecutivos.component.html">
+            <span>
+                <span class="lbl">Reportes Ejecutivos</span>
+                <span class="sub">Estadísticas y análisis</span>
+            </span>
+        </a>
+    </nav>
+
+    <div class="sidebar-logout">
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Cerrar Sesión
+        </button>
+    </div>
+
+    <div class="sidebar-footer">
+        DIAGTI v2.0 · CTIC UNAS<br>
+        Módulo Directivo
+    </div>
+</aside>
+
+<!-- =====================================================
+         CONTENIDO PRINCIPAL
+    ====================================================== -->
+<main class="main-content" id="main-content">
+    <!-- HEADER -->
+    <header class="executive-header-compact">
+        <span class="section-label">Módulo Directivo</span>
+        <h1>Dashboard Ejecutivo</h1>
+        <p>Resumen estratégico de la salud tecnológica institucional, el cumplimiento del diagnóstico y el avance de los proyectos de modernización.</p>
+    </header>
+
+    <!-- =================================================
+             FILTROS EJECUTIVOS (OCULTOS POR DEFECTO)
+        ================================================== -->
+    <section aria-labelledby="dashboard-filter-title" class="executive-filter-panel" hidden>
+        <h2 id="dashboard-filter-title">Filtros ejecutivos</h2>
+        <form class="executive-filter-form" id="executive-filter-form">
+            <fieldset class="executive-date-range">
+                <legend>Rango de fechas</legend>
+                <div class="executive-date-range__fields">
+                    <label>
+                        <span>Desde</span>
+                        <input id="filter-date-from" max="2026-12-31" min="2025-01-01" name="dateFrom" type="date" value="2025-01-01"/>
+                    </label>
+                    <label>
+                        <span>Hasta</span>
+                        <input id="filter-date-to" max="2026-12-31" min="2025-01-01" name="dateTo" type="date" value="2026-12-31"/>
+                    </label>
+                </div>
+            </fieldset>
+            <div class="executive-filter-group">
+                <label for="filter-area">Área funcional</label>
+                <select id="filter-area" name="area">
+                    <option value="all">Todas las áreas</option>
+                </select>
+            </div>
+            <div class="executive-filter-group">
+                <label for="filter-criticality">Criticidad</label>
+                <select id="filter-criticality" name="criticality">
+                    <option value="all">Todas</option>
+                </select>
+            </div>
+            <div class="executive-filter-group">
+                <label for="filter-validation">Estado</label>
+                <select id="filter-validation" name="validation">
+                    <option value="all">Todos</option>
+                </select>
+            </div>
+            <div class="executive-filter-group executive-filter-group--search">
+                <label for="filter-search">Buscar sistema</label>
+                <div class="executive-search-control">
+                    <span aria-hidden="true">⌕</span>
+                    <input autocomplete="off" id="filter-search" name="search" placeholder="Código o nombre" type="search"/>
+                </div>
+            </div>
+            <div class="executive-filter-actions">
+                <button class="executive-button executive-button--secondary" id="reset-dashboard-filters" type="button">Restablecer</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- ESTADO VACÍO -->
+    <section class="dashboard-state dashboard-state--empty" hidden id="dashboard-empty">
+        <div aria-hidden="true" class="dashboard-state__icon">○</div>
+        <h2>No existen datos para los criterios seleccionados</h2>
+        <p>Restablezca los filtros o seleccione otro rango.</p>
+        <button class="executive-button executive-button--secondary" id="empty-reset-filters" type="button">Restablecer filtros</button>
+    </section>
+
+    <!-- CONTENIDO DEL DASHBOARD -->
+    <div class="dashboard-content" id="dashboard-content">
+        <!-- KPIs -->
+        <section aria-label="Resumen de sistemas y validación" class="executive-kpi-grid">
+            <article class="executive-kpi-card executive-kpi-card--systems">
+                <div class="executive-kpi-card__header">
+                    <span class="executive-kpi-card__label">Sistemas registrados</span>
+                    <span aria-hidden="true" class="executive-kpi-card__icon">▦</span>
+                </div>
+                <strong class="executive-kpi-card__value" id="kpi-total-systems">0</strong>
+                <p class="executive-kpi-card__context">Total de sistemas registrados</p>
+            </article>
+            <article class="executive-kpi-card executive-kpi-card--validated">
+                <div class="executive-kpi-card__header">
+                    <span class="executive-kpi-card__label">Validado</span>
+                    <span aria-hidden="true" class="executive-kpi-card__icon">✓</span>
+                </div>
+                <strong class="executive-kpi-card__value" id="kpi-validated">0</strong>
+                <p class="executive-kpi-card__percentage" id="kpi-validated-percentage">0%</p>
+            </article>
+            <article class="executive-kpi-card executive-kpi-card--observed">
+                <div class="executive-kpi-card__header">
+                    <span class="executive-kpi-card__label">Observado</span>
+                    <span aria-hidden="true" class="executive-kpi-card__icon">!</span>
+                </div>
+                <strong class="executive-kpi-card__value" id="kpi-observed">0</strong>
+                <p class="executive-kpi-card__percentage" id="kpi-observed-percentage">0%</p>
+            </article>
+            <article class="executive-kpi-card executive-kpi-card--pending">
+                <div class="executive-kpi-card__header">
+                    <span class="executive-kpi-card__label">Pendiente</span>
+                    <span aria-hidden="true" class="executive-kpi-card__icon">…</span>
+                </div>
+                <strong class="executive-kpi-card__value" id="kpi-pending">0</strong>
+                <p class="executive-kpi-card__percentage" id="kpi-pending-percentage">0%</p>
+            </article>
+        </section>
+
+        <!-- GRÁFICO DE VALIDACIÓN -->
+        <section aria-labelledby="validation-chart-title" class="executive-panel executive-panel--validation">
+            <div class="executive-panel__header">
+                <div>
+                    <span class="section-label">Estado general</span>
+                    <h2 id="validation-chart-title">Estado de validación de los sistemas</h2>
+                    <p>Resume la validación de los sistemas registrados.</p>
+                </div>
+                <span class="executive-panel__counter" id="validation-total">0 sistemas</span>
+            </div>
+            <div aria-live="polite" class="health-chart-layout" id="validation-chart"></div>
+        </section>
+
+        <!-- GRÁFICO DE CRITICIDAD -->
+        <section aria-labelledby="criticality-chart-title" class="executive-panel executive-panel--criticality">
+            <div class="executive-panel__header executive-panel__header--criticality">
+                <div>
+                    <span class="section-label">Análisis estadístico</span>
+                    <h2 id="criticality-chart-title">Distribución de criticidad</h2>
+                    <p>Seleccione una categoría para filtrar los sistemas de la tabla.</p>
+                </div>
+                <button class="executive-button executive-button--secondary executive-button--small" hidden id="clear-criticality-selection" type="button">Ver todas</button>
+            </div>
+            <div aria-live="polite" class="criticality-chart" id="criticality-chart"></div>
+        </section>
+
+        <!-- TABLA DE PRIORIDADES -->
+        <section aria-labelledby="priority-table-title" class="executive-table-section">
+            <div class="executive-table-header">
+                <div>
+                    <span class="section-label">Priorización</span>
+                    <h2 id="priority-table-title">Prioridades ejecutivas</h2>
+                </div>
+                <div class="executive-table-tools">
+                    <label for="priority-page-size">Filas</label>
+                    <select id="priority-page-size">
+                        <option value="5">5</option>
+                        <option selected value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+            </div>
+            <div class="executive-table-responsive">
+                <table class="executive-table">
+                    <caption class="sr-only">Sistemas filtrados ordenados por criticidad.</caption>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Sistema</th>
+                            <th>Área</th>
+                            <th>Alerta principal</th>
+                            <th>Criticidad</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="priority-table-body"></tbody>
+                </table>
+            </div>
+            <div class="executive-pagination">
+                <p id="priority-pagination-summary">Mostrando resultados</p>
+                <div class="executive-pagination__controls">
+                    <button class="executive-button executive-button--secondary executive-button--small" id="priority-previous" type="button">Anterior</button>
+                    <span id="priority-page-indicator">Página 1</span>
+                    <button class="executive-button executive-button--secondary executive-button--small" id="priority-next" type="button">Siguiente</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL DETALLE -->
+    <dialog aria-labelledby="dialog-system-title" class="executive-dialog" id="system-detail-dialog">
+        <div class="executive-dialog__surface">
+            <header class="executive-dialog__header">
+                <h2 id="dialog-system-title">Sistema</h2>
+                <button aria-label="Cerrar" class="executive-dialog__close" id="dialog-close" type="button">×</button>
+            </header>
+            <div class="executive-dialog__content" id="dialog-system-content"></div>
+        </div>
+    </dialog>
+</main>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script src="resumen-ejecutivo.component.js"></script>
+
+<!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+<div class="logout-confirm-overlay" id="logout-confirm-overlay">
+    <div class="logout-confirm-box">
+        <div class="logout-confirm-header">
+            <h3>Cerrar sesión</h3>
+            <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
+        </div>
+        <div class="logout-confirm-body">
+            <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+            <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+        </div>
+        <div class="logout-confirm-footer">
+            <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
+            <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
