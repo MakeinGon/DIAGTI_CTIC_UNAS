@@ -1,5 +1,5 @@
 /* ==========================================================================
-   DIAGTI · CTIC UNAS — Login
+   DIAGTI · CTIC UNAS — Login con Redirección por Rol (DNI)
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -29,57 +29,64 @@ document.addEventListener('DOMContentLoaded', function() {
     let isSubmitting = false;
 
     // ============================================
-    // USUARIOS Y ROLES (SIMULACIÓN)
+    // USUARIOS Y ROLES (SIMULACIÓN CON DNI)
     // ============================================
     const usuarios = {
         // ADMINISTRADOR
-        '2020-12345': {
+        '76551691': {
             password: 'admin123',
             rol: 'admin',
             nombre: 'Johan Alberto Vela Arevalo',
+            dni: '76551691',
             redirect: '../../admin/modules/gestion-usuarios/gestion-usuarios.component.html'
         },
         // AUDITOR
-        '2021-67890': {
+        '74331380': {
             password: 'auditor456',
             rol: 'auditor',
             nombre: 'Carlos Ruiz',
-            redirect: '../../auditor/modules/auditoria-trazabilidad/auditoria-trazabilidad.component.html'
+            dni: '74331380',
+            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/auditor/modules/html/inventario.html'
         },
         // DESARROLLO
-        '2022-11111': {
+        '71234567': {
             password: 'desarrollo789',
             rol: 'desarrollo',
             nombre: 'Juan Pérez',
-            redirect: '../../desarrollo/modules/evidencias-obligatorias/evidencias-obligatorias.component.html'
+            dni: '71234567',
+            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/desarrollo/modules/html/dashboard.html'
         },
         // DIRECTIVO
-        '2023-22222': {
+        '72345678': {
             password: 'directivo321',
             rol: 'directivo',
             nombre: 'María Gómez',
-            redirect: '../../directivo/modules/reportes-inventario/reportes-inventario.component.html'
+            dni: '72345678',
+            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/directivo/modules/html/dashboard-riesgos.html'
         },
         // FUNCIONAL
-        '2024-33333': {
+        '73456789': {
             password: 'funcional654',
             rol: 'funcional',
             nombre: 'Laura García',
+            dni: '73456789',
             redirect: '../../funcional/modules/gestion-catalogos/gestion-catalogos.component.html'
         },
         // INFRAESTRUCTURA
-        '2025-44444': {
+        '74567890': {
             password: 'infra987',
             rol: 'infraestructura',
             nombre: 'Ana Torres',
-            redirect: '../../infraestructura/modules/roles-permisos/roles-permisos.component.html'
+            dni: '74567890',
+            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/infraestructura/html/dashboard.html'
         },
         // VALIDACION
-        '2026-55555': {
+        '75678901': {
             password: 'validacion111',
             rol: 'validacion',
             nombre: 'Roberto Díaz',
-            redirect: '../../validacion/modules/evidencias-obligatorias/evidencias-obligatorias.component.html'
+            dni: '75678901',
+            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/validacion/modules/html/dashboard.html'
         }
     };
 
@@ -112,9 +119,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     // VALIDACIONES
     // ============================================
-    function validarCodigo(codigo) {
-        const regex = /^\d{4}-\d{5}$/;
-        return regex.test(codigo);
+    function validarDNI(dni) {
+        // DNI debe tener exactamente 8 dígitos
+        const regex = /^\d{8}$/;
+        return regex.test(dni);
     }
 
     function validarPassword(password) {
@@ -214,16 +222,16 @@ document.addEventListener('DOMContentLoaded', function() {
         ocultarError();
         if (isSubmitting) return;
 
-        const codigo = codigoInput.value.trim();
-        if (!codigo) {
-            mostrarError('El código universitario es obligatorio');
+        const dni = codigoInput.value.trim();
+        if (!dni) {
+            mostrarError('El DNI es obligatorio');
             marcarError(codigoInput);
             codigoInput.focus();
             return;
         }
 
-        if (!validarCodigo(codigo)) {
-            mostrarError('Formato inválido. Usa: AAAA-NNNNN (ej: 2020-12345)');
+        if (!validarDNI(dni)) {
+            mostrarError('DNI inválido. Debe tener 8 dígitos (ej: 76551691)');
             marcarError(codigoInput);
             codigoInput.focus();
             return;
@@ -262,12 +270,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // ============================================
-        // AUTENTICACIÓN POR ROL
+        // AUTENTICACIÓN POR DNI
         // ============================================
-        const usuario = usuarios[codigo];
+        const usuario = usuarios[dni];
         
         if (!usuario || usuario.password !== password) {
-            mostrarError('Usuario o contraseña incorrectos');
+            mostrarError('DNI o contraseña incorrectos');
             marcarError(codigoInput);
             marcarError(passwordInput);
             actualizarCaptcha();
@@ -278,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Guardar datos de sesión
         const sessionData = {
-            codigo: codigo,
+            dni: dni,
             rol: usuario.rol,
             nombre: usuario.nombre,
             loginTime: new Date().toISOString()
@@ -309,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const data = JSON.parse(session);
                 // Si hay sesión activa, redirigir automáticamente
-                const usuario = usuarios[data.codigo];
+                const usuario = usuarios[data.dni];
                 if (usuario) {
                     window.location.href = usuario.redirect;
                 }
@@ -335,13 +343,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Para DNI: solo permitir números y limitar a 8 dígitos
     codigoInput.addEventListener('input', function() {
-        this.value = this.value.replace(/\s/g, '');
-        if (this.value.length > 10) {
-            this.value = this.value.slice(0, 10);
-        }
-        if (this.value.length === 4 && !this.value.includes('-')) {
-            this.value = this.value + '-';
+        // Solo números
+        this.value = this.value.replace(/\D/g, '');
+        // Limitar a 8 dígitos
+        if (this.value.length > 8) {
+            this.value = this.value.slice(0, 8);
         }
     });
 
@@ -355,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
     verificarSesion();
 
     console.log('Login DIAGTI CTIC UNAS inicializado');
-    console.log('Usuarios disponibles:');
+    console.log('Usuarios disponibles (DNI):');
     Object.keys(usuarios).forEach(key => {
         console.log(`  ${key} → ${usuarios[key].rol} (${usuarios[key].nombre})`);
     });
