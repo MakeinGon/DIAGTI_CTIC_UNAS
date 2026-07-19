@@ -6,6 +6,7 @@ import pe.edu.unas.ctic.diagti.administrador.dto.AuditoriaDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.AuditoriaStatsDTO;
 import pe.edu.unas.ctic.diagti.administrador.entity.AuditoriaEntity;
 import pe.edu.unas.ctic.diagti.administrador.repository.AuditoriaRepository;
+import pe.edu.unas.ctic.diagti.administrador.repository.UsuarioRepository;
 import pe.edu.unas.ctic.diagti.administrador.service.AuditoriaService;
 
 import java.time.format.DateTimeFormatter;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 public class AuditoriaServiceImpl implements AuditoriaService {
 
     private final AuditoriaRepository auditoriaRepository;
+    private final UsuarioRepository usuarioRepository;  // ← AGREGAR ESTA DEPENDENCIA
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
@@ -26,10 +28,7 @@ public class AuditoriaServiceImpl implements AuditoriaService {
         return registros.stream()
                 .filter(r -> {
                     if (usuario != null && !usuario.isEmpty()) {
-                        String nombreUsuario = "Sistema";
-                        if (r.getIdUsuario() != null) {
-                            nombreUsuario = "Usuario-" + r.getIdUsuario();
-                        }
+                        String nombreUsuario = obtenerNombreUsuario(r.getIdUsuario());
                         if (!nombreUsuario.toLowerCase().contains(usuario.toLowerCase())) return false;
                     }
                     if (modulo != null && !modulo.isEmpty() && !r.getModulo().equals(modulo)) return false;
@@ -56,13 +55,20 @@ public class AuditoriaServiceImpl implements AuditoriaService {
         return stats;
     }
 
+    // ✅ NUEVO MÉTODO: Obtener nombre completo del usuario
+    private String obtenerNombreUsuario(Long idUsuario) {
+        if (idUsuario == null) return "Sistema";
+        return usuarioRepository.findById(idUsuario)
+                .map(u -> (u.getNombres() + " " + u.getApellidos()).trim())
+                .orElse("Usuario-" + idUsuario);
+    }
+
+    // ✅ MODIFICADO: Usar el nombre real del usuario
     private AuditoriaDTO toDTO(AuditoriaEntity entity) {
         AuditoriaDTO dto = new AuditoriaDTO();
         dto.setId(entity.getIdAuditoria());
-        String nombreUsuario = "Sistema";
-        if (entity.getIdUsuario() != null) {
-            nombreUsuario = "Usuario-" + entity.getIdUsuario();
-        }
+        // ✅ Obtener nombre real del usuario desde la base de datos
+        String nombreUsuario = obtenerNombreUsuario(entity.getIdUsuario());
         dto.setUsuario(nombreUsuario);
         dto.setModulo(entity.getModulo());
         dto.setAccion(entity.getAccion());
