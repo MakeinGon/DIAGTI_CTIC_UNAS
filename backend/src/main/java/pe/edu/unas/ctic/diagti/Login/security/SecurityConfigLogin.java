@@ -22,51 +22,41 @@ public class SecurityConfigLogin {
         return new BCryptPasswordEncoder();
     }
 
-
     @Bean
     @Order(1)
     public SecurityFilterChain loginFilterChain(HttpSecurity http) throws Exception {
-
         http
             .securityMatcher("/auth/**")
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> {})
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login").permitAll()
+                .requestMatchers(
+                    "/auth/login", 
+                    "/auth/health", 
+                    "/auth/test",
+                    "/auth/verify"
+                ).permitAll()  // Permitir todos estos endpoints
                 .anyRequest().authenticated());
 
         return http.build();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-
         CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowedOrigins(List.of(
-            "http://127.0.0.1:5500",
-            "http://localhost:5500"
-        ));
-
-        config.setAllowedMethods(List.of(
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "OPTIONS"
-        ));
-
+        
+        // Permitir TODOS los orígenes para desarrollo
+        config.setAllowedOrigins(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(false);  // Cambiar a false cuando se usa *
+        config.setMaxAge(3600L);
 
-        config.setAllowCredentials(true);
-
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-
+        source.registerCorsConfiguration("/auth/**", config);
+        
         return source;
     }
 }

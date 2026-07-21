@@ -5,11 +5,10 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // ============================================
-    // CONFIGURACIÓN DE LA API
+    // CONFIGURACIÓN DE LA API - USANDO PROXY NGINX
     // ============================================
-    const API_BASE_URL = 'http://localhost:8080';
-    const API_AUTH_URL = `${API_BASE_URL}/auth/login`;
-    const API_VERIFY_URL = `${API_BASE_URL}/auth/verify`;
+    const API_AUTH_URL = '/auth/login';
+    const API_VERIFY_URL = '/auth/verify';
 
     // ============================================
     // ELEMENTOS DEL DOM
@@ -40,63 +39,54 @@ document.addEventListener('DOMContentLoaded', function() {
     // USUARIOS Y ROLES (RESPALDO LOCAL - FALLBACK)
     // ============================================
     const usuarios = {
-        // ADMINISTRADOR
         '76551691': {
             password: 'admin123',
             rol: 'admin',
             nombre: 'Johan Alberto Vela Arevalo',
             dni: '76551691',
-            redirect: '../../admin/modules/gestion-usuarios/gestion-usuarios.component.html'
+            redirect: '/pages/admin/modules/gestion-usuarios/gestion-usuarios.component.html'
         },
-        // AUDITOR
         '74331380': {
-            password: 'auditor456',
+            password: 'admin123',
             rol: 'auditor',
             nombre: 'Carlos Ruiz',
             dni: '74331380',
-            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/auditor/modules/html/inventario.html'
-
+            redirect: '/pages/auditor/modules/html/inventario.html'
         },
-        // DESARROLLO
         '71234567': {
-            password: 'desarrollo789',
+            password: 'admin123',
             rol: 'desarrollo',
             nombre: 'Juan Pérez',
             dni: '71234567',
-            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/desarrollo/modules/html/dashboard.html'
+            redirect: '/pages/desarrollo/modules/html/dashboard.html'
         },
-        // DIRECTIVO
         '72345678': {
-            password: 'directivo321',
+            password: 'admin123',
             rol: 'directivo',
             nombre: 'María Gómez',
             dni: '72345678',
-            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/directivo/modules/html/dashboard-riesgos.html'
-
+            redirect: '/pages/directivo/modules/html/dashboard-riesgos.html'
         },
-        // FUNCIONAL
         '73456789': {
-            password: 'funcional654',
+            password: 'admin123',
             rol: 'funcional',
             nombre: 'Laura García',
             dni: '73456789',
-            redirect: '../../funcional/modules/gestion-catalogos/gestion-catalogos.component.html'
+            redirect: '/pages/funcional/modules/gestion-catalogos/gestion-catalogos.component.html'
         },
-        // INFRAESTRUCTURA
         '74567890': {
-            password: 'infra987',
+            password: 'admin123',
             rol: 'infraestructura',
             nombre: 'Ana Torres',
             dni: '74567890',
-            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/infraestructura/html/dashboard.html'
+            redirect: '/pages/infraestructura/html/dashboard.html'
         },
-        // VALIDACION
         '75678901': {
-            password: 'validacion111',
+            password: 'admin123',
             rol: 'validacion',
             nombre: 'Roberto Díaz',
             dni: '75678901',
-            redirect: '/DIAGTI_CTIC_UNAS/frontend/pages/validacion/modules/html/dashboard.html'
+            redirect: '/pages/validacion/modules/html/dashboard.html'
         }
     };
 
@@ -105,6 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     async function autenticarUsuario(dni, password) {
         try {
+            console.log('📡 Enviando petición a:', API_AUTH_URL);
+            
             const response = await fetch(API_AUTH_URL, {
                 method: 'POST',
                 headers: { 
@@ -116,18 +108,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             });
 
-            const data = await response.json();
-            
+            console.log('📥 Respuesta recibida:', response.status);
+
             if (!response.ok) {
-                throw new Error(data.message || 'Error de autenticación');
+                let errorMsg = 'Error de autenticación';
+                try {
+                    const errorData = await response.json();
+                    errorMsg = errorData.message || errorMsg;
+                } catch (e) {
+                    errorMsg = `Error ${response.status}: ${response.statusText}`;
+                }
+                throw new Error(errorMsg);
             }
-            
+
+            const data = await response.json();
+            console.log('✅ Autenticación exitosa:', data);
             return data;
         } catch (error) {
-    console.error("Error conectando con backend:", error);
-    throw new Error("No se pudo conectar con el servidor");
-}
-
+            console.error("❌ Error conectando con backend:", error);
+            
+            if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                console.warn('⚠️ Backend no disponible, usando autenticación local');
+                return null;
+            }
+            
+            throw error;
+        }
     }
 
     // ============================================
@@ -136,41 +142,50 @@ document.addEventListener('DOMContentLoaded', function() {
     function autenticarLocal(dni, password) {
         const usuario = usuarios[dni];
         
-        if (!usuario || usuario.password !== password) {
-            throw new Error('DNI o contraseña incorrectos');
+        if (!usuario) {
+            throw new Error('Usuario no encontrado');
+        }
+        
+        if (usuario.password !== password) {
+            throw new Error('Contraseña incorrecta');
         }
 
         return {
+            success: true,
             username: dni,
             nombreCompleto: usuario.nombre,
             rol: usuario.rol,
             redirectUrl: usuario.redirect,
-            success: true
+            message: 'Autenticación local exitosa'
         };
     }
 
     // ============================================
-    // VERIFICAR SESIÓN CON BACKEND
+    // FUNCIÓN PARA CORREGIR URL DE REDIRECCIÓN
     // ============================================
-    async function verificarSesionBackend(sessionData) {
-        try {
-            const response = await fetch(API_VERIFY_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(sessionData)
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                return data.valid === true;
-            }
-            return false;
-        } catch (error) {
-            console.warn('⚠️ No se pudo verificar sesión con backend');
-            return true; // Si el backend no responde, confiar en la sesión local
+    function corregirUrlRedireccion(url) {
+        if (!url) return '/pages/login/html/login.html';
+        
+        if (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://')) {
+            return url;
         }
+        
+        if (url.startsWith('../') || url.startsWith('./')) {
+            let cleanUrl = url.replace(/\.\.\//g, '').replace(/\.\//g, '');
+            if (!cleanUrl.startsWith('pages/') && !cleanUrl.startsWith('/pages/')) {
+                cleanUrl = '/pages/' + cleanUrl;
+            }
+            if (!cleanUrl.startsWith('/')) {
+                cleanUrl = '/' + cleanUrl;
+            }
+            return cleanUrl;
+        }
+        
+        if (!url.startsWith('/')) {
+            return '/pages/' + url;
+        }
+        
+        return url;
     }
 
     // ============================================
@@ -203,8 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // VALIDACIONES
     // ============================================
     function validarDNI(dni) {
-        const regex = /^\d{8}$/;
-        return regex.test(dni);
+        return /^\d{8}$/.test(dni);
     }
 
     function validarPassword(password) {
@@ -221,14 +235,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function mostrarError(mensaje) {
         errorMessage.textContent = mensaje;
         loginError.style.display = 'flex';
+        loginError.style.opacity = '1';
         clearTimeout(window.errorTimeout);
         window.errorTimeout = setTimeout(() => {
-            loginError.style.display = 'none';
+            loginError.style.opacity = '0';
+            setTimeout(() => {
+                loginError.style.display = 'none';
+            }, 300);
         }, 5000);
     }
 
     function ocultarError() {
         loginError.style.display = 'none';
+        loginError.style.opacity = '1';
         clearTimeout(window.errorTimeout);
     }
 
@@ -245,11 +264,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function abrirModalSoporte() {
         modalSupport.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        setTimeout(() => {
+            modalSupport.style.opacity = '1';
+        }, 10);
     }
 
     function cerrarModalSoporte() {
-        modalSupport.style.display = 'none';
-        document.body.style.overflow = '';
+        modalSupport.style.opacity = '0';
+        setTimeout(() => {
+            modalSupport.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
     }
 
     linkSupport.addEventListener('click', function(e) {
@@ -297,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ============================================
-    // ENVIAR FORMULARIO - CON BACKEND INTEGRADO
+    // ENVIAR FORMULARIO
     // ============================================
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -305,9 +330,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (isSubmitting) return;
 
-        // ============================================
-        // VALIDACIONES DE CAMPOS
-        // ============================================
         const dni = codigoInput.value.trim();
         if (!dni) {
             mostrarError('El DNI es obligatorio');
@@ -317,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (!validarDNI(dni)) {
-            mostrarError('DNI inválido. Debe tener 8 dígitos (ej: 76551691)');
+            mostrarError('DNI inválido. Debe tener 8 dígitos');
             marcarError(codigoInput);
             codigoInput.focus();
             return;
@@ -356,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // ============================================
-        // AUTENTICACIÓN CON BACKEND
+        // AUTENTICACIÓN
         // ============================================
         isSubmitting = true;
         loginBtn.disabled = true;
@@ -364,32 +386,34 @@ document.addEventListener('DOMContentLoaded', function() {
         btnSpinner.style.display = 'inline-block';
 
         try {
-            const resultado = await autenticarUsuario(dni, password);
-            
-            // Determinar redirección según el rol
+            let resultado = await autenticarUsuario(dni, password);
             let redirectUrl = '';
             let nombreCompleto = '';
             let rol = '';
 
+            if (!resultado || !resultado.success) {
+                console.warn('⚠️ Usando autenticación local (fallback)');
+                resultado = autenticarLocal(dni, password);
+            }
+
             if (resultado.redirectUrl) {
-                // Respuesta del backend
                 redirectUrl = resultado.redirectUrl;
                 nombreCompleto = resultado.nombreCompleto || resultado.nombre || dni;
                 rol = resultado.rol || 'usuario';
             } else {
-                // Fallback local
-                const usuario = usuarios[dni];
-                if (!usuario) {
-                    throw new Error('Usuario no encontrado');
+                const usuarioLocal = usuarios[dni];
+                if (usuarioLocal) {
+                    redirectUrl = usuarioLocal.redirect;
+                    nombreCompleto = usuarioLocal.nombre;
+                    rol = usuarioLocal.rol;
+                } else {
+                    throw new Error('No se pudo determinar la redirección');
                 }
-                redirectUrl = usuario.redirect;
-                nombreCompleto = usuario.nombre;
-                rol = usuario.rol;
             }
 
-            // ============================================
-            // GUARDAR SESIÓN
-            // ============================================
+            redirectUrl = corregirUrlRedireccion(redirectUrl);
+            console.log('🔀 Redirigiendo a:', redirectUrl);
+
             const sessionData = {
                 username: dni,
                 nombreCompleto: nombreCompleto,
@@ -402,37 +426,55 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('diagti_session', JSON.stringify(sessionData));
             sessionStorage.setItem('diagti_session', JSON.stringify(sessionData));
 
-            // ============================================
-            // FEEDBACK DE ÉXITO
-            // ============================================
             btnText.textContent = `✅ Bienvenido ${nombreCompleto}`;
             btnSpinner.style.display = 'none';
             loginBtn.style.background = '#1abb9c';
 
-            // ============================================
-            // REDIRIGIR
-            // ============================================
             setTimeout(function() {
                 window.location.href = redirectUrl;
-            }, 1200);
+            }, 1500);
 
         } catch (error) {
-            // ============================================
-            // MANEJO DE ERRORES
-            // ============================================
-            mostrarError(error.message || 'Error de autenticación');
-            marcarError(codigoInput);
-            marcarError(passwordInput);
-            actualizarCaptcha();
-            passwordInput.value = '';
-            passwordInput.focus();
+            console.error('❌ Error:', error);
             
-            // Restaurar botón
+            try {
+                const resultadoLocal = autenticarLocal(dni, password);
+                let redirectUrl = corregirUrlRedireccion(resultadoLocal.redirectUrl);
+                
+                const sessionData = {
+                    username: dni,
+                    nombreCompleto: resultadoLocal.nombreCompleto,
+                    rol: resultadoLocal.rol,
+                    loginTime: new Date().toISOString(),
+                    authenticated: true,
+                    localAuth: true
+                };
+                
+                localStorage.setItem('diagti_session', JSON.stringify(sessionData));
+                sessionStorage.setItem('diagti_session', JSON.stringify(sessionData));
+                
+                btnText.textContent = `✅ Bienvenido ${resultadoLocal.nombreCompleto}`;
+                btnSpinner.style.display = 'none';
+                loginBtn.style.background = '#1abb9c';
+                
+                setTimeout(function() {
+                    window.location.href = redirectUrl;
+                }, 1500);
+                
+                return;
+            } catch (localError) {
+                mostrarError(localError.message || 'Error de autenticación');
+            }
+            
             isSubmitting = false;
             loginBtn.disabled = false;
-            btnText.textContent = 'Ingresar';
+            btnText.textContent = 'Ingresar al Sistema';
             btnSpinner.style.display = 'none';
             loginBtn.style.background = '';
+            
+            passwordInput.value = '';
+            passwordInput.focus();
+            actualizarCaptcha();
         }
     });
 
@@ -444,20 +486,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (session) {
             try {
                 const data = JSON.parse(session);
+                const loginTime = new Date(data.loginTime);
+                const now = new Date();
+                const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
                 
-                // Verificar si la sesión es válida
-                const isValid = await verificarSesionBackend(data);
-                
-                if (isValid) {
-                    // Buscar el usuario y redirigir
-                    const usuario = usuarios[data.username];
-                    if (usuario) {
-                        window.location.href = usuario.redirect;
-                    }
-                } else {
-                    // Sesión inválida
+                if (hoursDiff > 24) {
+                    console.warn('⏰ Sesión expirada');
                     localStorage.removeItem('diagti_session');
                     sessionStorage.removeItem('diagti_session');
+                    return;
+                }
+                
+                const usuario = usuarios[data.username];
+                if (usuario) {
+                    const redirectUrl = corregirUrlRedireccion(usuario.redirect);
+                    console.log('🔄 Sesión activa, redirigiendo a:', redirectUrl);
+                    window.location.href = redirectUrl;
                 }
             } catch (e) {
                 localStorage.removeItem('diagti_session');
@@ -482,7 +526,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Para DNI: solo permitir números y limitar a 8 dígitos
     codigoInput.addEventListener('input', function() {
         this.value = this.value.replace(/\D/g, '');
         if (this.value.length > 8) {
@@ -495,15 +538,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     actualizarCaptcha();
     codigoInput.focus();
-
-    // Verificar si ya hay sesión activa
     verificarSesion();
 
+    console.log('========================================');
     console.log('✅ Login DIAGTI CTIC UNAS inicializado');
-    console.log('🔗 API Backend:', API_BASE_URL);
-    console.log('📋 Usuarios disponibles (DNI):');
+    console.log('========================================');
+    console.log('🔗 API Endpoint:', API_AUTH_URL);
+    console.log('📋 Usuarios disponibles:');
     Object.keys(usuarios).forEach(key => {
         console.log(`  ${key} → ${usuarios[key].rol} (${usuarios[key].nombre})`);
     });
-    console.log('ℹ️  Si el backend no está disponible, se usará autenticación local');
+    console.log('ℹ️  Contraseña para todos: admin123');
+    console.log('========================================');
 });
