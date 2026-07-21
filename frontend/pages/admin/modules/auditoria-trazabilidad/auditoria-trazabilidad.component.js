@@ -1,232 +1,186 @@
 // ============================================================
-// AUDITORÍA Y TRAZABILIDAD - MÓDULO PRINCIPAL v2.0
+// AUDITORÍA - BITÁCORA DE ACCIONES ADMINISTRATIVAS
+// Módulo para el usuario Administrador
 // ============================================================
 
-class AuditoriaModule {
+class AuditoriaAdmin {
     constructor() {
-        this.eventosAuditoria = [];
-        this.eventosFiltrados = [];
+        this.registros = [];
+        this.registrosFiltrados = [];
         this.paginaActual = 1;
         this.itemsPorPagina = 8;
-        this.accionesMap = {
-            'Creación': 'verde',
-            'Edición': 'azul',
-            'Eliminación': 'rojo',
-            'Aprobación': 'verde',
-            'Observación': 'amarillo',
-            'Rechazo': 'rojo',
-            'Resolución': 'morado',
-            'Login': 'cian',
-            'Logout': 'rosa'
-        };
+        this.modulos = ['Gestión de Usuarios', 'Roles y Permisos', 'Gestión de Catálogos', 'Evidencias Obligatorias'];
         this.init();
     }
 
-    // ============================================================
-    // INICIALIZACIÓN
-    // ============================================================
-    
     init() {
         this.cargarDatosMock();
+        this.llenarFiltros();
         this.renderStats();
         this.renderTabla();
         this.setupEventListeners();
-        console.log('🔍 Módulo de Auditoría y Trazabilidad v2.0 cargado');
-        console.log(`📋 ${this.eventosAuditoria.length} eventos registrados`);
+        console.log('📋 Módulo de Auditoría (Administrador) cargado');
+        console.log(`📊 ${this.registros.length} registros de acciones administrativas`);
     }
 
     // ============================================================
-    // DATOS MOCK
+    // DATOS MOCK - ACCIONES DEL ADMINISTRADOR
     // ============================================================
-    
+
     cargarDatosMock() {
-        this.eventosAuditoria = [
-            { id: 1, fecha: '2026-07-02 10:30:00', usuario: 'admin@ctic.com', accion: 'Creación', entidad: 'Sistema', detalle: 'Nuevo sistema registrado: SYS-008' },
-            { id: 2, fecha: '2026-07-02 09:15:00', usuario: 'jperez@unas.edu.pe', accion: 'Aprobación', entidad: 'Validación', detalle: 'Sistema SYS-001 aprobado' },
-            { id: 3, fecha: '2026-07-01 16:45:00', usuario: 'mgomez@unas.edu.pe', accion: 'Observación', entidad: 'Sistema', detalle: 'Observación en SYS-002: falta SSL' },
-            { id: 4, fecha: '2026-07-01 14:20:00', usuario: 'admin@ctic.com', accion: 'Edición', entidad: 'Usuario', detalle: 'Actualización de usuario: Laura García' },
-            { id: 5, fecha: '2026-07-01 11:00:00', usuario: 'lruiz@unas.edu.pe', accion: 'Login', entidad: 'Autenticación', detalle: 'Inicio de sesión exitoso' },
-            { id: 6, fecha: '2026-06-30 17:30:00', usuario: 'admin@ctic.com', accion: 'Eliminación', entidad: 'Sistema', detalle: 'Eliminación lógica de SYS-005' },
-            { id: 7, fecha: '2026-06-30 15:00:00', usuario: 'jperez@unas.edu.pe', accion: 'Rechazo', entidad: 'Validación', detalle: 'Rechazo de SYS-006 por falta de evidencias' },
-            { id: 8, fecha: '2026-06-30 10:30:00', usuario: 'mgomez@unas.edu.pe', accion: 'Creación', entidad: 'Evidencia', detalle: 'Carga de evidencia: manual_erp.pdf' },
-            { id: 9, fecha: '2026-06-29 12:45:00', usuario: 'admin@ctic.com', accion: 'Edición', entidad: 'Rol', detalle: 'Actualización de permisos de usuario' },
-            { id: 10, fecha: '2026-06-29 09:00:00', usuario: 'lruiz@unas.edu.pe', accion: 'Resolución', entidad: 'Sistema', detalle: 'Resolución N° 001-2026 emitida' },
-            { id: 11, fecha: '2026-06-28 16:20:00', usuario: 'jperez@unas.edu.pe', accion: 'Observación', entidad: 'Sistema', detalle: 'Observación en SYS-004: tecnología obsoleta' },
-            { id: 12, fecha: '2026-06-28 11:10:00', usuario: 'admin@ctic.com', accion: 'Creación', entidad: 'Sistema', detalle: 'Nuevo sistema registrado: SYS-009' },
-            { id: 13, fecha: '2026-06-27 14:30:00', usuario: 'mgomez@unas.edu.pe', accion: 'Edición', entidad: 'Sistema', detalle: 'Actualización de responsable en SYS-003' },
-            { id: 14, fecha: '2026-06-27 10:00:00', usuario: 'lruiz@unas.edu.pe', accion: 'Logout', entidad: 'Autenticación', detalle: 'Cierre de sesión' },
-            { id: 15, fecha: '2026-06-26 15:45:00', usuario: 'admin@ctic.com', accion: 'Rechazo', entidad: 'Sistema', detalle: 'Rechazo de SYS-007 por incumplimiento' },
-            { id: 16, fecha: '2026-06-26 09:30:00', usuario: 'admin@ctic.com', accion: 'Creación', entidad: 'Usuario', detalle: 'Nuevo usuario: Roberto Sánchez' },
-            { id: 17, fecha: '2026-06-25 17:00:00', usuario: 'jperez@unas.edu.pe', accion: 'Aprobación', entidad: 'Evidencia', detalle: 'Evidencia aprobada: manual_tecnico.pdf' },
-            { id: 18, fecha: '2026-06-25 11:20:00', usuario: 'mgomez@unas.edu.pe', accion: 'Observación', entidad: 'Sistema', detalle: 'Observación en SYS-001: actualizar documentación' },
-            { id: 19, fecha: '2026-06-24 13:45:00', usuario: 'admin@ctic.com', accion: 'Edición', entidad: 'Configuración', detalle: 'Actualización de catálogos del sistema' },
-            { id: 20, fecha: '2026-06-24 08:30:00', usuario: 'lruiz@unas.edu.pe', accion: 'Creación', entidad: 'Sistema', detalle: 'Nuevo sistema registrado: SYS-010' },
+        this.registros = [
+            { id: 1, fecha: '2026-07-15 10:30:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Usuarios', accion: 'Creó usuario', detalle: 'Usuario: jperez@unas.edu.pe (Rol: Desarrollo)' },
+            { id: 2, fecha: '2026-07-15 11:20:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Usuarios', accion: 'Editó usuario', detalle: 'Usuario: mgomez@unas.edu.pe - Cambio de rol: Desarrollo → Infraestructura' },
+            { id: 3, fecha: '2026-07-14 09:15:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Usuarios', accion: 'Eliminó usuario', detalle: 'Usuario: lruiz_old@unas.edu.pe (Desactivado por inactividad)' },
+            { id: 4, fecha: '2026-07-14 14:00:00', usuario: 'admin@ctic.com', modulo: 'Roles y Permisos', accion: 'Creó rol', detalle: 'Rol: Auditor (Permisos de solo lectura)' },
+            { id: 5, fecha: '2026-07-13 16:30:00', usuario: 'admin@ctic.com', modulo: 'Roles y Permisos', accion: 'Editó rol', detalle: 'Rol: Validador - Añadido permiso para observar evidencias' },
+            { id: 6, fecha: '2026-07-13 10:00:00', usuario: 'admin@ctic.com', modulo: 'Roles y Permisos', accion: 'Eliminó rol', detalle: 'Rol: Supervisor (Rol obsoleto, sin usuarios asignados)' },
+            { id: 7, fecha: '2026-07-12 15:45:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Catálogos', accion: 'Registró catálogo', detalle: 'Catálogo: Tipos de aplicación (Web, Desktop, Móvil, API, Legacy)' },
+            { id: 8, fecha: '2026-07-12 11:30:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Catálogos', accion: 'Actualizó catálogo', detalle: 'Catálogo: Estados de sistema - Añadido estado "En mantenimiento"' },
+            { id: 9, fecha: '2026-07-11 13:20:00', usuario: 'admin@ctic.com', modulo: 'Evidencias Obligatorias', accion: 'Registró evidencia obligatoria', detalle: 'Evidencia: Manual de usuario para sistemas críticos' },
+            { id: 10, fecha: '2026-07-11 09:00:00', usuario: 'admin@ctic.com', modulo: 'Evidencias Obligatorias', accion: 'Actualizó evidencia obligatoria', detalle: 'Evidencia: Plan de contingencia - Actualizada versión 2026' },
+            { id: 11, fecha: '2026-07-10 17:00:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Usuarios', accion: 'Creó usuario', detalle: 'Usuario: atorres@unas.edu.pe (Rol: Auditor)' },
+            { id: 12, fecha: '2026-07-10 12:15:00', usuario: 'admin@ctic.com', modulo: 'Roles y Permisos', accion: 'Editó rol', detalle: 'Rol: Administrador - Añadido permiso para gestionar catálogos' },
+            { id: 13, fecha: '2026-07-09 16:40:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Catálogos', accion: 'Actualizó catálogo', detalle: 'Catálogo: Niveles de riesgo - Actualizados criterios' },
+            { id: 14, fecha: '2026-07-09 10:30:00', usuario: 'admin@ctic.com', modulo: 'Evidencias Obligatorias', accion: 'Registró evidencia obligatoria', detalle: 'Evidencia: Acta de conformidad para sistemas legacy' },
+            { id: 15, fecha: '2026-07-08 14:00:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Usuarios', accion: 'Editó usuario', detalle: 'Usuario: jvela@unas.edu.pe - Actualización de datos personales' },
+            { id: 16, fecha: '2026-07-08 11:20:00', usuario: 'admin@ctic.com', modulo: 'Roles y Permisos', accion: 'Creó rol', detalle: 'Rol: Desarrollador Senior (Permisos avanzados de desarrollo)' },
+            { id: 17, fecha: '2026-07-07 15:00:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Catálogos', accion: 'Registró catálogo', detalle: 'Catálogo: Proveedores tecnológicos (Microsoft, Oracle, AWS, Google)' },
+            { id: 18, fecha: '2026-07-07 09:45:00', usuario: 'admin@ctic.com', modulo: 'Evidencias Obligatorias', accion: 'Actualizó evidencia obligatoria', detalle: 'Evidencia: Política de seguridad - Actualizada a versión 2.1' },
+            { id: 19, fecha: '2026-07-06 12:30:00', usuario: 'admin@ctic.com', modulo: 'Gestión de Usuarios', accion: 'Eliminó usuario', detalle: 'Usuario: usr_temp@unas.edu.pe (Usuario de prueba eliminado)' },
+            { id: 20, fecha: '2026-07-06 10:00:00', usuario: 'admin@ctic.com', modulo: 'Roles y Permisos', accion: 'Editó rol', detalle: 'Rol: Auditor - Añadido permiso para exportar reportes' }
         ];
-        this.eventosFiltrados = [...this.eventosAuditoria];
+        this.registros.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        this.registrosFiltrados = [...this.registros];
     }
 
     // ============================================================
-    // RENDERIZADO DE ESTADÍSTICAS
+    // RENDERIZADO DE TARJETAS DE RESUMEN
     // ============================================================
-    
-renderStats() {
-    const stats = {
-        total: this.eventosAuditoria.length,
-        creaciones: this.eventosAuditoria.filter(e => e.accion === 'Creación').length,
-        ediciones: this.eventosAuditoria.filter(e => e.accion === 'Edición').length,
-        eliminaciones: this.eventosAuditoria.filter(e => e.accion === 'Eliminación').length,
-        aprobaciones: this.eventosAuditoria.filter(e => e.accion === 'Aprobación').length,
-        observaciones: this.eventosAuditoria.filter(e => e.accion === 'Observación').length,
-    };
 
-    const statsContainer = document.getElementById("statsAuditoria");
-
-    if (!statsContainer) return;
-
-    statsContainer.innerHTML = `
-        <div class="card">
-            <div class="card-number">${stats.total}</div>
-            <div class="card-label">Total Eventos</div>
-        </div>
-
-        <div class="card verde">
-            <div class="card-number">${stats.creaciones}</div>
-            <div class="card-label">Creaciones</div>
-        </div>
-
-        <div class="card azul">
-            <div class="card-number">${stats.ediciones}</div>
-            <div class="card-label">Ediciones</div>
-        </div>
-
-        <div class="card rojo">
-            <div class="card-number">${stats.eliminaciones}</div>
-            <div class="card-label">Eliminaciones</div>
-        </div>
-
-        <div class="card amarillo">
-            <div class="card-number">${stats.aprobaciones}</div>
-            <div class="card-label">Aprobaciones</div>
-        </div>
-
-        <div class="card morado">
-            <div class="card-number">${stats.observaciones}</div>
-            <div class="card-label">Observaciones</div>
-        </div>
-    `;
-}
+    renderStats() {
+        const container = document.getElementById('statsAuditoria');
+        if (!container) return;
+        const total = this.registros.length;
+        const ultimo = this.registros.length > 0 ? this.registros[0] : null;
+        const ultimaActualizacion = new Date().toLocaleString('es-PE');
+        container.innerHTML = `
+            <div class="card azul">
+                <div class="card-number">${total}</div>
+                <div class="card-label">Total de registros</div>
+            </div>
+            <div class="card verde">
+                <div class="card-number" style="font-size:16px; margin:6px 0 8px;">${ultimo ? ultimo.accion : 'Ninguno'}</div>
+                <div class="card-label">Último registro realizado</div>
+            </div>
+            <div class="card verde">
+                <div class="card-number" style="font-size:16px; margin:6px 0 8px;">${ultimaActualizacion}</div>
+                <div class="card-label">Última actualización</div>
+            </div>
+        `;
+    }
 
     // ============================================================
     // RENDERIZADO DE TABLA
     // ============================================================
-    
+
     renderTabla() {
         const tbody = document.getElementById('tablaAuditoria');
         if (!tbody) return;
-
         const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
-        const fin = Math.min(inicio + this.itemsPorPagina, this.eventosFiltrados.length);
-        const paginaEventos = this.eventosFiltrados.slice(inicio, fin);
+        const fin = Math.min(inicio + this.itemsPorPagina, this.registrosFiltrados.length);
+        const paginaRegistros = this.registrosFiltrados.slice(inicio, fin);
 
-        if (paginaEventos.length === 0) {
+        if (paginaRegistros.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5" style="text-align:center;padding:3rem;color:var(--text-muted);">
-                        <div style="font-size:3rem;margin-bottom:0.5rem;">🔍</div>
-                        No hay eventos que coincidan con los filtros
+                    <td colspan="5" style="text-align:center;padding:3rem;color:var(--muted);">
+                        <div style="font-size:3rem;margin-bottom:0.5rem;">📋</div>
+                        No hay registros que coincidan con los filtros
                     </td>
                 </tr>
             `;
-            this.updateEventCount(0);
+            this.updateCount(0);
+            this.updatePagination();
             return;
         }
 
-        tbody.innerHTML = paginaEventos.map(e => `
-            <tr>
-                <td><span style="font-size:0.8rem;color:var(--text-muted);">${this.formatearFecha(e.fecha)}</span></td>
-                <td><strong>${e.usuario}</strong></td>
-                <td><span class="badge badge-${this.getBadgeClass(e.accion)}">${e.accion}</span></td>
-                <td><span class="badge badge-info">${e.entidad}</span></td>
-                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e.detalle}">${e.detalle}</td>
-            </tr>
-        `).join('');
-
-        this.updateEventCount(this.eventosFiltrados.length);
-        this.updatePagination();
-        this.renderGraficoAcciones();
-    }
-
-    // ============================================================
-    // GRÁFICO DE ACCIONES
-    // ============================================================
-    
-    renderGraficoAcciones() {
-        const container = document.getElementById('chartAcciones');
-        if (!container) return;
-
-        const acciones = {};
-        this.eventosFiltrados.forEach(e => {
-            acciones[e.accion] = (acciones[e.accion] || 0) + 1;
-        });
-
-        const maxValue = Math.max(...Object.values(acciones), 1);
-        const entries = Object.entries(acciones).sort((a, b) => b[1] - a[1]);
-
-        if (entries.length === 0) {
-            container.innerHTML = `
-                <div style="text-align:center;padding:2rem;color:var(--text-muted);">
-                    <div style="font-size:2rem;margin-bottom:0.5rem;">📊</div>
-                    No hay datos para mostrar
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = entries.map(([accion, count]) => {
-            const porcentaje = (count / maxValue * 100);
-            const color = this.accionesMap[accion] || 'azul';
+        tbody.innerHTML = paginaRegistros.map(r => {
+            const badgeClase = this.getBadgeClase(r.accion);
             return `
-                <div class="bar-item">
-                    <span class="bar-label">${accion}</span>
-                    <div class="bar-track">
-                        <div class="bar-fill ${color}" style="width: ${Math.max(porcentaje, 5)}%;">
-                            ${count}
-                        </div>
-                    </div>
-                </div>
+                <tr>
+                    <td style="white-space:nowrap;">${this.formatearFecha(r.fecha)}</td>
+                    <td><strong>${r.usuario}</strong></td>
+                    <td><span class="badge-modulo">${r.modulo}</span></td>
+                    <td><span class="badge-accion ${badgeClase}">${r.accion}</span></td>
+                    <td>
+                        <button class="btn-icon btn-ver" data-id="${r.id}" title="Ver detalle">👁️</button>
+                        <button class="btn-icon btn-exportar-registro" data-id="${r.id}" title="Exportar este registro">📤</button>
+                    </td>
+                </tr>
             `;
         }).join('');
+
+        this.updateCount(this.registrosFiltrados.length);
+        this.updatePagination();
+        this.asignarEventosTabla();
+    }
+
+    asignarEventosTabla() {
+        const tbody = document.getElementById('tablaAuditoria');
+        if (!tbody) return;
+        tbody.querySelectorAll('.btn-ver').forEach(btn => {
+            btn.removeEventListener('click', this.handleVerClick);
+            btn.addEventListener('click', this.handleVerClick.bind(this));
+        });
+        tbody.querySelectorAll('.btn-exportar-registro').forEach(btn => {
+            btn.removeEventListener('click', this.handleExportarRegistroClick);
+            btn.addEventListener('click', this.handleExportarRegistroClick.bind(this));
+        });
+    }
+
+    handleVerClick(e) {
+        const id = parseInt(e.currentTarget.dataset.id);
+        this.verDetalle(id);
+    }
+
+    handleExportarRegistroClick(e) {
+        const id = parseInt(e.currentTarget.dataset.id);
+        this.exportarRegistroIndividual(id);
     }
 
     // ============================================================
     // FILTROS
     // ============================================================
-    
-    filtrarAuditoria() {
-        const busqueda = document.getElementById('buscarAuditoria')?.value.toLowerCase().trim() || '';
-        const accion = document.getElementById('filtroAccion')?.value || '';
-        const fechaInicio = document.getElementById('filtroFechaInicio')?.value || '';
-        const fechaFin = document.getElementById('filtroFechaFin')?.value || '';
 
-        this.eventosFiltrados = this.eventosAuditoria.filter(e => {
-            const matchBusqueda = busqueda === '' || 
-                e.usuario.toLowerCase().includes(busqueda) || 
-                e.detalle.toLowerCase().includes(busqueda) ||
-                e.entidad.toLowerCase().includes(busqueda);
-            
-            const matchAccion = accion === '' || e.accion === accion;
-            
+    llenarFiltros() {
+        const selectModulo = document.getElementById('filtroModulo');
+        if (!selectModulo) return;
+        selectModulo.innerHTML = '<option value="">Todos los módulos</option>';
+        this.modulos.forEach(m => {
+            selectModulo.innerHTML += `<option value="${m}">${m}</option>`;
+        });
+    }
+
+    filtrarRegistros() {
+        const usuario = document.getElementById('filtroUsuario')?.value?.toLowerCase()?.trim() || '';
+        const modulo = document.getElementById('filtroModulo')?.value || '';
+        const fechaDesde = document.getElementById('filtroFechaDesde')?.value || '';
+        const fechaHasta = document.getElementById('filtroFechaHasta')?.value || '';
+
+        this.registrosFiltrados = this.registros.filter(r => {
+            const matchUsuario = usuario === '' || r.usuario.toLowerCase().includes(usuario);
+            const matchModulo = modulo === '' || r.modulo === modulo;
             let matchFecha = true;
-            const fechaEvento = e.fecha.split(' ')[0];
-            if (fechaInicio && fechaFin) {
-                matchFecha = fechaEvento >= fechaInicio && fechaEvento <= fechaFin;
-            } else if (fechaInicio) {
-                matchFecha = fechaEvento >= fechaInicio;
-            } else if (fechaFin) {
-                matchFecha = fechaEvento <= fechaFin;
+            const fechaRegistro = r.fecha.split(' ')[0];
+            if (fechaDesde && fechaHasta) {
+                matchFecha = fechaRegistro >= fechaDesde && fechaRegistro <= fechaHasta;
+            } else if (fechaDesde) {
+                matchFecha = fechaRegistro >= fechaDesde;
+            } else if (fechaHasta) {
+                matchFecha = fechaRegistro <= fechaHasta;
             }
-            
-            return matchBusqueda && matchAccion && matchFecha;
+            return matchUsuario && matchModulo && matchFecha;
         });
 
         this.paginaActual = 1;
@@ -234,23 +188,142 @@ renderStats() {
     }
 
     limpiarFiltros() {
-        const inputs = ['buscarAuditoria', 'filtroAccion', 'filtroFechaInicio', 'filtroFechaFin'];
-        inputs.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = '';
-        });
-        
-        this.eventosFiltrados = [...this.eventosAuditoria];
+        const usuarioInput = document.getElementById('filtroUsuario');
+        const moduloSelect = document.getElementById('filtroModulo');
+        const fechaDesdeInput = document.getElementById('filtroFechaDesde');
+        const fechaHastaInput = document.getElementById('filtroFechaHasta');
+        if (usuarioInput) usuarioInput.value = '';
+        if (moduloSelect) moduloSelect.value = '';
+        if (fechaDesdeInput) fechaDesdeInput.value = '';
+        if (fechaHastaInput) fechaHastaInput.value = '';
+        this.registrosFiltrados = [...this.registros];
         this.paginaActual = 1;
         this.renderTabla();
     }
 
     // ============================================================
+    // ACCIONES: VER DETALLE (MODAL MEJORADO)
+    // ============================================================
+
+    verDetalle(id) {
+        const registro = this.registros.find(r => r.id === id);
+        if (!registro) {
+            alert('Registro no encontrado.');
+            return;
+        }
+
+        const body = document.getElementById('detalleBody');
+        if (!body) return;
+
+        // Contenido con estilos en línea para garantizar visibilidad
+        body.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:10px; padding:4px 0;">
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
+                    <span style="font-weight:600; color:#374151; width:100px;">Fecha</span>
+                    <span style="color:#1f2937;">${this.formatearFecha(registro.fecha)}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
+                    <span style="font-weight:600; color:#374151; width:100px;">Usuario</span>
+                    <span style="color:#1f2937;">${registro.usuario}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
+                    <span style="font-weight:600; color:#374151; width:100px;">Módulo</span>
+                    <span style="color:#1f2937;">${registro.modulo}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:10px 0;">
+                    <span style="font-weight:600; color:#374151; width:100px;">Acción</span>
+                    <span style="color:#1f2937;"><span class="badge-accion ${this.getBadgeClase(registro.accion)}">${registro.accion}</span></span>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:10px 0;">
+                    <span style="font-weight:600; color:#374151; width:100px;">Detalle</span>
+                    <span style="color:#1f2937;">${registro.detalle}</span>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('modalDetalleTitulo').textContent = `📄 Detalle del registro #${registro.id}`;
+        const modal = document.getElementById('modalDetalle');
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+        }
+    }
+
+    // ============================================================
+    // EXPORTAR REGISTRO INDIVIDUAL
+    // ============================================================
+
+    exportarRegistroIndividual(id) {
+        const registro = this.registros.find(r => r.id === id);
+        if (!registro) {
+            alert('Registro no encontrado.');
+            return;
+        }
+        const headers = ['Fecha', 'Usuario', 'Módulo', 'Acción', 'Detalle'];
+        const row = [
+            registro.fecha,
+            registro.usuario,
+            registro.modulo,
+            registro.accion,
+            registro.detalle
+        ];
+        this.descargarCSV([row], headers, `registro_${id}.csv`);
+        alert(`📤 Registro #${id} exportado a CSV.`);
+    }
+
+    // ============================================================
+    // EXPORTAR LISTADO COMPLETO (CSV)
+    // ============================================================
+
+    exportarListado() {
+        const datos = this.registrosFiltrados.length > 0 ? this.registrosFiltrados : this.registros;
+        if (datos.length === 0) {
+            alert('No hay registros para exportar.');
+            return;
+        }
+        const headers = ['Fecha', 'Usuario', 'Módulo', 'Acción', 'Detalle'];
+        const rows = datos.map(r => [
+            r.fecha,
+            r.usuario,
+            r.modulo,
+            r.accion,
+            r.detalle
+        ]);
+        this.descargarCSV(rows, headers, `auditoria_admin_${new Date().toISOString().split('T')[0]}.csv`);
+        alert(`📤 Listado exportado a CSV (${datos.length} registros).`);
+    }
+
+    descargarCSV(rows, headers, filename) {
+        let csvContent = '\uFEFF';
+        csvContent += headers.join(';') + '\n';
+        rows.forEach(row => {
+            const escaped = row.map(cell => {
+                if (typeof cell === 'string' && (cell.includes(';') || cell.includes('"'))) {
+                    return `"${cell.replace(/"/g, '""')}"`;
+                }
+                return cell;
+            });
+            csvContent += escaped.join(';') + '\n';
+        });
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // ============================================================
     // PAGINACIÓN
     // ============================================================
-    
+
     cambiarPagina(direccion) {
-        const totalPaginas = Math.ceil(this.eventosFiltrados.length / this.itemsPorPagina);
+        const totalPaginas = Math.ceil(this.registrosFiltrados.length / this.itemsPorPagina) || 1;
         const nuevaPagina = this.paginaActual + direccion;
         if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
             this.paginaActual = nuevaPagina;
@@ -259,26 +332,24 @@ renderStats() {
     }
 
     updatePagination() {
-        const totalPaginas = Math.ceil(this.eventosFiltrados.length / this.itemsPorPagina) || 1;
+        const totalPaginas = Math.ceil(this.registrosFiltrados.length / this.itemsPorPagina) || 1;
         const pageInfo = document.getElementById('paginaInfo');
         const btnPrev = document.getElementById('btnAnterior');
         const btnNext = document.getElementById('btnSiguiente');
+        if (pageInfo) pageInfo.textContent = `Página ${this.paginaActual} de ${totalPaginas}`;
+        if (btnPrev) btnPrev.disabled = this.paginaActual <= 1;
+        if (btnNext) btnNext.disabled = this.paginaActual >= totalPaginas;
+    }
 
-        if (pageInfo) {
-            pageInfo.textContent = `Página ${this.paginaActual} de ${totalPaginas}`;
-        }
-        if (btnPrev) {
-            btnPrev.disabled = this.paginaActual <= 1;
-        }
-        if (btnNext) {
-            btnNext.disabled = this.paginaActual >= totalPaginas;
-        }
+    updateCount(total) {
+        const countEl = document.getElementById('registroCount');
+        if (countEl) countEl.textContent = `Total: ${total}`;
     }
 
     // ============================================================
     // UTILIDADES
     // ============================================================
-    
+
     formatearFecha(fechaStr) {
         try {
             const fecha = new Date(fechaStr);
@@ -288,7 +359,6 @@ renderStats() {
                 day: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit',
-                second: '2-digit',
                 hour12: false
             });
         } catch {
@@ -296,154 +366,126 @@ renderStats() {
         }
     }
 
-    getBadgeClass(accion) {
-        return this.accionesMap[accion] || 'gris';
+    getBadgeClase(accion) {
+        if (accion.includes('Creó') || accion.includes('Registró')) return 'creacion';
+        if (accion.includes('Editó') || accion.includes('Actualizó')) return 'edicion';
+        if (accion.includes('Eliminó')) return 'eliminacion';
+        if (accion.includes('Aprobó')) return 'aprobacion';
+        if (accion.includes('Observó')) return 'observacion';
+        if (accion.includes('Rechazó')) return 'rechazo';
+        return 'resolucion';
     }
 
-    updateEventCount(total) {
-        const countEl = document.getElementById('eventoCount');
-        if (countEl) {
-            countEl.textContent = `Total: ${total}`;
-        }
-    }
-
-    // ============================================================
-    // EXPORTACIÓN DE DATOS
-    // ============================================================
-    
-    exportarDatos() {
-        if (this.eventosFiltrados.length === 0) {
-            alert('No hay datos para exportar');
-            return;
-        }
-
-        const data = this.eventosFiltrados.map(e => ({
-            fecha: e.fecha,
-            usuario: e.usuario,
-            accion: e.accion,
-            entidad: e.entidad,
-            detalle: e.detalle
-        }));
-
-        const csv = this.convertirACSV(data);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `auditoria_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
-    convertirACSV(data) {
-        const headers = Object.keys(data[0]);
-        const rows = data.map(obj => headers.map(key => `"${String(obj[key] || '').replace(/"/g, '""')}"`).join(','));
-        return [headers.join(','), ...rows].join('\n');
+    refrescar() {
+        this.registrosFiltrados = [...this.registros];
+        this.paginaActual = 1;
+        this.renderTabla();
+        this.renderStats();
+        alert('🔄 Datos actualizados.');
     }
 
     // ============================================================
     // EVENT LISTENERS
     // ============================================================
-    
+
     setupEventListeners() {
-        // Filtros
-        const searchInput = document.getElementById('buscarAuditoria');
-        const actionFilter = document.getElementById('filtroAccion');
-        const dateStart = document.getElementById('filtroFechaInicio');
-        const dateEnd = document.getElementById('filtroFechaFin');
+        const btnFiltrar = document.getElementById('btnFiltrar');
+        if (btnFiltrar) btnFiltrar.addEventListener('click', () => this.filtrarRegistros());
 
-        if (searchInput) {
-            searchInput.addEventListener('input', () => this.filtrarAuditoria());
-        }
-        if (actionFilter) {
-            actionFilter.addEventListener('change', () => this.filtrarAuditoria());
-        }
-        if (dateStart) {
-            dateStart.addEventListener('change', () => this.filtrarAuditoria());
-        }
-        if (dateEnd) {
-            dateEnd.addEventListener('change', () => this.filtrarAuditoria());
+        const btnLimpiar = document.getElementById('btnLimpiarFiltros');
+        if (btnLimpiar) btnLimpiar.addEventListener('click', () => this.limpiarFiltros());
+
+        const filtroUsuario = document.getElementById('filtroUsuario');
+        if (filtroUsuario) {
+            filtroUsuario.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') this.filtrarRegistros();
+            });
         }
 
-        // Botones
-        const filterBtn = document.querySelector('.btn-verde');
-        const clearBtn = document.querySelector('.btn-outline');
-        
-        if (filterBtn) {
-            filterBtn.addEventListener('click', () => this.filtrarAuditoria());
-        }
-        if (clearBtn) {
-            clearBtn.addEventListener('click', () => this.limpiarFiltros());
+        const btnExportar = document.getElementById('btnExportarListado');
+        if (btnExportar) btnExportar.addEventListener('click', () => this.exportarListado());
+
+        const btnRefrescar = document.getElementById('btnRefrescar');
+        if (btnRefrescar) btnRefrescar.addEventListener('click', () => this.refrescar());
+
+        const btnAnterior = document.getElementById('btnAnterior');
+        if (btnAnterior) btnAnterior.addEventListener('click', () => this.cambiarPagina(-1));
+
+        const btnSiguiente = document.getElementById('btnSiguiente');
+        if (btnSiguiente) btnSiguiente.addEventListener('click', () => this.cambiarPagina(1));
+
+        // Cerrar modal detalle
+        const btnCerrarDetalle = document.getElementById('btnCerrarDetalle');
+        if (btnCerrarDetalle) {
+            btnCerrarDetalle.addEventListener('click', () => {
+                const modal = document.getElementById('modalDetalle');
+                if (modal) modal.style.display = 'none';
+            });
         }
 
-        // Paginación
-        const prevBtn = document.getElementById('btnAnterior');
-        const nextBtn = document.getElementById('btnSiguiente');
-        
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.cambiarPagina(-1));
-        }
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.cambiarPagina(1));
+        const btnCerrarDetalleFooter = document.getElementById('btnCerrarDetalleFooter');
+        if (btnCerrarDetalleFooter) {
+            btnCerrarDetalleFooter.addEventListener('click', () => {
+                const modal = document.getElementById('modalDetalle');
+                if (modal) modal.style.display = 'none';
+            });
         }
 
-        // Exportar (opcional)
-        const exportBtn = document.createElement('button');
-        exportBtn.textContent = '📥 Exportar CSV';
-        exportBtn.className = 'btn-verde';
-        exportBtn.style.marginLeft = 'auto';
-        exportBtn.addEventListener('click', () => this.exportarDatos());
-        
-        const tableHeader = document.querySelector('.table-header');
-        if (tableHeader) {
-            tableHeader.appendChild(exportBtn);
+        const modalDetalle = document.getElementById('modalDetalle');
+        if (modalDetalle) {
+            modalDetalle.addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) e.currentTarget.style.display = 'none';
+            });
         }
 
-        console.log('✅ Event listeners configurados');
+        // Cerrar sesión
+        const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+        if (btnCerrarSesion) btnCerrarSesion.addEventListener('click', () => this.cerrarSesion());
+
+        const btnCancelar1 = document.getElementById('btnCancelarCerrarSesion1');
+        if (btnCancelar1) btnCancelar1.addEventListener('click', () => this.cancelarCerrarSesion());
+
+        const btnCancelar2 = document.getElementById('btnCancelarCerrarSesion2');
+        if (btnCancelar2) btnCancelar2.addEventListener('click', () => this.cancelarCerrarSesion());
+
+        const btnConfirmar = document.getElementById('btnConfirmarCerrarSesion');
+        if (btnConfirmar) btnConfirmar.addEventListener('click', () => this.confirmarCerrarSesion());
+
+        const overlay = document.getElementById('logout-confirm-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) this.cancelarCerrarSesion();
+            });
+        }
+
+        console.log('✅ Todos los event listeners configurados correctamente');
+    }
+
+    // ============================================================
+    // CERRAR SESIÓN
+    // ============================================================
+
+    cerrarSesion() {
+        const overlay = document.getElementById('logout-confirm-overlay');
+        if (overlay) overlay.classList.add('open');
+    }
+
+    cancelarCerrarSesion() {
+        const overlay = document.getElementById('logout-confirm-overlay');
+        if (overlay) overlay.classList.remove('open');
+    }
+
+    confirmarCerrarSesion() {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "../../../login/html/login.html";
     }
 }
-// ============================================================
-// CERRAR SESIÓN
-// ============================================================
 
-function cerrarSesion() {
-    // Eliminar datos de sesión (si existen)
-    localStorage.clear();
-    sessionStorage.clear();
-
-    // Redirigir al login
-   window.location.href = "../../../login/html/login.html";
-}
 // ============================================================
 // INICIALIZAR AL CARGAR EL DOM
 // ============================================================
 
-let auditoriaModule;
-
 document.addEventListener('DOMContentLoaded', function() {
-    auditoriaModule = new AuditoriaModule();
+    window.auditoriaAdmin = new AuditoriaAdmin();
 });
-
-// Funciones globales para compatibilidad con HTML inline
-function filtrarAuditoria() {
-    if (auditoriaModule) auditoriaModule.filtrarAuditoria();
-}
-
-function limpiarFiltrosAuditoria() {
-    if (auditoriaModule) auditoriaModule.limpiarFiltros();
-}
-
-function cambiarPagina(direccion) {
-    if (auditoriaModule) auditoriaModule.cambiarPagina(direccion);
-}
-
-// ============================================================
-// EXPORTAR MÓDULO
-// ============================================================
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = AuditoriaModule;
-}

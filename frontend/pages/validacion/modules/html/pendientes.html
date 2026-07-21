@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistemas Pendientes | DIAGTI - CTIC</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/pendientes.css">
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+
+        <div>
+            <div class="brand">
+                <div class="logo">
+                    <img src="../assets/logo-unas.png" alt="UNAS">
+                </div>
+                <div>
+                    <h1>UNAS</h1>
+                    <small>CTIC - Tingo María</small>
+                </div>
+            </div>
+
+            <div class="sidebar-profile">
+                <div class="profile-avatar">VL</div>
+                <div class="profile-info">
+                    <div class="profile-name">Validador</div>
+                    <div class="profile-role">CTIC</div>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <!-- SECCIÓN VALIDACIÓN -->
+                <div class="nav-label">VALIDACIÓN</div>
+
+                <a class="nav-item" href="dashboard.html">
+                    <span class="ic"><i class="fas fa-chart-pie"></i></span>
+                    <span>
+                        <span class="lbl">Dashboard</span>
+                        <span class="sub">Resumen General</span>
+                    </span>
+                </a>
+
+                <a class="nav-item active" href="pendientes.html">
+                    <span class="ic"><i class="fas fa-clock"></i></span>
+                    <span>
+                        <span class="lbl">Pendientes</span>
+                        <span class="sub">Sistemas enviados</span>
+                    </span>
+                </a>
+
+                <a class="nav-item" href="historial.html">
+                    <span class="ic"><i class="fas fa-history"></i></span>
+                    <span>
+                        <span class="lbl">Historial</span>
+                        <span class="sub">Validaciones realizadas</span>
+                    </span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <button class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar Sesión
+            </button>
+            <div class="footer-divider"></div>
+            <div class="footer-version">
+                <span>DIAGIT v2.0 - CTIC UNAS</span>
+                <span class="version-sub">Módulo de administración interna</span>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ================= CONTENIDO ================= -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div>
+                <h2>
+                    <i class="fas fa-clock" style="color: var(--color-verde-ctic); margin-right: 10px;"></i>
+                    Bandeja de Pendientes
+                </h2>
+                <div class="hint">
+                    Sistemas y solicitudes que requieren revisión o seguimiento inmediato.
+                </div>
+            </div>
+            <button class="btn btn-verde" id="btn-actualizar">
+                <i class="fas fa-rotate-right"></i>
+                Actualizar
+            </button>
+        </header>
+
+        <!-- HERO -->
+        <section class="card hero-card">
+            <div>
+                <span class="badge warning">
+                    <i class="fas fa-exclamation-triangle"></i> PENDIENTES
+                </span>
+                <h2>
+                    Sistemas en Revisión
+                </h2>
+                <p>
+                    Consulte todos los sistemas pendientes de validación y gestione las acciones necesarias para su
+                    atención.
+                </p>
+            </div>
+            <div class="hero-pill">
+                <i class="fas fa-list-check"></i>
+            </div>
+        </section>
+
+        <!-- TABLA DE SISTEMAS PENDIENTES -->
+        <section class="card">
+            <div class="section-head">
+                <div>
+                    <h3>
+                        <i class="fas fa-table" style="color: var(--color-verde-ctic);"></i>
+                        Sistemas Pendientes
+                    </h3>
+                    <small>
+                        Elementos que requieren revisión
+                    </small>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">Sistema</th>
+                            <th style="width: 35%;">Área Usuaria</th>
+                            <th style="width: 20%;">Fecha de Envío</th>
+                            <th style="width: 15%;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendientes-body">
+                        <!-- Los datos se cargan desde pendientes.js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PIE DE PÁGINA -->
+        <footer class="page-footer">
+            <div>
+                DIAGIT - CTIC UNAS © 2026
+            </div>
+            <div>
+                Módulo de Validación · Bandeja de Pendientes
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- ==========================================
+         PANEL LATERAL DE VALIDACIÓN
+         ========================================== -->
+
+    <!-- Overlay -->
+    <div id="panel-overlay" class="panel-overlay" onclick="cerrarPanelValidacion()"></div>
+
+    <!-- Panel -->
+    <div id="panel-validacion" class="slide-panel panel-validacion">
+        <!-- Header -->
+        <div class="slide-panel-header">
+            <h3>
+                <i class="fas fa-shield-check" style="color: var(--color-verde-ctic);"></i>
+                Validar Sistema
+            </h3>
+            <button class="btn-close-panel" onclick="cerrarPanelValidacion()" title="Cerrar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="slide-panel-body" id="panel-body">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span class="spinner-text">Cargando información del sistema...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         PANEL LATERAL DE DETALLE
+         ========================================== -->
+
+    <!-- Overlay para Detalle -->
+    <div id="panel-overlay-detalle" class="panel-overlay" onclick="cerrarPanelDetalle()"></div>
+
+    <!-- Panel Detalle -->
+    <div id="panel-detalle" class="slide-panel panel-detalle">
+        <!-- Header -->
+        <div class="slide-panel-header">
+            <h3>
+                <i class="fas fa-info-circle" style="color: var(--color-verde-ctic);"></i>
+                Detalle del Sistema
+            </h3>
+            <button class="btn-close-panel" onclick="cerrarPanelDetalle()" title="Cerrar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="slide-panel-body" id="panel-body-detalle">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span class="spinner-text">Cargando información del sistema...</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/pendientes.js"></script>
+    <script type="module" src="../js/panel-detalle.js"></script>
+</body>
+
+</html>

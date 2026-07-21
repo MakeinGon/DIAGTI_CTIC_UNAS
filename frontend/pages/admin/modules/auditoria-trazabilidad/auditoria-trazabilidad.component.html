@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auditoría y Trazabilidad · DIAGTI CTIC</title>
+    <title>Auditoría · Administrador · DIAGTI CTIC</title>
 
-    <!-- Estilos propios del módulo - TODO EN UN SOLO ARCHIVO -->
+    <!-- Estilos propios del módulo -->
     <link rel="stylesheet" href="auditoria-trazabilidad.component.css" />
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -36,19 +36,19 @@
         <div class="nav-label">Administración</div>
 
         <nav class="nav">
-            <a class="nav-item" href="/DIAGTI_CTIC_UNAS/frontend/pages/admin/modules/html/usuarios.html">
+            <a class="nav-item" href="../gestion-usuarios/gestion-usuarios.component.html">
                 <span>
                     <span class="lbl">Gestión de Usuarios</span>
                     <span class="sub">Cuentas y accesos</span>
                 </span>
             </a>
-            <a class="nav-item" href="/DIAGTI_CTIC_UNAS/frontend/pages/admin/modules/html/roles.html">
+            <a class="nav-item" href="../roles-permisos/roles-permisos.component.html">
                 <span>
                     <span class="lbl">Roles y Permisos</span>
                     <span class="sub">Perfiles de acceso</span>
                 </span>
             </a>
-            <a class="nav-item" href="/DIAGTI_CTIC_UNAS/frontend/pages/admin/modules/html/catalogos.html">
+            <a class="nav-item" href="../gestion-catalogos/gestion-catalogos.component.html">
                 <span>
                     <span class="lbl">Gestión de Catálogos</span>
                     <span class="sub">Listas maestras</span>
@@ -68,15 +68,15 @@
             </a>
             <a class="nav-item active" href="auditoria-trazabilidad.component.html">
                 <span>
-                    <span class="lbl">Auditoría y Trazabilidad</span>
-                    <span class="sub">Historial y seguimiento</span>
+                    <span class="lbl">Auditoría</span>
+                    <span class="sub">Bitácora administrativa</span>
                 </span>
             </a>
         </nav>
 
         <!-- ===== BOTÓN CERRAR SESIÓN ===== -->
         <div class="sidebar-logout">
-            <button class="btn-logout" onclick="cerrarSesion()">
+            <button class="btn-logout" id="btnCerrarSesion">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>
@@ -87,162 +87,104 @@
         </div>
 
         <div class="sidebar-footer">
-            upi v2.0 · CTIC UNAS<br>
+            DIAGTI v2.0 · CTIC UNAS<br>
             Módulo de administración interna
         </div>
     </aside>
-<!-- ===================== CONTENIDO PRINCIPAL ===================== -->
-<main class="main-content">
-    <div class="content-wrapper">
 
-        <!-- HEADER -->
-        <div class="header">
-            <div class="header-content">
-                <div class="header-left">
-                    <h1>🔍 Auditoría y <span>Trazabilidad</span></h1>
-                    <p>Historial completo de eventos y cambios en el sistema</p>
-                    <span class="badge-version">v2.0 · 2026</span>
+    <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- HEADER -->
+            <div class="header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <h1>📋 Auditoría · <span>Bitácora Administrativa</span></h1>
+                        <p>Registro de acciones realizadas por el Administrador en los módulos del sistema</p>
+                        <span class="badge-version">RF-31 · RF-32 · v2.0</span>
+                    </div>
+                    <div class="header-right">
+                        <span class="badge-live">
+                            <span class="pulse-dot"></span>
+                            Activo
+                        </span>
+                    </div>
                 </div>
+            </div>
 
-                <div class="header-right">
-                    <span class="badge-live">
-                        <span class="pulse-dot"></span>
-                        En Vivo
-                    </span>
+            <!-- ===== TARJETAS DE RESUMEN ===== -->
+            <div class="cards-grid" id="statsAuditoria">
+                <!-- Renderizado dinámico desde JS -->
+            </div>
+
+            <!-- ===== FILTROS ===== -->
+            <div class="filters-section">
+                <div class="toolbar">
+                    <div class="filter-group">
+                        <label class="filter-label">Usuario</label>
+                        <input type="text" id="filtroUsuario" placeholder="Filtrar por usuario..." />
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Módulo</label>
+                        <select id="filtroModulo">
+                            <option value="">Todos los módulos</option>
+                            <!-- Dinámico desde JS -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Fecha Desde</label>
+                        <input type="date" id="filtroFechaDesde" />
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Fecha Hasta</label>
+                        <input type="date" id="filtroFechaHasta" />
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn-verde" id="btnFiltrar">Filtrar</button>
+                        <button class="btn-outline" id="btnLimpiarFiltros">Limpiar</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- ESTADÍSTICAS -->
-        <div class="cards-grid" id="statsAuditoria">
-            <div class="card">
-                <div class="card-number">20</div>
-                <div class="card-label">Total Eventos</div>
-            </div>
 
-            <div class="card verde">
-                <div class="card-number">5</div>
-                <div class="card-label">Creaciones</div>
-            </div>
-
-            <div class="card azul">
-                <div class="card-number">4</div>
-                <div class="card-label">Ediciones</div>
-            </div>
-
-            <div class="card rojo">
-                <div class="card-number">1</div>
-                <div class="card-label">Eliminaciones</div>
-            </div>
-
-            <div class="card amarillo">
-                <div class="card-number">2</div>
-                <div class="card-label">Aprobaciones</div>
-            </div>
-
-            <div class="card verde">
-                <div class="card-number">3</div>
-                <div class="card-label">Observaciones</div>
-            </div>
-        </div>
-
-    </div>
-
-        <!-- FILTROS -->
-        <div class="filters-section">
-            <div class="toolbar">
-
-                <div class="filter-group">
-                    <label class="filter-label">Buscar</label>
-                    <input
-                        type="text"
-                        id="buscarAuditoria"
-                        placeholder="Buscar evento..."
-                        oninput="filtrarAuditoria()">
-                </div>
-
-                <div class="filter-group">
-                    <label class="filter-label">Acción</label>
-                    <select id="filtroAccion" onchange="filtrarAuditoria()">
-                        <option value="">Todas las acciones</option>
-                        <option value="Creación">Creación</option>
-                        <option value="Edición">Edición</option>
-                        <option value="Eliminación">Eliminación</option>
-                        <option value="Aprobación">Aprobación</option>
-                        <option value="Observación">Observación</option>
-                        <option value="Rechazo">Rechazo</option>
-                        <option value="Resolución">Resolución</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label class="filter-label">Fecha Inicio</label>
-                    <input
-                        type="date"
-                        id="filtroFechaInicio"
-                        onchange="filtrarAuditoria()">
-                </div>
-
-                <div class="filter-group">
-                    <label class="filter-label">Fecha Fin</label>
-                    <input
-                        type="date"
-                        id="filtroFechaFin"
-                        onchange="filtrarAuditoria()">
-                </div>
-
-                <div class="filter-actions">
-                    <button class="btn-verde" onclick="filtrarAuditoria()">
-                        Filtrar
-                    </button>
-
-                    <button class="btn-outline" onclick="limpiarFiltros()">
-                        Limpiar
-                    </button>
-                </div>
-
-            </div>
-        </div>
-
-
-
-            <!-- TABLA -->
+            <!-- ===== TABLA ===== -->
             <div class="table-section">
                 <div class="table-wrapper">
                     <div class="table-header">
                         <div class="table-header-left">
-                            <h3>📋 Historial de Eventos</h3>
-                            <span class="event-count" id="eventoCount">Total: 12</span>
+                            <h3>📋 Registros de Auditoría</h3>
+                            <span class="event-count" id="registroCount">Total: 0</span>
                         </div>
                         <div class="table-header-right">
-                            <button class="btn-export" onclick="exportarAuditoria()">📤 Exportar</button>
-                            <button class="btn-refresh" onclick="refrescarAuditoria()">🔄</button>
+                            <button class="btn-export" id="btnExportarListado">📤 Exportar listado</button>
+                            <button class="btn-refresh" id="btnRefrescar">🔄</button>
                         </div>
                     </div>
                     <div class="table-responsive">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Fecha y Hora</th>
+                                    <th>Fecha</th>
                                     <th>Usuario</th>
-                                    <th>Acción</th>
                                     <th>Módulo</th>
-                                    <th>Detalle</th>
+                                    <th>Acción realizada</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="tablaAuditoria">
-                                <!-- JS -->
+                                <!-- Renderizado dinámico desde JS -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PAGINACIÓN -->
+            <!-- ===== PAGINACIÓN ===== -->
             <div class="pagination-wrapper">
                 <div style="display:flex; justify-content:center; align-items:center; gap:1rem; padding:1rem; background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-                    <button id="btnAnterior" onclick="cambiarPagina(-1)" class="pagination-btn">◀ Anterior</button>
+                    <button id="btnAnterior" class="pagination-btn">◀ Anterior</button>
                     <span id="paginaInfo" style="color:var(--muted); font-size:0.9rem;">Página 1 de 1</span>
-                    <button id="btnSiguiente" onclick="cambiarPagina(1)" class="pagination-btn">Siguiente ▶</button>
+                    <button id="btnSiguiente" class="pagination-btn">Siguiente ▶</button>
                 </div>
             </div>
 
@@ -251,7 +193,7 @@
                 <div class="footer-content">
                     <p>&copy; 2026 CTIC · DIAGTI v2.0 · Sistema de Inventario y Diagnóstico TI</p>
                     <div class="footer-right">
-                        <span class="footer-badge">Auditoría en tiempo real</span>
+                        <span class="footer-badge">Bitácora administrativa</span>
                         <span class="footer-badge">v2.0</span>
                     </div>
                 </div>
@@ -259,51 +201,41 @@
         </div>
     </main>
 
-    <script src="auditoria-trazabilidad.component.js"></script>
-    <script>
-        // Prevenir navegación a la página actual y doble clic
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPage = window.location.pathname.split('/').pop();
-            const navLinks = document.querySelectorAll('.nav-item');
-            
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href) {
-                    const linkPage = href.split('/').pop();
-                    
-                    if (linkPage === currentPage) {
-                        link.addEventListener('click', function(e) {
-                            e.preventDefault();
-                        });
-                    } else {
-                        let isClicked = false;
-                        link.addEventListener('click', function(e) {
-                            if (isClicked) {
-                                e.preventDefault();
-                                return;
-                            }
-                            isClicked = true;
-                            setTimeout(() => {
-                                isClicked = false;
-                            }, 500);
-                        });
-                    }
-                }
-            });
-        });
+    <!-- ===================== MODAL: DETALLE DE REGISTRO ===================== -->
+    <div class="modal" id="modalDetalle" style="display:none;">
+        <div class="modal-content" style="max-width:500px;">
+            <div class="modal-header">
+                <h3 id="modalDetalleTitulo">📄 Detalle del registro</h3>
+                <button class="modal-close" id="btnCerrarDetalle">✖</button>
+            </div>
+            <div class="modal-body" id="detalleBody">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" id="btnCerrarDetalleFooter">Cerrar</button>
+            </div>
+        </div>
+    </div>
 
-        // Funciones placeholder
-        function filtrarAuditoria() { console.log('Filtrando auditoría...'); }
-        function limpiarFiltros() { 
-            document.getElementById('buscarAuditoria').value = '';
-            document.getElementById('filtroAccion').value = '';
-            document.getElementById('filtroFechaInicio').value = '';
-            document.getElementById('filtroFechaFin').value = '';
-            filtrarAuditoria();
-        }
-        function cambiarPagina(dir) { console.log('Cambiando página:', dir); }
-        function exportarAuditoria() { alert('Exportando auditoría...'); }
-        function refrescarAuditoria() { alert('Actualizando datos...'); }
-    </script>
+    <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+    <div class="logout-confirm-overlay" id="logout-confirm-overlay">
+        <div class="logout-confirm-box">
+            <div class="logout-confirm-header">
+                <h3>Cerrar sesión</h3>
+                <button class="logout-confirm-close" id="btnCancelarCerrarSesion1">✕</button>
+            </div>
+            <div class="logout-confirm-body">
+                <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+                <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+            </div>
+            <div class="logout-confirm-footer">
+                <button class="logout-confirm-btn-cancel" id="btnCancelarCerrarSesion2">Cancelar</button>
+                <button class="logout-confirm-btn-accept" id="btnConfirmarCerrarSesion">Sí, cerrar sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="auditoria-trazabilidad.component.js"></script>
 </body>
 </html>

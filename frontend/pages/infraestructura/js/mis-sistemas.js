@@ -1,0 +1,46 @@
+const rows=[...document.querySelectorAll('#tablaSistemas tbody tr')],message=document.getElementById('mensaje');let currentRow=null,subEvidence=[],editSub=-1;
+function addHistory(code,name,action,detail,state,section,after){let h=[];try{h=JSON.parse(localStorage.getItem('diagti-historial')||'[]')}catch{}h.unshift({id:`evt-${Date.now()}-${Math.random().toString(16).slice(2)}`,date:new Date().toISOString(),code,name,action,detail,user:'Carlos Rojas',state,section,after});localStorage.setItem('diagti-historial',JSON.stringify(h.slice(0,200)))}
+function openModal(id){document.getElementById(id).classList.add('show')}function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));document.querySelectorAll('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)closeModal(m.id)});
+function stateClass(s){return {Validado:'success',Observado:'observed',Borrador:'neutral',Corregido:'corrected',Enviado:'sent',Nuevo:'neutral'}[s]||'neutral'}
+function syncStates(){rows.forEach(r=>{const saved=localStorage.getItem(`diagti-estado-${r.dataset.code}`);const record=JSON.parse(localStorage.getItem(`diagti-registro-${r.dataset.code}`)||'null');if(saved)r.dataset.estado=saved;else if(record?.estado)r.dataset.estado=record.estado;const badge=r.querySelector('.estado-badge');badge.textContent=r.dataset.estado;badge.className=`badge ${stateClass(r.dataset.estado)} estado-badge`;renderActions(r)})}
+function renderActions(r){const c=r.querySelector('.actions-cell'),s=r.dataset.estado,code=r.dataset.code;let html='<button class="btn outline ver">Ver</button>';
+if(s==='Nuevo')html+=`<a class="btn primary" href="infraestructura.html?sistema=${code}">Registrar</a>`;
+if(s==='Borrador')html+=`<a class="btn secondary" href="infraestructura.html?sistema=${code}">Completar</a>`;
+if(s==='Observado')html+='<button class="btn warning-btn subsanar">Subsanar</button>';
+if(s==='Corregido')html+='<button class="btn secondary editar-correccion">Editar</button><button class="btn primary enviar">Enviar a validación</button>';
+c.innerHTML=html;bindRow(r)}
+function bindRow(r){r.querySelector('.ver')?.addEventListener('click',()=>showDetail(r));r.querySelector('.subsanar')?.addEventListener('click',()=>openCorrection(r,false));r.querySelector('.editar-correccion')?.addEventListener('click',()=>openCorrection(r,true));r.querySelector('.enviar')?.addEventListener('click',()=>send(r))}
+function showDetail(r){const corr=JSON.parse(localStorage.getItem(`subsanacion-${r.dataset.code}`)||'null');let extra='';if(corr){extra=`<h4>Corrección guardada</h4><p>${corr.descripcion}</p><h4>Evidencias</h4><ul>${corr.evidencias.map(e=>`<li><strong>${e.nombre}</strong> — ${e.archivo||e.url}</li>`).join('')}</ul>`}document.getElementById('detalleSistema').innerHTML=`<dl><dt>Código</dt><dd>${r.dataset.code}</dd><dt>Sistema</dt><dd>${r.dataset.name}</dd><dt>Plataforma</dt><dd>${r.cells[2].textContent}</dd><dt>Exposición</dt><dd>${r.cells[3].textContent}</dd><dt>Estado</dt><dd>${r.dataset.estado}</dd><dt>Riesgo</dt><dd>${r.dataset.riesgo}</dd></dl>${extra}`;openModal('modalVer')}
+function openCorrection(r,edit){currentRow=r;document.getElementById('codigoSubsanar').value=r.dataset.code;document.getElementById('tituloSubsanar').textContent=edit?'Editar corrección':'Subsanar observación';document.getElementById('textoObservacion').textContent=r.dataset.observation||'Revise y corrija la observación registrada por el Validador CTIC.';document.getElementById('fechaObservacion').textContent='Fecha: '+(r.dataset.observationDate||'Sin fecha');const saved=JSON.parse(localStorage.getItem(`subsanacion-${r.dataset.code}`)||'null');document.getElementById('descripcionCorreccion').value=saved?.descripcion||'';subEvidence=saved?.evidencias||[];renderSub();openModal('modalSubsanar')}
+function renderSub(){const body=document.getElementById('tablaSubEvidencias');document.getElementById('subContador').textContent=subEvidence.length;if(!subEvidence.length){body.innerHTML='<tr><td colspan="5" class="empty">No hay evidencias agregadas.</td></tr>';return}body.innerHTML=subEvidence.map((e,i)=>`<tr><td>${e.tipo}</td><td>${e.nombre}</td><td>${e.archivo||e.url}</td><td>${e.descripcion||'—'}</td><td><button type="button" class="mini edit-sub" data-i="${i}">Editar</button><button type="button" class="mini delete-sub" data-i="${i}">Eliminar</button></td></tr>`).join('');body.querySelectorAll('.edit-sub').forEach(b=>b.onclick=()=>editSubEvidence(+b.dataset.i));body.querySelectorAll('.delete-sub').forEach(b=>b.onclick=()=>{subEvidence.splice(+b.dataset.i,1);renderSub()})}
+function editSubEvidence(i){const e=subEvidence[i];document.getElementById('subTipo').value=e.tipo;document.getElementById('subNombre').value=e.nombre;document.getElementById('subUrl').value=e.url||'';document.getElementById('subDescripcion').value=e.descripcion||'';document.getElementById('subArchivo').value='';editSub=i;document.getElementById('btnAgregarSub').textContent='Actualizar evidencia'}
+function clearSub(){['subTipo','subNombre','subUrl','subDescripcion'].forEach(id=>document.getElementById(id).value='');document.getElementById('subArchivo').value='';editSub=-1;document.getElementById('btnAgregarSub').textContent='Agregar evidencia'}
+document.getElementById('btnAgregarSub').onclick=()=>{
+ const tipo=document.getElementById('subTipo').value;
+ const nombre=document.getElementById('subNombre').value.trim();
+ const file=document.getElementById('subArchivo').files[0]?.name||'';
+ const url=document.getElementById('subUrl').value.trim();
+ const desc=document.getElementById('subDescripcion').value.trim();
+ const err=document.getElementById('errorSubEvidencia');
+ const old=editSub>=0?subEvidence[editSub]:{};
+ const archivoFinal=file||old.archivo||'';
+ const urlFinal=url||old.url||'';
+ if(!tipo||!nombre||(!archivoFinal&&!urlFinal)){
+   err.textContent='Complete tipo, nombre y agregue archivo o URL.';
+   return;
+ }
+ const estabaEditando=editSub>=0;
+ const item={tipo,nombre,archivo:archivoFinal,url:urlFinal,descripcion:desc};
+ if(estabaEditando)subEvidence[editSub]=item;else subEvidence.push(item);
+ err.textContent=estabaEditando?'Evidencia actualizada correctamente. Puede agregar otra evidencia.':'Evidencia agregada correctamente.';
+ err.classList.add('success-inline');
+ clearSub();
+ renderSub();
+ document.getElementById('subTipo').focus();
+ setTimeout(()=>{err.textContent='';err.classList.remove('success-inline')},2500);
+};
+document.getElementById('formSubsanar').onsubmit=e=>{e.preventDefault();const desc=document.getElementById('descripcionCorreccion').value.trim(),err=document.getElementById('errorSubsanar');if(!desc||!subEvidence.length){err.textContent='Ingrese la descripción general y agregue al menos una evidencia.';return}localStorage.setItem(`subsanacion-${currentRow.dataset.code}`,JSON.stringify({descripcion:desc,evidencias:subEvidence,estado:'Corregido',fecha:new Date().toLocaleString('es-PE')}));localStorage.setItem(`diagti-estado-${currentRow.dataset.code}`,'Corregido');addHistory(currentRow.dataset.code,currentRow.dataset.name,'Subsanación','Se guardó la corrección y sus evidencias.','Corregido','Subsanación','Corregido');currentRow.dataset.estado='Corregido';err.textContent='';closeModal('modalSubsanar');renderActions(currentRow);const badge=currentRow.querySelector('.estado-badge');badge.textContent='Corregido';badge.className='badge corrected estado-badge';message.className='message success-text';message.textContent='Corrección guardada. Puede editarla antes de enviarla nuevamente.'};
+function send(r){if(!confirm('¿Desea enviar la corrección al Validador CTIC? Después no podrá editarla.'))return;localStorage.setItem(`diagti-estado-${r.dataset.code}`,'Enviado');addHistory(r.dataset.code,r.dataset.name,'Envío','La corrección fue reenviada al Validador CTIC.','Enviado','Flujo de validación','Enviado');r.dataset.estado='Enviado';const badge=r.querySelector('.estado-badge');badge.textContent='Enviado';badge.className='badge sent estado-badge';renderActions(r);message.className='message success-text';message.textContent='Sistema enviado correctamente al Validador CTIC.'}
+function filter(){const q=document.getElementById('buscar').value.toLowerCase(),st=document.getElementById('estado').value,ri=document.getElementById('riesgo').value;let n=0;rows.forEach(r=>{const ok=r.textContent.toLowerCase().includes(q)&&(!st||r.dataset.estado===st)&&(!ri||r.dataset.riesgo===ri);r.hidden=!ok;if(ok)n++});document.getElementById('sinResultados').classList.toggle('hidden',n>0)}
+document.getElementById('buscar').oninput=filter;document.getElementById('estado').onchange=filter;document.getElementById('riesgo').onchange=filter;syncStates();const queryParams=new URLSearchParams(location.search);const requestedState=queryParams.get('estado');if(requestedState){document.getElementById('estado').value=requestedState;filter()}const requested=queryParams.get('sistema');if(requested){const row=rows.find(r=>r.dataset.code===requested);if(row){row.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>showDetail(row),250)}}
