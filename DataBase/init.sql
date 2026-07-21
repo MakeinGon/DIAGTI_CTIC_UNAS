@@ -10,13 +10,13 @@
 -- 2. CATÁLOGOS
 \i /docker-entrypoint-initdb.d/modules/catalogos.sql
 
--- 3. MÓDULOS DE NEGOCIO (PRIMERO SISTEMAS)
+-- 3. MÓDULOS DE NEGOCIO
 \i /docker-entrypoint-initdb.d/modules/sistemas.sql
 \i /docker-entrypoint-initdb.d/modules/infraestructura.sql
 \i /docker-entrypoint-initdb.d/modules/seguridad.sql
 \i /docker-entrypoint-initdb.d/modules/integraciones.sql
 
--- 4. ARQUITECTURA (DESPUÉS DE SISTEMAS)
+-- 4. ARQUITECTURA
 \i /docker-entrypoint-initdb.d/modules/arquitectura.sql
 
 -- 5. AUDITORÍA Y VALIDACIONES
@@ -32,7 +32,7 @@
 -- DATOS DE PRUEBA
 -- ============================================
 
--- Insertar roles solo si no existen
+-- Insertar roles
 INSERT INTO roles (nombre, descripcion, estado) 
 SELECT * FROM (VALUES 
     ('admin', 'Administrador del sistema', true),
@@ -45,7 +45,7 @@ SELECT * FROM (VALUES
 ) AS datos(nombre, descripcion, estado)
 WHERE NOT EXISTS (SELECT 1 FROM roles LIMIT 1);
 
--- Insertar datos de catálogos
+-- Insertar catálogos
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM catalogos LIMIT 1) THEN
@@ -68,7 +68,7 @@ BEGIN
     END IF;
 END $$;
 
--- Insertar usuarios de prueba
+-- Insertar usuarios con contraseñas EN TEXTO PLANO
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM usuarios LIMIT 1) THEN
@@ -89,7 +89,7 @@ BEGIN
             '76551691',
             'johan.vela@unas.edu.pe',
             '76551691',
-            '$2a$10$7hgf3kLqZ7Yxk3p7MsnEEO0C1P2Q3R4S5T6U7V8W9X0Y1Z2A3B4C5D',
+            'admin123',  -- ✅ TEXTO PLANO
             'CTIC',
             'Local',
             true
@@ -100,7 +100,7 @@ BEGIN
             '74331380',
             'carlos.ruiz@unas.edu.pe',
             '74331380',
-            '$2a$10$8iJ4lMqA8Yxk3p7MsnEEO0C1P2Q3R4S5T6U7V8W9X0Y1Z2A3B4C5D',
+            'admin123',  -- ✅ TEXTO PLANO
             'Auditoria',
             'Local',
             true
@@ -111,7 +111,7 @@ BEGIN
             '71234567',
             'juan.perez@unas.edu.pe',
             '71234567',
-            '$2a$10$9kM5nR7Zxk3p7MsnEEO0C1P2Q3R4S5T6U7V8W9X0Y1Z2A3B4C5D',
+            'admin123',  -- ✅ TEXTO PLANO
             'Desarrollo',
             'Local',
             true
@@ -122,7 +122,7 @@ BEGIN
             '72345678',
             'maria.gomez@unas.edu.pe',
             '72345678',
-            '$2a$10$0lN6oP8Axk3p7MsnEEO0C1P2Q3R4S5T6U7V8W9X0Y1Z2A3B4C5D',
+            'admin123',  -- ✅ TEXTO PLANO
             'Direccion',
             'Local',
             true
@@ -133,7 +133,7 @@ BEGIN
             '73456789',
             'laura.garcia@unas.edu.pe',
             '73456789',
-            '$2a$10$1mO7pQ9Byk3p7MsnEEO0C1P2Q3R4S5T6U7V8W9X0Y1Z2A3B4C5D',
+            'admin123',  -- ✅ TEXTO PLANO
             'Funcional',
             'Local',
             true
@@ -144,7 +144,7 @@ BEGIN
             '74567890',
             'ana.torres@unas.edu.pe',
             '74567890',
-            '$2a$10$2nP8qR0Czk3p7MsnEEO0C1P2Q3R4S5T6U7V8W9X0Y1Z2A3B4C5D',
+            'admin123',  -- ✅ TEXTO PLANO
             'Infraestructura',
             'Local',
             true
@@ -155,7 +155,7 @@ BEGIN
             '75678901',
             'roberto.diaz@unas.edu.pe',
             '75678901',
-            '$2a$10$3oQ9rS1Dzk3p7MsnEEO0C1P2Q3R4S5T6U7V8W9X0Y1Z2A3B4C5D',
+            'admin123',  -- ✅ TEXTO PLANO
             'Validacion',
             'Local',
             true
@@ -181,7 +181,7 @@ BEGIN
     END IF;
 END $$;
 
--- Insertar eventos de auditoría de prueba
+-- Insertar eventos de auditoría
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM auditoria LIMIT 1) THEN

@@ -22,28 +22,38 @@ public class AuthServiceImpl implements AuthService {
         LoginResponse response = new LoginResponse();
 
         try {
+            System.out.println("🔐 Buscando usuario: " + loginRequest.getUsername());
+
             Optional<Usuario> usuarioOpt = usuarioRepository.findActiveUserWithRoles(
                 loginRequest.getUsername()
             );
 
             if (usuarioOpt.isEmpty()) {
+                System.out.println("❌ Usuario no encontrado");
                 response.setSuccess(false);
                 response.setMessage("Usuario no encontrado");
                 return response;
             }
 
             Usuario usuario = usuarioOpt.get();
+            System.out.println("✅ Usuario encontrado: " + usuario.getUsername());
 
-            // Contraseña temporal para pruebas
-            String passwordValida = "admin123";
+            // ✅ COMPARACIÓN DIRECTA - Sin BCrypt
+            String passwordIngresada = loginRequest.getPassword();
+            String passwordGuardada = usuario.getPasswordHash();
+            
+            System.out.println("📌 Password ingresada: " + passwordIngresada);
+            System.out.println("📌 Password guardada: " + passwordGuardada);
 
-            if (!passwordValida.equals(loginRequest.getPassword())) {
+            // Comparar directamente (sin encriptación)
+            if (!passwordIngresada.equals(passwordGuardada)) {
+                System.out.println("❌ Contraseña incorrecta");
                 response.setSuccess(false);
                 response.setMessage("Contraseña incorrecta");
                 return response;
             }
 
-            // Login correcto
+            System.out.println("✅ Autenticación exitosa");
             response.setSuccess(true);
             response.setMessage("Autenticación exitosa");
             response.setNombreCompleto(
@@ -59,6 +69,8 @@ public class AuthServiceImpl implements AuthService {
             response.setRedirectUrl(getRedirectUrl(rol));
 
         } catch (Exception e) {
+            System.err.println("💥 ERROR: " + e.getMessage());
+            e.printStackTrace();
             response.setSuccess(false);
             response.setMessage("Error en autenticación: " + e.getMessage());
         }
