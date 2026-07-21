@@ -4,7 +4,7 @@ import pe.edu.unas.ctic.diagti.Login.dto.LoginRequest;
 import pe.edu.unas.ctic.diagti.Login.dto.LoginResponse;
 import pe.edu.unas.ctic.diagti.Login.model.Usuario;
 import pe.edu.unas.ctic.diagti.Login.model.Rol;
-import pe.edu.unas.ctic.diagti.Login.repository.UsuarioRepository;
+import pe.edu.unas.ctic.diagti.Login.repository.LoginUsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.Optional;
 public class AuthServiceImpl implements AuthService {
     
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private LoginUsuarioRepository usuarioRepository;
     
     @Override
     public LoginResponse authenticate(LoginRequest loginRequest) {

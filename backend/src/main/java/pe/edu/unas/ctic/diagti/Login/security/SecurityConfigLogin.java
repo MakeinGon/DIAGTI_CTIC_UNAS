@@ -2,6 +2,7 @@ package pe.edu.unas.ctic.diagti.Login.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,15 +24,16 @@ public class SecurityConfigLogin {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain loginFilterChain(HttpSecurity http) throws Exception {
 
         http
+            .securityMatcher("/auth/**")
             .csrf(csrf -> csrf.disable())
             .cors(cors -> {})
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/login").permitAll()
-                .anyRequest().permitAll()
-            );
+                .anyRequest().authenticated());
 
         return http.build();
     }
