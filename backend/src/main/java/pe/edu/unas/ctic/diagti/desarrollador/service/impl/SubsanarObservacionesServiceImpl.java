@@ -27,9 +27,9 @@ public class SubsanarObservacionesServiceImpl implements SubsanarObservacionesSe
     
     private final SistemaDesarrolloRepository sistemaRepository;
     private final ArquitecturaRepository arquitecturaRepository;
-    private final InfraestructuraRepository infraestructuraRepository;
-    private final SeguridadRepository seguridadRepository;
-    private final EvidenciaRepository evidenciaRepository;
+    private final DesarrolladorInfraestructuraRepository infraestructuraRepository;
+    private final DesarrolladorSeguridadRepository seguridadRepository;
+    private final DesarrolladorEvidenciaRepository evidenciaRepository;
     private final DesarrolladorValidacionRepository validacionRepository;  // ← CAMBIADO
     
     private final RiesgoCalculator riesgoCalculator;

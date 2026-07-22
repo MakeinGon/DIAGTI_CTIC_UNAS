@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import pe.edu.unas.ctic.diagti.director.entity.InfraestructuraEntity;
 import java.util.List;
 
-public interface InfraestructuraRepository extends JpaRepository<InfraestructuraEntity, Long> {
+public interface DirectorInfraestructuraRepository extends JpaRepository<InfraestructuraEntity, Long> {
     List<InfraestructuraEntity> findByIdSistema(Long idSistema);
 }

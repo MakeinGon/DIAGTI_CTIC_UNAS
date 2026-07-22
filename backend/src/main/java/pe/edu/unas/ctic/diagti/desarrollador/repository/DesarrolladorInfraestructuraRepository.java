@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface InfraestructuraRepository extends JpaRepository<InfraestructuraEntity, Long> {
+public interface DesarrolladorInfraestructuraRepository extends JpaRepository<InfraestructuraEntity, Long> {
     
     /**
      * Busca la infraestructura asociada a un sistema específico
@@ -40,12 +40,12 @@ public interface InfraestructuraRepository extends JpaRepository<Infraestructura
     /**
      * Busca sistemas que usan Docker
      */
-    @Query("SELECT i FROM InfraestructuraEntity i WHERE i.usoDocker = true")
+    @Query("SELECT i FROM DesarrolladorInfraestructuraEntity i WHERE i.usoDocker = true")
     List<InfraestructuraEntity> findWithDocker();
     
     /**
      * Busca sistemas en Proxmox
      */
-    @Query("SELECT i FROM InfraestructuraEntity i WHERE i.proxmox = true")
+    @Query("SELECT i FROM DesarrolladorInfraestructuraEntity i WHERE i.proxmox = true")
     List<InfraestructuraEntity> findWithProxmox();
 }

@@ -14,3 +14,4 @@ frontend/.angular/
 *.log
 
 
+.env

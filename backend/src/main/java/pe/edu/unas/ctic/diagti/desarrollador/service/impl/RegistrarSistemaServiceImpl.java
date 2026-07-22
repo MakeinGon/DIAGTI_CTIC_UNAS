@@ -27,9 +27,9 @@ public class RegistrarSistemaServiceImpl implements RegistrarSistemaService {
     
     private final SistemaDesarrolloRepository sistemaRepository;
     private final ArquitecturaRepository arquitecturaRepository;
-    private final InfraestructuraRepository infraestructuraRepository;
-    private final SeguridadRepository seguridadRepository;
-    private final EvidenciaRepository evidenciaRepository;
+    private final DesarrolladorInfraestructuraRepository infraestructuraRepository;
+    private final DesarrolladorSeguridadRepository seguridadRepository;
+    private final DesarrolladorEvidenciaRepository evidenciaRepository;
     private final IntegracionRepository integracionRepository;
     
     private final SistemaMapper sistemaMapper;

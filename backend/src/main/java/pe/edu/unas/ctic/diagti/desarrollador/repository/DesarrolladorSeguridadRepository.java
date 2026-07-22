@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SeguridadRepository extends JpaRepository<SeguridadEntity, Long> {
+public interface DesarrolladorSeguridadRepository extends JpaRepository<SeguridadEntity, Long> {
     
     /**
      * Busca la seguridad asociada a un sistema específico
@@ -30,36 +30,36 @@ public interface SeguridadRepository extends JpaRepository<SeguridadEntity, Long
     /**
      * Busca sistemas que tienen SSL/TLS activo
      */
-    @Query("SELECT s FROM SeguridadEntity s WHERE s.sslTls = true")
+    @Query("SELECT s FROM DesarrolladorSeguridadEntity s WHERE s.sslTls = true")
     List<SeguridadEntity> findWithSSL();
     
     /**
      * Busca sistemas que tienen MFA activo
      */
-    @Query("SELECT s FROM SeguridadEntity s WHERE s.mfa = true")
+    @Query("SELECT s FROM DesarrolladorSeguridadEntity s WHERE s.mfa = true")
     List<SeguridadEntity> findWithMFA();
     
     /**
      * Busca sistemas que tienen logs activos
      */
-    @Query("SELECT s FROM SeguridadEntity s WHERE s.logsActivos = true")
+    @Query("SELECT s FROM DesarrolladorSeguridadEntity s WHERE s.logsActivos = true")
     List<SeguridadEntity> findWithLogs();
     
     /**
      * Busca sistemas que cumplen con OWASP
      */
-    @Query("SELECT s FROM SeguridadEntity s WHERE s.owaspCumple = true")
+    @Query("SELECT s FROM DesarrolladorSeguridadEntity s WHERE s.owaspCumple = true")
     List<SeguridadEntity> findWithOWASP();
     
     /**
      * Busca sistemas que NO tienen SSL/TLS (para alertas de seguridad)
      */
-    @Query("SELECT s FROM SeguridadEntity s WHERE s.sslTls = false OR s.sslTls IS NULL")
+    @Query("SELECT s FROM DesarrolladorSeguridadEntity s WHERE s.sslTls = false OR s.sslTls IS NULL")
     List<SeguridadEntity> findWithoutSSL();
     
     /**
      * Busca sistemas que NO tienen backup seguro
      */
-    @Query("SELECT s FROM SeguridadEntity s WHERE s.backupSeguro = false OR s.backupSeguro IS NULL")
+    @Query("SELECT s FROM DesarrolladorSeguridadEntity s WHERE s.backupSeguro = false OR s.backupSeguro IS NULL")
     List<SeguridadEntity> findWithoutBackup();
 }

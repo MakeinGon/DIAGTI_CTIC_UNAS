@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EvidenciaRepository extends JpaRepository<EvidenciaEntity, Long> {
+public interface DesarrolladorEvidenciaRepository extends JpaRepository<EvidenciaEntity, Long> {
     
     /**
      * Busca todas las evidencias de un sistema (no eliminadas)
@@ -25,7 +25,7 @@ public interface EvidenciaRepository extends JpaRepository<EvidenciaEntity, Long
     /**
      * Busca evidencias obligatorias de un sistema
      */
-    @Query("SELECT e FROM EvidenciaEntity e WHERE e.sistema.id = :sistemaId AND e.esObligatoria = true AND e.eliminado = false")
+    @Query("SELECT e FROM DesarrolladorEvidenciaEntity e WHERE e.sistema.id = :sistemaId AND e.esObligatoria = true AND e.eliminado = false")
     List<EvidenciaEntity> findObligatoriasBySistemaId(@Param("sistemaId") Long sistemaId);
     
     /**
@@ -41,7 +41,7 @@ public interface EvidenciaRepository extends JpaRepository<EvidenciaEntity, Long
     /**
      * Cuenta las evidencias obligatorias de un sistema
      */
-    @Query("SELECT COUNT(e) FROM EvidenciaEntity e WHERE e.sistema.id = :sistemaId AND e.esObligatoria = true AND e.eliminado = false")
+    @Query("SELECT COUNT(e) FROM DesarrolladorEvidenciaEntity e WHERE e.sistema.id = :sistemaId AND e.esObligatoria = true AND e.eliminado = false")
     long countObligatoriasBySistemaId(@Param("sistemaId") Long sistemaId);
     
     /**

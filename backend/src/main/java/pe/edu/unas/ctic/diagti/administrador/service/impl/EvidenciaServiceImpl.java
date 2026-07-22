@@ -7,12 +7,12 @@ import pe.edu.unas.ctic.diagti.administrador.dto.EvidenciaStatsDTO;
 import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
 import pe.edu.unas.ctic.diagti.administrador.entity.UsuarioEntity;  // ← USAR LA QUE EXISTE
 import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
-import pe.edu.unas.ctic.diagti.administrador.repository.EvidenciaRepository;
+import pe.edu.unas.ctic.diagti.administrador.repository.AdministradorEvidenciaRepository;
 import pe.edu.unas.ctic.diagti.administrador.repository.UsuarioRepository;  // ← USAR LA QUE EXISTE
 import pe.edu.unas.ctic.diagti.administrador.service.EvidenciaService;
 import pe.edu.unas.ctic.diagti.director.entity.EvidenciaEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
-import pe.edu.unas.ctic.diagti.director.repository.SistemaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorSistemaRepository;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EvidenciaServiceImpl implements EvidenciaService {
 
-    private final EvidenciaRepository evidenciaRepository;
-    private final SistemaRepository sistemaRepository;
+    private final AdministradorEvidenciaRepository evidenciaRepository;
+    private final DirectorSistemaRepository sistemaRepository;
     private final CatalogoRepository catalogoRepository;
     private final UsuarioRepository usuarioRepository;  // ← Usa el repositorio que existe
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");

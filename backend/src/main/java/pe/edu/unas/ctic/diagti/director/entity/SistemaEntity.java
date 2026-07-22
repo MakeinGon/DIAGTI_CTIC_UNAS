@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Entity
+@Entity(name = "DirectorSistemaEntity")
 @Table(name = "sistemas")
 public class SistemaEntity {
 

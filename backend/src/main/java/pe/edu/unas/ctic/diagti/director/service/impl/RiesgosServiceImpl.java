@@ -10,8 +10,8 @@ import pe.edu.unas.ctic.diagti.director.entity.SeguridadEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.entity.ValidacionEntity;
 import pe.edu.unas.ctic.diagti.director.mapper.RiesgoMapper;
-import pe.edu.unas.ctic.diagti.director.repository.SeguridadRepository;
-import pe.edu.unas.ctic.diagti.director.repository.SistemaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorSeguridadRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorSistemaRepository;
 import pe.edu.unas.ctic.diagti.director.repository.ValidacionRepository;
 import pe.edu.unas.ctic.diagti.director.service.RiesgosService;
 
@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RiesgosServiceImpl implements RiesgosService {
 
-    private final SistemaRepository sistemaRepository;
+    private final DirectorSistemaRepository sistemaRepository;
     private final ValidacionRepository validacionRepository;
-    private final SeguridadRepository seguridadRepository;
+    private final DirectorSeguridadRepository seguridadRepository;
     private final CatalogoRepository catalogoRepository;  // ← NUEVO
     private final RiesgoMapper riesgoMapper;
 

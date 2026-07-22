@@ -7,11 +7,11 @@ import pe.edu.unas.ctic.diagti.administrador.dto.SistemaDetalleDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.SistemaListDTO;
 import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
 import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
-import pe.edu.unas.ctic.diagti.administrador.repository.EvidenciaRepository;
+import pe.edu.unas.ctic.diagti.administrador.repository.AdministradorEvidenciaRepository;
 import pe.edu.unas.ctic.diagti.administrador.repository.UsuarioRepository;
 import pe.edu.unas.ctic.diagti.administrador.service.SistemaAdminService;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
-import pe.edu.unas.ctic.diagti.director.repository.SistemaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorSistemaRepository;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SistemaAdminServiceImpl implements SistemaAdminService {
 
-    private final SistemaRepository sistemaRepository;
-    private final EvidenciaRepository evidenciaRepository;
+    private final DirectorSistemaRepository sistemaRepository;
+    private final AdministradorEvidenciaRepository evidenciaRepository;
     private final CatalogoRepository catalogoRepository;
     private final UsuarioRepository usuarioRepository;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "DesarrolladorValidacionEntity")
 @Table(name = "validaciones_tecnicas")
 @Data
 @NoArgsConstructor

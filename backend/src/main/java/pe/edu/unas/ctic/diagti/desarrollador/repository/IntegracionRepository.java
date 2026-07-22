@@ -35,7 +35,7 @@ public interface IntegracionRepository extends JpaRepository<IntegracionEntity, 
     /**
      * Busca integraciones donde un sistema es origen o destino
      */
-    @Query("SELECT i FROM IntegracionEntity i WHERE (i.sistemaOrigen = :nombreSistema OR i.sistemaDestino = :nombreSistema) AND i.eliminado = false")
+    @Query("SELECT i FROM DesarrolladorIntegracionEntity i WHERE (i.sistemaOrigen = :nombreSistema OR i.sistemaDestino = :nombreSistema) AND i.eliminado = false")
     List<IntegracionEntity> findBySistemaOrigenOrSistemaDestino(@Param("nombreSistema") String nombreSistema);
     
     /**
@@ -46,6 +46,6 @@ public interface IntegracionRepository extends JpaRepository<IntegracionEntity, 
     /**
      * Verifica si existe una integración entre dos sistemas
      */
-    @Query("SELECT COUNT(i) > 0 FROM IntegracionEntity i WHERE i.sistemaOrigen = :origen AND i.sistemaDestino = :destino AND i.eliminado = false")
+    @Query("SELECT COUNT(i) > 0 FROM DesarrolladorIntegracionEntity i WHERE i.sistemaOrigen = :origen AND i.sistemaDestino = :destino AND i.eliminado = false")
     boolean existsBySistemaOrigenAndSistemaDestino(@Param("origen") String origen, @Param("destino") String destino);
 }

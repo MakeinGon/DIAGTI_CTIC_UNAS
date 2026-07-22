@@ -10,7 +10,7 @@ import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
 import pe.edu.unas.ctic.diagti.director.dto.*;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.mapper.SistemaMapper;
-import pe.edu.unas.ctic.diagti.director.repository.SistemaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorSistemaRepository;
 import pe.edu.unas.ctic.diagti.director.service.DashboardService;
 import pe.edu.unas.ctic.diagti.director.specification.SistemaSpecification;
 
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
 
-    private final SistemaRepository sistemaRepository;
+    private final DirectorSistemaRepository sistemaRepository;
     private final SistemaMapper sistemaMapper;
     private final CatalogoRepository catalogoRepository;
 
