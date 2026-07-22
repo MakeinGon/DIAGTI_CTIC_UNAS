@@ -16,7 +16,7 @@ let datosUsuario = null;
 
 async function obtenerDatosUsuario() {
     try {
-        const response = await fetch('http://localhost:8080/api/usuario/actual', {
+        const response = await fetch('/api/usuario/actual', {
             headers: obtenerHeaders()
         });
         if (response.ok) {
@@ -85,9 +85,9 @@ window.cerrarPanelValidacion = cerrarPanelValidacion;
 
 async function cargarSistema(sistemaId, container) {
     try {
-        const response = await fetch(`http://localhost:8080/api/sistemas/${sistemaId}`, {
-            headers: obtenerHeaders()
-        });
+            const response = await fetch(`/api/validacion/sistema/${sistemaId}`, {
+                headers: obtenerHeaders()
+            });
 
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
@@ -161,10 +161,9 @@ function generarDatosSistemaEjemplo(id) {
 
 async function cargarEvidencias(sistemaId) {
     try {
-        const response = await fetch(`http://localhost:8080/api/sistemas/${sistemaId}/evidencias`, {
+        const response = await fetch(`/api/validacion/sistema/${sistemaId}/evidencias`, {
             headers: obtenerHeaders()
         });
-
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
         }
@@ -186,7 +185,7 @@ async function cargarEvidencias(sistemaId) {
 
 async function cargarHistorial(sistemaId) {
     try {
-        const response = await fetch(`http://localhost:8080/api/sistemas/${sistemaId}/historial`, {
+        const response = await fetch(`/api/validacion/sistema/${sistemaId}/historial`, {
             headers: obtenerHeaders()
         });
 
@@ -349,15 +348,14 @@ window.ejecutarValidacion = async function(estado) {
     mensajeDiv.className = 'form-message info';
 
     try {
-        const response = await fetch('http://localhost:8080/api/validaciones', {
-            method: 'POST',
-            headers: {
-                ...obtenerHeaders(),
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-
+            const response = await fetch('/api/validaciones', {
+                method: 'POST',
+                headers: {
+                    ...obtenerHeaders(),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.mensaje || `Error HTTP: ${response.status}`);

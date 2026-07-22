@@ -156,9 +156,9 @@ function configurarArea() {
 async function cargarSistema() {
     try {
         const sistemaId = obtenerIdSistema();
-        const response = await fetch(`http://localhost:8080/api/sistemas/${sistemaId}`, {
-            headers: obtenerHeaders()
-        });
+            const response = await fetch(`/api/validacion/sistema/${sistemaId}`, {
+                headers: obtenerHeaders()
+            });
 
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
@@ -327,14 +327,14 @@ async function enviarObservacion(event) {
     }
 
     try {
-        const response = await fetch('http://localhost:8080/api/observaciones', {
-            method: 'POST',
-            headers: {
-                ...obtenerHeaders(),
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
+            const response = await fetch('/api/observaciones', {
+                method: 'POST',
+                headers: {
+                    ...obtenerHeaders(),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));

@@ -118,92 +118,120 @@ function getBadgeClassEstado(estado) {
 }
 
 // ============================================
-// 4. CARGAR DATOS DEL SISTEMA
+// 4. CARGAR DATOS DEL SISTEMA DESDE EL BACKEND
 // ============================================
 
-function cargarSistema() {
+async function cargarSistema() {
     const id = obtenerIdSistema();
-    const sistema = getSistema(id);
-    const evidencias = getEvidencias(id);
-
-    // Actualizar hero
-    document.getElementById('titulo-sistema').textContent = `📋 ${sistema.nombre}`;
-
-    // Actualizar estadísticas
-    document.getElementById('estado-actual').textContent = sistema.estado || '--';
-    document.getElementById('fecha-envio').textContent = sistema.fechaEnvio || '--';
-    document.getElementById('responsable').textContent = sistema.responsable || '--';
-
-    // Actualizar información de desarrollo
+    
+    document.getElementById('titulo-sistema').textContent = '⏳ Cargando...';
+    document.getElementById('estado-actual').textContent = 'Cargando...';
+    document.getElementById('fecha-envio').textContent = 'Cargando...';
+    document.getElementById('responsable').textContent = 'Cargando...';
+    
     const infoContainer = document.getElementById('info-desarrollo');
     infoContainer.innerHTML = `
-        <div class="info-row">
-            <span class="label">Código del Sistema</span>
-            <span class="value"><strong>${sistema.codigo || '--'}</strong></span>
-        </div>
-        <div class="info-row">
-            <span class="label">Nombre</span>
-            <span class="value">${sistema.nombre || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Lenguaje</span>
-            <span class="value">${sistema.lenguaje || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Versión</span>
-            <span class="value">${sistema.version || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Framework</span>
-            <span class="value">${sistema.framework || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Arquitectura</span>
-            <span class="value">${sistema.arquitectura || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Repositorio</span>
-            <span class="value"><a href="${sistema.repositorio || '#'}" target="_blank" style="color: var(--color-azul-ctic);">${sistema.repositorio || '--'}</a></span>
-        </div>
-        <div class="info-row">
-            <span class="label">Tipo de Aplicación</span>
-            <span class="value">${sistema.tipoAplicacion || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Año de Desarrollo</span>
-            <span class="value">${sistema.anioDesarrollo || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Empresa</span>
-            <span class="value">${sistema.empresa || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Contrato</span>
-            <span class="value">${sistema.contrato || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Motor de BD</span>
-            <span class="value">${sistema.bdMotor || '--'}</span>
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Cargando información...</span>
         </div>
     `;
 
-    // Actualizar evidencias
-    const evidenciasContainer = document.getElementById('evidencias-container');
-    evidenciasContainer.innerHTML = evidencias.map(ev => `
-        <div class="evidencia-item">
-            <span class="evidencia-nombre">
-                <i class="fas fa-file-${ev.clase === 'success' ? 'pdf' : 'exclamation'}"></i>
-                ${ev.nombre}
-            </span>
-            <span class="badge ${ev.clase}">
-                ${ev.estado === 'Cargado' ? '✅' : ev.estado === 'Faltante' ? '❌' : '⏳'} ${ev.estado}
-            </span>
-        </div>
-    `).join('');
+    try {
+        const response = await fetch(`/api/validacion/sistema/${id}`, {
+            headers: { 'Content-Type': 'application/json' }
+        });
 
-    console.log(`✅ Sistema de desarrollo ${id} cargado correctamente`);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const validacion = await response.json();
+        console.log('✅ Datos de validación:', validacion);
+
+        // ✅ USAR DATOS DE VALIDACIÓN DIRECTAMENTE (sin llamar a /api/sistemas)
+        const sistema = {
+            idSistema: validacion.idSistema,
+            nombre: validacion.nombreSistema || 'Sistema #' + id,
+            estadoValidacion: validacion.estadoValidacion || 'Pendiente',
+            fechaCreacion: validacion.fechaCreacion,
+            observacionGeneral: validacion.observacionGeneral || 'Sin observaciones'
+        };
+
+        document.getElementById('titulo-sistema').textContent = `📋 ${sistema.nombre}`;
+        document.getElementById('estado-actual').textContent = sistema.estadoValidacion;
+        document.getElementById('fecha-envio').textContent = sistema.fechaCreacion ? new Date(sistema.fechaCreacion).toLocaleDateString() : '--';
+        document.getElementById('responsable').textContent = validacion.nombreValidador || 'No asignado';
+
+        infoContainer.innerHTML = `
+            <div class="info-row">
+                <span class="label">ID Sistema</span>
+                <span class="value"><strong>${sistema.idSistema}</strong></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Nombre</span>
+                <span class="value">${sistema.nombre}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Estado Actual</span>
+                <span class="value"><span class="badge ${getBadgeClassEstado(sistema.estadoValidacion)}">${sistema.estadoValidacion}</span></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Fecha de Creación</span>
+                <span class="value">${sistema.fechaCreacion ? new Date(sistema.fechaCreacion).toLocaleString() : '--'}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Observación General</span>
+                <span class="value">${sistema.observacionGeneral}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Validador Asignado</span>
+                <span class="value">${validacion.nombreValidador || 'No asignado'}</span>
+            </div>
+        `;
+
+        console.log(`✅ Sistema de desarrollo ${id} cargado correctamente`);
+
+    } catch (error) {
+        console.error("❌ Error al cargar sistema:", error);
+        // Usar datos de ejemplo (fallback)
+        const sistema = sistemasDesarrolloData[id] || sistemasDesarrolloData[1];
+        
+        document.getElementById('titulo-sistema').textContent = `📋 ${sistema.nombre}`;
+        document.getElementById('estado-actual').textContent = sistema.estado || '--';
+        document.getElementById('fecha-envio').textContent = sistema.fechaEnvio || '--';
+        document.getElementById('responsable').textContent = sistema.responsable || '--';
+
+        infoContainer.innerHTML = `
+            <div class="info-row">
+                <span class="label">Código del Sistema</span>
+                <span class="value"><strong>${sistema.codigo || '--'}</strong></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Nombre</span>
+                <span class="value">${sistema.nombre || '--'}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Lenguaje</span>
+                <span class="value">${sistema.lenguaje || '--'}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Versión</span>
+                <span class="value">${sistema.version || '--'}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Framework</span>
+                <span class="value">${sistema.framework || '--'}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Responsable</span>
+                <span class="value">${sistema.responsable || '--'}</span>
+            </div>
+        `;
+        
+        mostrarNotificacion('⚠️ Usando datos de ejemplo', 'warning');
+    }
 }
-
 // ============================================
 // 5. FUNCIONES PARA MODAL DE RECHAZO - 🟢 ELIMINADO
 // ============================================

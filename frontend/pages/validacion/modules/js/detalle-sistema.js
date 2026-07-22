@@ -36,10 +36,9 @@ async function cargarDetalle() {
     try {
         sistemaId = obtenerIdSistema();
         
-        const response = await fetch(`http://localhost:8080/api/sistemas/${sistemaId}`, {
+        const response = await fetch(`/api/validacion/sistema/${sistemaId}`, {
             headers: obtenerHeaders()
         });
-
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
         }
@@ -411,7 +410,7 @@ async function guardarEdicion() {
 
     try {
         // Enviar datos a la API
-        const response = await fetch(`http://localhost:8080/api/sistemas/${sistemaId}`, {
+        const response = await fetch(`/api/validacion/sistema/${sistemaId}`, {
             method: 'PUT',
             headers: {
                 ...obtenerHeaders(),

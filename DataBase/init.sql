@@ -243,6 +243,72 @@ SELECT * FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM sistemas LIMIT 1);
 
 -- ============================================
+-- DATOS DE PRUEBA - VALIDACIONES
+-- ============================================
+
+INSERT INTO validaciones (
+    id_sistema,
+    id_validador,
+    estado_validacion,
+    resultado,
+    observacion_general,
+    fecha_creacion
+)
+SELECT 
+    s.id_sistema,
+    (SELECT id_usuario FROM usuarios WHERE username = '76551691'),
+    'PENDIENTE',
+    'PENDIENTE',
+    'Sistema enviado para validación inicial.',
+    NOW()
+FROM sistemas s
+WHERE NOT EXISTS (SELECT 1 FROM validaciones v WHERE v.id_sistema = s.id_sistema);
+
+-- ============================================
+-- DATOS DE PRUEBA - OBSERVACIONES
+-- ============================================
+
+INSERT INTO observaciones (
+    id_sistema,
+    id_validacion,
+    descripcion,
+    estado_observacion,
+    id_usuario_observa,
+    fecha_observacion
+)
+SELECT 
+    s.id_sistema,
+    v.id_validacion,
+    'Se requiere revisar la documentación técnica del sistema. Faltan evidencias de pruebas de seguridad.',
+    'PENDIENTE',
+    (SELECT id_usuario FROM usuarios WHERE username = '74331380'),
+    NOW()
+FROM sistemas s
+JOIN validaciones v ON s.id_sistema = v.id_sistema
+WHERE s.id_sistema = 2
+AND NOT EXISTS (SELECT 1 FROM observaciones o WHERE o.id_sistema = s.id_sistema);
+
+INSERT INTO observaciones (
+    id_sistema,
+    id_validacion,
+    descripcion,
+    estado_observacion,
+    id_usuario_observa,
+    fecha_observacion
+)
+SELECT 
+    s.id_sistema,
+    v.id_validacion,
+    'El sistema tiene riesgos críticos de seguridad. Se debe implementar autenticación de dos factores.',
+    'PENDIENTE',
+    (SELECT id_usuario FROM usuarios WHERE username = '74331380'),
+    NOW()
+FROM sistemas s
+JOIN validaciones v ON s.id_sistema = v.id_sistema
+WHERE s.id_sistema = 3
+AND NOT EXISTS (SELECT 1 FROM observaciones o WHERE o.id_sistema = s.id_sistema);
+
+-- ============================================
 -- VERIFICACIÓN FINAL
 -- ============================================
 
@@ -254,6 +320,8 @@ DECLARE
     audit_count INTEGER;
     catalogo_count INTEGER;
     sistema_count INTEGER;
+    validacion_count INTEGER;
+    observacion_count INTEGER;
 BEGIN
     SELECT COUNT(*) INTO rol_count FROM roles;
     SELECT COUNT(*) INTO user_count FROM usuarios;
@@ -261,6 +329,8 @@ BEGIN
     SELECT COUNT(*) INTO audit_count FROM auditoria;
     SELECT COUNT(*) INTO catalogo_count FROM catalogos;
     SELECT COUNT(*) INTO sistema_count FROM sistemas;
+    SELECT COUNT(*) INTO validacion_count FROM validaciones;
+    SELECT COUNT(*) INTO observacion_count FROM observaciones;
     
     RAISE NOTICE '============================================';
     RAISE NOTICE 'INICIALIZACIÓN DE BASE DE DATOS COMPLETADA';
@@ -271,6 +341,8 @@ BEGIN
     RAISE NOTICE 'Eventos de auditoría: %', audit_count;
     RAISE NOTICE 'Catálogos insertados: %', catalogo_count;
     RAISE NOTICE 'Sistemas insertados: %', sistema_count;
+    RAISE NOTICE 'Validaciones insertadas: %', validacion_count;
+    RAISE NOTICE 'Observaciones insertadas: %', observacion_count;
     RAISE NOTICE '============================================';
     RAISE NOTICE 'CREDENCIALES DE PRUEBA:';
     RAISE NOTICE '  DNI: 76551691 -> admin (admin123)';

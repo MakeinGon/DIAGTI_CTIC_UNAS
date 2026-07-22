@@ -1,11 +1,12 @@
-// pendientes.js
+// ============================================
+// 1. IMPORTACIONES
+// ============================================
 
-console.log('🚀 Cargando pendientes.js...');
-
-// ====== IMPORTAR FUNCIONES ======
+import { obtenerHeaders } from './api-utils.js';
 import './panel-detalle.js';
 import { configurarCerrarSesion } from "./common.js";
 
+// ... resto del código
 // ============================================
 // 1. DATOS DE EJEMPLO (PENDIENTES) - SIN CRITICIDAD
 // ============================================
@@ -275,41 +276,62 @@ function renderizarTabla(datos) {
 }
 
 // ============================================
-// 7. CARGAR PENDIENTES (CON SIMULACIÓN DE API)
+// 7. CARGAR PENDIENTES DESDE EL BACKEND
 // ============================================
 
-function cargarPendientes() {
-    console.log('🔄 Cargando pendientes...');
+async function cargarPendientes() {
+    console.log('🔄 Cargando pendientes desde el backend...');
     
     const btnActualizar = document.getElementById('btn-actualizar');
     const icon = btnActualizar?.querySelector('i');
     
-    // Mostrar estado de carga
     if (btnActualizar) {
         btnActualizar.disabled = true;
         btnActualizar.style.opacity = '0.7';
         if (icon) icon.classList.add('fa-spin');
     }
     
-    // Simular carga de datos (puedes reemplazar con fetch a tu API)
-    setTimeout(() => {
-        // Usar datos de ejemplo
+    try {
+        // ✅ ENDPOINT CORRECTO
+        const response = await fetch('/api/validacion/pendientes', {
+            headers: obtenerHeaders()
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Pendientes desde API:', data);
+            
+            if (data && data.length > 0) {
+                // Convertir datos de la API al formato de la tabla
+                const datosTabla = data.map(item => ({
+                    id: item.idSistema || item.id,
+                    nombre: item.nombreSistema || 'Sistema sin nombre',
+                    area: item.area || '--',
+                    fecha: item.fechaCreacion ? new Date(item.fechaCreacion).toISOString().split('T')[0] : '--'
+                }));
+                renderizarTabla(datosTabla);
+                mostrarNotificacion(`✅ ${data.length} sistemas pendientes cargados`, 'success');
+            } else {
+                renderizarTabla([]);
+                mostrarNotificacion('📋 No hay sistemas pendientes', 'info');
+            }
+        } else {
+            console.warn('⚠️ API no disponible, usando datos de ejemplo');
+            renderizarTabla(datosEjemplo);
+            mostrarNotificacion('ℹ️ Usando datos de ejemplo', 'info');
+        }
+    } catch (error) {
+        console.warn('⚠️ Error al conectar con la API:', error.message);
         renderizarTabla(datosEjemplo);
-        
-        // Mostrar notificación
-        mostrarNotificacion('✅ Datos actualizados correctamente', 'success');
-        
-        // Restaurar botón
+        mostrarNotificacion('ℹ️ Usando datos de ejemplo', 'info');
+    } finally {
         if (btnActualizar) {
             btnActualizar.disabled = false;
             btnActualizar.style.opacity = '1';
             if (icon) icon.classList.remove('fa-spin');
         }
-        
-        console.log('✅ Pendientes cargados correctamente');
-    }, 500);
+    }
 }
-
 // ============================================
 // 8. MOSTRAR NOTIFICACIONES FLOTANTES
 // ============================================

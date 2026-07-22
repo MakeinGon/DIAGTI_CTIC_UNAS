@@ -84,75 +84,120 @@ function getBadgeClassEstado(estado) {
 }
 
 // ============================================
-// 4. CARGAR DATOS DEL SISTEMA
+// 4. CARGAR DATOS DEL SISTEMA DESDE EL BACKEND
 // ============================================
 
-function cargarSistema() {
+async function cargarSistema() {
     const id = obtenerIdSistema();
-    const sistema = getSistema(id);
-
-    // Actualizar hero
-    document.getElementById('titulo-sistema').textContent = `📋 ${sistema.nombre}`;
-
-    // Actualizar estadísticas
-    document.getElementById('estado-actual').textContent = sistema.estado || '--';
-    document.getElementById('fecha-envio').textContent = sistema.fechaEnvio || '--';
-    document.getElementById('responsable').textContent = sistema.responsable || '--';
-
-    // Actualizar información de infraestructura
+    
+    document.getElementById('titulo-sistema').textContent = '⏳ Cargando...';
+    document.getElementById('estado-actual').textContent = 'Cargando...';
+    document.getElementById('fecha-envio').textContent = 'Cargando...';
+    document.getElementById('responsable').textContent = 'Cargando...';
+    
     const infoContainer = document.getElementById('info-infraestructura');
     infoContainer.innerHTML = `
-        <div class="info-row">
-            <span class="label">Nombre del Sistema</span>
-            <span class="value"><strong>${sistema.nombre || '--'}</strong></span>
-        </div>
-        <div class="info-row">
-            <span class="label">Responsable</span>
-            <span class="value">${sistema.responsable || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Sistema Operativo</span>
-            <span class="value">${sistema.sistemaOperativo || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Versión de SO</span>
-            <span class="value">${sistema.versionSO || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Autenticación</span>
-            <span class="value">${sistema.autenticacion || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Cifrado</span>
-            <span class="value">${sistema.cifrado || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Tipo de Base de Datos</span>
-            <span class="value">${sistema.tipoBD || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Versión de BD</span>
-            <span class="value">${sistema.versionBD || '--'}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Servidor</span>
-            <span class="value">${sistema.servidor || '--'}</span>
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Cargando información...</span>
         </div>
     `;
 
-    // Actualizar badge de estado en el hero
-    const badgeEstado = document.querySelector('.hero-card .badge');
-    if (badgeEstado) {
-        const estado = sistema.estado || 'Pendiente';
-        badgeEstado.textContent = estado;
-        badgeEstado.className = `badge ${getBadgeClassEstado(estado)}`;
-        // Agregar el ícono de infraestructura
-        badgeEstado.innerHTML = `<i class="fas fa-server"></i> ${estado}`;
+    try {
+        const response = await fetch(`/api/validacion/sistema/${id}`, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const validacion = await response.json();
+        console.log('✅ Datos de validación (infraestructura):', validacion);
+
+        // ✅ USAR DATOS DE VALIDACIÓN DIRECTAMENTE
+        const sistema = {
+            idSistema: validacion.idSistema,
+            nombre: validacion.nombreSistema || 'Sistema #' + id,
+            estadoValidacion: validacion.estadoValidacion || 'Pendiente',
+            fechaCreacion: validacion.fechaCreacion,
+            observacionGeneral: validacion.observacionGeneral || 'Sin observaciones'
+        };
+
+        document.getElementById('titulo-sistema').textContent = `📋 ${sistema.nombre}`;
+        document.getElementById('estado-actual').textContent = sistema.estadoValidacion;
+        document.getElementById('fecha-envio').textContent = sistema.fechaCreacion ? new Date(sistema.fechaCreacion).toLocaleDateString() : '--';
+        document.getElementById('responsable').textContent = validacion.nombreValidador || 'No asignado';
+
+        infoContainer.innerHTML = `
+            <div class="info-row">
+                <span class="label">ID Sistema</span>
+                <span class="value"><strong>${sistema.idSistema}</strong></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Nombre</span>
+                <span class="value">${sistema.nombre}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Estado Actual</span>
+                <span class="value"><span class="badge ${getBadgeClassEstado(sistema.estadoValidacion)}">${sistema.estadoValidacion}</span></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Fecha de Creación</span>
+                <span class="value">${sistema.fechaCreacion ? new Date(sistema.fechaCreacion).toLocaleString() : '--'}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Observación General</span>
+                <span class="value">${sistema.observacionGeneral}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Validador Asignado</span>
+                <span class="value">${validacion.nombreValidador || 'No asignado'}</span>
+            </div>
+        `;
+
+        const badgeEstado = document.querySelector('.hero-card .badge');
+        if (badgeEstado) {
+            const estado = sistema.estadoValidacion;
+            badgeEstado.textContent = estado;
+            badgeEstado.className = `badge ${getBadgeClassEstado(estado)}`;
+            badgeEstado.innerHTML = `<i class="fas fa-server"></i> ${estado}`;
+        }
+
+        console.log(`✅ Sistema de infraestructura ${id} cargado correctamente`);
+
+    } catch (error) {
+        console.error("❌ Error al cargar sistema de infraestructura:", error);
+        
+        const sistema = sistemasInfraestructuraData[id] || sistemasInfraestructuraData[1];
+        
+        document.getElementById('titulo-sistema').textContent = `📋 ${sistema.nombre}`;
+        document.getElementById('estado-actual').textContent = sistema.estado || '--';
+        document.getElementById('fecha-envio').textContent = sistema.fechaEnvio || '--';
+        document.getElementById('responsable').textContent = sistema.responsable || '--';
+
+        infoContainer.innerHTML = `
+            <div class="info-row">
+                <span class="label">Nombre del Sistema</span>
+                <span class="value"><strong>${sistema.nombre || '--'}</strong></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Responsable</span>
+                <span class="value">${sistema.responsable || '--'}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Sistema Operativo</span>
+                <span class="value">${sistema.sistemaOperativo || '--'}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Versión de SO</span>
+                <span class="value">${sistema.versionSO || '--'}</span>
+            </div>
+        `;
+        
+        mostrarNotificacion('⚠️ Usando datos de ejemplo', 'warning');
     }
-
-    console.log(`✅ Sistema de infraestructura ${id} cargado correctamente`);
 }
-
 // ============================================
 // 5. FUNCIONES PARA MODAL DE RECHAZO - 🟢 ELIMINADO
 // ============================================

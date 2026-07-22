@@ -13,7 +13,7 @@ function actualizarInterfaz(data) {
     const statsValidados = document.getElementById('stats-validados');
 
     if (statsPendientes) statsPendientes.textContent = data.pendientes ?? '--';
-    if (statsSubsanacion) statsSubsanacion.textContent = data.subsanacion ?? '--';
+    if (statsSubsanacion) statsSubsanacion.textContent = data.observados ?? '--';
     if (statsValidados) statsValidados.textContent = data.validados ?? '--';
 
     // Actualizar indicadores de gestión
@@ -22,7 +22,7 @@ function actualizarInterfaz(data) {
     const indValidados = document.getElementById('ind-validados');
 
     if (indPendientes) indPendientes.textContent = data.pendientes ? `${data.pendientes} sistemas` : '--';
-    if (indSubsanacion) indSubsanacion.textContent = data.subsanacion ? `${data.subsanacion} sistemas` : '--';
+    if (indSubsanacion) indSubsanacion.textContent = data.observados ? `${data.observados} sistemas` : '--';
     if (indValidados) indValidados.textContent = data.validados ? `${data.validados} sistemas` : '--';
 }
 
@@ -30,11 +30,9 @@ function actualizarInterfaz(data) {
  * Función para mostrar notificación de actualización
  */
 function mostrarNotificacion(mensaje, tipo = 'success') {
-    // Eliminar notificaciones anteriores
     const existing = document.querySelectorAll('.notification-toast');
     existing.forEach(el => el.remove());
 
-    // Crear contenedor si no existe
     let container = document.getElementById('notification-container');
     if (!container) {
         container = document.createElement('div');
@@ -53,7 +51,6 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
         document.body.appendChild(container);
     }
 
-    // Configurar colores según tipo
     const colors = {
         success: { bg: '#dcfce7', border: '#16a34a', text: '#166534', icon: 'fa-check-circle' },
         error: { bg: '#fee2e2', border: '#dc2626', text: '#991b1b', icon: 'fa-exclamation-circle' },
@@ -63,7 +60,6 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
 
     const style = colors[tipo] || colors.success;
 
-    // Crear notificación
     const notification = document.createElement('div');
     notification.className = 'notification-toast';
     notification.style.cssText = `
@@ -102,7 +98,6 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
 
     container.appendChild(notification);
 
-    // Auto-eliminar después de 4 segundos
     setTimeout(() => {
         if (notification.parentElement) {
             notification.style.transform = 'translateX(120%)';
@@ -119,7 +114,6 @@ async function cargarDashboard() {
     const btn = document.getElementById('btn-actualizar');
     const icon = btn?.querySelector('i');
 
-    // Mostrar estado de carga
     if (btn) {
         btn.disabled = true;
         btn.style.opacity = '0.7';
@@ -128,50 +122,27 @@ async function cargarDashboard() {
     }
 
     try {
-        // Datos de ejemplo predefinidos
-        const datosEjemplo = {
-            pendientes: 5,
-            subsanacion: 3,
-            validados: 8
-        };
+        // ✅ ENDPOINT CORRECTO
+        const response = await fetch('/api/validacion/estadisticas', {
+            headers: obtenerHeaders()
+        });
 
-        // Intentar cargar desde la API
-        try {
-            const response = await fetch('http://localhost:8080/api/dashboard/stats', {
-                headers: obtenerHeaders()
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                datosEjemplo.pendientes = data.pendientes ?? datosEjemplo.pendientes;
-                datosEjemplo.subsanacion = data.subsanacion ?? datosEjemplo.subsanacion;
-                datosEjemplo.validados = data.validados ?? datosEjemplo.validados;
-                mostrarNotificacion('✅ Datos cargados correctamente', 'success');
-            } else {
-                console.warn('⚠️ API no disponible, usando datos de ejemplo');
-                mostrarNotificacion('ℹ️ Usando datos de ejemplo', 'info');
-            }
-        } catch (error) {
-            console.warn('⚠️ Error al conectar con la API:', error.message);
+        if (response.ok) {
+            const data = await response.json();
+            console.log('📊 Datos recibidos:', data);
+            actualizarInterfaz(data);
+            mostrarNotificacion('✅ Datos cargados correctamente', 'success');
+        } else {
+            console.warn('⚠️ API no disponible, usando datos de ejemplo');
             mostrarNotificacion('ℹ️ Usando datos de ejemplo', 'info');
+            // Datos de ejemplo
+            actualizarInterfaz({ pendientes: 5, observados: 0, validados: 0 });
         }
-
-        // Actualizar interfaz con los datos
-        actualizarInterfaz(datosEjemplo);
-
     } catch (error) {
-        console.error("Error al cargar el dashboard:", error);
-        mostrarNotificacion('❌ Error al cargar datos', 'error');
-        
-        // Mostrar datos de ejemplo en caso de error
-        const datosFallback = {
-            pendientes: 5,
-            subsanacion: 3,
-            validados: 8
-        };
-        actualizarInterfaz(datosFallback);
+        console.warn('⚠️ Error al conectar con la API:', error.message);
+        mostrarNotificacion('ℹ️ Usando datos de ejemplo', 'info');
+        actualizarInterfaz({ pendientes: 5, observados: 0, validados: 0 });
     } finally {
-        // Restaurar botón
         if (btn) {
             btn.disabled = false;
             btn.style.opacity = '1';
@@ -185,22 +156,14 @@ async function cargarDashboard() {
  * Inicialización al cargar la página
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // Agregar estilos de animación si no existen
     if (!document.getElementById('notification-styles')) {
         const styleSheet = document.createElement('style');
         styleSheet.id = 'notification-styles';
         styleSheet.textContent = `
             @keyframes slideInRight {
-                from {
-                    transform: translateX(120%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
+                from { transform: translateX(120%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
             }
-            
             .notification-toast {
                 animation: slideInRight 0.4s ease;
             }
@@ -208,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(styleSheet);
     }
 
-    // Configurar evento del botón
     const btnActualizar = document.getElementById('btn-actualizar');
     if (btnActualizar) {
         const nuevoBtn = btnActualizar.cloneNode(true);
@@ -216,16 +178,8 @@ document.addEventListener('DOMContentLoaded', function() {
         nuevoBtn.addEventListener('click', cargarDashboard);
     }
 
-    // Cargar datos iniciales
     cargarDashboard();
-    
-    // Configurar cerrar sesión
     configurarCerrarSesion();
 });
 
-// Exportar funciones para uso en otros módulos si es necesario
-export { 
-    cargarDashboard, 
-    actualizarInterfaz, 
-    mostrarNotificacion
-};
+export { cargarDashboard, actualizarInterfaz, mostrarNotificacion };
