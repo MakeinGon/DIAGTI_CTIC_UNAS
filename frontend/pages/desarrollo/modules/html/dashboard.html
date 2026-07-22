@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="../css/dashboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
     <!-- SIDEBAR -->
@@ -38,26 +40,18 @@
             <a class="nav-item" href="mis-sistemas.html">
                 <span><span class="lbl">Mis Sistemas</span><span class="sub">Administrar sistemas</span></span>
             </a>
-            <a class="nav-item" href="registrar-sistema.html">
-                <span><span class="lbl">Registrar Sistema</span><span class="sub">Nuevo registro</span></span>
-            </a>
-            <a class="nav-item" href="enviar-validacion.html">
-                <span><span class="lbl">Enviar Validación</span><span class="sub">Sistemas completos</span></span>
-            </a>
-            <a class="nav-item" href="subsanar-observaciones.html">
-                <span><span class="lbl">Subsanar Observaciones</span><span class="sub">Corregir observaciones</span></span>
-            </a>
-            <a class="nav-item" href="historial-sistema.html">
-                <span><span class="lbl">Historial del Sistema</span><span class="sub">Trazabilidad</span></span>
+            <a class="nav-item" href="observaciones.html">
+                <span><span class="lbl">Observaciones</span><span class="sub">Correcciones pendientes</span></span>
             </a>
         </nav>
 
         <div class="sidebar-logout">
             <button class="btn-logout" onclick="cerrarSesion()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
                 </svg>
                 Cerrar Sesión
             </button>
@@ -68,69 +62,144 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
-        <div class="topbar">
-            <div>
-                <h2>Dashboard</h2>
-                <div class="hint">Resumen rápido del trabajo del desarrollador</div>
+
+        <!-- BIENVENIDA -->
+        <div class="greeting-box" id="greeting-box">
+            <div class="greeting-text">
+                <span id="greeting-message">Buenos días, Desarrollador Demo. 👋</span>
+                <span id="greeting-submessage" style="font-size:14px; color: var(--muted); font-weight:400;"></span>
             </div>
+            <a href="#pending-section" class="btn btn-azul btn-sm" id="greeting-action" style="display:none;">📋 Ir a
+                pendientes</a>
         </div>
 
-        <!-- Tarjetas -->
+        <!-- ESTADÍSTICAS -->
         <div class="stats-grid">
-            <div class="card">
-                <div class="stat-label">Total Sistemas</div>
-                <div class="stat-num accent" id="total-sistemas">0</div>
-                <div style="font-size:13px;color:var(--muted);">Registrados</div>
-            </div>
-            <div class="card">
-                <div class="stat-label">Borrador</div>
-                <div class="stat-num" style="color:#344054;" id="total-borrador">0</div>
-                <div style="font-size:13px;color:var(--muted);">Pendientes</div>
-            </div>
-            <div class="card">
-                <div class="stat-label">Enviados</div>
-                <div class="stat-num" style="color:#1e40af;" id="total-enviado">0</div>
-                <div style="font-size:13px;color:var(--muted);">En validación</div>
-            </div>
-            <div class="card">
-                <div class="stat-label">Observados</div>
-                <div class="stat-num" style="color:#9a3412;" id="total-observado">0</div>
-                <div style="font-size:13px;color:var(--muted);">Corregir</div>
-            </div>
-            <div class="card">
-                <div class="stat-label">Validados</div>
-                <div class="stat-num verde" id="total-validado">0</div>
-                <div style="font-size:13px;color:var(--muted);">Aprobados</div>
-            </div>
-        </div>
-
-        <!-- Actividad Reciente -->
-        <div class="card" style="margin-bottom:24px;">
-            <div class="section-head" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div class="stat-card stat-total">
+                <div class="stat-icon">📁</div>
                 <div>
-                    <h3>Actividad Reciente</h3>
-                    <div class="desc">Últimos movimientos en los sistemas</div>
+                    <div class="stat-label">Total Sistemas</div>
+                    <div class="stat-num" id="total-sistemas">0</div>
+                    <div class="stat-sub">Registrados</div>
                 </div>
             </div>
-            <div class="table-wrap" id="actividad-reciente"></div>
+            <div class="stat-card stat-borrador">
+                <div class="stat-icon">📝</div>
+                <div>
+                    <div class="stat-label">Borradores</div>
+                    <div class="stat-num" id="total-borrador">0</div>
+                    <div class="stat-sub">Pendientes de completar</div>
+                </div>
+            </div>
+            <div class="stat-card stat-enviado">
+                <div class="stat-icon">📤</div>
+                <div>
+                    <div class="stat-label">Enviados</div>
+                    <div class="stat-num" id="total-enviado">0</div>
+                    <div class="stat-sub">Esperando validación</div>
+                </div>
+            </div>
+            <div class="stat-card stat-observado">
+                <div class="stat-icon">⚠️</div>
+                <div>
+                    <div class="stat-label">Observados</div>
+                    <div class="stat-num" id="total-observado">0</div>
+                    <div class="stat-sub">Requiere corrección</div>
+                </div>
+            </div>
+            <div class="stat-card stat-validado">
+                <div class="stat-icon">✅</div>
+                <div>
+                    <div class="stat-label">Validados</div>
+                    <div class="stat-num" id="total-validado">0</div>
+                    <div class="stat-sub">Aprobados</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Accesos Rápidos -->
-        <div class="card">
+        <!-- PROGRESO GENERAL -->
+        <div class="progress-section card">
+            <div class="progress-header">
+                <span class="progress-label">📊 Progreso general</span>
+                <span class="progress-percent" id="progress-percent">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-fill" style="width:0%;"></div>
+            </div>
+            <div class="progress-sub" id="progress-message">0 de 0 sistemas enviados a validación.</div>
+        </div>
+
+        <!-- FILA: PENDIENTES + OBSERVACIONES -->
+        <div class="dashboard-row" id="pending-section">
+            <div class="card pending-card">
+                <div class="section-head">
+                    <div>
+                        <h3>⏳ Pendientes de atención</h3>
+                        <div class="desc">Sistemas que requieren acción</div>
+                    </div>
+                </div>
+                <div id="pending-list">
+                    <div class="empty-state">🎉 No hay pendientes, ¡todo al día!</div>
+                </div>
+            </div>
+
+            <div class="card observations-card">
+                <div class="section-head">
+                    <div>
+                        <h3>🔴 Observaciones pendientes</h3>
+                        <div class="desc">Correcciones requeridas por CTIC</div>
+                    </div>
+                </div>
+                <div id="observations-list">
+                    <div class="empty-state">✅ Sin observaciones pendientes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILA: ÚLTIMOS SISTEMAS + PRÓXIMAS ACCIONES -->
+        <div class="dashboard-row">
+            <div class="card recent-card">
+                <div class="section-head">
+                    <div>
+                        <h3>🕒 Últimos sistemas registrados</h3>
+                        <div class="desc">Los más recientes</div>
+                    </div>
+                    <a href="mis-sistemas.html" class="btn btn-ghost btn-sm">Ir a Mis Sistemas →</a>
+                </div>
+                <ul id="recent-list">
+                    <li class="empty-state">No hay sistemas registrados aún.</li>
+                </ul>
+            </div>
+
+            <div class="card actions-card">
+                <div class="section-head">
+                    <div>
+                        <h3>🎯 Próximas acciones</h3>
+                        <div class="desc">Lo que sigue en tu flujo de trabajo</div>
+                    </div>
+                </div>
+                <div id="next-actions-list">
+                    <div class="empty-state">🏆 ¡Sin acciones pendientes!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVIDAD RECIENTE -->
+        <div class="card activity-card">
             <div class="section-head">
                 <div>
-                    <h3>Accesos Rápidos</h3>
-                    <div class="desc">Atajos para las acciones más comunes</div>
+                    <h3>📋 Actividad Reciente</h3>
+                    <div class="desc">Últimas acciones realizadas en los sistemas</div>
                 </div>
             </div>
-            <div class="quick-access">
-                <a href="registrar-sistema.html" class="btn btn-verde">➕ Registrar Sistema</a>
-                <a href="mis-sistemas.html" class="btn btn-azul">📋 Ver Mis Sistemas</a>
-                <a href="subsanar-observaciones.html" class="btn" style="background:#ffedd5;color:#9a3412;">✏️ Corregir Observaciones</a>
+            <div class="table-wrap" id="actividad-reciente">
+                <!-- Generado por JS -->
             </div>
         </div>
+
     </main>
-    <script src="../js/config.js"></script>
+
     <script src="../js/dashboard.js"></script>
 </body>
+
 </html>
