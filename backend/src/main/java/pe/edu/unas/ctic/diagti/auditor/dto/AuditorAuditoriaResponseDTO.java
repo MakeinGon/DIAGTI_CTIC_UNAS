@@ -1,40 +1,17 @@
-package pe.edu.unas.ctic.diagti.auditor.model;
+package pe.edu.unas.ctic.diagti.auditor.dto;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "auditoria")
-public class Auditoria {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_auditoria")
+public class AuditorAuditoriaResponseDTO {
     private Long idAuditoria;
-
-    @Column(name = "id_usuario")
     private Long idUsuario;
-
-    @Column(name = "modulo", nullable = false, length = 100)
+    private String nombreUsuario;
+    private String correoUsuario;
     private String modulo;
-
-    @Column(name = "accion", nullable = false, length = 50)
     private String accion;
-
-    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
-
-    @Column(name = "fecha_evento")
-    private LocalDateTime fechaEvento = LocalDateTime.now();
-
-    @Column(name = "direccion_ip", length = 50)
+    private LocalDateTime fechaEvento;
     private String direccionIp;
-
-    @Column(name = "user_agent", length = 255)
-    private String userAgent;
-
-    @Column(name = "sesion_id", length = 100)
-    private String sesionId;
 
     // Getters y Setters
     public Long getIdAuditoria() { return idAuditoria; }
@@ -42,6 +19,12 @@ public class Auditoria {
 
     public Long getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
+
+    public String getNombreUsuario() { return nombreUsuario; }
+    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
+
+    public String getCorreoUsuario() { return correoUsuario; }
+    public void setCorreoUsuario(String correoUsuario) { this.correoUsuario = correoUsuario; }
 
     public String getModulo() { return modulo; }
     public void setModulo(String modulo) { this.modulo = modulo; }
@@ -57,10 +40,4 @@ public class Auditoria {
 
     public String getDireccionIp() { return direccionIp; }
     public void setDireccionIp(String direccionIp) { this.direccionIp = direccionIp; }
-
-    public String getUserAgent() { return userAgent; }
-    public void setUserAgent(String userAgent) { this.userAgent = userAgent; }
-
-    public String getSesionId() { return sesionId; }
-    public void setSesionId(String sesionId) { this.sesionId = sesionId; }
 }

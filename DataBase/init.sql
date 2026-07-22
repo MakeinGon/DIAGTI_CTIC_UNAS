@@ -29,10 +29,9 @@
 \i /docker-entrypoint-initdb.d/modules/permisos.sql
 
 -- ============================================
--- DATOS DE PRUEBA
+-- DATOS DE PRUEBA - ROLES
 -- ============================================
 
--- Insertar roles
 INSERT INTO roles (nombre, descripcion, estado) 
 SELECT * FROM (VALUES 
     ('admin', 'Administrador del sistema', true),
@@ -45,7 +44,10 @@ SELECT * FROM (VALUES
 ) AS datos(nombre, descripcion, estado)
 WHERE NOT EXISTS (SELECT 1 FROM roles LIMIT 1);
 
--- Insertar catálogos
+-- ============================================
+-- DATOS DE PRUEBA - CATÁLOGOS
+-- ============================================
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM catalogos LIMIT 1) THEN
@@ -68,7 +70,10 @@ BEGIN
     END IF;
 END $$;
 
--- Insertar usuarios con contraseñas EN TEXTO PLANO
+-- ============================================
+-- DATOS DE PRUEBA - USUARIOS (TEXTO PLANO)
+-- ============================================
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM usuarios LIMIT 1) THEN
@@ -89,7 +94,7 @@ BEGIN
             '76551691',
             'johan.vela@unas.edu.pe',
             '76551691',
-            'admin123',  -- ✅ TEXTO PLANO
+            'admin123',
             'CTIC',
             'Local',
             true
@@ -100,7 +105,7 @@ BEGIN
             '74331380',
             'carlos.ruiz@unas.edu.pe',
             '74331380',
-            'admin123',  -- ✅ TEXTO PLANO
+            'admin123',
             'Auditoria',
             'Local',
             true
@@ -111,7 +116,7 @@ BEGIN
             '71234567',
             'juan.perez@unas.edu.pe',
             '71234567',
-            'admin123',  -- ✅ TEXTO PLANO
+            'admin123',
             'Desarrollo',
             'Local',
             true
@@ -122,7 +127,7 @@ BEGIN
             '72345678',
             'maria.gomez@unas.edu.pe',
             '72345678',
-            'admin123',  -- ✅ TEXTO PLANO
+            'admin123',
             'Direccion',
             'Local',
             true
@@ -133,7 +138,7 @@ BEGIN
             '73456789',
             'laura.garcia@unas.edu.pe',
             '73456789',
-            'admin123',  -- ✅ TEXTO PLANO
+            'admin123',
             'Funcional',
             'Local',
             true
@@ -144,7 +149,7 @@ BEGIN
             '74567890',
             'ana.torres@unas.edu.pe',
             '74567890',
-            'admin123',  -- ✅ TEXTO PLANO
+            'admin123',
             'Infraestructura',
             'Local',
             true
@@ -155,7 +160,7 @@ BEGIN
             '75678901',
             'roberto.diaz@unas.edu.pe',
             '75678901',
-            'admin123',  -- ✅ TEXTO PLANO
+            'admin123',
             'Validacion',
             'Local',
             true
@@ -163,7 +168,10 @@ BEGIN
     END IF;
 END $$;
 
--- Asignar roles a usuarios
+-- ============================================
+-- DATOS DE PRUEBA - ASIGNACIÓN DE ROLES
+-- ============================================
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM usuarios_roles LIMIT 1) THEN
@@ -181,7 +189,10 @@ BEGIN
     END IF;
 END $$;
 
--- Insertar eventos de auditoría
+-- ============================================
+-- DATOS DE PRUEBA - AUDITORÍA
+-- ============================================
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM auditoria LIMIT 1) THEN
@@ -195,8 +206,46 @@ BEGIN
 END $$;
 
 -- ============================================
+-- DATOS DE PRUEBA - SISTEMAS
+-- ============================================
+
+INSERT INTO sistemas (
+    codigo_unico, 
+    nombre, 
+    descripcion, 
+    id_area_usuario, 
+    id_tipo_aplicativo, 
+    id_criticidad, 
+    forma_adquisicion, 
+    id_responsable_funcional, 
+    id_responsable_tecnico, 
+    ano_adquisicion, 
+    desarrollador_nombre, 
+    contrato_vigente, 
+    es_legacy, 
+    estado_flujo, 
+    nivel_riesgo, 
+    prioridad_migracion
+) 
+SELECT * FROM (VALUES 
+    ('SYS-001', 'Sistema Académico', 'Matrícula, notas y currícula.', 1, 1, 3, 'Desarrollo CTIC', 2, 3, 2021, 'CTIC UNAS', false, false, 'VALIDADO', 'MEDIO', 'MEDIANO PLAZO'),
+    ('SYS-002', 'Trámite Documentario', 'Gestión de documentos internos.', 2, 1, 3, 'Proveedor externo', 4, 3, 2020, 'Proveedor externo', true, false, 'OBSERVADO', 'ALTO', 'CORTO PLAZO'),
+    ('SYS-003', 'Sistema de Biblioteca', 'Catálogo bibliográfico, préstamos y devoluciones.', 3, 1, 2, 'Desarrollo interno', 5, NULL, 2015, 'Equipo anterior CTIC', false, true, 'OBSERVADO', 'CRITICO', 'INMEDIATA'),
+    ('SYS-004', 'Recursos Humanos', 'Gestión de personal, asistencia, contratos y planillas.', 4, 1, 3, 'Compra', 6, 3, 2019, 'Proveedor RRHH', true, false, 'VALIDADO', 'BAJO', 'MONITOREO'),
+    ('SYS-005', 'Sistema Financiero', 'Control de ingresos, egresos, pagos y reportes financieros.', 5, 1, 4, 'Proveedor externo', 7, 3, 2018, 'Proveedor Financiero', false, false, 'ENVIADO', 'ALTO', 'CORTO PLAZO')
+) AS datos(
+    codigo_unico, nombre, descripcion, 
+    id_area_usuario, id_tipo_aplicativo, id_criticidad, 
+    forma_adquisicion, id_responsable_funcional, id_responsable_tecnico, 
+    ano_adquisicion, desarrollador_nombre, contrato_vigente, 
+    es_legacy, estado_flujo, nivel_riesgo, prioridad_migracion
+)
+WHERE NOT EXISTS (SELECT 1 FROM sistemas LIMIT 1);
+
+-- ============================================
 -- VERIFICACIÓN FINAL
 -- ============================================
+
 DO $$
 DECLARE
     rol_count INTEGER;
@@ -204,12 +253,14 @@ DECLARE
     role_assign_count INTEGER;
     audit_count INTEGER;
     catalogo_count INTEGER;
+    sistema_count INTEGER;
 BEGIN
     SELECT COUNT(*) INTO rol_count FROM roles;
     SELECT COUNT(*) INTO user_count FROM usuarios;
     SELECT COUNT(*) INTO role_assign_count FROM usuarios_roles;
     SELECT COUNT(*) INTO audit_count FROM auditoria;
     SELECT COUNT(*) INTO catalogo_count FROM catalogos;
+    SELECT COUNT(*) INTO sistema_count FROM sistemas;
     
     RAISE NOTICE '============================================';
     RAISE NOTICE 'INICIALIZACIÓN DE BASE DE DATOS COMPLETADA';
@@ -219,6 +270,7 @@ BEGIN
     RAISE NOTICE 'Asignaciones de roles: %', role_assign_count;
     RAISE NOTICE 'Eventos de auditoría: %', audit_count;
     RAISE NOTICE 'Catálogos insertados: %', catalogo_count;
+    RAISE NOTICE 'Sistemas insertados: %', sistema_count;
     RAISE NOTICE '============================================';
     RAISE NOTICE 'CREDENCIALES DE PRUEBA:';
     RAISE NOTICE '  DNI: 76551691 -> admin (admin123)';

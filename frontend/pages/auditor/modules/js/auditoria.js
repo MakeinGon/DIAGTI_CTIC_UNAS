@@ -2,9 +2,9 @@
 // CONEXIÓN CON EL BACKEND - AUDITORÍA
 // ============================================
 
-const API_URL_AUDITOR = 'http://localhost:8080/auditor';
+// ✅ CORRECTO: Usar proxy de nginx (NO localhost:8080)
+const API_URL_AUDITOR = '/auditor';
 
-// Variable global para almacenar los datos
 let auditoriaActual = [];
 let paginaActual = 1;
 const registrosPorPagina = 5;
@@ -31,6 +31,9 @@ const kpiExportaciones = document.getElementById("kpi-exportaciones");
 
 async function obtenerAuditoria(filtros) {
     try {
+        console.log('📡 Enviando a:', `${API_URL_AUDITOR}/auditoria`);
+        console.log('📋 Filtros:', filtros);
+        
         const response = await fetch(`${API_URL_AUDITOR}/auditoria`, {
             method: 'POST',
             headers: {
@@ -43,9 +46,11 @@ async function obtenerAuditoria(filtros) {
             throw new Error('Error al obtener auditoría');
         }
         
-        return await response.json();
+        const data = await response.json();
+        console.log('✅ Datos recibidos:', data.length, 'registros');
+        return data;
     } catch (error) {
-        console.error('Error en obtenerAuditoria:', error);
+        console.error('❌ Error:', error);
         return [];
     }
 }
@@ -53,12 +58,10 @@ async function obtenerAuditoria(filtros) {
 async function obtenerKPIs() {
     try {
         const response = await fetch(`${API_URL_AUDITOR}/kpis`);
-        
-        if (!response.ok) {
-            throw new Error('Error al obtener KPIs');
-        }
-        
-        return await response.json();
+        if (!response.ok) throw new Error('Error al obtener KPIs');
+        const data = await response.json();
+        console.log('📊 KPIs:', data);
+        return data;
     } catch (error) {
         console.error('Error en obtenerKPIs:', error);
         return { total: 0, consultas: 0, intentosFallidos: 0, exportaciones: 0 };
@@ -86,6 +89,8 @@ async function registrarEvento(modulo, accion, descripcion) {
         
         if (!response.ok) {
             console.error('Error al registrar evento');
+        } else {
+            console.log('✅ Evento registrado:', modulo, '-', accion);
         }
     } catch (error) {
         console.error('Error en registrarEvento:', error);
@@ -117,7 +122,6 @@ async function cargarAuditoria() {
             size: registrosPorPagina
         };
         
-        // Limpiar valores vacíos
         Object.keys(filtros).forEach(key => {
             if (filtros[key] === null || filtros[key] === '') {
                 delete filtros[key];
@@ -127,7 +131,7 @@ async function cargarAuditoria() {
         const data = await obtenerAuditoria(filtros);
         auditoriaActual = data;
         
-        // Actualizar KPIs desde el backend
+        // Actualizar KPIs
         const kpis = await obtenerKPIs();
         kpiTotal.textContent = kpis.total || 0;
         kpiConsultas.textContent = kpis.consultas || 0;
@@ -136,7 +140,7 @@ async function cargarAuditoria() {
         
         renderAuditoria(data);
         
-        // Registrar evento de consulta
+        // Registrar evento
         await registrarEvento('Auditoría', 'Consulta', 'El auditor consultó el historial de eventos');
         
     } catch (error) {
@@ -148,15 +152,15 @@ async function cargarAuditoria() {
 }
 
 function renderAuditoria(lista) {
+    console.log('🎨 Renderizando', lista ? lista.length : 0, 'registros');
     tablaAuditoria.innerHTML = "";
     
-    // Si no hay datos, mostrar mensaje
     if (!lista || lista.length === 0) {
         tablaAuditoria.innerHTML = `
             <tr>
                 <td colspan="8" style="text-align:center; color:#64757a; padding:40px 20px;">
                     <div style="font-size: 18px; margin-bottom: 8px;">📋</div>
-                    No se encontraron eventos con los filtros seleccionados.
+                    No se encontraron eventos en la base de datos con los filtros seleccionados.
                 </td>
             </tr>
         `;
@@ -197,14 +201,13 @@ function renderAuditoria(lista) {
             }
         }
         
-        // Obtener nombre y correo (pueden venir del backend o de campos antiguos)
-        const nombreUsuario = log.nombreUsuario || log.usuario || "Usuario no registrado";
-        const correoUsuario = log.correoUsuario || log.correo || "Sin correo";
-        const idAuditoria = log.idAuditoria || log.id_auditoria || '?';
+        const nombreUsuario = log.nombreUsuario || "Usuario no registrado";
+        const correoUsuario = log.correoUsuario || "Sin correo";
+        const idAuditoria = log.idAuditoria || '?';
         const modulo = log.modulo || "-";
         const accion = log.accion || "-";
         const descripcion = log.descripcion || "-";
-        const direccionIp = log.direccionIp || log.direccion_ip || "-";
+        const direccionIp = log.direccionIp || "-";
         
         fila.innerHTML = `
             <td><span class="id-cell">#${idAuditoria}</span></td>
@@ -256,11 +259,6 @@ function formatearFecha(fechaEvento) {
     }
 }
 
-function obtenerFechaISO(fechaEvento) {
-    if (!fechaEvento) return "";
-    return fechaEvento.substring(0, 10);
-}
-
 function obtenerClaseAccion(accion) {
     const acciones = {
         "Consulta": "action-consulta",
@@ -276,11 +274,8 @@ function obtenerClaseAccion(accion) {
 function renderPaginacion(totalPaginas) {
     paginacion.innerHTML = "";
     
-    if (totalPaginas <= 1) {
-        return;
-    }
+    if (totalPaginas <= 1) return;
     
-    // Botón Anterior
     const btnAnterior = document.createElement('button');
     btnAnterior.className = 'btn btn-ghost btn-sm';
     btnAnterior.textContent = 'Anterior';
@@ -288,7 +283,6 @@ function renderPaginacion(totalPaginas) {
     btnAnterior.onclick = () => cambiarPagina(paginaActual - 1);
     paginacion.appendChild(btnAnterior);
     
-    // Números de página
     const maxPages = Math.min(totalPaginas, 5);
     let startPage = Math.max(1, paginaActual - 2);
     let endPage = Math.min(totalPaginas, startPage + maxPages - 1);
@@ -305,7 +299,6 @@ function renderPaginacion(totalPaginas) {
         paginacion.appendChild(btn);
     }
     
-    // Botón Siguiente
     const btnSiguiente = document.createElement('button');
     btnSiguiente.className = 'btn btn-ghost btn-sm';
     btnSiguiente.textContent = 'Siguiente';
@@ -320,12 +313,10 @@ function cambiarPagina(numeroPagina) {
     
     paginaActual = numeroPagina;
     renderAuditoria(auditoriaActual);
-    
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function mostrarError(mensaje) {
-    // Puedes implementar un toast o notificación
     console.error(mensaje);
     const errorDiv = document.createElement('div');
     errorDiv.style.cssText = `
@@ -363,14 +354,14 @@ function exportarExcel() {
     const encabezados = ["ID", "Fecha y hora", "Usuario", "Correo", "Módulo", "Acción", "Descripción", "IP origen"];
     
     const filas = auditoriaActual.map(log => [
-        log.idAuditoria || log.id_auditoria || '',
-        formatearFecha(log.fechaEvento || log.fecha_evento),
-        log.nombreUsuario || log.usuario || 'Usuario no registrado',
-        log.correoUsuario || log.correo || 'Sin correo',
+        log.idAuditoria || '',
+        formatearFecha(log.fechaEvento),
+        log.nombreUsuario || 'Usuario no registrado',
+        log.correoUsuario || 'Sin correo',
         log.modulo || '-',
         log.accion || '-',
         log.descripcion || '-',
-        log.direccionIp || log.direccion_ip || '-'
+        log.direccionIp || '-'
     ]);
     
     const contenido = [encabezados, ...filas]
@@ -385,7 +376,6 @@ function exportarExcel() {
     enlace.click();
     URL.revokeObjectURL(url);
     
-    // Registrar evento de exportación
     registrarEvento('Reportes', 'Exportación', 'El auditor exportó el reporte de auditoría en Excel');
 }
 
@@ -397,14 +387,14 @@ function exportarPDF() {
     
     const filas = auditoriaActual.map(log => `
         <tr>
-            <td>${log.idAuditoria || log.id_auditoria || ''}</td>
-            <td>${formatearFecha(log.fechaEvento || log.fecha_evento)}</td>
-            <td>${log.nombreUsuario || log.usuario || 'Usuario no registrado'}</td>
-            <td>${log.correoUsuario || log.correo || 'Sin correo'}</td>
+            <td>${log.idAuditoria || ''}</td>
+            <td>${formatearFecha(log.fechaEvento)}</td>
+            <td>${log.nombreUsuario || 'Usuario no registrado'}</td>
+            <td>${log.correoUsuario || 'Sin correo'}</td>
             <td>${log.modulo || '-'}</td>
             <td>${log.accion || '-'}</td>
             <td>${log.descripcion || '-'}</td>
-            <td>${log.direccionIp || log.direccion_ip || '-'}</td>
+            <td>${log.direccionIp || '-'}</td>
         </tr>
     `).join("");
     
@@ -453,8 +443,6 @@ function exportarPDF() {
     `;
     
     abrirVentanaPDF(html);
-    
-    // Registrar evento de exportación
     registrarEvento('Reportes', 'Exportación', 'El auditor exportó el reporte de auditoría en PDF');
 }
 
@@ -491,14 +479,12 @@ function confirmarCerrarSesion() {
 // EVENTOS Y INICIALIZACIÓN
 // ============================================
 
-// Event listeners para filtros
 searchInput.addEventListener("input", filtrarAuditoria);
 filterModulo.addEventListener("change", filtrarAuditoria);
 filterAccion.addEventListener("change", filtrarAuditoria);
 filterDesde.addEventListener("change", filtrarAuditoria);
 filterHasta.addEventListener("change", filtrarAuditoria);
 
-// Cerrar modal de logout al hacer clic fuera
 document.addEventListener("DOMContentLoaded", function() {
     const overlay = document.getElementById("logout-confirm-overlay");
     if (overlay) {
@@ -509,15 +495,21 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // Cargar datos iniciales
+    console.log('🚀 Iniciando módulo de Auditoría...');
     cargarAuditoria();
     
-    // Verificar sesión
     const session = JSON.parse(localStorage.getItem('diagti_session') || '{}');
     if (!session.rol || session.rol !== 'auditor') {
         console.warn('Usuario no autorizado para esta página');
-        // window.location.href = '../../../login/html/login.html';
     }
     
-    console.log('Módulo de Auditoría inicializado correctamente');
+    console.log('✅ Módulo de Auditoría conectado a la BD');
 });
+
+// Exponer funciones globales
+window.filtrarAuditoria = filtrarAuditoria;
+window.exportarExcel = exportarExcel;
+window.exportarPDF = exportarPDF;
+window.cerrarSesion = cerrarSesion;
+window.cancelarCerrarSesion = cancelarCerrarSesion;
+window.confirmarCerrarSesion = confirmarCerrarSesion;

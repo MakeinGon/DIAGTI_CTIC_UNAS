@@ -11,7 +11,12 @@ import java.util.List;
 
 @Repository
 public interface AuditorAuditoriaRepository extends JpaRepository<Auditoria, Long> {
-    
+
+    // ✅ MÉTODO SIMPLE - TRAE TODOS LOS REGISTROS
+    @Query("SELECT a FROM Auditoria a ORDER BY a.fechaEvento DESC")
+    List<Auditoria> findAllOrderByFechaDesc();
+
+    // ✅ MÉTODO CON FILTROS (SIMPLIFICADO)
     @Query("""
         SELECT a FROM Auditoria a 
         WHERE (:searchText IS NULL OR 
@@ -32,13 +37,13 @@ public interface AuditorAuditoriaRepository extends JpaRepository<Auditoria, Lon
         @Param("fechaDesde") LocalDateTime fechaDesde,
         @Param("fechaHasta") LocalDateTime fechaHasta
     );
-    
+
     @Query("SELECT COUNT(a) FROM Auditoria a WHERE a.accion = 'Consulta'")
     Long countConsultas();
-    
+
     @Query("SELECT COUNT(a) FROM Auditoria a WHERE a.accion = 'Intento fallido'")
     Long countIntentosFallidos();
-    
+
     @Query("SELECT COUNT(a) FROM Auditoria a WHERE a.accion = 'Exportación'")
     Long countExportaciones();
 }
