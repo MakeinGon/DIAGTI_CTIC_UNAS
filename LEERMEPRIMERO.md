@@ -177,3 +177,10 @@ git merge develop
 # 🎯 Objetivo
 
 Mantener un sistema modular, escalable y ordenado para el desarrollo colaborativo del SGI.
+
+
+docker-compose down -v
+docker-compose build --no-cache
+docker-compose up -d
+
+http://localhost/pages/login/html/login.html
