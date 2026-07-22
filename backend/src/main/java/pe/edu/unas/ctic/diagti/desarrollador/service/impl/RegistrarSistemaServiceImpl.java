@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RegistrarSistemaServiceImpl implements RegistrarSistemaService {
     
-    private final SistemaRepository sistemaRepository;
+    private final SistemaDesarrolloRepository sistemaRepository;
     private final ArquitecturaRepository arquitecturaRepository;
     private final InfraestructuraRepository infraestructuraRepository;
     private final SeguridadRepository seguridadRepository;

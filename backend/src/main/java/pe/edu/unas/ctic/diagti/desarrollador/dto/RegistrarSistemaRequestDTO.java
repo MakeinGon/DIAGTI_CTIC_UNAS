@@ -48,4 +48,4 @@ public class RegistrarSistemaRequestDTO {
     
     // Lista de integraciones
     private List<IntegracionDTO> integraciones;
-}
+}//-

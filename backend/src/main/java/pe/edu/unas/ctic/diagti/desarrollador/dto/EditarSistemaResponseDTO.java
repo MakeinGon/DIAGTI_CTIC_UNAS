@@ -14,4 +14,4 @@ public class EditarSistemaResponseDTO {
     private LocalDateTime fechaActualizacion;
     private boolean exito;
     private String mensaje;
-}
+}//-

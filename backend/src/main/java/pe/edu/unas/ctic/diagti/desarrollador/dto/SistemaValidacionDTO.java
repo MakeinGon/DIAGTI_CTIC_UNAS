@@ -14,4 +14,4 @@ public class SistemaValidacionDTO {
     private Boolean puedeEnviar;
     private Integer evidenciasFaltantes;
     private String mensajeCompletitud;
-}
+}//-

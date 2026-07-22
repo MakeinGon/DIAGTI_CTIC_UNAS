@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SistemaRepository extends JpaRepository<SistemaEntity, Long>, JpaSpecificationExecutor<SistemaEntity> {
+public interface SistemaDesarrolloRepository extends JpaRepository<SistemaEntity, Long>, JpaSpecificationExecutor<SistemaEntity> {
     
     // ============================================================
     // BÚSQUEDAS BÁSICAS
@@ -33,7 +33,7 @@ public interface SistemaRepository extends JpaRepository<SistemaEntity, Long>, J
     List<SistemaEntity> findByEliminadoFalse();
     
     // ============================================================
-    // BÚSQUEDAS CON MÚLTIPLES CONDICIONES
+    // BÚSQUEDAS CON MÚLTIPLES CONDICIONES -
     // ============================================================
     
     @Query("SELECT s FROM SistemaEntity s WHERE s.responsableTecnico = :responsable AND s.eliminado = false")

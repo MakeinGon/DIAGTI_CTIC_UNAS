@@ -15,4 +15,4 @@ public class RegistrarSistemaResponseDTO {
     private boolean exito;
     private String mensaje;
     private String errores;
-}
+}//-

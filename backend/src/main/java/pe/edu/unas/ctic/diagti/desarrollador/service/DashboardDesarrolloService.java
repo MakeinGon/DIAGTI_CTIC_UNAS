@@ -13,4 +13,4 @@ public interface DashboardDesarrolloService {
     List<DashboardDesarrolloDTO.ActividadDTO> obtenerActividadReciente(String usuario, int limite);
     
     List<DashboardDesarrolloDTO.RiesgoCriticoDTO> obtenerRiesgosCriticos(String usuario);
-}
+}//-

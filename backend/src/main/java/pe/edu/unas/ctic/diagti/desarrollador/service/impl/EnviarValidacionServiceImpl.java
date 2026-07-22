@@ -1,4 +1,3 @@
-
 package pe.edu.unas.ctic.diagti.desarrollador.service.impl;
 
 import lombok.RequiredArgsConstructor;
@@ -9,8 +8,8 @@ import pe.edu.unas.ctic.diagti.desarrollador.dto.EnviarValidacionResponseDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.dto.SistemaValidacionDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.desarrollador.entity.ValidacionEntity;
-import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaRepository;
-import pe.edu.unas.ctic.diagti.desarrollador.repository.ValidacionRepository;
+import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaDesarrolloRepository;
+import pe.edu.unas.ctic.diagti.desarrollador.repository.DesarrolladorValidacionRepository;  // ← CAMBIADO
 import pe.edu.unas.ctic.diagti.desarrollador.service.EnviarValidacionService;
 
 import java.time.LocalDateTime;
@@ -22,8 +21,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EnviarValidacionServiceImpl implements EnviarValidacionService {
     
-    private final SistemaRepository sistemaRepository;
-    private final ValidacionRepository validacionRepository;
+    private final SistemaDesarrolloRepository sistemaRepository;
+    private final DesarrolladorValidacionRepository validacionRepository;  // ← CAMBIADO
     
     @Override
     @Transactional(readOnly = true)
@@ -72,14 +71,15 @@ public class EnviarValidacionServiceImpl implements EnviarValidacionService {
         
         // Crear registro de validación
         ValidacionEntity nuevaValidacion = new ValidacionEntity();
-        nuevaValidacion.setSistema(sistema);
+        // ✅ Usar sistemaId en lugar de setSistema
+        nuevaValidacion.setSistemaId(sistema.getId());  // ← CAMBIADO
         nuevaValidacion.setEstadoValidacion("ENVIADO");
         nuevaValidacion.setValidador(usuarioActual);
         nuevaValidacion.setFechaValidacion(LocalDateTime.now());
         nuevaValidacion.setEsUltima(true);
         nuevaValidacion.setObservacion(request.getComentario() != null ? request.getComentario() : "Sistema enviado a validación");
         
-        // ✅ CORRECTO: validacionRepository (con c) y nuevaValidacion (con c)
+        // Buscar y marcar validaciones anteriores como no últimas
         validacionRepository.findBySistemaIdAndEsUltimaTrue(sistema.getId())
             .ifPresent(v -> {
                 v.setEsUltima(false);

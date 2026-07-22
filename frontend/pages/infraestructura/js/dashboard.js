@@ -1,51 +1,208 @@
-const systems = [
-  {code:'SIS-MAT-01',name:'Sistema de Matrícula',baseState:'Validado',risk:'Medio'},
-  {code:'SIS-DOC-02',name:'Documenta',baseState:'Observado',risk:'Alto'},
-  {code:'SIS-VEN-03',name:'Registro de Ventas',baseState:'Borrador',risk:'Crítico'},
-  {code:'SIS-BIB-04',name:'Biblioteca Virtual',baseState:'Corregido',risk:'Medio'},
-  {code:'SIS-RRH-05',name:'Control de Personal',baseState:'Enviado',risk:'Bajo'},
-  {code:'SIS-MSA-06',name:'Mesa de Servicios TI',baseState:'Nuevo',risk:'Medio'},
-  {code:'SIS-PAG-07',name:'Portal de Pagos',baseState:'Observado',risk:'Alto'},
-  {code:'SIS-ADM-08',name:'Gestión Administrativa',baseState:'Observado',risk:'Medio'},
-  {code:'SIS-INV-09',name:'Sistema de Investigación',baseState:'Observado',risk:'Alto'},
-  {code:'SIS-COM-10',name:'Comedor Universitario',baseState:'Observado',risk:'Medio'}
-];
+// ============================================================
+// DIAGTI · CTIC UNAS — Dashboard de Infraestructura
+// ============================================================
 
-function storedState(system){
-  const direct=localStorage.getItem(`diagti-estado-${system.code}`);
-  if(direct)return direct;
-  try{
-    const record=JSON.parse(localStorage.getItem(`diagti-registro-${system.code}`)||'null');
-    return record?.estado||system.baseState;
-  }catch{return system.baseState}
+const API_BASE_URL = 'http://localhost:8080/api/infraestructura';
+
+// ============================================================
+// CARGAR DATOS DEL DASHBOARD
+// ============================================================
+
+async function cargarDashboard() {
+    try {
+        console.log('🔄 Cargando dashboard...');
+        
+        const response = await fetch(`${API_BASE_URL}/dashboard`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('✅ Datos del dashboard:', data);
+        
+        // Actualizar la UI con los datos reales
+        actualizarDashboard(data);
+        
+    } catch (error) {
+        console.error('❌ Error al cargar dashboard:', error);
+        console.log('📋 Usando datos de respaldo (locales)');
+        
+        // Usar datos de respaldo si la API falla
+        const datosRespaldo = obtenerDatosRespaldo();
+        actualizarDashboard(datosRespaldo);
+    }
 }
 
-const current=systems.map(s=>({...s,state:storedState(s)}));
-const stateOrder=['Nuevo','Borrador','Enviado','Observado','Corregido','Validado'];
-const counts=Object.fromEntries(stateOrder.map(s=>[s,current.filter(x=>x.state===s).length]));
-const risks=['Bajo','Medio','Alto','Crítico'];
-const riskCounts=Object.fromEntries(risks.map(r=>[r,current.filter(x=>x.risk===r).length]));
+// ============================================================
+// ACTUALIZAR UI
+// ============================================================
 
-document.getElementById('kpiTotal').textContent=current.length;
-document.getElementById('kpiNuevos').textContent=counts.Nuevo;
-document.getElementById('kpiBorradores').textContent=counts.Borrador;
-document.getElementById('kpiPendientes').textContent=counts.Nuevo+counts.Borrador;
-document.getElementById('kpiObservados').textContent=counts.Observado;
-document.getElementById('kpiValidados').textContent=counts.Validado;
+function actualizarDashboard(data) {
+    // 1. Estadísticas principales
+    const stats = data.estadisticas || {};
+    document.getElementById('kpiTotal').textContent = stats.totalSistemas || 0;
+    document.getElementById('kpiNuevos').textContent = stats.nuevos || 0;
+    document.getElementById('kpiBorradores').textContent = stats.borradores || 0;
+    document.getElementById('kpiPendientes').textContent = stats.pendientesRegistro || 0;
+    document.getElementById('kpiObservados').textContent = stats.observados || 0;
+    document.getElementById('kpiValidados').textContent = stats.validados || 0;
+    
+    // 2. Prioridades de atención
+    const prioridades = data.prioridades || [];
+    const priorityList = document.getElementById('priorityList');
+    
+    if (prioridades.length === 0) {
+        priorityList.innerHTML = '<div class="empty-state">No hay acciones pendientes.</div>';
+    } else {
+        priorityList.innerHTML = prioridades.map(p => `
+            <div class="priority-item">
+                <div class="priority-main">
+                    <span class="priority-status ${p.estado}">${p.estado}</span>
+                    <div class="priority-text">
+                        <strong>${p.codigo} — ${p.nombre}</strong>
+                        <small>${p.detalle}</small>
+                    </div>
+                </div>
+                <a class="priority-action" href="${p.url}">${p.accion}</a>
+            </div>
+        `).join('');
+    }
+    
+    // 3. Distribución por estado
+    const estados = data.estados || [];
+    const maxState = Math.max(1, ...estados.map(e => e.cantidad));
+    const stateContainer = document.getElementById('stateBars');
+    const stateOrder = ['Nuevo', 'Borrador', 'Enviado', 'Observado', 'Corregido', 'Validado'];
+    
+    stateContainer.innerHTML = stateOrder.map(nombre => {
+        const encontrado = estados.find(e => e.nombre === nombre);
+        const cantidad = encontrado ? encontrado.cantidad : 0;
+        const porcentaje = (cantidad / maxState) * 100;
+        
+        return `
+            <div class="bar-row">
+                <span class="bar-label">${nombre}</span>
+                <div class="bar-track">
+                    <span class="bar-fill ${nombre.toLowerCase()}" style="width: ${porcentaje}%"></span>
+                </div>
+                <span class="bar-count">${cantidad}</span>
+            </div>
+        `;
+    }).join('');
+    
+    // 4. Nivel de riesgo
+    const riesgos = data.riesgos || [];
+    const riskContainer = document.getElementById('riskSummary');
+    const riskOrder = ['Bajo', 'Medio', 'Alto', 'Crítico'];
+    
+    riskContainer.innerHTML = riskOrder.map(nombre => {
+        const encontrado = riesgos.find(r => r.nombre === nombre);
+        const cantidad = encontrado ? encontrado.cantidad : 0;
+        const clase = encontrado ? encontrado.clase : nombre.toLowerCase();
+        
+        return `
+            <div class="risk-card ${clase}">
+                <span>Riesgo ${nombre.toLowerCase()}</span>
+                <strong>${cantidad}</strong>
+            </div>
+        `;
+    }).join('');
+}
 
-const actionLabels={Nuevo:'Registrar',Borrador:'Completar',Observado:'Subsanar',Corregido:'Revisar y enviar'};
-const actionDetails={Nuevo:'Aún no tiene registro técnico.',Borrador:'El registro está incompleto.',Observado:'Tiene observaciones del Validador CTIC.',Corregido:'La corrección está lista para revisión.'};
-const priorities=current.filter(x=>['Observado','Corregido','Borrador','Nuevo'].includes(x.state))
-  .sort((a,b)=>['Observado','Corregido','Borrador','Nuevo'].indexOf(a.state)-['Observado','Corregido','Borrador','Nuevo'].indexOf(b.state));
-const priorityList=document.getElementById('priorityList');
-priorityList.innerHTML=priorities.length?priorities.slice(0,6).map(x=>{
-  const href=(x.state==='Nuevo'||x.state==='Borrador')?`infraestructura.html?sistema=${x.code}`:`mis-sistemas.html?estado=${x.state}&sistema=${x.code}`;
-  return `<div class="priority-item"><div class="priority-main"><span class="priority-status ${x.state}">${x.state}</span><div class="priority-text"><strong>${x.code} — ${x.name}</strong><small>${actionDetails[x.state]}</small></div></div><a class="priority-action" href="${href}">${actionLabels[x.state]}</a></div>`;
-}).join(''):'<div class="empty-state">No hay acciones pendientes.</div>';
+// ============================================================
+// DATOS DE RESPALDO (LOCALES)
+// ============================================================
 
-const maxState=Math.max(1,...Object.values(counts));
-document.getElementById('stateBars').innerHTML=stateOrder.map(state=>`<div class="bar-row"><span class="bar-label">${state}</span><div class="bar-track"><span class="bar-fill ${state}" style="width:${(counts[state]/maxState)*100}%"></span></div><span class="bar-count">${counts[state]}</span></div>`).join('');
+function obtenerDatosRespaldo() {
+    return {
+        estadisticas: {
+            totalSistemas: 10,
+            pendientesRegistro: 3,
+            nuevos: 1,
+            borradores: 2,
+            observados: 4,
+            validados: 1
+        },
+        prioridades: [
+            {
+                codigo: "SIS-MAT-01",
+                nombre: "Sistema de Matrícula",
+                estado: "Validado",
+                detalle: "Registro técnico completado y aprobado.",
+                accion: "Ver",
+                url: "mis-sistemas.html?sistema=SIS-MAT-01"
+            },
+            {
+                codigo: "SIS-DOC-02",
+                nombre: "Documenta",
+                estado: "Observado",
+                detalle: "Tiene observaciones del Validador CTIC.",
+                accion: "Subsanar",
+                url: "mis-sistemas.html?estado=Observado&sistema=SIS-DOC-02"
+            },
+            {
+                codigo: "SIS-VEN-03",
+                nombre: "Registro de Ventas",
+                estado: "Borrador",
+                detalle: "El registro está incompleto.",
+                accion: "Completar",
+                url: "infraestructura.html?sistema=SIS-VEN-03"
+            },
+            {
+                codigo: "SIS-BIB-04",
+                nombre: "Biblioteca Virtual",
+                estado: "Corregido",
+                detalle: "La corrección está lista para revisión.",
+                accion: "Revisar y enviar",
+                url: "mis-sistemas.html?estado=Corregido&sistema=SIS-BIB-04"
+            },
+            {
+                codigo: "SIS-RRH-05",
+                nombre: "Control de Personal",
+                estado: "Enviado",
+                detalle: "Enviado a validación.",
+                accion: "Ver",
+                url: "mis-sistemas.html?sistema=SIS-RRH-05"
+            },
+            {
+                codigo: "SIS-MSA-06",
+                nombre: "Mesa de Servicios TI",
+                estado: "Nuevo",
+                detalle: "Aún no tiene registro técnico.",
+                accion: "Registrar",
+                url: "infraestructura.html?sistema=SIS-MSA-06"
+            }
+        ],
+        riesgos: [
+            { nombre: "Bajo", cantidad: 1, clase: "low" },
+            { nombre: "Medio", cantidad: 4, clase: "medium" },
+            { nombre: "Alto", cantidad: 3, clase: "high" },
+            { nombre: "Crítico", cantidad: 1, clase: "critical" }
+        ],
+        estados: [
+            { nombre: "Nuevo", cantidad: 1 },
+            { nombre: "Borrador", cantidad: 2 },
+            { nombre: "Enviado", cantidad: 1 },
+            { nombre: "Observado", cantidad: 4 },
+            { nombre: "Corregido", cantidad: 1 },
+            { nombre: "Validado", cantidad: 1 }
+        ]
+    };
+}
 
-document.getElementById('riskSummary').innerHTML=[
-  ['Bajo','low'],['Medio','medium'],['Alto','high'],['Crítico','critical']
-].map(([name,cls])=>`<div class="risk-card ${cls}"><span>Riesgo ${name.toLowerCase()}</span><strong>${riskCounts[name]}</strong></div>`).join('');
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Dashboard de Infraestructura - Inicializando...');
+    cargarDashboard();
+    
+    // Auto-refresh cada 60 segundos
+    setInterval(cargarDashboard, 60000);
+});

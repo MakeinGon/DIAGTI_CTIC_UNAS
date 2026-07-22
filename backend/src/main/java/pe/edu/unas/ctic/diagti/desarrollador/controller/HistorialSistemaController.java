@@ -23,3 +23,4 @@ public class HistorialSistemaController {
         return ResponseEntity.ok(historialService.obtenerResumen(id));
     }
 }
+//-

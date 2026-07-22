@@ -37,4 +37,4 @@ public class EditarSistemaRequestDTO {
     private List<Long> integracionesEliminar;
     private List<Long> evidenciasEliminar;
     private List<Long> urlsEliminar;
-}
+}//-

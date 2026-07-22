@@ -39,4 +39,4 @@ public class HistorialSistemaDTO {
         private Object valorNuevo;
         private String entidadAfectada;
     }
-}
+}//-

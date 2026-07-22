@@ -6,4 +6,4 @@ import lombok.Data;
 public class EnviarValidacionRequestDTO {
     private Long sistemaId;
     private String comentario;
-}
+}//-

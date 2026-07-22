@@ -36,4 +36,4 @@ public class SubsanarObservacionesResponseDTO {
         private ArquitecturaDTO arquitectura;
         private InfraestructuraDTO infraestructura;
     }
-}
+}//-

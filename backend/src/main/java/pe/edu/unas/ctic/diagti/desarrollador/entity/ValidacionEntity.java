@@ -18,36 +18,35 @@ public class ValidacionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(name = "sistema_id")
+    private Long sistemaId;
+    
+    // ✅ AGREGAR RELACIÓN CON SISTEMA
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sistema_id", nullable = false)
+    @JoinColumn(name = "sistema_id", insertable = false, updatable = false)
     private SistemaEntity sistema;
     
-    @Column(name = "estado_validacion", nullable = false)
-    private String estadoValidacion;
-    
-    @Column(columnDefinition = "TEXT")
-    private String observacion;
-    
-    private String validador;
+    @Column(name = "es_ultima")
+    private Boolean esUltima;
     
     @Column(name = "fecha_validacion")
     private LocalDateTime fechaValidacion;
+    
+    @Column(name = "observacion")
+    private String observacion;
+    
+    @Column(name = "comentario_subsanacion")
+    private String comentarioSubsanacion;
+    
+    @Column(name = "estado_validacion")
+    private String estadoValidacion;
+    
+    @Column(name = "validador")
+    private String validador;
     
     @Column(name = "fecha_subsanacion")
     private LocalDateTime fechaSubsanacion;
     
     @Column(name = "usuario_subsanacion")
     private String usuarioSubsanacion;
-    
-    @Column(name = "comentario_subsanacion", columnDefinition = "TEXT")
-    private String comentarioSubsanacion;
-    
-    @Column(name = "es_ultima")
-    private Boolean esUltima = true;
-    
-    @PrePersist
-    protected void onCreate() {
-        fechaValidacion = LocalDateTime.now();
-        if (esUltima == null) esUltima = true;
-    }
 }

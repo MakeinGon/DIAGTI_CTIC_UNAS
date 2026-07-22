@@ -15,4 +15,4 @@ public class EvidenciaDTO {
     private String usuarioRegistra;
     private LocalDateTime fechaCarga;
     private String estado;
-}
+}//-

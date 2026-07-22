@@ -11,4 +11,4 @@ public class EnviarValidacionResponseDTO {
     private String mensaje;
     private boolean exito;
     private String observacionesPendientes;
-}
+}//-

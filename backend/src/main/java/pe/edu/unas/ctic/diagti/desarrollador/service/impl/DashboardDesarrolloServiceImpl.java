@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unas.ctic.diagti.desarrollador.dto.DashboardDesarrolloDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.entity.SistemaEntity;
-import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaRepository;
+import pe.edu.unas.ctic.diagti.desarrollador.repository.DesarrolladorValidacionRepository;  // ← CAMBIADO
+import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaDesarrolloRepository;
 import pe.edu.unas.ctic.diagti.desarrollador.service.DashboardDesarrolloService;
 
 import java.time.LocalDateTime;
@@ -17,7 +18,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DashboardDesarrolloServiceImpl implements DashboardDesarrolloService {
     
-    private final SistemaRepository sistemaRepository;
+    private final SistemaDesarrolloRepository sistemaRepository;
+    private final DesarrolladorValidacionRepository validacionRepository;  // ← AGREGADO
     
     @Override
     @Transactional(readOnly = true)
@@ -59,7 +61,7 @@ public class DashboardDesarrolloServiceImpl implements DashboardDesarrolloServic
                 .filter(s -> "CRITICA".equals(s.getCriticidad()) || "ALTA".equals(s.getCriticidad()))
                 .count();
         
-        // ✅ Evidencias cargadas - CORREGIDO
+        // Evidencias cargadas
         long evidencias = sistemas.stream()
                 .mapToLong(s -> s.getEvidencias() != null ? 
                         s.getEvidencias().stream().filter(e -> !Boolean.TRUE.equals(e.getEliminado())).count() : 0)
@@ -78,7 +80,6 @@ public class DashboardDesarrolloServiceImpl implements DashboardDesarrolloServic
         List<SistemaEntity> sistemas = sistemaRepository
                 .findByResponsableTecnicoAndEliminadoFalse(usuarioActual);
         
-        // ✅ CORREGIDO - Usar Comparator con manejo de null
         return sistemas.stream()
                 .sorted(Comparator.comparing(
                         s -> s.getFechaActualizacion() != null ? s.getFechaActualizacion() : LocalDateTime.MIN,
@@ -107,7 +108,6 @@ public class DashboardDesarrolloServiceImpl implements DashboardDesarrolloServic
         List<SistemaEntity> sistemas = sistemaRepository
                 .findByResponsableTecnicoAndEliminadoFalse(usuarioActual);
         
-        // ✅ CORREGIDO - Comparador completo
         return sistemas.stream()
                 .filter(s -> s.getPuntajeRiesgo() != null && s.getPuntajeRiesgo() >= 60)
                 .sorted((s1, s2) -> {
@@ -128,14 +128,12 @@ public class DashboardDesarrolloServiceImpl implements DashboardDesarrolloServic
                 .collect(Collectors.toList());
     }
     
-    // ✅ MÉTODO CORREGIDO - Sin parámetro adicional
     private List<DashboardDesarrolloDTO.SistemaResumenDTO> obtenerSistemasRecientes(String usuario) {
         String usuarioActual = usuario != null ? usuario : obtenerUsuarioActual();
         
         List<SistemaEntity> sistemas = sistemaRepository
                 .findByResponsableTecnicoAndEliminadoFalse(usuarioActual);
         
-        // ✅ CORREGIDO - Comparator correcto
         return sistemas.stream()
                 .sorted(Comparator.comparing(
                         s -> s.getFechaActualizacion() != null ? s.getFechaActualizacion() : LocalDateTime.MIN,

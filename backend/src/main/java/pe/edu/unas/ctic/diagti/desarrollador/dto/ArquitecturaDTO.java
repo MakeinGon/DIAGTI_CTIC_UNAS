@@ -27,4 +27,4 @@ public class ArquitecturaDTO {
     private Boolean cifradoBaseDatos;
     private String responsableBaseDatos;
     private String observaciones;
-}
+}//-

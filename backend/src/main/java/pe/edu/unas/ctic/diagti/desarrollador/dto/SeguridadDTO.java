@@ -21,4 +21,4 @@ public class SeguridadDTO {
     private Boolean controlSesiones;
     private Boolean backupSeguro;
     private String observaciones;
-}
+}//-

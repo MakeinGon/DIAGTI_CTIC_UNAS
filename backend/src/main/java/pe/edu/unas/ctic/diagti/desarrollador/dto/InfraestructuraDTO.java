@@ -30,4 +30,4 @@ public class InfraestructuraDTO {
     private String ipPrivada;
     private String subdominioInstitucional;
     private String observaciones;
-}
+}//-

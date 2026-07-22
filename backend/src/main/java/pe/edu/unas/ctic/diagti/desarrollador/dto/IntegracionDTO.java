@@ -17,4 +17,4 @@ public class IntegracionDTO {
     private String estado;
     private String responsable;
     private String descripcion;
-}
+}//-

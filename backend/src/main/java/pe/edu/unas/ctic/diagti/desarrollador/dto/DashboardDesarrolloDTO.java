@@ -66,4 +66,4 @@ public class DashboardDesarrolloDTO {
         private String nivelRiesgo;
         private LocalDateTime fechaActualizacion;
     }
-}
+}//-

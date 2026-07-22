@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unas.ctic.diagti.desarrollador.dto.MisSistemasDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.dto.MisSistemasFilterDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.entity.SistemaEntity;
-import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaRepository;
+import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaDesarrolloRepository;
 import pe.edu.unas.ctic.diagti.desarrollador.service.MisSistemasService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MisSistemasServiceImpl implements MisSistemasService {
     
-    private final SistemaRepository sistemaRepository;
+    private final SistemaDesarrolloRepository sistemaRepository;
     
     @Override
     @Transactional(readOnly = true)

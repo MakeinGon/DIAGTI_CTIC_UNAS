@@ -1,29 +1,39 @@
 package pe.edu.unas.ctic.diagti.desarrollador.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import pe.edu.unas.ctic.diagti.desarrollador.dto.ValidacionDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.entity.ValidacionEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring", 
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+import java.util.List;
+
+@Mapper(componentModel = "spring")
 public interface ValidacionMapper {
-    
-    ValidacionDTO toDto(ValidacionEntity entity);
-    
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "sistema", ignore = true)
-    @Mapping(target = "fechaValidacion", ignore = true)
-    @Mapping(target = "fechaSubsanacion", ignore = true)
-    @Mapping(target = "esUltima", constant = "true")
+
+    ValidacionMapper INSTANCE = Mappers.getMapper(ValidacionMapper.class);
+
+    // Mapear de Entity a DTO - SOLO LOS CAMPOS QUE EXISTEN EN EL DTO
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "fechaValidacion", target = "fechaValidacion")
+    @Mapping(source = "observacion", target = "observacion")
+    @Mapping(source = "comentarioSubsanacion", target = "comentarioSubsanacion")
+    @Mapping(source = "estadoValidacion", target = "estadoValidacion")
+    @Mapping(source = "validador", target = "validador")
+    @Mapping(source = "esUltima", target = "esUltima")
+    // El DTO no tiene sistemaId, así que lo ignoramos
+    ValidacionDTO toDTO(ValidacionEntity entity);
+
+    // Mapear de DTO a Entity - SOLO LOS CAMPOS QUE EXISTEN EN LA ENTITY
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "fechaValidacion", target = "fechaValidacion")
+    @Mapping(source = "observacion", target = "observacion")
+    @Mapping(source = "comentarioSubsanacion", target = "comentarioSubsanacion")
+    @Mapping(source = "estadoValidacion", target = "estadoValidacion")
+    @Mapping(source = "validador", target = "validador")
+    @Mapping(source = "esUltima", target = "esUltima")
+    // El DTO no tiene sistemaId, así que lo ignoramos
     ValidacionEntity toEntity(ValidacionDTO dto);
-    
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "sistema", ignore = true)
-    @Mapping(target = "fechaValidacion", ignore = true)
-    @Mapping(target = "fechaSubsanacion", ignore = true)
-    @Mapping(target = "esUltima", ignore = true)
-    void updateEntity(ValidacionDTO dto, @MappingTarget ValidacionEntity entity);
+
+    List<ValidacionDTO> toDTOList(List<ValidacionEntity> entities);
 }

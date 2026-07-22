@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EditarSistemaServiceImpl implements EditarSistemaService {
     
-    private final SistemaRepository sistemaRepository;
+    private final SistemaDesarrolloRepository sistemaRepository;
     private final ArquitecturaRepository arquitecturaRepository;
     private final InfraestructuraRepository infraestructuraRepository;
     private final SeguridadRepository seguridadRepository;
     private final EvidenciaRepository evidenciaRepository;
     private final IntegracionRepository integracionRepository;
-    private final ValidacionRepository validacionRepository;
+    private final DesarrolladorValidacionRepository validacionRepository;  // ← CAMBIADO
     
     private final SistemaMapper sistemaMapper;
     private final ArquitecturaMapper arquitecturaMapper;

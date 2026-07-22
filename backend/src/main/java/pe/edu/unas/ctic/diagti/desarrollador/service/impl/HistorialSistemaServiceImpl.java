@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unas.ctic.diagti.desarrollador.dto.HistorialSistemaDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.desarrollador.entity.ValidacionEntity;
-import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaRepository;
-import pe.edu.unas.ctic.diagti.desarrollador.repository.ValidacionRepository;
+import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaDesarrolloRepository;
+import pe.edu.unas.ctic.diagti.desarrollador.repository.DesarrolladorValidacionRepository;  // ← CAMBIADO
 import pe.edu.unas.ctic.diagti.desarrollador.service.HistorialSistemaService;
 
 import java.time.LocalDateTime;
@@ -19,8 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HistorialSistemaServiceImpl implements HistorialSistemaService {
     
-    private final SistemaRepository sistemaRepository;
-    private final ValidacionRepository validacionRepository;
+    private final SistemaDesarrolloRepository sistemaRepository;
+    private final DesarrolladorValidacionRepository validacionRepository;  // ← CAMBIADO
     
     @Override
     @Transactional(readOnly = true)

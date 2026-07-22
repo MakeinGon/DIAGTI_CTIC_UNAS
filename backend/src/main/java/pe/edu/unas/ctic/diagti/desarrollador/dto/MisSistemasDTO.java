@@ -43,4 +43,4 @@ public class MisSistemasDTO {
         private Long legacy;
         private Long riesgoCritico;
     }
-}
+}//-

@@ -22,4 +22,4 @@ public class SubsanarObservacionesRequestDTO {
         private String respuesta;
         private Boolean subsanada;
     }
-}
+}//-

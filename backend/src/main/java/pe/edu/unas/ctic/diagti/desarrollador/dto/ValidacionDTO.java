@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ValidacionDTO {
     private Long id;
+    private Long sistemaId;  // ← AGREGAR ESTE CAMPO
     private String estadoValidacion;
     private String observacion;
     private String validador;

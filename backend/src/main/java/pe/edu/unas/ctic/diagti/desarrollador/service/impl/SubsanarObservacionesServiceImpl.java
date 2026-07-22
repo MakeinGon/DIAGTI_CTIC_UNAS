@@ -25,12 +25,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SubsanarObservacionesServiceImpl implements SubsanarObservacionesService {
     
-    private final SistemaRepository sistemaRepository;
+    private final SistemaDesarrolloRepository sistemaRepository;
     private final ArquitecturaRepository arquitecturaRepository;
     private final InfraestructuraRepository infraestructuraRepository;
     private final SeguridadRepository seguridadRepository;
     private final EvidenciaRepository evidenciaRepository;
-    private final ValidacionRepository validacionRepository;
+    private final DesarrolladorValidacionRepository validacionRepository;  // ← CAMBIADO
     
     private final RiesgoCalculator riesgoCalculator;
     
@@ -201,7 +201,8 @@ public class SubsanarObservacionesServiceImpl implements SubsanarObservacionesSe
             
             // Crear registro de subsanación
             ValidacionEntity nuevaValidacion = new ValidacionEntity();
-            nuevaValidacion.setSistema(sistema);
+            // ✅ Usar sistemaId en lugar de setSistema
+            nuevaValidacion.setSistemaId(sistema.getId());  // ← CAMBIADO
             nuevaValidacion.setEstadoValidacion("SUBSANADO");
             nuevaValidacion.setUsuarioSubsanacion(usuarioActual);
             nuevaValidacion.setFechaSubsanacion(LocalDateTime.now());
@@ -334,7 +335,8 @@ public class SubsanarObservacionesServiceImpl implements SubsanarObservacionesSe
             
             // Crear registro de reenvío
             ValidacionEntity nuevaValidacion = new ValidacionEntity();
-            nuevaValidacion.setSistema(sistema);
+            // ✅ Usar sistemaId en lugar de setSistema
+            nuevaValidacion.setSistemaId(sistema.getId());  // ← CAMBIADO
             nuevaValidacion.setEstadoValidacion("REENVIADO");
             nuevaValidacion.setValidador(usuarioActual);
             nuevaValidacion.setFechaValidacion(LocalDateTime.now());

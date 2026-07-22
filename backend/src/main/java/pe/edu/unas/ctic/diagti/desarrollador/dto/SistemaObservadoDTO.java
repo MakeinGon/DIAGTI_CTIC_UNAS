@@ -15,4 +15,4 @@ public class SistemaObservadoDTO {
     private String validador;
     private Integer cantidadObservaciones;
     private List<String> observacionesResumen;
-}
+}//-
