@@ -40,8 +40,18 @@
             <a class="nav-item active" href="mis-sistemas.html">
                 <span><span class="lbl">Mis Sistemas</span><span class="sub">Administrar sistemas</span></span>
             </a>
-            <a class="nav-item" href="observaciones.html">
-                <span><span class="lbl">Observaciones</span><span class="sub">Correcciones pendientes</span></span>
+            <a class="nav-item" href="registrar-sistema.html">
+                <span><span class="lbl">Registrar Sistema</span><span class="sub">Nuevo registro</span></span>
+            </a>
+            <a class="nav-item" href="enviar-validacion.html">
+                <span><span class="lbl">Enviar Validación</span><span class="sub">Sistemas completos</span></span>
+            </a>
+            <a class="nav-item" href="subsanar-observaciones.html">
+                <span><span class="lbl">Subsanar Observaciones</span><span class="sub">Corregir
+                        observaciones</span></span>
+            </a>
+            <a class="nav-item" href="historial-sistema.html">
+                <span><span class="lbl">Historial del Sistema</span><span class="sub">Trazabilidad</span></span>
             </a>
         </nav>
 
@@ -67,7 +77,7 @@
                 <h2>Mis Sistemas</h2>
                 <div class="hint">Administrar todos los sistemas creados</div>
             </div>
-            <button class="btn btn-verde" onclick="abrirModalRegistro()">➕ Registrar Nuevo Sistema</button>
+            <a href="registrar-sistema.html" class="btn btn-verde">➕ Registrar Nuevo Sistema</a>
         </div>
 
         <div class="card">
@@ -85,13 +95,11 @@
                 </select>
                 <select id="filter-area">
                     <option value="">Todas las áreas</option>
-                    <option value="Académico">Académico</option>
+                    <option value="Dirección Académica">Dirección Académica</option>
                     <option value="Biblioteca">Biblioteca</option>
-                    <option value="Finanzas">Finanzas</option>
+                    <option value="Economía y Finanzas">Economía y Finanzas</option>
                     <option value="Recursos Humanos">Recursos Humanos</option>
-                    <option value="Investigación">Investigación</option>
-                    <option value="Logística">Logística</option>
-                    <option value="Tesorería">Tesorería</option>
+                    <option value="Comunicaciones">Comunicaciones</option>
                 </select>
                 <select id="filter-tipo">
                     <option value="">Todos los tipos</option>
@@ -99,28 +107,12 @@
                     <option value="Desktop">Desktop</option>
                     <option value="API">API</option>
                     <option value="Mobile">Mobile</option>
-                    <option value="Legacy">Legacy</option>
-                    <option value="Batch">Batch</option>
-                    <option value="IoT">IoT</option>
-                    <option value="Otro">Otro</option>
                 </select>
                 <select id="filter-criticidad">
                     <option value="">Todas las criticidades</option>
-                    <option value="Baja">Baja</option>
-                    <option value="Media">Media</option>
-                    <option value="Alta">Alta</option>
-                    <option value="Crítica">Crítica / Misión Crítica</option>
-                </select>
-                <select id="filter-responsable">
-                    <option value="">Todos los responsables</option>
-                    <!-- Opciones dinámicas desde los datos -->
-                </select>
-                <select id="filter-riesgo">
-                    <option value="">Todos los riesgos</option>
-                    <option value="Bajo">Bajo</option>
-                    <option value="Medio">Medio</option>
-                    <option value="Alto">Alto</option>
-                    <option value="Crítico">Crítico</option>
+                    <option value="Académico">Académico</option>
+                    <option value="Financiero">Financiero</option>
+                    <option value="RRHH">RRHH</option>
                 </select>
             </div>
 
@@ -128,49 +120,8 @@
             <div class="table-wrap" id="tabla-sistemas"></div>
         </div>
     </main>
-
-    <!-- ===== MODAL: Registrar/Editar/Ver/Corregir Sistema ===== -->
-    <div class="modal-overlay" id="modal-sistema">
-        <div class="modal">
-            <div class="modal-head">
-                <div>
-                    <h3 id="modal-titulo">Registrar Nuevo Sistema</h3>
-                    <span class="modal-subtitle" id="modal-subtitulo">Complete toda la información del sistema</span>
-                </div>
-                <button class="modal-close" onclick="cerrarModalSistema()">✕</button>
-            </div>
-            <div class="modal-body" id="modal-body-sistema">
-                <!-- Las pestañas y contenido se generan dinámicamente desde JS -->
-            </div>
-            <div class="modal-foot" id="modal-footer-fijo">
-                <button class="btn btn-secondary" onclick="cerrarModalSistema()">Cancelar</button>
-                <button class="btn btn-verde" id="btn-guardar-modal" onclick="guardarSistemaModal()">💾 Guardar
-                    Borrador</button>
-                <button class="btn-enviar-validacion" id="btn-enviar-validacion" onclick="validateFinalSubmit()"
-                    style="display:none;">
-                    🚀 Enviar a Validación
-                </button>
-            </div>
-        </div>
-
-        <!-- ===== MODAL: Confirmación ===== -->
-        <div class="modal-overlay" id="modal-confirmacion">
-            <div class="modal" style="width:min(450px,100%);">
-                <div class="modal-head">
-                    <h3>Confirmar acción</h3>
-                    <button class="modal-close" onclick="cerrarModalConfirmacion()">✕</button>
-                </div>
-                <div class="modal-body" id="modal-confirmacion-body">
-                    <p id="confirmacion-mensaje">¿Estás seguro de realizar esta acción?</p>
-                </div>
-                <div class="modal-foot">
-                    <button class="btn btn-secondary" onclick="cerrarModalConfirmacion()">Cancelar</button>
-                    <button class="btn btn-verde" id="btn-confirmar" onclick="confirmarAccion()">Confirmar</button>
-                </div>
-            </div>
-        </div>
-
-        <script src="../js/mis-sistemas.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/mis-sistemas.js"></script>
 </body>
 
 </html>
