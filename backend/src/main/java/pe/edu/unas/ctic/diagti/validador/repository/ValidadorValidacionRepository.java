@@ -14,9 +14,13 @@ public interface ValidadorValidacionRepository extends JpaRepository<Validacion,
     @Query("SELECT v FROM ValidadorValidacion v WHERE v.idSistema = :idSistema ORDER BY v.fechaCreacion DESC")
     List<Validacion> findBySistemaIdSistema(@Param("idSistema") Long idSistema);
 
+    /**
+     * Cola de Validación: solo PENDIENTE y SUBSANADO.
+     * Excluye BORRADOR (no enviado), VALIDADO y RECHAZADO.
+     */
     @Query("""
             SELECT v FROM ValidadorValidacion v
-            WHERE v.estadoValidacion IN ('PENDIENTE', 'SUBSANADO', 'BORRADOR')
+            WHERE v.estadoValidacion IN ('PENDIENTE', 'SUBSANADO')
             ORDER BY v.fechaCreacion DESC
             """)
     List<Validacion> findPendientes();

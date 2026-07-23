@@ -71,8 +71,6 @@ class DesarrolladorInventarioRegistroServiceTest {
 
         SistemaEntity saved = baseSaved(100L, "SYS-TMP-100", "BORRADOR", dev.getIdUsuario());
         when(sistemaRepository.findActivoById(100L)).thenReturn(Optional.of(saved));
-        when(validacionRepository.findByIdSistema(100L)).thenReturn(List.of());
-        when(validacionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         stubFichaLecturaVacia(100L);
 
         RegistrarSistemaOficialResponseDTO resp = service.registrarSistemaOficial("71234567", request("SYS-TMP-100"));
@@ -82,6 +80,7 @@ class DesarrolladorInventarioRegistroServiceTest {
         assertNull(saved.getIdResponsableFuncional());
         verify(arquitecturaRepository, never()).save(any());
         verify(baseDatosSistemaRepository, never()).save(any());
+        verify(validacionRepository, never()).save(any());
     }
 
     @Test
@@ -96,8 +95,6 @@ class DesarrolladorInventarioRegistroServiceTest {
                 .thenReturn(200L);
         SistemaEntity saved = baseSaved(200L, "SYS-TMP-FULL", "BORRADOR", dev.getIdUsuario());
         when(sistemaRepository.findActivoById(200L)).thenReturn(Optional.of(saved));
-        when(validacionRepository.findByIdSistema(200L)).thenReturn(List.of());
-        when(validacionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(arquitecturaRepository.findByIdSistema(200L)).thenReturn(List.of());
         when(baseDatosSistemaRepository.findByIdSistema(200L)).thenReturn(Optional.empty());
         when(arquitecturaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -157,8 +154,6 @@ class DesarrolladorInventarioRegistroServiceTest {
                 .thenReturn(201L);
         when(sistemaRepository.findActivoById(201L))
                 .thenReturn(Optional.of(baseSaved(201L, "SYS-TMP-EV", "BORRADOR", dev.getIdUsuario())));
-        when(validacionRepository.findByIdSistema(201L)).thenReturn(List.of());
-        when(validacionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         stubFichaLecturaVacia(201L);
         when(evidenciaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -193,8 +188,6 @@ class DesarrolladorInventarioRegistroServiceTest {
                 .thenReturn(202L);
         when(sistemaRepository.findActivoById(202L))
                 .thenReturn(Optional.of(baseSaved(202L, "SYS-TMP-ARQ", "BORRADOR", dev.getIdUsuario())));
-        when(validacionRepository.findByIdSistema(202L)).thenReturn(List.of());
-        when(validacionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         ArquitecturaEntity existente = new ArquitecturaEntity();
         existente.setIdArquitectura(9L);
@@ -271,16 +264,11 @@ class DesarrolladorInventarioRegistroServiceTest {
                 .thenReturn(102L);
         when(sistemaRepository.findActivoById(102L))
                 .thenReturn(Optional.of(baseSaved(102L, "SYS-TMP-DUP", "BORRADOR", dev.getIdUsuario())));
-
-        ValidacionEntity existente = new ValidacionEntity();
-        existente.setIdValidacion(9L);
-        existente.setIdSistema(102L);
-        existente.setEstadoValidacion("BORRADOR");
-        when(validacionRepository.findByIdSistema(102L)).thenReturn(List.of(existente));
         stubFichaLecturaVacia(102L);
 
         service.registrarSistemaOficial("71234567", request("SYS-TMP-DUP"));
         verify(validacionRepository, never()).save(any());
+        verify(validacionRepository, never()).findByIdSistema(any());
     }
 
     private void stubCatalogos() {

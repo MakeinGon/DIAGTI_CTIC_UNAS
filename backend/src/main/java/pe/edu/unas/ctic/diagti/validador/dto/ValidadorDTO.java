@@ -8,6 +8,9 @@ public class ValidadorDTO {
     private String nombreSistema;
     private String codigo;
     private String area;
+    /** Estado del sistema (estado_flujo). */
+    private String estado;
+    private String responsableTecnico;
     private Long idValidador;
     private String nombreValidador;
     private String estadoValidacion;
@@ -17,6 +20,8 @@ public class ValidadorDTO {
     private LocalDateTime fechaSubsanacion;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
+    /** Fecha de referencia para la cola (creación de la validación). */
+    private LocalDateTime fecha;
 
     // Getters y Setters
     public Long getIdValidacion() { return idValidacion; }
@@ -29,6 +34,10 @@ public class ValidadorDTO {
     public void setCodigo(String codigo) { this.codigo = codigo; }
     public String getArea() { return area; }
     public void setArea(String area) { this.area = area; }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+    public String getResponsableTecnico() { return responsableTecnico; }
+    public void setResponsableTecnico(String responsableTecnico) { this.responsableTecnico = responsableTecnico; }
     public Long getIdValidador() { return idValidador; }
     public void setIdValidador(Long idValidador) { this.idValidador = idValidador; }
     public String getNombreValidador() { return nombreValidador; }
@@ -47,4 +56,6 @@ public class ValidadorDTO {
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
     public LocalDateTime getFechaActualizacion() { return fechaActualizacion; }
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) { this.fechaActualizacion = fechaActualizacion; }
+    public LocalDateTime getFecha() { return fecha; }
+    public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
 }

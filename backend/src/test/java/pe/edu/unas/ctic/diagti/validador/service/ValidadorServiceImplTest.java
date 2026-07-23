@@ -60,6 +60,7 @@ class ValidadorServiceImplTest {
         validacion.setIdValidacion(20L);
         validacion.setIdSistema(10L);
         validacion.setEstadoValidacion(ValidacionEstados.VAL_PENDIENTE);
+        validacion.setFechaCreacion(java.time.LocalDateTime.of(2026, 7, 22, 10, 0));
     }
 
     @Test
@@ -75,6 +76,38 @@ class ValidadorServiceImplTest {
         List<ValidadorDTO> list = service.getPendientes();
         assertEquals(1, list.size());
         assertEquals("Sistema Validación Test", list.get(0).getNombreSistema());
+        assertEquals(10L, list.get(0).getIdSistema());
+        assertEquals("SYS-VAL-01", list.get(0).getCodigo());
+        assertEquals(ValidacionEstados.SISTEMA_ENVIADO, list.get(0).getEstado());
+        assertEquals(ValidacionEstados.VAL_PENDIENTE, list.get(0).getEstadoValidacion());
+        assertNotNull(list.get(0).getFecha());
+    }
+
+    @Test
+    void listaPendientes_incluyeSubsanadoExcluyeBorradorYValidadoPorConsulta() {
+        // El filtro real está en findPendientes(); el servicio solo mapea lo que el repo entrega.
+        Validacion subsanado = new Validacion();
+        subsanado.setIdValidacion(21L);
+        subsanado.setIdSistema(10L);
+        subsanado.setEstadoValidacion(ValidacionEstados.VAL_SUBSANADO);
+        when(validacionRepository.findPendientes()).thenReturn(List.of(validacion, subsanado));
+        when(sistemaRepository.findActivoById(10L)).thenReturn(Optional.of(sistema));
+
+        List<ValidadorDTO> list = service.getPendientes();
+        assertEquals(2, list.size());
+        assertTrue(list.stream().anyMatch(d -> ValidacionEstados.VAL_PENDIENTE.equals(d.getEstadoValidacion())));
+        assertTrue(list.stream().anyMatch(d -> ValidacionEstados.VAL_SUBSANADO.equals(d.getEstadoValidacion())));
+        assertTrue(list.stream().noneMatch(d -> "BORRADOR".equalsIgnoreCase(d.getEstadoValidacion())));
+        assertTrue(list.stream().noneMatch(d -> "VALIDADO".equalsIgnoreCase(d.getEstadoValidacion())));
+    }
+
+    @Test
+    void listaPendientes_mismoIdSistemaEnDtoYValidacion() {
+        when(validacionRepository.findPendientes()).thenReturn(List.of(validacion));
+        when(sistemaRepository.findActivoById(10L)).thenReturn(Optional.of(sistema));
+        ValidadorDTO dto = service.getPendientes().get(0);
+        assertEquals(validacion.getIdSistema(), dto.getIdSistema());
+        assertEquals(sistema.getIdSistema(), dto.getIdSistema());
     }
 
     @Test

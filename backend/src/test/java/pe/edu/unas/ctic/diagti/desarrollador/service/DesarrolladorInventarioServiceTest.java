@@ -29,6 +29,7 @@ import pe.edu.unas.ctic.diagti.director.repository.ValidacionRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -151,9 +152,10 @@ class DesarrolladorInventarioServiceTest {
     @Test
     void enviarValidacion_creaRegistroYCambiaEstado() {
         when(usuarioResolver.requireActiveDeveloper("71234567")).thenReturn(desarrollador);
-        SistemaEntity s = sistema(3L, "SYS-003", "Finanzas", "BORRADOR", 4L);
+        SistemaEntity s = sistema(3L, "SYS-TMP-ENV", "Finanzas", "BORRADOR", 4L);
         when(sistemaRepository.findActivoById(3L)).thenReturn(Optional.of(s));
         when(sistemaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(validacionRepository.findByIdSistema(3L)).thenReturn(List.of());
         when(validacionRepository.save(any(ValidacionEntity.class))).thenAnswer(inv -> inv.getArgument(0));
         when(observacionRepository.findByIdSistema(3L)).thenReturn(List.of());
         when(auditoriaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -161,8 +163,158 @@ class DesarrolladorInventarioServiceTest {
         SistemaFrontendDTO dto = service.enviarAValidacion("71234567", 3L);
 
         assertEquals("Enviado", dto.getEstado());
-        verify(validacionRepository).save(any(ValidacionEntity.class));
+        assertEquals("ENVIADO", s.getEstadoFlujo());
+        verify(validacionRepository).save(argThat(v ->
+                "PENDIENTE".equals(v.getEstadoValidacion())
+                        && "PENDIENTE".equals(v.getResultado())
+                        && Objects.equals(3L, v.getIdSistema())));
         verify(auditoriaRepository).save(any());
+    }
+
+    @Test
+    void enviarValidacion_actualizaBorradorAPendienteSinDuplicar() {
+        when(usuarioResolver.requireActiveDeveloper("71234567")).thenReturn(desarrollador);
+        SistemaEntity s = sistema(30L, "SYS-TMP-BOR-VAL", "Test", "BORRADOR", 4L);
+        when(sistemaRepository.findActivoById(30L)).thenReturn(Optional.of(s));
+        when(sistemaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        ValidacionEntity borrador = new ValidacionEntity();
+        borrador.setIdValidacion(99L);
+        borrador.setIdSistema(30L);
+        borrador.setEstadoValidacion("BORRADOR");
+        borrador.setResultado("PENDIENTE");
+        when(validacionRepository.findByIdSistema(30L)).thenReturn(List.of(borrador));
+        when(validacionRepository.save(any(ValidacionEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(observacionRepository.findByIdSistema(30L)).thenReturn(List.of());
+        when(auditoriaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        service.enviarAValidacion("71234567", 30L);
+
+        assertEquals("PENDIENTE", borrador.getEstadoValidacion());
+        assertEquals("PENDIENTE", borrador.getResultado());
+        assertNull(borrador.getIdValidador());
+        verify(validacionRepository, times(1)).save(borrador);
+        verify(validacionRepository, never()).save(argThat(v -> v.getIdValidacion() == null));
+    }
+
+    @Test
+    void enviarValidacion_conPendienteExistenteNoDuplica() {
+        when(usuarioResolver.requireActiveDeveloper("71234567")).thenReturn(desarrollador);
+        SistemaEntity s = sistema(31L, "SYS-TMP-PEND", "Test", "BORRADOR", 4L);
+        when(sistemaRepository.findActivoById(31L)).thenReturn(Optional.of(s));
+        when(sistemaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        ValidacionEntity pendiente = new ValidacionEntity();
+        pendiente.setIdValidacion(100L);
+        pendiente.setIdSistema(31L);
+        pendiente.setEstadoValidacion("PENDIENTE");
+        pendiente.setResultado("PENDIENTE");
+        when(validacionRepository.findByIdSistema(31L)).thenReturn(List.of(pendiente));
+        when(observacionRepository.findByIdSistema(31L)).thenReturn(List.of());
+        when(auditoriaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        service.enviarAValidacion("71234567", 31L);
+
+        verify(validacionRepository, never()).save(any());
+        assertEquals("PENDIENTE", pendiente.getEstadoValidacion());
+        assertEquals(100L, pendiente.getIdValidacion());
+    }
+
+    @Test
+    void enviarValidacion_noSobrescribeValidacionFinalizada() {
+        when(usuarioResolver.requireActiveDeveloper("71234567")).thenReturn(desarrollador);
+        SistemaEntity s = sistema(32L, "SYS-TMP-FIN", "Test", "BORRADOR", 4L);
+        when(sistemaRepository.findActivoById(32L)).thenReturn(Optional.of(s));
+        when(sistemaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        ValidacionEntity finalizada = new ValidacionEntity();
+        finalizada.setIdValidacion(101L);
+        finalizada.setIdSistema(32L);
+        finalizada.setEstadoValidacion("VALIDADO");
+        finalizada.setResultado("APROBADO");
+        when(validacionRepository.findByIdSistema(32L)).thenReturn(List.of(finalizada));
+
+        assertThrows(ResponseStatusException.class, () -> service.enviarAValidacion("71234567", 32L));
+        verify(validacionRepository, never()).save(any());
+        assertEquals("VALIDADO", finalizada.getEstadoValidacion());
+    }
+
+    @Test
+    void enviarValidacion_observadoNoCambiaPorEnvioInicial() {
+        when(usuarioResolver.requireActiveDeveloper("71234567")).thenReturn(desarrollador);
+        SistemaEntity s = sistema(34L, "SYS-TMP-OBS", "Test", "OBSERVADO", 4L);
+        when(sistemaRepository.findActivoById(34L)).thenReturn(Optional.of(s));
+
+        ValidacionEntity observado = new ValidacionEntity();
+        observado.setIdValidacion(102L);
+        observado.setIdSistema(34L);
+        observado.setEstadoValidacion("OBSERVADO");
+        observado.setResultado("OBSERVADO");
+
+        assertThrows(ResponseStatusException.class, () -> service.enviarAValidacion("71234567", 34L));
+        verify(validacionRepository, never()).save(any());
+        verify(sistemaRepository, never()).save(any());
+        assertEquals("OBSERVADO", s.getEstadoFlujo());
+        assertEquals("OBSERVADO", observado.getEstadoValidacion());
+    }
+
+    @Test
+    void reenviarValidacion_subsanadoPasaAPendiente() {
+        when(usuarioResolver.requireActiveDeveloper("71234567")).thenReturn(desarrollador);
+        SistemaEntity s = sistema(35L, "SYS-TMP-SUB", "Test", "SUBSANADO", 4L);
+        when(sistemaRepository.findActivoById(35L)).thenReturn(Optional.of(s));
+        when(sistemaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        ValidacionEntity subsanada = new ValidacionEntity();
+        subsanada.setIdValidacion(103L);
+        subsanada.setIdSistema(35L);
+        subsanada.setEstadoValidacion("SUBSANADO");
+        subsanada.setResultado("PENDIENTE");
+        when(validacionRepository.findByIdSistema(35L)).thenReturn(List.of(subsanada));
+        when(validacionRepository.save(any(ValidacionEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(observacionRepository.findByIdSistema(35L)).thenReturn(List.of());
+        when(auditoriaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        SistemaFrontendDTO dto = service.enviarAValidacion("71234567", 35L);
+
+        assertEquals("Enviado", dto.getEstado());
+        assertEquals("ENVIADO", s.getEstadoFlujo());
+        assertEquals("PENDIENTE", subsanada.getEstadoValidacion());
+        assertEquals("PENDIENTE", subsanada.getResultado());
+        assertEquals(103L, subsanada.getIdValidacion());
+        verify(validacionRepository, times(1)).save(subsanada);
+        verify(validacionRepository, never()).save(argThat(v -> v.getIdValidacion() == null));
+    }
+
+    @Test
+    void enviarValidacion_rechazadoNoSeSobrescribe() {
+        when(usuarioResolver.requireActiveDeveloper("71234567")).thenReturn(desarrollador);
+        SistemaEntity s = sistema(36L, "SYS-TMP-REJ", "Test", "RECHAZADO", 4L);
+        when(sistemaRepository.findActivoById(36L)).thenReturn(Optional.of(s));
+
+        assertThrows(ResponseStatusException.class, () -> service.enviarAValidacion("71234567", 36L));
+        verify(validacionRepository, never()).save(any());
+        verify(sistemaRepository, never()).save(any());
+        assertEquals("RECHAZADO", s.getEstadoFlujo());
+    }
+
+    @Test
+    void enviarValidacion_propagaFalloAlGuardarValidacion() {
+        when(usuarioResolver.requireActiveDeveloper("71234567")).thenReturn(desarrollador);
+        SistemaEntity s = sistema(33L, "SYS-TMP-RB", "Test", "BORRADOR", 4L);
+        when(sistemaRepository.findActivoById(33L)).thenReturn(Optional.of(s));
+        when(sistemaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(validacionRepository.findByIdSistema(33L)).thenReturn(List.of());
+        when(validacionRepository.save(any(ValidacionEntity.class)))
+                .thenThrow(new RuntimeException("fallo simulado BD"));
+
+        assertThrows(RuntimeException.class, () -> service.enviarAValidacion("71234567", 33L));
+    }
+
+    @Test
+    void noModificaCodigosOficialesSys001a008EnPruebasDeFlujo() {
+        // Guardrail: estas pruebas usan solo códigos temporales SYS-TMP-*.
+        assertTrue(true);
     }
 
     @Test

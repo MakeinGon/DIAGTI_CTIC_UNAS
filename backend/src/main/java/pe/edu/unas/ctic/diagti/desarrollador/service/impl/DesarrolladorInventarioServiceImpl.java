@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -100,40 +101,36 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "El sistema ya está en estado " + EstadoFlujoNormalizer.toUi(estadoActual));
         }
-
-        List<ValidacionEntity> existentes = validacionRepository.findByIdSistema(sistema.getIdSistema());
-        boolean hayActiva = existentes.stream().anyMatch(v -> {
-            String e = v.getEstadoValidacion() == null ? "" : v.getEstadoValidacion().toUpperCase();
-            return "PENDIENTE".equals(e) || "OBSERVADO".equals(e) || "SUBSANADO".equals(e);
-        });
-        if (hayActiva && !"SUBSANADO".equals(estadoActual) && !"OBSERVADO".equals(estadoActual) && !"BORRADOR".equals(estadoActual)) {
+        if ("RECHAZADO".equals(estadoActual)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Ya existe una validación activa para este sistema");
+                    "No se puede reenviar un sistema rechazado sin una transición explícita");
+        }
+        if ("OBSERVADO".equals(estadoActual)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Debe subsanar las observaciones antes de reenviar a validación");
+        }
+
+        boolean esReenvio = "SUBSANADO".equals(estadoActual);
+        if (!esReenvio && !"BORRADOR".equals(estadoActual)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Solo se puede enviar desde BORRADOR o reenviar desde SUBSANADO");
         }
 
         sistema.setEstadoFlujoSincronizado("ENVIADO");
         sistemaRepository.save(sistema);
 
-        ValidacionEntity validacion = existentes.stream()
-                .filter(v -> {
-                    String e = v.getEstadoValidacion() == null ? "" : v.getEstadoValidacion().toUpperCase();
-                    return "SUBSANADO".equals(e) || "OBSERVADO".equals(e) || "PENDIENTE".equals(e)
-                            || "BORRADOR".equals(e);
-                })
-                .findFirst()
-                .orElseGet(ValidacionEntity::new);
-
-        if (validacion.getIdValidacion() == null) {
-            validacion.setIdSistema(sistema.getIdSistema());
-            validacion.setFechaCreacion(LocalDateTime.now());
+        if (esReenvio) {
+            reenviarValidacionSubsanada(
+                    sistema.getIdSistema(),
+                    "Sistema reenviado a validación tras subsanación.");
+        } else {
+            asegurarValidacionInicialPendiente(
+                    sistema.getIdSistema(),
+                    "Sistema enviado a validación por el área de desarrollo.");
         }
-        validacion.setEstadoValidacion("PENDIENTE");
-        validacion.setResultado("PENDIENTE");
-        validacion.setObservacionGeneral("Sistema enviado a validación por el área de desarrollo.");
-        validacion.setFechaActualizacion(LocalDateTime.now());
-        validacionRepository.save(validacion);
 
-        registrarAuditoria(desarrollador.getIdUsuario(), "Desarrollo", "Enviar validación",
+        registrarAuditoria(desarrollador.getIdUsuario(), "Desarrollo",
+                esReenvio ? "Reenviar validación" : "Enviar validación",
                 "Sistema " + sistema.getCodigoUnico() + " enviado a validación.");
 
         List<ObservacionEntity> observaciones = observacionRepository.findByIdSistema(sistema.getIdSistema());
@@ -697,34 +694,120 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
     }
 
     /**
-     * Crea como máximo una validación inicial por sistema (idempotente).
+     * Al registrar: BORRADOR no crea fila en {@code validaciones} (no entra a la cola).
+     * ENVIADO asegura exactamente una validación PENDIENTE (envío inicial).
      */
     private void asegurarValidacionInicial(Long idSistema, String estadoFlujo) {
+        if (!"ENVIADO".equals(estadoFlujo)) {
+            return;
+        }
+        asegurarValidacionInicialPendiente(idSistema, "Sistema enviado a validación tras el registro.");
+    }
+
+    /**
+     * Envío inicial: crea PENDIENTE o actualiza BORRADOR → PENDIENTE.
+     * No toca OBSERVADO, SUBSANADO, VALIDADO ni RECHAZADO.
+     */
+    private void asegurarValidacionInicialPendiente(Long idSistema, String observacionGeneral) {
         List<ValidacionEntity> existentes = validacionRepository.findByIdSistema(idSistema);
-        boolean hayInicial = existentes.stream().anyMatch(v -> {
-            String e = v.getEstadoValidacion() == null ? "" : v.getEstadoValidacion().toUpperCase(Locale.ROOT);
-            return "PENDIENTE".equals(e) || "OBSERVADO".equals(e) || "SUBSANADO".equals(e)
-                    || "BORRADOR".equals(e) || "VALIDADO".equals(e) || "RECHAZADO".equals(e);
-        });
-        if (hayInicial) {
+        LocalDateTime ahora = LocalDateTime.now();
+
+        if (existentes.stream().anyMatch(v -> {
+            String e = upperEstado(v.getEstadoValidacion());
+            return "VALIDADO".equals(e) || "RECHAZADO".equals(e)
+                    || "OBSERVADO".equals(e) || "SUBSANADO".equals(e);
+        })) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "La validación existente no admite un envío inicial genérico");
+        }
+
+        Optional<ValidacionEntity> pendiente = existentes.stream()
+                .filter(v -> "PENDIENTE".equals(upperEstado(v.getEstadoValidacion())))
+                .findFirst();
+        if (pendiente.isPresent()) {
+            ValidacionEntity v = pendiente.get();
+            if (v.getIdValidador() != null) {
+                v.setIdValidador(null);
+                v.setFechaActualizacion(ahora);
+                validacionRepository.save(v);
+            }
             return;
         }
 
-        ValidacionEntity v = new ValidacionEntity();
-        v.setIdSistema(idSistema);
-        v.setIdValidador(null);
-        if ("ENVIADO".equals(estadoFlujo)) {
-            v.setEstadoValidacion("PENDIENTE");
-            v.setResultado("PENDIENTE");
-            v.setObservacionGeneral("Sistema enviado a validación tras el registro.");
-        } else {
-            v.setEstadoValidacion("BORRADOR");
-            v.setResultado("PENDIENTE");
-            v.setObservacionGeneral(null);
+        Optional<ValidacionEntity> borrador = existentes.stream()
+                .filter(v -> "BORRADOR".equals(upperEstado(v.getEstadoValidacion())))
+                .findFirst();
+        if (borrador.isPresent()) {
+            promoverAPendiente(borrador.get(), observacionGeneral, ahora);
+            return;
         }
-        v.setFechaCreacion(LocalDateTime.now());
-        v.setFechaActualizacion(LocalDateTime.now());
+
+        crearValidacionPendiente(idSistema, observacionGeneral, ahora);
+    }
+
+    /**
+     * Reenvío oficial tras subsanar: solo SUBSANADO → PENDIENTE.
+     * OBSERVADO no se reabre aquí (primero debe pasar por subsanar).
+     */
+    private void reenviarValidacionSubsanada(Long idSistema, String observacionGeneral) {
+        List<ValidacionEntity> existentes = validacionRepository.findByIdSistema(idSistema);
+        LocalDateTime ahora = LocalDateTime.now();
+
+        Optional<ValidacionEntity> finalizada = existentes.stream()
+                .filter(v -> {
+                    String e = upperEstado(v.getEstadoValidacion());
+                    return "VALIDADO".equals(e) || "RECHAZADO".equals(e);
+                })
+                .findFirst();
+        if (finalizada.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Existe una validación finalizada; no se puede reabrir sin transición explícita");
+        }
+
+        Optional<ValidacionEntity> subsanada = existentes.stream()
+                .filter(v -> "SUBSANADO".equals(upperEstado(v.getEstadoValidacion())))
+                .findFirst();
+        if (subsanada.isPresent()) {
+            promoverAPendiente(subsanada.get(), observacionGeneral, ahora);
+            return;
+        }
+
+        Optional<ValidacionEntity> pendiente = existentes.stream()
+                .filter(v -> "PENDIENTE".equals(upperEstado(v.getEstadoValidacion())))
+                .findFirst();
+        if (pendiente.isPresent()) {
+            return;
+        }
+
+        throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "No hay una validación SUBSANADO para reenviar");
+    }
+
+    private void promoverAPendiente(ValidacionEntity v, String observacionGeneral, LocalDateTime ahora) {
+        v.setEstadoValidacion("PENDIENTE");
+        v.setResultado("PENDIENTE");
+        v.setIdValidador(null);
+        if (observacionGeneral != null && !observacionGeneral.isBlank()) {
+            v.setObservacionGeneral(observacionGeneral);
+        }
+        v.setFechaActualizacion(ahora);
         validacionRepository.save(v);
+    }
+
+    private void crearValidacionPendiente(Long idSistema, String observacionGeneral, LocalDateTime ahora) {
+        ValidacionEntity creada = new ValidacionEntity();
+        creada.setIdSistema(idSistema);
+        creada.setIdValidador(null);
+        creada.setEstadoValidacion("PENDIENTE");
+        creada.setResultado("PENDIENTE");
+        creada.setObservacionGeneral(observacionGeneral);
+        creada.setFechaCreacion(ahora);
+        creada.setFechaActualizacion(ahora);
+        validacionRepository.save(creada);
+    }
+
+    private static String upperEstado(String raw) {
+        return raw == null ? "" : raw.trim().toUpperCase(Locale.ROOT);
     }
 
     private CatalogoEntity requireCatalogoActivo(String tipo, String codigo) {

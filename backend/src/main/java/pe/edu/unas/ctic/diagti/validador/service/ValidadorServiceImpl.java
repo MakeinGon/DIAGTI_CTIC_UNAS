@@ -418,11 +418,16 @@ public class ValidadorServiceImpl implements ValidadorService {
         dto.setFechaSubsanacion(validacion.getFechaSubsanacion());
         dto.setFechaCreacion(validacion.getFechaCreacion());
         dto.setFechaActualizacion(validacion.getFechaActualizacion());
+        dto.setFecha(validacion.getFechaCreacion() != null
+                ? validacion.getFechaCreacion()
+                : validacion.getFechaActualizacion());
 
         sistemaRepository.findActivoById(validacion.getIdSistema()).ifPresent(s -> {
             dto.setNombreSistema(s.getNombre());
             dto.setCodigo(s.getCodigoUnico());
+            dto.setEstado(s.getEstadoFlujo());
             dto.setArea(catalogoValor(s.getIdAreaUsuario()));
+            dto.setResponsableTecnico(nombreUsuario(s.getIdResponsableTecnico()));
         });
         if (validacion.getIdValidador() != null) {
             usuarioRepository.findById(validacion.getIdValidador()).ifPresent(u ->
