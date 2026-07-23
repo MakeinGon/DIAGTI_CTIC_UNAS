@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/pages/infraestructura/assets/logo-unas.png?v=13">
+    <title>Auditoría · Auditor · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="../css/auditoria.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>CTIC – Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">AC</div>
+            <div class="profile-info">
+                <div class="profile-name">Auditor CTIC</div>
+                <div class="profile-role">Auditor / OCI</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Auditoría</div>
+
+        <nav class="nav">
+            <a class="nav-item" href="inventario.html">
+                <span>
+                    <span class="lbl">Inventario</span>
+                    <span class="sub">Consulta general</span>
+                </span>
+            </a>
+
+            <a class="nav-item active" href="auditoria.html">
+                <span>
+                    <span class="lbl">Auditoría</span>
+                    <span class="sub">Logs y trazabilidad</span>
+                </span>
+            </a>
+
+            <a class="nav-item" href="reportes.html">
+                <span>
+                    <span class="lbl">Reportes</span>
+                    <span class="sub">PDF y Excel</span>
+                </span>
+            </a>
+        </nav>
+
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v1.0 · CTIC UNAS<br>
+            Módulo de auditoría interna
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h2>Auditoría del Sistema</h2>
+                <div class="hint">
+                    Consulta de eventos registrados en la tabla auditoría de DIAGTI.
+                </div>
+            </div>
+        </div>
+
+        <!-- AVISO SOLO LECTURA -->
+        <div class="readonly-box">
+            <div>
+                <strong>Registro histórico no editable</strong>
+                <p>
+                    Esta pantalla permite revisar eventos auditables. El auditor solo consulta la información registrada.
+                </p>
+            </div>
+            <span class="badge status-secondary">Solo consulta</span>
+        </div>
+
+        <!-- KPIS -->
+        <div class="kpi-grid">
+            <div class="card kpi-card">
+                <div class="stat-label">Eventos registrados</div>
+                <div class="stat-num" id="kpi-total">0</div>
+                <span class="badge status-info">Historial general</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Consultas</div>
+                <div class="stat-num accent" id="kpi-consultas">0</div>
+                <span class="badge status-success">Eventos de consulta</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Intentos fallidos</div>
+                <div class="stat-num" id="kpi-fallidos">0</div>
+                <span class="badge status-warning">Accesos fallidos</span>
+            </div>
+
+            <div class="card kpi-card">
+                <div class="stat-label">Exportaciones</div>
+                <div class="stat-num" id="kpi-exportaciones">0</div>
+                <span class="badge status-success">PDF y Excel</span>
+            </div>
+        </div>
+
+        <!-- TABLA AUDITORÍA -->
+        <div class="card">
+            <div class="section-head">
+                <div>
+                    <h3>Consulta de eventos de auditoría</h3>
+                    <div class="desc">
+                        Filtra registros por usuario, correo, módulo, acción, descripción, IP o rango de fechas.
+                    </div>
+                </div>
+
+                <div class="section-actions">
+                    <button class="btn btn-verde" onclick="exportarExcel()">Exportar Excel</button>
+                    <button class="btn btn-ghost" onclick="exportarPDF()">Exportar PDF</button>
+                </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="toolbar">
+                <div class="search">
+                    <input type="text" id="search-input" placeholder="Buscar por usuario, correo, módulo, acción, descripción o IP...">
+                </div>
+
+                <select id="filter-modulo">
+                    <option value="">Todos los módulos</option>
+                    <option value="Inventario">Inventario</option>
+                    <option value="Auditoría">Auditoría</option>
+                    <option value="Reportes">Reportes</option>
+                    <option value="Acceso">Acceso</option>
+                    <option value="Sistemas">Sistemas</option>
+                    <option value="Seguridad">Seguridad</option>
+                    <option value="Evidencias">Evidencias</option>
+                    <option value="Administración">Administración</option>
+                </select>
+
+                <select id="filter-accion">
+                    <option value="">Todas las acciones</option>
+                    <option value="Consulta">Consulta</option>
+                    <option value="Exportación">Exportación</option>
+                    <option value="Intento fallido">Intento fallido</option>
+                    <option value="Eliminación lógica">Eliminación lógica</option>
+                    <option value="Registro">Registro</option>
+                    <option value="Actualización">Actualización</option>
+                </select>
+
+                <input type="date" id="filter-desde">
+                <input type="date" id="filter-hasta">
+            </div>
+
+            <!-- TABLA -->
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha y hora</th>
+                            <th>Usuario</th>
+                            <th>Correo</th>
+                            <th>Módulo</th>
+                            <th>Acción</th>
+                            <th>Descripción</th>
+                            <th>IP origen</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabla-auditoria">
+                        <!-- JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINACIÓN FUNCIONAL -->
+            <div class="pagination">
+                <span id="contador-registros">Mostrando eventos auditables</span>
+
+                <div class="page-actions" id="paginacion">
+                    <!-- JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: CONFIRMAR CIERRE DE SESIÓN -->
+    <div class="logout-confirm-overlay" id="logout-confirm-overlay">
+        <div class="logout-confirm-box">
+            <div class="logout-confirm-header">
+                <h3>Cerrar sesión</h3>
+                <button class="logout-confirm-close" onclick="cancelarCerrarSesion()">✕</button>
+            </div>
+            <div class="logout-confirm-body">
+                <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+                <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+            </div>
+            <div class="logout-confirm-footer">
+                <button class="logout-confirm-btn-cancel" onclick="cancelarCerrarSesion()">Cancelar</button>
+                <button class="logout-confirm-btn-accept" onclick="confirmarCerrarSesion()">Sí, cerrar sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auditoria.js"></script>
+</body>
+
+</html>

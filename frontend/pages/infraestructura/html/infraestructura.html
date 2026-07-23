@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" type="image/png" href="/pages/infraestructura/assets/logo-unas.png?v=13"><title>Infraestructura | DIAGTI</title><link rel="stylesheet" href="../css/infraestructura.css?v=13"></head>
+<body>
+<div class="app-layout">
+<aside class="sidebar">
+  <div class="brand"><img src="../assets/logo-unas.png" alt="Logo UNAS"><div><h1>UNAS</h1><p>Tingo María</p></div></div>
+  <div class="user-card"><div class="avatar">CR</div><div><strong>CARLOS ROJAS</strong><span>ÁREA DE INFRAESTRUCTURA</span></div></div>
+  <nav class="menu"><p class="menu-title">INFRAESTRUCTURA</p>
+    <a class="menu-item" href="dashboard.html"><strong>Dashboard</strong><span>Resumen general</span></a>
+    <a class="menu-item" href="mis-sistemas.html"><strong>Mis Sistemas</strong><span>Sistemas asignados</span></a>
+    <a class="menu-item active" href="infraestructura.html"><strong>Infraestructura</strong><span>Registro técnico</span></a>
+    <a class="menu-item" href="historial.html"><strong>Historial</strong><span>Seguimiento</span></a>
+  </nav>
+    <!-- Botón Cerrar Sesión -->
+    <div class="sidebar-logout">
+      <button class="btn-logout" type="button" onclick="window.location.href='../../login/html/login.html'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        Cerrar Sesión
+      </button>
+    </div>
+  <div class="sidebar-footer">DIAGTI v2.0 · CTIC UNAS<br>Módulo de Infraestructura</div>
+</aside>
+<main class="main-content">
+<header class="page-header"><h2>Registro técnico</h2><p>Complete la infraestructura, despliegue, seguridad y evidencias del sistema.</p></header>
+<section class="panel selector-panel">
+  <div class="selector-grid"><label>Sistema a registrar <span class="required">*</span>
+    <select id="sistema"><option value="">Seleccione un sistema</option></select>
+  </label><div><span class="status-label">Estado del registro</span><span id="estadoRegistro" class="status-badge new">Nuevo</span></div></div>
+  <p id="selectorAyuda" class="selector-help">Seleccione un sistema para iniciar o continuar su registro técnico.</p>
+</section>
+<section id="observacionesTecnicas" class="panel correction-panel hidden">
+  <div class="section-head">
+    <h3>Observaciones de Validación de Infraestructura</h3>
+    <p>Abra el paso indicado, corrija el dato y explique la solución aplicada.</p>
+  </div>
+  <div id="listaObservacionesTecnicas"></div>
+</section>
+<section class="steps" aria-label="Pasos del formulario">
+<button type="button" class="step active" data-step="infra"><span>1</span>Infraestructura</button><button type="button" class="step" data-step="deploy"><span>2</span>Despliegue</button><button type="button" class="step" data-step="security"><span>3</span>Seguridad</button><button type="button" class="step" data-step="evidence"><span>4</span>Evidencias</button>
+</section>
+<form id="formTecnico" class="panel" novalidate>
+<div class="step-panel active" id="infra"><div class="section-head"><h3>Infraestructura tecnológica</h3><p>RF-09: plataforma y recursos donde opera el sistema.</p></div><div class="form-grid">
+<label>Plataforma <span class="required">*</span><select name="plataforma" required><option value="">Seleccione</option><option>VM en Proxmox</option><option>Servidor físico</option><option>Contenedor Docker</option><option>Cloud</option><option>Hosting externo</option><option>Infraestructura mixta</option></select></label>
+<label>Tipo de servidor <span class="required">*</span><select name="tipoServidor" required><option value="">Seleccione</option><option>Virtual</option><option>Físico</option><option>Contenedor</option></select></label>
+<label>Sistema operativo <span class="required">*</span><input name="sistemaOperativo" required placeholder="Ej. Ubuntu Server"></label><label>Versión del sistema operativo <span class="required">*</span><input name="versionSO" required placeholder="Ej. 24.04 LTS"></label>
+<label>IP privada <span class="required">*</span><input name="ipPrivada" required pattern="^(?:\d{1,3}\.){3}\d{1,3}$" placeholder="192.168.10.25"></label><label>¿Usa Proxmox? <span class="required">*</span><select name="proxmox" required><option value="">Seleccione</option><option>Sí</option><option>No</option><option>No aplica</option></select></label>
+<label>¿Cuenta con backup? <span class="required">*</span><select name="backup" required><option value="">Seleccione</option><option>Sí</option><option>No</option></select></label><label>Frecuencia de backup <span class="required">*</span><select name="frecuenciaBackup" required><option value="">Seleccione</option><option>Diario</option><option>Semanal</option><option>Mensual</option><option>No aplica</option></select></label>
+<label class="full">Observaciones<textarea name="observacionesInfra" placeholder="Información adicional de infraestructura"></textarea></label></div></div>
+<div class="step-panel" id="deploy"><div class="section-head"><h3>Despliegue y exposición</h3><p>RF-10 y RF-11: ubicación, publicación y nivel de acceso.</p></div><div class="form-grid">
+<label>Ambiente <span class="required">*</span><select name="ambiente" required><option value="">Seleccione</option><option>Producción</option><option>Pruebas</option><option>Desarrollo</option></select></label><label>Servidor <span class="required">*</span><input name="servidor" required placeholder="Ej. vm-app-01"></label>
+<label>Puerto <span class="required">*</span><input name="puerto" required type="number" min="1" max="65535" placeholder="443"></label><label>Dominio o subdominio <span class="required">*</span><input name="dominio" required placeholder="matricula.unas.edu.pe"></label>
+<label>Servidor web <span class="required">*</span><select name="servidorWeb" required><option value="">Seleccione</option><option>Nginx</option><option>Apache</option><option>IIS</option><option>Otro</option></select></label><label>Proxy reverso <span class="required">*</span><select name="proxy" required><option value="">Seleccione</option><option>Sí</option><option>No</option><option>No aplica</option></select></label>
+<label>Docker <span class="required">*</span><select name="docker" required><option value="">Seleccione</option><option>Sí</option><option>No</option></select></label><label>Docker Compose <span class="required">*</span><select name="compose" required><option value="">Seleccione</option><option>Sí</option><option>No</option><option>No aplica</option></select></label>
+<label>Exposición <span class="required">*</span><select name="exposicion" required><option value="">Seleccione</option><option>Intranet</option><option>Internet</option><option>VPN</option><option>DMZ</option><option>Red local</option><option>IP pública</option><option>IP privada</option></select></label><label>Mecanismo CI/CD (Integración Continua / Despliegue Continuo) <span class="required">*</span><select name="cicd" required><option value="">Seleccione</option><option>GitLab CI</option><option>GitHub Actions</option><option>Jenkins</option><option>No implementado</option></select></label></div></div>
+<div class="step-panel" id="security"><div class="section-head"><h3>Controles de seguridad</h3><p>RF-12: cumplimiento de controles técnicos.</p></div><div class="form-grid">
+<label>SSL/TLS (Capa de Conexión Segura / Seguridad de la Capa de Transporte) <span class="required">*</span><select name="ssl" required><option value="">Seleccione</option><option>Cumple</option><option>No cumple</option><option>Parcial</option><option>No aplica</option></select><small>Protege la comunicación mediante HTTPS (Protocolo Seguro de Transferencia de Hipertexto).</small></label><label>Método de autenticación <span class="required">*</span><select name="autenticacion" required><option value="">Seleccione</option><option>LDAP (Protocolo Ligero de Acceso a Directorios) / Active Directory</option><option>Usuario y contraseña</option><option>OAuth / SSO (Inicio de Sesión Único)</option><option>Sin autenticación</option><option>Otro</option></select><small>Forma de ingreso de los usuarios.</small></label>
+<label>MFA (Autenticación Multifactor) <span class="required">*</span><select name="mfa" required><option value="">Seleccione</option><option>Cumple</option><option>No cumple</option><option>Parcial</option><option>No aplica</option></select><small>Segundo factor de autenticación.</small></label><label>Generación de logs <span class="required">*</span><select name="logs" required><option value="">Seleccione</option><option>Cumple</option><option>No cumple</option><option>Parcial</option></select><small>Registra errores, accesos y eventos técnicos.</small></label>
+<label>Cifrado de información <span class="required">*</span><select name="cifrado" required><option value="">Seleccione</option><option>Cumple</option><option>No cumple</option><option>Parcial</option><option>No aplica</option></select><small>Protección de datos sensibles y credenciales.</small></label><label>Restricción por IP <span class="required">*</span><select name="restriccionIp" required><option value="">Seleccione</option><option>Cumple</option><option>No cumple</option><option>Parcial</option><option>No aplica</option></select><small>Acceso desde redes autorizadas.</small></label>
+<label>Control de sesiones <span class="required">*</span><select name="sesiones" required><option value="">Seleccione</option><option>Cumple</option><option>No cumple</option><option>Parcial</option></select><small>Cierre por inactividad y protección de sesión.</small></label></div></div>
+<div class="step-panel" id="evidence"><div class="section-head"><h3>Evidencias técnicas</h3><p>RF-14: agregue todos los archivos o enlaces que sustenten la información registrada.</p></div>
+<div class="evidence-box"><div class="form-grid">
+<label>Tipo de evidencia <span class="required">*</span><select id="evTipo"><option value="">Seleccione</option><option>Captura de servidor</option><option>Configuración de despliegue</option><option>Backup</option><option>Certificado SSL</option><option>Docker Compose</option><option>Documento técnico</option><option>Otro</option></select></label><label>Nombre de la evidencia <span class="required">*</span><input id="evNombre" placeholder="Ej. Certificado SSL vigente"></label>
+<label>Archivo<input id="evArchivo" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.zip,.txt"></label><label>URL de evidencia<input id="evUrl" type="url" placeholder="https://..."></label><label class="full">Descripción<textarea id="evDescripcion" placeholder="Detalle breve de la evidencia"></textarea></label></div>
+<p class="file-note">Cada evidencia debe tener un archivo o una URL. Puede agregar varias antes de guardar.</p><div class="evidence-actions"><button type="button" class="btn outline-green" id="btnAgregarEvidencia">Agregar evidencia</button></div><p id="errorEvidencia" class="message error"></p></div>
+<div class="evidence-list-head"><h4>Evidencias agregadas <span id="contadorEvidencias">0</span></h4></div><div class="table-scroll"><table class="evidence-table"><thead><tr><th>Tipo</th><th>Nombre</th><th>Archivo / URL</th><th>Descripción</th><th>Acciones</th></tr></thead><tbody id="tablaEvidencias"><tr class="empty-row"><td colspan="5">Todavía no se agregaron evidencias.</td></tr></tbody></table></div>
+</div>
+<div class="actions"><button type="button" class="btn secondary" id="btnAnterior">Anterior</button><button type="button" class="btn secondary" id="btnCancelar">Cancelar cambios</button><button type="button" class="btn primary" id="btnContinuar">Continuar</button><button type="button" class="btn secondary hidden" id="btnGuardarBorrador">Guardar borrador</button><button type="button" class="btn primary hidden" id="btnEnviar">Enviar a validación</button></div><p id="mensaje" class="message"></p>
+</form>
+</main></div>
+<div class="modal" id="modalCambio"><div class="modal-card"><h3>Cambiar sistema</h3><p id="textoCambio">Tiene cambios sin guardar. Si cambia de sistema, perderá la información no guardada.</p><div class="modal-actions"><button class="btn secondary" id="btnPermanecer">Permanecer</button><button class="btn danger-btn" id="btnCambiar">Cambiar sistema</button></div></div></div>
+<div class="modal" id="modalIncompleto"><div class="modal-card"><h3>Información incompleta</h3><p>Falta completar información obligatoria en:</p><ul id="listaPendientes"></ul><div class="modal-actions"><button class="btn secondary" id="btnRegresar">Regresar y completar</button><button class="btn primary" id="btnBorradorModal">Guardar como borrador</button></div></div></div>
+<div class="modal" id="modalEnviar"><div class="modal-card"><h3>Enviar a validación</h3><p>Una vez enviado, el registro quedará bloqueado mientras el Validador CTIC lo revisa.</p><div class="modal-actions"><button class="btn secondary" id="btnCancelarEnvio">Cancelar</button><button class="btn primary" id="btnConfirmarEnvio">Enviar</button></div></div></div>
+<script src="../../shared/js/flujo-validacion.js?v=13"></script><script src="../js/infraestructura.js?v=13"></script></body></html>

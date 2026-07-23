@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/png" href="/pages/infraestructura/assets/logo-unas.png?v=13">
+    <title>Historial de Validaciones | DIAGTI - CTIC</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/historial.css">
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+
+        <div>
+            <div class="brand">
+                <div class="logo">
+                    <img src="../assets/logo-unas.png" alt="UNAS">
+                </div>
+                <div>
+                    <h1>UNAS</h1>
+                    <small>CTIC - Tingo María</small>
+                </div>
+            </div>
+
+            <div class="sidebar-profile">
+                <div class="profile-avatar">VL</div>
+                <div class="profile-info">
+                    <div class="profile-name">Validador</div>
+                    <div class="profile-role">CTIC</div>
+                </div>
+            </div>
+
+            <!-- ===== MENÚ SIMPLIFICADO ===== -->
+            <nav class="nav">
+                <!-- SECCIÓN VALIDACIÓN -->
+                <div class="nav-label">VALIDACIÓN</div>
+
+                <a class="nav-item" href="dashboard.html">
+                    <span class="ic"><i class="fas fa-chart-pie"></i></span>
+                    <span>
+                        <span class="lbl">Dashboard</span>
+                        <span class="sub">Resumen General</span>
+                    </span>
+                </a>
+
+                <a class="nav-item" href="pendientes.html">
+                    <span class="ic"><i class="fas fa-clock"></i></span>
+                    <span>
+                        <span class="lbl">Pendientes</span>
+                        <span class="sub">Sistemas enviados</span>
+                    </span>
+                </a>
+
+                <a class="nav-item active" href="historial.html">
+                    <span class="ic"><i class="fas fa-history"></i></span>
+                    <span>
+                        <span class="lbl">Historial</span>
+                        <span class="sub">Validaciones realizadas</span>
+                    </span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <button class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar Sesión
+            </button>
+            <div class="footer-divider"></div>
+            <div class="footer-version">
+                <span>DIAGIT v2.0 - CTIC UNAS</span>
+                <span class="version-sub">Módulo de administración interna</span>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ================= CONTENIDO ================= -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div>
+                <h2>
+                    <i class="fas fa-clock-rotate-left" style="color: var(--color-verde-ctic); margin-right: 10px;"></i>
+                    Historial de Validaciones
+                </h2>
+                <div class="hint">
+                    Registro histórico de todas las acciones realizadas por el área de validación.
+                </div>
+            </div>
+            <button class="btn btn-verde" id="btn-exportar">
+                <i class="fas fa-file-export"></i>
+                Exportar Historial
+            </button>
+        </header>
+
+        <!-- HERO -->
+        <section class="card hero-card">
+            <div>
+                <span class="badge info">
+                    <i class="fas fa-info-circle"></i> HISTORIAL
+                </span>
+                <h2>
+                    Registro de Validaciones
+                </h2>
+                <p>
+                    Consulte todas las validaciones, observaciones y acciones realizadas sobre los sistemas registrados.
+                </p>
+            </div>
+            <div class="hero-pill">
+                <i class="fas fa-clock-rotate-left"></i>
+            </div>
+        </section>
+
+        <!-- TABLA DE HISTORIAL -->
+        <section class="card">
+            <div class="section-head">
+                <div>
+                    <h3>
+                        <i class="fas fa-table" style="color: var(--color-verde-ctic);"></i>
+                        Historial de Registros
+                    </h3>
+                    <small>
+                        Acciones realizadas por el equipo de validación
+                    </small>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Sistema</th>
+                            <th>Fecha</th>
+                            <th>Acción</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historial-body">
+                        <!-- Los registros serán cargados por historial.js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PIE DE PÁGINA -->
+        <footer class="page-footer">
+            <div>
+                DIAGIT - CTIC UNAS © 2026
+            </div>
+            <div>
+                Módulo de Validación · Historial de Validaciones
+            </div>
+        </footer>
+
+    </main>
+
+    <script type="module" src="../js/historial.js?v=8"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/pages/infraestructura/assets/logo-unas.png?v=13">
+  <title>Mis Sistemas | DIAGTI</title>
+  <link href="../css/mis-sistemas.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="brand"><img alt="Logo UNAS" src="../assets/logo-unas.png"><div><h1>UNAS</h1><p>Tingo María</p></div></div>
+    <div class="user-card"><div class="avatar">CR</div><div><strong>CARLOS ROJAS</strong><span>ÁREA DE INFRAESTRUCTURA</span></div></div>
+    <nav class="menu">
+      <p class="menu-title">INFRAESTRUCTURA</p>
+      <a class="menu-item" href="dashboard.html"><strong>Dashboard</strong><span>Resumen general</span></a>
+      <a class="menu-item active" href="mis-sistemas.html"><strong>Mis Sistemas</strong><span>Sistemas asignados</span></a>
+      <a class="menu-item" href="infraestructura.html"><strong>Infraestructura</strong><span>Registro técnico</span></a>
+      <a class="menu-item" href="historial.html"><strong>Historial</strong><span>Seguimiento</span></a>
+    </nav>
+    <div class="sidebar-logout">
+      <button class="btn-logout" type="button" onclick="window.location.href='../../login/html/login.html'">Cerrar Sesión</button>
+    </div>
+    <div class="sidebar-footer">DIAGTI v2.0 · CTIC UNAS<br>Módulo de Infraestructura</div>
+  </aside>
+  <main class="main-content">
+    <header class="page-header"><h2>Mis Sistemas</h2><p>Todos los integrantes del área pueden consultar; el responsable asignado realiza los cambios.</p></header>
+    <section class="toolbar">
+      <input id="buscar" placeholder="Buscar por código o nombre" type="search">
+      <select id="estado"><option value="">Todos los estados</option><option>Nuevo</option><option>Borrador</option><option>Enviado</option><option>Observado</option><option>Subsanado</option><option>Validado</option></select>
+      <select id="riesgo"><option value="">Todos los riesgos</option><option>Bajo</option><option>Medio</option><option>Alto</option><option>Crítico</option></select>
+    </section>
+    <section class="panel table-wrap">
+      <table id="tablaSistemas">
+        <thead><tr><th>Código</th><th>Sistema</th><th>Plataforma</th><th>Exposición</th><th>Estado</th><th>Riesgo</th><th>Responsable</th><th>Acciones</th></tr></thead>
+        <tbody><tr><td colspan="8" class="empty">Cargando información desde PostgreSQL...</td></tr></tbody>
+      </table>
+      <p class="empty hidden" id="sinResultados">No se encontraron sistemas.</p>
+    </section>
+    <p class="message" id="mensaje"></p>
+  </main>
+</div>
+<div class="modal" id="modalVer">
+  <div class="modal-card">
+    <button class="close" data-close="modalVer">×</button>
+    <h3>Detalle del sistema</h3>
+    <div id="detalleSistema"></div>
+    <div class="modal-actions"><button class="btn secondary" data-close="modalVer">Cerrar</button></div>
+  </div>
+</div>
+<script src="../../shared/js/flujo-validacion.js?v=13"></script>
+<script src="../js/mis-sistemas.js?v=13"></script>
+</body>
+</html>

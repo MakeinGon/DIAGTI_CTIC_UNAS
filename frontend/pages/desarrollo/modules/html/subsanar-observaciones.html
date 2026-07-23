@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/pages/infraestructura/assets/logo-unas.png?v=13">
+    <title>Subsanar Observaciones · Desarrollo · DIAGTI</title>
+    <link rel="stylesheet" href="../css/subsanar-observaciones.css?v=13">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<aside class="sidebar">
+    <div class="brand">
+        <div class="logo"><img src="../assets/logo-unas.png" alt="UNAS"></div>
+        <div><h1>UNAS</h1><small>Tingo María</small></div>
+    </div>
+    <div class="sidebar-profile">
+        <div class="profile-avatar">DV</div>
+        <div class="profile-info"><div class="profile-name">Desarrollo</div><div class="profile-role">Área de Desarrollo</div></div>
+    </div>
+    <div class="nav-label">Desarrollo</div>
+    <nav class="nav">
+        <a class="nav-item" href="dashboard.html"><span><span class="lbl">Dashboard</span><span class="sub">Resumen de trabajo</span></span></a>
+        <a class="nav-item" href="mis-sistemas.html"><span><span class="lbl">Mis Sistemas</span><span class="sub">Administrar sistemas</span></span></a>
+        <a class="nav-item active" href="subsanar-observaciones.html"><span><span class="lbl">Observaciones</span><span class="sub">Correcciones pendientes</span></span></a>
+    </nav>
+    <div class="sidebar-logout">
+        <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+    <div class="sidebar-footer">DIAGTI v2.0 · CTIC UNAS<br>Módulo de Desarrollo</div>
+</aside>
+
+<main class="main-content">
+    <div class="topbar">
+        <div><h2>Subsanar Observaciones</h2><div class="hint">Observaciones dirigidas únicamente al Área de Desarrollo</div></div>
+        <button class="btn btn-verde" id="btn-actualizar">Actualizar</button>
+    </div>
+
+    <section class="card">
+        <div class="section-head">
+            <div><h3>Sistemas observados</h3><div class="desc">Todos los integrantes del área pueden consultar la información; la trazabilidad conserva al usuario responsable.</div></div>
+        </div>
+        <div class="table-wrap" id="lista-observados"></div>
+    </section>
+
+    <section id="detalle-subsanacion" class="detalle-subsanacion"></section>
+</main>
+
+<script src="../js/config.js"></script>
+<script src="../../../shared/js/flujo-validacion.js?v=15"></script>
+<script src="../js/subsanar-observaciones.js?v=13"></script>
+</body>
+</html>
