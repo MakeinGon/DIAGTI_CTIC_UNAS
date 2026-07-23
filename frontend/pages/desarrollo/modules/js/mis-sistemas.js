@@ -3,23 +3,28 @@
 // ============================================================
 
 // ============================================================
-// DATOS MOCK (localStorage)
+// DATOS DESDE BACKEND OFICIAL (tabla sistemas)
 // ============================================================
 const SISTEMAS_KEY = 'diagti_sistemas';
+let sistemasCacheBackend = [];
 
 function getSistemas() {
-    const stored = localStorage.getItem(SISTEMAS_KEY);
-    if (stored) {
-        try {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                return parsed;
-            }
-        } catch (e) {
-            console.log('Error al parsear datos, creando nuevos...');
-        }
-    }
+    return Array.isArray(sistemasCacheBackend) ? sistemasCacheBackend : [];
+}
 
+async function cargarSistemasDesdeBackend() {
+    try {
+        sistemasCacheBackend = await diagtiFetchSistemas();
+        localStorage.setItem(SISTEMAS_KEY, JSON.stringify(sistemasCacheBackend));
+    } catch (error) {
+        console.error('Error cargando sistemas:', error);
+        sistemasCacheBackend = [];
+        alert('No se pudieron cargar los sistemas desde el servidor.');
+    }
+    return sistemasCacheBackend;
+}
+
+/* MOCK LEGACY DESHABILITADO — se conserva bloque comentado para referencia
     const initial = [
         {
             id: 'SIS001',
@@ -159,13 +164,11 @@ function getSistemas() {
             estado_operativo: 'En Desarrollo'
         }
     ];
+    MOCK LEGACY END */
 
-    localStorage.setItem(SISTEMAS_KEY, JSON.stringify(initial));
-    return initial;
-}
-
-function guardarSistemas(sistemas) {
-    localStorage.setItem(SISTEMAS_KEY, JSON.stringify(sistemas));
+function guardarSistemas(lista) {
+    sistemasCacheBackend = Array.isArray(lista) ? lista : [];
+    localStorage.setItem(SISTEMAS_KEY, JSON.stringify(sistemasCacheBackend));
 }
 
 // ============================================================
@@ -182,7 +185,7 @@ function cerrarSesion() {
 // ============================================================
 // VARIABLES GLOBALES
 // ============================================================
-let sistemas = getSistemas();
+let sistemas = [];
 let sistemaEnEdicion = null;
 let modoModal = 'registrar';
 let tabActual = 0;
@@ -1672,7 +1675,8 @@ function poblarSelectResponsables() {
 // ============================================================
 // INICIALIZACIÓN
 // ============================================================
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
+    await cargarSistemasDesdeBackend();
     sistemas = getSistemas();
     renderizarTabla();
 
@@ -1696,48 +1700,41 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // ============================================================
-    // LECTURA DE PARÁMETROS DE URL (desde Dashboard)
-    // ============================================================
     const urlParams = new URLSearchParams(window.location.search);
     const action = urlParams.get('action');
     const id = urlParams.get('id');
 
     if (action && id) {
-        const sistema = sistemas.find(s => s.id === id);
+        const sistema = sistemas.find(s => String(s.id) === String(id));
         if (sistema) {
             if (action === 'editar') {
-                // Abrir modal en modo edición
                 editarSistema(id);
             } else if (action === 'enviar') {
-                // Abrir modal en modo edición y cambiar a la pestaña de Resumen
                 editarSistema(id);
-                // Esperar a que el modal se renderice para cambiar de pestaña
                 setTimeout(function () {
-                    cambiarTab(7); // Índice 7 = Resumen
+                    cambiarTab(7);
                 }, 150);
             } else if (action === 'corregir') {
-                // Abrir modal en modo corregir
                 corregirSistema(id);
             }
         }
     }
 
-    // Cargar los responsables en el select
     poblarSelectResponsables();
-    // ============================================================
-    // ENVIAR A VALIDACIÓN DIRECTAMENTE DESDE LA TABLA
-    // ============================================================
-    window.enviarAValidacionDirecto = function (id) {
-        if (confirm('¿Estás seguro de que deseas enviar este sistema a validación técnica? Ya no podrás editarlo.')) {
-            const index = sistemas.findIndex(s => s.id === id);
-            if (index !== -1) {
-                sistemas[index].estado = 'Enviado';
-                guardarSistemas(sistemas);
-                alert('✅ El sistema ha sido enviado a revisión técnica correctamente.');
-                sistemas = getSistemas();
-                renderizarTabla();
-            }
+
+    window.enviarAValidacionDirecto = async function (id) {
+        if (!confirm('¿Estás seguro de que deseas enviar este sistema a validación técnica? Ya no podrás editarlo.')) {
+            return;
         }
-    }
+        try {
+            await diagtiEnviarValidacion(id);
+            await cargarSistemasDesdeBackend();
+            sistemas = getSistemas();
+            alert('✅ El sistema ha sido enviado a revisión técnica correctamente.');
+            renderizarTabla();
+        } catch (error) {
+            console.error(error);
+            alert('❌ No se pudo enviar a validación: ' + (error.message || error));
+        }
+    };
 });

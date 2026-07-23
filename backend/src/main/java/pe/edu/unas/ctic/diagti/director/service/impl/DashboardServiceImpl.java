@@ -2,21 +2,25 @@ package pe.edu.unas.ctic.diagti.director.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
-import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
+import pe.edu.unas.ctic.diagti.administrador.entity.AuditoriaEntity;
+import pe.edu.unas.ctic.diagti.administrador.repository.AuditoriaRepository;
 import pe.edu.unas.ctic.diagti.director.dto.*;
+import pe.edu.unas.ctic.diagti.director.entity.InfraestructuraEntity;
+import pe.edu.unas.ctic.diagti.director.entity.ObservacionEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.mapper.SistemaMapper;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorInfraestructuraRepository;
 import pe.edu.unas.ctic.diagti.director.repository.DirectorSistemaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.ObservacionRepository;
 import pe.edu.unas.ctic.diagti.director.service.DashboardService;
-import pe.edu.unas.ctic.diagti.director.specification.SistemaSpecification;
+import pe.edu.unas.ctic.diagti.director.support.DirectorCatalogHelper;
+import pe.edu.unas.ctic.diagti.director.support.DirectorEstados;
+import pe.edu.unas.ctic.diagti.director.support.DirectorTexto;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,100 +28,108 @@ import java.util.stream.Collectors;
 public class DashboardServiceImpl implements DashboardService {
 
     private final DirectorSistemaRepository sistemaRepository;
+    private final ObservacionRepository observacionRepository;
+    private final DirectorInfraestructuraRepository infraestructuraRepository;
+    private final AuditoriaRepository auditoriaRepository;
     private final SistemaMapper sistemaMapper;
-    private final CatalogoRepository catalogoRepository;
+    private final DirectorCatalogHelper catalogHelper;
 
+    private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     private static final Map<String, String> CRITICIDAD_COLORS = Map.of(
-            "critica", "#cf2d35",
             "alta", "#e49a18",
             "media", "#4f7fa4",
             "baja", "#1abb9c",
-            // Colores para los niveles del catálogo de criticidad
-            "academico", "#cf2d35",
-            "financiero", "#e49a18",
-            "rrhh", "#4f7fa4",
-            "administrativo", "#1abb9c",
-            "misional", "#8b5cf6",
-            "estrategico", "#f59e0b"
+            "critica", "#cf2d35",
+            "no-especificada", "#94a3b8"
     );
-
-    /**
-     * Obtiene el nombre del área desde el catálogo usando el id_area_usuario
-     */
-    private String getAreaNombre(SistemaEntity sistema) {
-        if (sistema == null || sistema.getIdAreaUsuario() == null) {
-            return "No especificada";
-        }
-        try {
-            return catalogoRepository.findById(sistema.getIdAreaUsuario())
-                    .map(CatalogoEntity::getValor)
-                    .orElse("No especificada");
-        } catch (Exception e) {
-            return "No especificada";
-        }
-    }
-
-    /**
-     * Obtiene el nombre de la criticidad desde el catálogo usando el id_criticidad
-     * NOTA: Esto devuelve "Académico", "Financiero", "RRHH", etc.
-     */
-    private String getCriticidadNombre(SistemaEntity sistema) {
-        if (sistema == null || sistema.getIdCriticidad() == null) {
-            return "No especificada";
-        }
-        try {
-            return catalogoRepository.findById(sistema.getIdCriticidad())
-                    .map(CatalogoEntity::getValor)
-                    .orElse("No especificada");
-        } catch (Exception e) {
-            return "No especificada";
-        }
-    }
 
     @Override
     @Transactional(readOnly = true)
     public DashboardKpiDTO obtenerKpis() {
-        List<SistemaEntity> todos = sistemaRepository.findAll();
-        todos.forEach(s -> {
-            Hibernate.initialize(s.getValidaciones());
-            Hibernate.initialize(s.getObservaciones());
-        });
-        
+        List<SistemaEntity> sistemas = cargarSistemasActivos();
         DashboardKpiDTO kpi = new DashboardKpiDTO();
-        kpi.setTotalSistemas(todos.size());
-        
-        long validados = todos.stream().filter(s -> "VALIDADO".equalsIgnoreCase(s.getEstadoValidacion())).count();
-        long observados = todos.stream().filter(s -> "OBSERVADO".equalsIgnoreCase(s.getEstadoValidacion())).count();
-        long pendientes = todos.size() - validados - observados;
-        
-        kpi.setValidados((int) validados);
-        kpi.setObservados((int) observados);
-        kpi.setPendientes((int) pendientes);
+        kpi.setTotalSistemas(sistemas.size());
+
+        int validados = 0, observados = 0, pendientes = 0, enValidacion = 0, borrador = 0, subsanados = 0;
+        for (SistemaEntity s : sistemas) {
+            String estado = DirectorEstados.normalizarEstadoSistema(s.getEstadoValidacion());
+            switch (estado) {
+                case DirectorEstados.VALIDADO -> validados++;
+                case DirectorEstados.OBSERVADO -> observados++;
+                case DirectorEstados.EN_VALIDACION, DirectorEstados.ENVIADO -> enValidacion++;
+                case DirectorEstados.BORRADOR -> borrador++;
+                case DirectorEstados.SUBSANADO -> subsanados++;
+                default -> pendientes++;
+            }
+        }
+        // "pendientes" del frontend: todo lo no validado/observado
+        pendientes = sistemas.size() - validados - observados;
+
+        kpi.setValidados(validados);
+        kpi.setObservados(observados);
+        kpi.setPendientes(Math.max(pendientes, 0));
+        kpi.setEnValidacion(enValidacion);
+        kpi.setBorrador(borrador);
+        kpi.setSubsanados(subsanados);
+
+        List<Long> ids = sistemas.stream().map(SistemaEntity::getIdSistema).toList();
+        List<ObservacionEntity> observaciones = ids.isEmpty()
+                ? List.of()
+                : observacionRepository.findByIdSistemaIn(ids);
+
+        int obsPend = 0, obsRev = 0, obsAten = 0, obsVal = 0, obsInfra = 0;
+        Set<Long> sistemasConObsAbiertas = new HashSet<>();
+        for (ObservacionEntity o : observaciones) {
+            String est = DirectorEstados.normalizarEstadoObservacion(o.getEstadoObservacion());
+            if (DirectorEstados.OBS_PENDIENTE.equals(est)) {
+                obsPend++;
+                sistemasConObsAbiertas.add(o.getIdSistema());
+            } else if (DirectorEstados.OBS_EN_REVISION.equals(est)) {
+                obsRev++;
+                sistemasConObsAbiertas.add(o.getIdSistema());
+            } else if (DirectorEstados.OBS_ATENDIDA.equals(est) || DirectorEstados.OBS_APROBADA.equals(est)) {
+                obsAten++;
+            }
+            String origen = DirectorEstados.origenDesdeDescripcion(o.getDescripcion());
+            if (DirectorEstados.ORIGEN_VALIDACION.equals(origen)) {
+                obsVal++;
+            } else if (DirectorEstados.ORIGEN_INFRAESTRUCTURA.equals(origen)) {
+                obsInfra++;
+            }
+        }
+        kpi.setObservacionesPendientes(obsPend);
+        kpi.setObservacionesEnRevision(obsRev);
+        kpi.setObservacionesAtendidas(obsAten);
+        kpi.setObservacionesValidacion(obsVal);
+        kpi.setObservacionesInfraestructura(obsInfra);
+        kpi.setSistemasConRiesgo((int) sistemas.stream()
+                .filter(s -> sistemasConObsAbiertas.contains(s.getIdSistema())
+                        || DirectorEstados.OBSERVADO.equals(DirectorEstados.normalizarEstadoSistema(s.getEstadoValidacion()))
+                        || Boolean.TRUE.equals(s.getEsLegacy()))
+                .count());
         return kpi;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ResumenValidacionDTO> obtenerResumenValidacion() {
-        List<SistemaEntity> todos = sistemaRepository.findAll();
-        todos.forEach(s -> Hibernate.initialize(s.getValidaciones()));
-        
-        Map<String, Long> counts = todos.stream()
+        List<SistemaEntity> sistemas = cargarSistemasActivos();
+        Map<String, Long> counts = sistemas.stream()
                 .collect(Collectors.groupingBy(
-                        s -> s.getEstadoValidacion().toLowerCase(),
-                        Collectors.counting()
-                ));
-        
+                        s -> DirectorEstados.normalizarEstadoSistema(s.getEstadoValidacion()).toLowerCase(),
+                        Collectors.counting()));
+
         return counts.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
                 .map(e -> {
                     ResumenValidacionDTO dto = new ResumenValidacionDTO();
                     dto.setEstado(e.getKey());
                     dto.setCantidad(e.getValue().intValue());
-                    switch (e.getKey()) {
-                        case "validado": dto.setColor("#1abb9c"); break;
-                        case "observado": dto.setColor("#e7a52d"); break;
-                        default: dto.setColor("#5f88a8");
-                    }
+                    dto.setColor(switch (e.getKey()) {
+                        case "validado" -> "#1abb9c";
+                        case "observado" -> "#e7a52d";
+                        default -> "#5f88a8";
+                    });
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -126,23 +138,21 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional(readOnly = true)
     public List<CriticidadDTO> obtenerCriticidades() {
-        List<SistemaEntity> todos = sistemaRepository.findAll();
-        
-        // IMPORTANTE: Usar getCriticidadNombre() que consulta el catálogo de criticidades reales
-        Map<String, Long> counts = todos.stream()
-                .collect(Collectors.groupingBy(
-                        s -> getCriticidadNombre(s).toLowerCase(),
-                        Collectors.counting()
-                ));
-        
-        // Asegurar que todas las categorías de criticidad estén presentes
-        List<String> todasCriticidades = Arrays.asList("academico", "financiero", "rrhh", "administrativo", "misional", "estrategico");
-        for (String nivel : todasCriticidades) {
-            counts.putIfAbsent(nivel, 0L);
+        List<SistemaEntity> sistemas = cargarSistemasActivos();
+        Map<String, Long> counts = new LinkedHashMap<>();
+        counts.put("alta", 0L);
+        counts.put("media", 0L);
+        counts.put("baja", 0L);
+
+        for (SistemaEntity s : sistemas) {
+            String key = DirectorTexto.normalize(catalogHelper.valorCatalogo(s.getIdCriticidad()));
+            if (!counts.containsKey(key)) {
+                counts.put(key, 0L);
+            }
+            counts.put(key, counts.get(key) + 1);
         }
-        
+
         return counts.entrySet().stream()
-                .filter(e -> e.getValue() > 0) // Solo mostrar las que tienen al menos 1
                 .map(e -> {
                     CriticidadDTO dto = new CriticidadDTO();
                     dto.setNivel(e.getKey());
@@ -156,41 +166,90 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional(readOnly = true)
     public List<SistemaResumenDTO> obtenerSistemasFiltrados(String area, String criticidad, String validacion, String busqueda) {
-        Specification<SistemaEntity> spec = (root, query, cb) -> cb.conjunction();
-        
-        if (busqueda != null && !busqueda.isEmpty()) {
-            spec = spec.and(SistemaSpecification.search(busqueda));
+        List<SistemaEntity> sistemas = cargarSistemasActivos();
+
+        return sistemas.stream()
+                .filter(s -> DirectorTexto.matchesFilter(area, catalogHelper.valorCatalogo(s.getIdAreaUsuario())))
+                .filter(s -> DirectorTexto.matchesFilter(criticidad, catalogHelper.valorCatalogo(s.getIdCriticidad())))
+                .filter(s -> DirectorTexto.matchesFilter(validacion, s.getEstadoValidacion()))
+                .filter(s -> {
+                    if (busqueda == null || busqueda.isBlank()) {
+                        return true;
+                    }
+                    String q = DirectorTexto.normalize(busqueda);
+                    return DirectorTexto.normalize(s.getCodigoUnico()).contains(q)
+                            || DirectorTexto.normalize(s.getNombre()).contains(q);
+                })
+                .map(s -> {
+                    List<InfraestructuraEntity> infra = infraestructuraRepository.findByIdSistema(s.getIdSistema());
+                    return sistemaMapper.toResumenDTO(s, infra);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ActividadRecienteDTO> obtenerActividadReciente() {
+        List<AuditoriaEntity> rows = auditoriaRepository.findTop100ByOrderByFechaEventoDesc();
+        if (rows == null || rows.isEmpty()) {
+            return List.of();
         }
-        
-        List<SistemaEntity> sistemas = sistemaRepository.findAll(spec);
+        return rows.stream().limit(20).map(a -> {
+            ActividadRecienteDTO dto = new ActividadRecienteDTO();
+            dto.setId(a.getIdAuditoria());
+            dto.setModulo(DirectorTexto.safe(a.getModulo()));
+            dto.setAccion(DirectorTexto.safe(a.getAccion()));
+            dto.setDescripcion(DirectorTexto.safe(a.getDescripcion()));
+            dto.setFecha(a.getFechaEvento() == null ? null : a.getFechaEvento().format(ISO));
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ObservacionConsolidadaDTO> obtenerObservacionesConsolidadas(String origen, String estado) {
+        List<SistemaEntity> sistemas = cargarSistemasActivos();
+        Map<Long, SistemaEntity> byId = sistemas.stream()
+                .collect(Collectors.toMap(SistemaEntity::getIdSistema, s -> s, (a, b) -> a));
+        List<Long> ids = new ArrayList<>(byId.keySet());
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        return observacionRepository.findByIdSistemaIn(ids).stream()
+                .filter(o -> {
+                    String oOrigen = DirectorEstados.origenDesdeDescripcion(o.getDescripcion());
+                    return DirectorTexto.matchesFilter(origen, oOrigen);
+                })
+                .filter(o -> DirectorTexto.matchesFilter(estado, o.getEstadoObservacion()))
+                .map(o -> toObservacionDTO(o, byId.get(o.getIdSistema())))
+                .collect(Collectors.toList());
+    }
+
+    private ObservacionConsolidadaDTO toObservacionDTO(ObservacionEntity o, SistemaEntity s) {
+        ObservacionConsolidadaDTO dto = new ObservacionConsolidadaDTO();
+        dto.setObservacionId(o.getIdObservacion());
+        dto.setSistemaId(o.getIdSistema());
+        dto.setCodigoSistema(s != null ? s.getCodigoUnico() : "");
+        dto.setNombreSistema(s != null ? s.getNombre() : "");
+        dto.setDescripcion(DirectorTexto.safe(o.getDescripcion()));
+        dto.setOrigen(DirectorEstados.origenDesdeDescripcion(o.getDescripcion()));
+        dto.setEstado(DirectorEstados.normalizarEstadoObservacion(o.getEstadoObservacion()));
+        dto.setFecha(o.getFechaObservacion() == null ? null : o.getFechaObservacion().format(ISO));
+        dto.setRespuestaSubsanacion(DirectorTexto.safe(o.getRespuestaSubsanacion()));
+        dto.setResultadoRevision(DirectorEstados.normalizarEstadoObservacion(o.getEstadoObservacion()));
+        return dto;
+    }
+
+    private List<SistemaEntity> cargarSistemasActivos() {
+        List<SistemaEntity> sistemas = sistemaRepository.findAllActivos();
+        if (sistemas == null) {
+            return List.of();
+        }
         sistemas.forEach(s -> {
             Hibernate.initialize(s.getValidaciones());
             Hibernate.initialize(s.getObservaciones());
         });
-        
-        // Filtrar por área en memoria
-        if (area != null && !area.isEmpty() && !"all".equals(area)) {
-            sistemas = sistemas.stream()
-                    .filter(s -> area.equalsIgnoreCase(getAreaNombre(s)))
-                    .collect(Collectors.toList());
-        }
-        
-        // Filtrar por criticidad en memoria (usando el nombre real de la criticidad)
-        if (criticidad != null && !criticidad.isEmpty() && !"all".equals(criticidad)) {
-            sistemas = sistemas.stream()
-                    .filter(s -> criticidad.equalsIgnoreCase(getCriticidadNombre(s)))
-                    .collect(Collectors.toList());
-        }
-        
-        // Filtrar por validación en memoria
-        if (validacion != null && !validacion.isEmpty() && !"all".equals(validacion)) {
-            sistemas = sistemas.stream()
-                    .filter(s -> validacion.equalsIgnoreCase(s.getEstadoValidacion()))
-                    .collect(Collectors.toList());
-        }
-        
-        return sistemas.stream()
-                .map(sistemaMapper::toResumenDTO)
-                .collect(Collectors.toList());
+        return sistemas;
     }
 }

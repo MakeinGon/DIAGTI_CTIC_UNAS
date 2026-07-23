@@ -10,87 +10,21 @@ function cerrarSesion() {
     }
 }
 
+let sistemasDashboardCache = [];
+
 function getSistemas() {
-    const stored = localStorage.getItem('diagti_sistemas');
-    if (stored) {
-        try {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        } catch (e) { }
+    return Array.isArray(sistemasDashboardCache) ? sistemasDashboardCache : [];
+}
+
+async function cargarSistemasDesdeBackend() {
+    try {
+        sistemasDashboardCache = await diagtiFetchSistemas();
+    } catch (error) {
+        console.error('Error cargando sistemas del backend:', error);
+        sistemasDashboardCache = [];
+        alert('No se pudieron cargar los sistemas desde el servidor.');
     }
-    return [
-        {
-            id: 'SIS001',
-            codigo: 'SIS001',
-            nombre: 'Sistema Académico',
-            tipo: 'Web',
-            estado: 'Validado',
-            criticidad: 'Media',
-            fecha: '08/07/2026',
-            area: 'Académico',
-            responsable_tecnico: 'Ing. María Gómez',
-            observaciones_validador: [],
-            arquitectura: 'MVC',
-            motor_bd: 'PostgreSQL',
-            evidencias: [{ tipo: 'Manual', nombre: 'manual.pdf' }],
-            urls: [{ desc: 'Git', url: 'https://github.com' }],
-            tiene_integraciones: true
-        },
-        {
-            id: 'SIS002',
-            codigo: 'SIS002',
-            nombre: 'Sistema Biblioteca',
-            tipo: 'Web',
-            estado: 'Observado',
-            criticidad: 'Alta',
-            fecha: '05/07/2026',
-            area: 'Biblioteca',
-            responsable_tecnico: 'Ing. Luis Torres',
-            observaciones_validador: [
-                { campo: 'motor_bd', mensaje: 'Debe indicar versión PostgreSQL.' },
-                { campo: 'repositorio', mensaje: 'Debe indicar repositorio Git.' }
-            ],
-            arquitectura: 'Microservicios',
-            motor_bd: 'MySQL',
-            evidencias: [],
-            urls: [],
-            tiene_integraciones: false
-        },
-        {
-            id: 'SIS003',
-            codigo: 'SIS003',
-            nombre: 'Sistema Finanzas',
-            tipo: 'Desktop',
-            estado: 'Borrador',
-            criticidad: 'Crítica',
-            fecha: '03/07/2026',
-            area: 'Finanzas',
-            responsable_tecnico: 'Ing. Pedro Ramírez',
-            observaciones_validador: [],
-            arquitectura: '',
-            motor_bd: '',
-            evidencias: [],
-            urls: [],
-            tiene_integraciones: false
-        },
-        {
-            id: 'SIS004',
-            codigo: 'SIS004',
-            nombre: 'SV',
-            tipo: 'Web',
-            estado: 'Borrador',
-            criticidad: 'Baja',
-            fecha: '13/07/2026',
-            area: 'Investigación',
-            responsable_tecnico: 'Ing. Carlos Ruiz',
-            observaciones_validador: [],
-            arquitectura: '',
-            motor_bd: '',
-            evidencias: [],
-            urls: [],
-            tiene_integraciones: false
-        }
-    ];
+    return sistemasDashboardCache;
 }
 
 function calcularPorcentaje(sistema) {
@@ -138,7 +72,7 @@ function renderDashboard() {
     if (borradores > 0) mensajes.push(`• ${borradores} borrador${borradores > 1 ? 'es' : ''}`);
     if (mensajes.length === 0) mensajes.push('• ¡Todo al día! 🎉');
 
-    document.getElementById('greeting-message').textContent = `${saludo}, Desarrollador Demo. 👋`;
+    document.getElementById('greeting-message').textContent = `${saludo}, ${diagtiNombreSesion()}. 👋`;
     document.getElementById('greeting-submessage').textContent = `📌 Tienes: ${mensajes.join(' ')}`;
 
     const greetingAction = document.getElementById('greeting-action');
@@ -338,7 +272,8 @@ function renderActividadReciente(sistemas) {
     container.innerHTML = html;
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
+    await cargarSistemasDesdeBackend();
     renderDashboard();
     document.querySelectorAll('.nav-item').forEach(item => {
         if (item.getAttribute('href') === 'dashboard.html') item.classList.add('active');

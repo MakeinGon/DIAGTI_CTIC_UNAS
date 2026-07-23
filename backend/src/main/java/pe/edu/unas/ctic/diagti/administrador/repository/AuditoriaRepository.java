@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface AuditoriaRepository extends JpaRepository<AuditoriaEntity, Long> {
     List<AuditoriaEntity> findTop100ByOrderByFechaEventoDesc();
+
+    List<AuditoriaEntity> findTop200ByModuloIgnoreCaseOrderByFechaEventoDesc(String modulo);
     
     @Query("SELECT COUNT(a) FROM AuditoriaEntity a")
     long countTotal();

@@ -307,14 +307,23 @@ async function enviarObservacion(event) {
     const area = obtenerArea();
 
     // Preparar payload
+    let username = null;
+    try {
+        const session = JSON.parse(localStorage.getItem('diagti_session') || '{}');
+        username = session.username || null;
+    } catch (_) { /* ignore */ }
+
     const payload = {
         titulo: titulo,
         descripcion: detalle,
+        detalle: detalle,
         sistema: sistemaNombre,
-        sistemaId: obtenerIdSistema(),
+        sistemaId: Number(obtenerIdSistema()),
+        idSistema: Number(obtenerIdSistema()),
         area: area,
+        username: username,
         fechaRegistro: new Date().toISOString(),
-        estado: 'Pendiente'
+        estado: 'PENDIENTE'
     };
 
     // Mostrar estado de carga

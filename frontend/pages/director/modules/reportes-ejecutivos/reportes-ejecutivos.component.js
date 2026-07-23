@@ -53,7 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
     /* ============================================================
        CONFIGURACIÓN DE API
     ============================================================ */
-    const API_BASE = "http://localhost:8080/api/director/reportes";
+    const API_BASE = (typeof DIAGTI_DIRECTOR_API !== "undefined")
+        ? DIAGTI_DIRECTOR_API.reportes
+        : "/api/director/reportes";
 
     /* ============================================================
        FUNCIONES AUXILIARES
@@ -497,7 +499,26 @@ document.addEventListener('DOMContentLoaded', function() {
     ============================================================ */
     form.addEventListener("submit", (event) => {
         event.preventDefault();
-        applyFilters();
+        // Recargar desde backend con filtros actuales y luego aplicar filtros cliente.
+        Promise.all([
+            fetch(`${API_BASE}/inventario?area=${encodeURIComponent(areaFilter.value || '')}&criticidad=${encodeURIComponent(criticalityFilter.value || '')}`)
+                .then((r) => (r.ok ? r.json() : Promise.reject(r))),
+            fetch(`${API_BASE}/riesgos?area=${encodeURIComponent(areaFilter.value || '')}&criticidad=${encodeURIComponent(criticalityFilter.value || '')}`)
+                .then((r) => (r.ok ? r.json() : Promise.reject(r))),
+            fetch(`${API_BASE}/validacion?area=${encodeURIComponent(areaFilter.value || '')}&estado=${encodeURIComponent(validationStatusFilter.value || '')}`)
+                .then((r) => (r.ok ? r.json() : Promise.reject(r))),
+            fetch(`${API_BASE}/catalogos/areas`).then((r) => (r.ok ? r.json() : Promise.reject(r)))
+        ])
+            .then(([inventario, riesgos, validacion, areas]) => {
+                pintarInventario(inventario || [], { areas });
+                pintarRiesgos(riesgos || []);
+                pintarValidacion(validacion || []);
+                applyFilters();
+            })
+            .catch((error) => {
+                console.error("Error recargando reportes:", error);
+                applyFilters();
+            });
     });
 
     form.addEventListener("reset", () => {
@@ -526,6 +547,9 @@ document.addEventListener('DOMContentLoaded', function() {
     /* ============================================================
        INICIALIZACIÓN
     ============================================================ */
+    if (typeof diagtiDirectorAplicarPerfil === "function") {
+        diagtiDirectorAplicarPerfil();
+    }
     cargarReportes();
 
 })();

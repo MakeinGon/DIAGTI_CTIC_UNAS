@@ -10,21 +10,18 @@ import pe.edu.unas.ctic.diagti.director.dto.ReporteRiesgoDTO;
 import pe.edu.unas.ctic.diagti.director.dto.ReporteValidacionDTO;
 import pe.edu.unas.ctic.diagti.director.service.ReportesService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/director/reportes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ReportesController {
 
     private final ReportesService reportesService;
     private final CatalogoRepository catalogoRepository;
 
-    // ============================================
-    // ENDPOINTS DE REPORTES
-    // ============================================
     @GetMapping("/inventario")
     public List<ReporteInventarioDTO> getInventario(
             @RequestParam(required = false) String area,
@@ -47,47 +44,67 @@ public class ReportesController {
         return reportesService.obtenerRiesgos(area, criticidad);
     }
 
-    // ============================================
-    // ENDPOINTS DE CATÁLOGOS PARA FILTROS
-    // ============================================
     @GetMapping("/catalogos/areas")
     public List<CatalogoDTO> getAreasUsuarias() {
-        return catalogoRepository
-                .findByTipoCatalogoAndEstadoTrueOrderByOrdenAsc("AREA_USUARIA")
-                .stream().map(this::toDTO).collect(Collectors.toList());
+        List<CatalogoDTO> areas = cargarCatalogo("AREA_USUARIO");
+        if (!areas.isEmpty()) {
+            return areas;
+        }
+        // Compatibilidad temporal con tipografía incorrecta previa
+        return cargarCatalogo("AREA_USUARIA");
     }
 
     @GetMapping("/catalogos/criticidades")
     public List<CatalogoDTO> getCriticidades() {
-        return catalogoRepository
-                .findByTipoCatalogoAndEstadoTrueOrderByOrdenAsc("CRITICIDAD")
-                .stream().map(this::toDTO).collect(Collectors.toList());
+        return cargarCatalogo("CRITICIDAD");
     }
 
     @GetMapping("/catalogos/tipos")
     public List<CatalogoDTO> getTiposAplicativo() {
-        return catalogoRepository
-                .findByTipoCatalogoAndEstadoTrueOrderByOrdenAsc("TIPO_APLICATIVO")
-                .stream().map(this::toDTO).collect(Collectors.toList());
+        return cargarCatalogo("TIPO_APLICATIVO");
     }
 
     @GetMapping("/catalogos/riesgos")
     public List<CatalogoDTO> getNivelesRiesgo() {
-        return catalogoRepository
-                .findByTipoCatalogoAndEstadoTrueOrderByOrdenAsc("NIVEL_RIESGO")
-                .stream().map(this::toDTO).collect(Collectors.toList());
+        List<CatalogoDTO> fromDb = cargarCatalogo("NIVEL_RIESGO");
+        if (!fromDb.isEmpty()) {
+            return fromDb;
+        }
+        return nivelesRiesgoEstaticos();
     }
 
     @GetMapping("/catalogos/estados-validacion")
     public List<CatalogoDTO> getEstadosValidacion() {
-        return catalogoRepository
-                .findByTipoCatalogoAndEstadoTrueOrderByOrdenAsc("ESTADO_LEVANTAMIENTO")
-                .stream().map(this::toDTO).collect(Collectors.toList());
+        // Estados oficiales del flujo (no dependen de catálogo ESTADO_LEVANTAMIENTO).
+        List<CatalogoDTO> list = new ArrayList<>();
+        list.add(estatico("BORRADOR", "Borrador", 1));
+        list.add(estatico("PENDIENTE", "Pendiente", 2));
+        list.add(estatico("ENVIADO", "Enviado", 3));
+        list.add(estatico("EN_VALIDACION", "En validación", 4));
+        list.add(estatico("OBSERVADO", "Observado", 5));
+        list.add(estatico("SUBSANADO", "Subsanado", 6));
+        list.add(estatico("VALIDADO", "Validado", 7));
+        list.add(estatico("RECHAZADO", "Rechazado", 8));
+        return list;
     }
 
-    // ============================================
-    // MÉTODO AUXILIAR
-    // ============================================
+    private List<CatalogoDTO> cargarCatalogo(String tipo) {
+        List<CatalogoEntity> activos = catalogoRepository
+                .findByTipoCatalogoAndEstadoTrueOrderByOrdenAsc(tipo);
+        if (activos != null && !activos.isEmpty()) {
+            return activos.stream().map(this::toDTO).collect(Collectors.toList());
+        }
+        // Fallback: incluye filas con estado null (datos legacy / seed parcial)
+        List<CatalogoEntity> todos = catalogoRepository.findByTipoCatalogoOrderByOrdenAsc(tipo);
+        if (todos == null || todos.isEmpty()) {
+            return List.of();
+        }
+        return todos.stream()
+                .filter(c -> c.getEstado() == null || Boolean.TRUE.equals(c.getEstado()))
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
     private CatalogoDTO toDTO(CatalogoEntity entity) {
         CatalogoDTO dto = new CatalogoDTO();
         dto.setId(entity.getIdCatalogo());
@@ -95,8 +112,29 @@ public class ReportesController {
         dto.setCodigo(entity.getCodigo());
         dto.setValor(entity.getValor());
         dto.setDescripcion(entity.getDescripcion());
-        dto.setEstado(entity.getEstado());
+        dto.setEstado(entity.getEstado() == null || Boolean.TRUE.equals(entity.getEstado()));
         dto.setOrden(entity.getOrden());
+        return dto;
+    }
+
+    private List<CatalogoDTO> nivelesRiesgoEstaticos() {
+        List<CatalogoDTO> list = new ArrayList<>();
+        list.add(estatico("BAJO", "Bajo", 1));
+        list.add(estatico("MEDIO", "Medio", 2));
+        list.add(estatico("ALTO", "Alto", 3));
+        list.add(estatico("CRITICO", "Crítico", 4));
+        return list;
+    }
+
+    private CatalogoDTO estatico(String codigo, String valor, int orden) {
+        CatalogoDTO dto = new CatalogoDTO();
+        dto.setId(null);
+        dto.setTipoCatalogo("ESTADO_FLUJO");
+        dto.setCodigo(codigo);
+        dto.setValor(valor);
+        dto.setDescripcion(valor);
+        dto.setEstado(true);
+        dto.setOrden(orden);
         return dto;
     }
 }

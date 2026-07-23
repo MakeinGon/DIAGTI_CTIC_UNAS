@@ -1,397 +1,239 @@
-// validar-infraestructura.js
-
-console.log('🚀 Cargando validar-infraestructura.js...');
-
-// ============================================
-// 1. OBTENER ID DEL SISTEMA DESDE LA URL
-// ============================================
+// validar-infraestructura.js — API real (mismo sistema_id oficial)
 
 function obtenerIdSistema() {
     const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
-    return id || 1;
+    const id = urlParams.get('id') || urlParams.get('sistemaId');
+    return id ? String(id) : null;
 }
 
-// ============================================
-// 2. DATOS DE EJEMPLO (SIMULACIÓN DE API)
-// ============================================
-
-const sistemasInfraestructuraData = {
-    1: {
-        id: 1,
-        nombre: 'Sistema Académico UNAS',
-        responsable: 'Ing. Carlos Ruiz',
-        estado: 'Pendiente',
-        fechaEnvio: '2026-07-08',
-        sistemaOperativo: 'Ubuntu Server 22.04 LTS',
-        versionSO: '22.04.3',
-        autenticacion: 'LDAP + MFA',
-        cifrado: 'AES-256',
-        tipoBD: 'PostgreSQL',
-        versionBD: '15.2',
-        servidor: 'Tomcat 10.1'
-    },
-    2: {
-        id: 2,
-        nombre: 'Sistema Financiero',
-        responsable: 'Ing. María Gómez',
-        estado: 'Pendiente',
-        fechaEnvio: '2026-07-07',
-        sistemaOperativo: 'Windows Server 2022',
-        versionSO: '2022',
-        autenticacion: 'Active Directory',
-        cifrado: 'SSL/TLS 1.3',
-        tipoBD: 'MySQL',
-        versionBD: '8.0.33',
-        servidor: 'IIS 10'
-    },
-    3: {
-        id: 3,
-        nombre: 'Portal Web Institucional',
-        responsable: 'Ing. Luis Martínez',
-        estado: 'Pendiente',
-        fechaEnvio: '2026-07-06',
-        sistemaOperativo: 'AlmaLinux 9',
-        versionSO: '9.2',
-        autenticacion: 'OAuth 2.0',
-        cifrado: 'AES-256 + TLS 1.3',
-        tipoBD: 'MongoDB',
-        versionBD: '6.0.5',
-        servidor: 'Node.js 20 + Nginx'
+function getSessionUsername() {
+    try {
+        const s = JSON.parse(localStorage.getItem('diagti_session') || 'null');
+        return s?.username || null;
+    } catch (_) {
+        return null;
     }
-};
-
-function getSistema(id) {
-    return sistemasInfraestructuraData[id] || sistemasInfraestructuraData[1];
 }
-
-// ============================================
-// 3. FUNCIONES AUXILIARES
-// ============================================
 
 function getBadgeClassEstado(estado) {
     const map = {
-        'Activo': 'success',
-        'Inactivo': 'danger',
-        'En Mantenimiento': 'warning',
-        'Pendiente': 'warning',
-        'Enviado para validación': 'warning',
-        'Aprobado': 'success',
-        'Observado': 'warning',
-        'Rechazado': 'danger'
+        Activo: 'success', Inactivo: 'danger', Pendiente: 'warning',
+        ENVIADO: 'warning', PENDIENTE: 'warning', VALIDADO: 'success',
+        Aprobado: 'success', Observado: 'warning', OBSERVADO: 'warning',
+        Rechazado: 'danger', RECHAZADO: 'danger'
     };
     return map[estado] || 'info';
 }
 
-// ============================================
-// 4. CARGAR DATOS DEL SISTEMA DESDE EL BACKEND
-// ============================================
+function esc(v = '') {
+    return String(v).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[c]));
+}
+
+async function fetchJson(url, options = {}) {
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            Accept: 'application/json',
+            ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+            ...(options.headers || {})
+        }
+    });
+    if (!response.ok) {
+        let msg = `Error HTTP ${response.status}`;
+        try {
+            const err = await response.json();
+            msg = err.message || err.error || msg;
+        } catch (_) { /* ignore */ }
+        throw new Error(msg);
+    }
+    return response.json();
+}
 
 async function cargarSistema() {
     const id = obtenerIdSistema();
-    
-    document.getElementById('titulo-sistema').textContent = '⏳ Cargando...';
+    const infoContainer = document.getElementById('info-infraestructura');
+    if (!id) {
+        document.getElementById('titulo-sistema').textContent = 'Sistema no especificado';
+        if (infoContainer) {
+            infoContainer.innerHTML = '<div class="info-row"><span class="value">Indique ?id=sistemaId en la URL.</span></div>';
+        }
+        return;
+    }
+
+    document.getElementById('titulo-sistema').textContent = 'Cargando...';
     document.getElementById('estado-actual').textContent = 'Cargando...';
     document.getElementById('fecha-envio').textContent = 'Cargando...';
     document.getElementById('responsable').textContent = 'Cargando...';
-    
-    const infoContainer = document.getElementById('info-infraestructura');
-    infoContainer.innerHTML = `
-        <div class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
-            <span>Cargando información...</span>
-        </div>
-    `;
+    if (infoContainer) {
+        infoContainer.innerHTML = '<div class="loading-spinner"><span>Cargando información...</span></div>';
+    }
 
     try {
-        const response = await fetch(`/api/validacion/sistema/${id}`, {
-            headers: { 'Content-Type': 'application/json' }
+        const [validacion, infra] = await Promise.all([
+            fetchJson(`/api/validacion/sistema/${id}`),
+            fetchJson(`/api/infraestructura/sistemas/${id}`)
+        ]);
+
+        const datos = infra.evaluacion?.datos || {};
+        const nombre = validacion.nombre || validacion.nombreSistema || infra.nombre || `Sistema #${id}`;
+        const estado = validacion.estadoValidacion || infra.estadoValidacion || infra.estadoSistemaUi || 'Pendiente';
+
+        document.getElementById('titulo-sistema').textContent = nombre;
+        document.getElementById('estado-actual').textContent = estado;
+        document.getElementById('fecha-envio').textContent = infra.fechaActualizacion
+            ? new Date(infra.fechaActualizacion).toLocaleDateString()
+            : (validacion.fechaCreacion ? new Date(validacion.fechaCreacion).toLocaleDateString() : '—');
+        document.getElementById('responsable').textContent = infra.responsableTecnico || validacion.responsableTecnico || '—';
+
+        const obsInfra = (infra.observaciones || []).filter(o => {
+            const area = (o.area || '').toUpperCase();
+            return area.includes('INFRA') || (o.descripcion || '').includes('[INFRAESTRUCTURA]');
         });
-
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        const validacion = await response.json();
-        console.log('✅ Datos de validación (infraestructura):', validacion);
-
-        // ✅ USAR DATOS DE VALIDACIÓN DIRECTAMENTE
-        const sistema = {
-            idSistema: validacion.idSistema,
-            nombre: validacion.nombreSistema || 'Sistema #' + id,
-            estadoValidacion: validacion.estadoValidacion || 'Pendiente',
-            fechaCreacion: validacion.fechaCreacion,
-            observacionGeneral: validacion.observacionGeneral || 'Sin observaciones'
-        };
-
-        document.getElementById('titulo-sistema').textContent = `📋 ${sistema.nombre}`;
-        document.getElementById('estado-actual').textContent = sistema.estadoValidacion;
-        document.getElementById('fecha-envio').textContent = sistema.fechaCreacion ? new Date(sistema.fechaCreacion).toLocaleDateString() : '--';
-        document.getElementById('responsable').textContent = validacion.nombreValidador || 'No asignado';
+        const obsHtml = obsInfra.length
+            ? `<ul>${obsInfra.map(o => `<li><strong>${esc(o.estadoObservacion || o.estado)}</strong> — ${esc(o.descripcion)}</li>`).join('')}</ul>`
+            : '<p>Sin observaciones de infraestructura.</p>';
 
         infoContainer.innerHTML = `
-            <div class="info-row">
-                <span class="label">ID Sistema</span>
-                <span class="value"><strong>${sistema.idSistema}</strong></span>
-            </div>
-            <div class="info-row">
-                <span class="label">Nombre</span>
-                <span class="value">${sistema.nombre}</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Estado Actual</span>
-                <span class="value"><span class="badge ${getBadgeClassEstado(sistema.estadoValidacion)}">${sistema.estadoValidacion}</span></span>
-            </div>
-            <div class="info-row">
-                <span class="label">Fecha de Creación</span>
-                <span class="value">${sistema.fechaCreacion ? new Date(sistema.fechaCreacion).toLocaleString() : '--'}</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Observación General</span>
-                <span class="value">${sistema.observacionGeneral}</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Validador Asignado</span>
-                <span class="value">${validacion.nombreValidador || 'No asignado'}</span>
-            </div>
+            <div class="info-row"><span class="label">ID Sistema</span><span class="value"><strong>${esc(infra.sistemaId)}</strong></span></div>
+            <div class="info-row"><span class="label">Código</span><span class="value">${esc(infra.codigo)}</span></div>
+            <div class="info-row"><span class="label">Nombre</span><span class="value">${esc(nombre)}</span></div>
+            <div class="info-row"><span class="label">Estado sistema</span><span class="value"><span class="badge ${getBadgeClassEstado(infra.estadoSistemaUi)}">${esc(infra.estadoSistemaUi)}</span></span></div>
+            <div class="info-row"><span class="label">Estado validación</span><span class="value"><span class="badge ${getBadgeClassEstado(estado)}">${esc(estado)}</span></span></div>
+            <div class="info-row"><span class="label">Eval. infraestructura</span><span class="value">${esc(infra.evaluacion?.estadoRegistro || 'SIN_REGISTRO')}</span></div>
+            <div class="info-row"><span class="label">Sistema operativo</span><span class="value">${esc(datos.sistemaOperativo || '—')} ${esc(datos.versionSO || '')}</span></div>
+            <div class="info-row"><span class="label">Servidor / Ambiente</span><span class="value">${esc(datos.servidor || '—')} / ${esc(datos.ambiente || '—')}</span></div>
+            <div class="info-row"><span class="label">Backup</span><span class="value">${esc(datos.backup || '—')} (${esc(datos.frecuenciaBackup || '—')})</span></div>
+            <div class="info-row"><span class="label">Exposición</span><span class="value">${esc(datos.exposicion || '—')}</span></div>
+            <div class="info-row"><span class="label">Autenticación</span><span class="value">${esc(infra.seguridad?.mecanismoAutenticacion || datos.autenticacion || '—')}</span></div>
+            <div class="info-row"><span class="label">SSL/TLS</span><span class="value">${esc(datos.ssl || infra.seguridad?.tipoControl || '—')}</span></div>
+            <div class="info-row"><span class="label">Observaciones INFRA</span><span class="value">${obsHtml}</span></div>
         `;
 
         const badgeEstado = document.querySelector('.hero-card .badge');
         if (badgeEstado) {
-            const estado = sistema.estadoValidacion;
-            badgeEstado.textContent = estado;
             badgeEstado.className = `badge ${getBadgeClassEstado(estado)}`;
-            badgeEstado.innerHTML = `<i class="fas fa-server"></i> ${estado}`;
+            badgeEstado.innerHTML = `<i class="fas fa-server"></i> ${esc(estado)}`;
         }
-
-        console.log(`✅ Sistema de infraestructura ${id} cargado correctamente`);
-
     } catch (error) {
-        console.error("❌ Error al cargar sistema de infraestructura:", error);
-        
-        const sistema = sistemasInfraestructuraData[id] || sistemasInfraestructuraData[1];
-        
-        document.getElementById('titulo-sistema').textContent = `📋 ${sistema.nombre}`;
-        document.getElementById('estado-actual').textContent = sistema.estado || '--';
-        document.getElementById('fecha-envio').textContent = sistema.fechaEnvio || '--';
-        document.getElementById('responsable').textContent = sistema.responsable || '--';
-
-        infoContainer.innerHTML = `
-            <div class="info-row">
-                <span class="label">Nombre del Sistema</span>
-                <span class="value"><strong>${sistema.nombre || '--'}</strong></span>
-            </div>
-            <div class="info-row">
-                <span class="label">Responsable</span>
-                <span class="value">${sistema.responsable || '--'}</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Sistema Operativo</span>
-                <span class="value">${sistema.sistemaOperativo || '--'}</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Versión de SO</span>
-                <span class="value">${sistema.versionSO || '--'}</span>
-            </div>
-        `;
-        
-        mostrarNotificacion('⚠️ Usando datos de ejemplo', 'warning');
+        console.error('Error al cargar sistema de infraestructura:', error);
+        document.getElementById('titulo-sistema').textContent = 'Error al cargar';
+        if (infoContainer) {
+            infoContainer.innerHTML = `<div class="info-row"><span class="value">${esc(error.message)}</span></div>`;
+        }
+        mostrarNotificacion(error.message || 'Error al cargar datos', 'error');
     }
 }
-// ============================================
-// 5. FUNCIONES PARA MODAL DE RECHAZO - 🟢 ELIMINADO
-// ============================================
 
-// 🔴 Las siguientes funciones han sido eliminadas:
-// - abrirModalRechazo()
-// - cerrarModalRechazo()  
-// - confirmarRechazo()
-// - sistemaIdActual (variable)
-
-// ============================================
-// 6. EJECUTAR VALIDACIÓN (SOLO APROBAR Y OBSERVAR)
-// ============================================
-
-function ejecutarValidacion(estado, comentarioForzado = null) {
+async function ejecutarValidacion(estado, comentarioForzado = null) {
     let comentario = comentarioForzado;
-
     if (!comentario) {
         comentario = document.getElementById('comentario-validacion')?.value?.trim();
     }
-
     const mensajeDiv = document.getElementById('mensaje-validacion');
     const resumenDiv = document.getElementById('resumen-validacion');
     const botones = document.querySelectorAll('.form-actions .btn');
+    const id = obtenerIdSistema();
+    const username = getSessionUsername();
 
-    // ✅ Validar comentario solo para OBSERVAR
-    if (estado === 'observado') {
-        if (!comentario || comentario.length < 5) {
-            const textarea = document.getElementById('comentario-validacion');
-            if (textarea) {
-                textarea.classList.add('error');
-            }
-            mensajeDiv.textContent = '⚠️ El comentario es obligatorio para observar. Debe tener al menos 5 caracteres.';
-            mensajeDiv.className = 'form-message warning';
-            if (textarea) textarea.focus();
-            return;
-        }
+    if (!id) {
+        mensajeDiv.textContent = 'Falta id de sistema en la URL.';
+        mensajeDiv.className = 'form-message warning';
+        return;
     }
 
-    const textarea = document.getElementById('comentario-validacion');
-    if (textarea) textarea.classList.remove('error');
+    if (estado === 'observado' && (!comentario || comentario.length < 5)) {
+        document.getElementById('comentario-validacion')?.classList.add('error');
+        mensajeDiv.textContent = 'El comentario es obligatorio para observar (mín. 5 caracteres).';
+        mensajeDiv.className = 'form-message warning';
+        return;
+    }
 
-    // Si es aprobado y no hay comentario, usar uno por defecto
+    document.getElementById('comentario-validacion')?.classList.remove('error');
     if (estado === 'aprobado' && !comentario) {
-        comentario = '✅ Validación de infraestructura aprobada correctamente.';
+        comentario = 'Validación de infraestructura aprobada.';
     }
 
     botones.forEach(b => b.disabled = true);
-
-    const id = obtenerIdSistema();
-    const sistema = getSistema(id);
-    const nombreSistema = sistema.nombre || 'Sistema sin nombre';
-
-    // ✅ Solo dos acciones: Aprobado y Observado
-    const acciones = {
-        'aprobado': { texto: 'Aprobando', icono: '✅', estadoFinal: 'Aprobado', clase: 'success' },
-        'observado': { texto: 'Observando', icono: '⚠️', estadoFinal: 'Observado', clase: 'warning' }
-    };
-
-    const accion = acciones[estado];
-    mensajeDiv.textContent = `⏳ ${accion.texto} validación de infraestructura...`;
+    mensajeDiv.textContent = estado === 'aprobado' ? 'Aprobando validación...' : 'Registrando observación...';
     mensajeDiv.className = 'form-message info';
 
-    setTimeout(() => {
-        mensajeDiv.textContent = `✅ Validación de infraestructura ${accion.estadoFinal.toLowerCase()} correctamente`;
-        mensajeDiv.className = 'form-message success';
-
-        document.getElementById('resumen-estado').textContent = accion.estadoFinal;
-        document.getElementById('resumen-validador').textContent = 'Validador CTIC';
-        document.getElementById('resumen-fecha').textContent = new Date().toLocaleString();
-        resumenDiv.className = 'resumen-validacion show';
-
-        document.getElementById('estado-actual').textContent = accion.estadoFinal;
-
-        const badgeEstado = document.querySelector('.hero-card .badge');
-        if (badgeEstado) {
-            badgeEstado.textContent = accion.estadoFinal;
-            badgeEstado.className = `badge ${accion.clase}`;
-            badgeEstado.innerHTML = `<i class="fas fa-server"></i> ${accion.estadoFinal}`;
-        }
-
-        // ✅ Si es observado, redirigir a registrar observación de infraestructura
-        if (estado === 'observado') {
-            setTimeout(() => {
-                mostrarNotificacion('📝 Redirigiendo a registro de observaciones de infraestructura...', 'info');
-                setTimeout(() => {
-                    window.location.href = `registrar-observacion.html?id=${id}&area=infraestructura`;
-                }, 1000);
-            }, 500);
-        } else {
-            // ✅ Si es aprobado, mostrar botón "Finalizar"
+    try {
+        if (estado === 'aprobado') {
+            await fetchJson('/api/validacion/validar', {
+                method: 'POST',
+                body: JSON.stringify({
+                    idSistema: Number(id),
+                    sistemaId: Number(id),
+                    username,
+                    observacionGeneral: comentario
+                })
+            });
+            mensajeDiv.textContent = 'Validación aprobada correctamente';
+            mensajeDiv.className = 'form-message success';
+            document.getElementById('resumen-estado').textContent = 'Validado';
+            document.getElementById('resumen-validador').textContent = username || 'Validador CTIC';
+            document.getElementById('resumen-fecha').textContent = new Date().toLocaleString();
+            resumenDiv.className = 'resumen-validacion show';
+            document.getElementById('estado-actual').textContent = 'Validado';
             document.getElementById('btn-finalizar-container').style.display = 'block';
+            mostrarNotificacion('Validación de infraestructura aprobada', 'success');
+        } else {
+            await fetchJson('/api/validacion/observaciones', {
+                method: 'POST',
+                body: JSON.stringify({
+                    idSistema: Number(id),
+                    sistemaId: Number(id),
+                    username,
+                    area: 'INFRAESTRUCTURA',
+                    descripcion: comentario
+                })
+            });
+            mensajeDiv.textContent = 'Observación de infraestructura registrada';
+            mensajeDiv.className = 'form-message success';
+            mostrarNotificacion('Redirigiendo a registro de observaciones...', 'info');
             setTimeout(() => {
-                botones.forEach(b => b.disabled = false);
-                mostrarNotificacion(`✅ Validación de infraestructura aprobada correctamente`, 'success');
-            }, 1000);
+                window.location.href = `registrar-observacion.html?id=${id}&area=infraestructura`;
+            }, 800);
+            return;
         }
-    }, 1500);
+    } catch (err) {
+        mensajeDiv.textContent = err.message;
+        mensajeDiv.className = 'form-message warning';
+        mostrarNotificacion(err.message, 'error');
+    } finally {
+        botones.forEach(b => b.disabled = false);
+    }
 }
-
-// ============================================
-// 7. FINALIZAR VALIDACIÓN
-// ============================================
 
 function finalizarValidacion() {
-    const id = obtenerIdSistema();
-    const sistema = getSistema(id);
-    
-    mostrarNotificacion(`✅ Validación completa del sistema "${sistema.nombre}"`, 'success');
-    
-    setTimeout(() => {
-        window.location.href = 'pendientes.html';
-    }, 1500);
+    mostrarNotificacion('Validación finalizada', 'success');
+    setTimeout(() => { window.location.href = 'pendientes.html'; }, 1000);
 }
-
-// ============================================
-// 8. MOSTRAR NOTIFICACIONES
-// ============================================
 
 function mostrarNotificacion(mensaje, tipo = 'info') {
-    const existing = document.querySelectorAll('.toast-notification');
-    existing.forEach(el => el.remove());
-
+    document.querySelectorAll('.toast-notification').forEach(el => el.remove());
     const colors = {
-        success: { bg: '#dcfce7', border: '#16a34a', text: '#166534', icon: 'fa-check-circle' },
-        error: { bg: '#fee2e2', border: '#dc2626', text: '#991b1b', icon: 'fa-exclamation-circle' },
-        warning: { bg: '#fef3c7', border: '#ca8a04', text: '#92400e', icon: 'fa-triangle-exclamation' },
-        info: { bg: '#dbeafe', border: '#3b82f6', text: '#1e40af', icon: 'fa-info-circle' }
+        success: { bg: '#dcfce7', border: '#16a34a', text: '#166534' },
+        error: { bg: '#fee2e2', border: '#dc2626', text: '#991b1b' },
+        warning: { bg: '#fef3c7', border: '#ca8a04', text: '#92400e' },
+        info: { bg: '#dbeafe', border: '#3b82f6', text: '#1e40af' }
     };
-
     const style = colors[tipo] || colors.info;
-
     const notification = document.createElement('div');
     notification.className = 'toast-notification';
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        background: ${style.bg};
-        border-left: 4px solid ${style.border};
-        border-radius: 10px;
-        padding: 14px 20px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 14px;
-        color: ${style.text};
-        font-weight: 600;
-        max-width: 400px;
-        min-width: 280px;
-        animation: slideInRight 0.4s ease;
-        transition: all 0.3s ease;
-    `;
-
-    notification.innerHTML = `
-        <i class="fas ${style.icon}" style="font-size: 18px; color: ${style.border};"></i>
-        <span>${mensaje}</span>
-        <button onclick="this.parentElement.remove()" style="background:none;border:none;font-size:18px;cursor:pointer;color:${style.text};opacity:0.5;padding:0 4px;">×</button>
-    `;
-
+    notification.style.cssText = `position:fixed;top:20px;right:20px;z-index:9999;background:${style.bg};border-left:4px solid ${style.border};border-radius:10px;padding:14px 20px;box-shadow:0 8px 30px rgba(0,0,0,.15);color:${style.text};font-weight:600;max-width:400px;`;
+    notification.textContent = mensaje;
     document.body.appendChild(notification);
-
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100px)';
-            setTimeout(() => notification.remove(), 300);
-        }
-    }, 4000);
+    setTimeout(() => notification.remove(), 4000);
 }
 
-// ============================================
-// 9. INICIALIZACIÓN
-// ============================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ DOM cargado');
+document.addEventListener('DOMContentLoaded', () => {
     cargarSistema();
-
-    // ✅ Solo dos eventos: Aprobar y Observar
     document.getElementById('btn-aprobar')?.addEventListener('click', () => ejecutarValidacion('aprobado'));
     document.getElementById('btn-observar')?.addEventListener('click', () => ejecutarValidacion('observado'));
-
-    console.log('✅ Inicialización completa');
 });
-
-// ============================================
-// 10. EXPONER FUNCIONES GLOBALMENTE
-// ============================================
 
 window.obtenerIdSistema = obtenerIdSistema;
 window.finalizarValidacion = finalizarValidacion;
-// 🔴 Ya no exponemos: abrirModalRechazo, cerrarModalRechazo, confirmarRechazo
-
-console.log('✅ validar-infraestructura.js cargado correctamente (solo Aprobar/Observar)');

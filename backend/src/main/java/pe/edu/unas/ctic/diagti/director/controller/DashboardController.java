@@ -10,7 +10,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/director/dashboard")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class DashboardController {
 
     private final DashboardService dashboardService;
@@ -37,5 +36,17 @@ public class DashboardController {
             @RequestParam(required = false) String validacion,
             @RequestParam(required = false) String busqueda) {
         return dashboardService.obtenerSistemasFiltrados(area, criticidad, validacion, busqueda);
+    }
+
+    @GetMapping("/actividad-reciente")
+    public List<ActividadRecienteDTO> getActividadReciente() {
+        return dashboardService.obtenerActividadReciente();
+    }
+
+    @GetMapping("/observaciones")
+    public List<ObservacionConsolidadaDTO> getObservaciones(
+            @RequestParam(required = false) String origen,
+            @RequestParam(required = false) String estado) {
+        return dashboardService.obtenerObservacionesConsolidadas(origen, estado);
     }
 }

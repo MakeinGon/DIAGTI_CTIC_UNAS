@@ -32,8 +32,15 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ============================================================
    CONFIGURACIÓN
 ============================================================ */
-const API_BASE_DASHBOARD = "http://localhost:8080/api/director/dashboard";
-const API_BASE_REPORTES = "http://localhost:8080/api/director/reportes";
+const API_BASE_DASHBOARD = (typeof DIAGTI_DIRECTOR_API !== "undefined")
+    ? DIAGTI_DIRECTOR_API.dashboard
+    : "/api/director/dashboard";
+const API_BASE_REPORTES = (typeof DIAGTI_DIRECTOR_API !== "undefined")
+    ? DIAGTI_DIRECTOR_API.reportes
+    : "/api/director/reportes";
+const API_BASE_INVENTARIO = (typeof DIAGTI_DIRECTOR_API !== "undefined")
+    ? DIAGTI_DIRECTOR_API.inventario
+    : "/api/director/inventario";
 
 /* ============================================================
    LABELS Y CONSTANTES
@@ -382,39 +389,40 @@ function renderValidationChart() {
 
 function renderCriticalityChart() {
     console.log("[DIAGTI] Renderizando gráfico de criticidad con datos:", criticidadesData);
-    
+
     const TODAS_CRITICIDADES = [
-        { key: 'academico', label: 'Académico', color: '#cf2d35' },
-        { key: 'financiero', label: 'Financiero', color: '#e49a18' },
-        { key: 'rrhh', label: 'RRHH', color: '#4f7fa4' },
-        { key: 'administrativo', label: 'Administrativo', color: '#1abb9c' },
-        { key: 'misional', label: 'Misional', color: '#8b5cf6' },
-        { key: 'estrategico', label: 'Estratégico', color: '#f59e0b' }
+        { key: 'alta', label: 'Alta', color: '#e49a18' },
+        { key: 'media', label: 'Media', color: '#4f7fa4' },
+        { key: 'baja', label: 'Baja', color: '#1abb9c' }
     ];
 
     let counts = {};
     if (criticidadesData && criticidadesData.length > 0) {
         criticidadesData.forEach(item => {
-            const key = item.nivel ? item.nivel.toLowerCase() : 'sin definir';
-            counts[key] = item.cantidad || 0;
+            const key = slug(item.nivel || 'media');
+            counts[key] = (counts[key] || 0) + (item.cantidad || 0);
         });
     } else {
         sistemasData.forEach(s => {
-            const key = s.criticidad ? s.criticidad.toLowerCase() : 'sin definir';
+            const key = slug(s.criticidad || 'media');
             counts[key] = (counts[key] || 0) + 1;
         });
     }
 
     TODAS_CRITICIDADES.forEach(({ key }) => {
-        if (!(key in counts)) {
-            counts[key] = 0;
-        }
+        if (!(key in counts)) counts[key] = 0;
     });
 
-    const total = Object.values(counts).reduce((sum, val) => sum + val, 0);
-    const maxValue = Math.max(1, ...TODAS_CRITICIDADES.map(c => counts[c.key] || 0));
+    const keys = Object.keys(counts);
+    const known = new Set(TODAS_CRITICIDADES.map(c => c.key));
+    const extra = keys.filter(k => !known.has(k) && counts[k] > 0)
+        .map(k => ({ key: k, label: CRITICALITY_LABELS[k] || k, color: CRITICALITY_COLORS[k] || '#94a3b8' }));
+    const rows = [...TODAS_CRITICIDADES, ...extra];
 
-    elements.criticalityChart.innerHTML = TODAS_CRITICIDADES.map(({ key, label, color }) => {
+    const total = Object.values(counts).reduce((sum, val) => sum + val, 0);
+    const maxValue = Math.max(1, ...rows.map(c => counts[c.key] || 0));
+
+    elements.criticalityChart.innerHTML = rows.map(({ key, label, color }) => {
         const count = counts[key] || 0;
         const width = (count / maxValue) * 100;
         const active = dashboardState.filters.criticality === key;
@@ -491,7 +499,7 @@ function renderTable() {
     elements.next.disabled = dashboardState.page >= totalPages;
 }
 
-function showSystemDetail(systemCode) {
+async function showSystemDetail(systemCode) {
     const system = sistemasData.find((item) => item.codigo === systemCode);
     if (!system) return;
 
@@ -503,15 +511,42 @@ function showSystemDetail(systemCode) {
         <p><strong>Código:</strong> ${escapeHTML(system.codigo || 'N/A')}</p>
         <p><strong>Área:</strong> ${escapeHTML(system.area || 'No especificada')}</p>
         <p><strong>Plataforma:</strong> ${escapeHTML(system.tipo || 'No especificado')}</p>
-        <p><strong>Exposición:</strong> ${escapeHTML(system.exposicion || 'No registrada')}</p>
+        <p><strong>Exposición / Infraestructura:</strong> ${escapeHTML(system.exposicion || system.resultadoInfraestructura || 'No registrada')}</p>
         <p><strong>Estado ejecutivo:</strong> ${escapeHTML(validationLabel)}</p>
         <p><strong>Criticidad:</strong> ${escapeHTML(criticidadLabel)}</p>
+        <p><strong>Observaciones:</strong> ${escapeHTML(String(system.cantidadObservaciones ?? 0))}</p>
         <p><strong>Detalle:</strong> ${escapeHTML(system.detalle || 'Sin información')}</p>
         <p><strong>Recomendación:</strong> ${escapeHTML(system.recomendacion || 'Revisar estado de validación y observaciones.')}</p>
+        <p id="director-detail-extra" style="color:#64757a;">Cargando consolidado...</p>
     `;
 
     if (typeof elements.dialog.showModal === "function") elements.dialog.showModal();
     else elements.dialog.setAttribute("open", "");
+
+    if (!system.sistemaId) {
+        const extra = document.getElementById("director-detail-extra");
+        if (extra) extra.textContent = "";
+        return;
+    }
+
+    try {
+        const detalle = await fetch(`${API_BASE_INVENTARIO}/${system.sistemaId}`)
+            .then(r => r.ok ? r.json() : Promise.reject(r));
+        const extra = document.getElementById("director-detail-extra");
+        if (!extra) return;
+        extra.innerHTML = `
+            <strong>Responsable técnico:</strong> ${escapeHTML(detalle.responsableTecnico || 'No asignado')}<br>
+            <strong>Validaciones:</strong> ${(detalle.validaciones || []).length}<br>
+            <strong>Arquitectura:</strong> ${(detalle.arquitectura || []).length} registro(s)<br>
+            <strong>Infraestructura:</strong> ${(detalle.infraestructura || []).length} registro(s)<br>
+            <strong>Seguridad:</strong> ${(detalle.seguridad || []).length} registro(s)<br>
+            <strong>Evidencias:</strong> ${(detalle.evidencias || []).length} registro(s)
+        `;
+    } catch (err) {
+        const extra = document.getElementById("director-detail-extra");
+        if (extra) extra.textContent = "No se pudo cargar el consolidado adicional.";
+        console.error("Error detalle director:", err);
+    }
 }
 
 /* ============================================================
@@ -719,10 +754,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("[DIAGTI] Inicializando Dashboard Ejecutivo...");
     cacheElements();
     bindEvents();
+    if (typeof diagtiDirectorAplicarPerfil === "function") {
+        diagtiDirectorAplicarPerfil();
+    }
 
     cargarAreasFiltro();
     cargarCriticidadesFiltro();
-    cargarEstadosValidacionFiltro();  // ← NUEVO
+    cargarEstadosValidacionFiltro();
 
     try {
         await Promise.all([

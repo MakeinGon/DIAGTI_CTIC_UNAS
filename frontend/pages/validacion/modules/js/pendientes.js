@@ -316,14 +316,14 @@ async function cargarPendientes() {
                 mostrarNotificacion('📋 No hay sistemas pendientes', 'info');
             }
         } else {
-            console.warn('⚠️ API no disponible, usando datos de ejemplo');
-            renderizarTabla(datosEjemplo);
-            mostrarNotificacion('ℹ️ Usando datos de ejemplo', 'info');
+            console.warn('⚠️ API respondió error:', response.status);
+            renderizarTabla([]);
+            mostrarNotificacion('❌ No se pudieron cargar pendientes desde el servidor', 'error');
         }
     } catch (error) {
         console.warn('⚠️ Error al conectar con la API:', error.message);
-        renderizarTabla(datosEjemplo);
-        mostrarNotificacion('ℹ️ Usando datos de ejemplo', 'info');
+        renderizarTabla([]);
+        mostrarNotificacion('❌ Error de conexión con el backend de validación', 'error');
     } finally {
         if (btnActualizar) {
             btnActualizar.disabled = false;

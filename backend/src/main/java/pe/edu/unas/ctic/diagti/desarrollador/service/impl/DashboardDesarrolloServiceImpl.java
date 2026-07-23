@@ -3,172 +3,142 @@ package pe.edu.unas.ctic.diagti.desarrollador.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.unas.ctic.diagti.Login.model.Usuario;
 import pe.edu.unas.ctic.diagti.desarrollador.dto.DashboardDesarrolloDTO;
-import pe.edu.unas.ctic.diagti.desarrollador.entity.SistemaEntity;
-import pe.edu.unas.ctic.diagti.desarrollador.repository.DesarrolladorValidacionRepository;  // ← CAMBIADO
-import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaDesarrolloRepository;
+import pe.edu.unas.ctic.diagti.desarrollador.dto.frontend.SistemaFrontendDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.service.DashboardDesarrolloService;
+import pe.edu.unas.ctic.diagti.desarrollador.service.DesarrolladorInventarioService;
+import pe.edu.unas.ctic.diagti.desarrollador.support.DesarrolladorUsuarioResolver;
+import pe.edu.unas.ctic.diagti.desarrollador.support.EstadoFlujoNormalizer;
+import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorSistemaRepository;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DashboardDesarrolloServiceImpl implements DashboardDesarrolloService {
-    
-    private final SistemaDesarrolloRepository sistemaRepository;
-    private final DesarrolladorValidacionRepository validacionRepository;  // ← AGREGADO
-    
+
+    private final DesarrolladorUsuarioResolver usuarioResolver;
+    private final DesarrolladorInventarioService inventarioService;
+    private final DirectorSistemaRepository sistemaRepository;
+
     @Override
     @Transactional(readOnly = true)
     public DashboardDesarrolloDTO obtenerDashboard(String usuario) {
-        String usuarioActual = usuario != null ? usuario : obtenerUsuarioActual();
-        
+        Usuario desarrollador = usuarioResolver.requireActiveDeveloper(usuario);
+        List<SistemaFrontendDTO> sistemas = inventarioService.listarSistemasDelDesarrollador(
+                desarrollador.getUsername(), Map.of());
+
         DashboardDesarrolloDTO dashboard = new DashboardDesarrolloDTO();
-        
-        // Estadísticas
-        dashboard.setEstadisticas(obtenerEstadisticas(usuarioActual));
-        
-        // Actividad reciente
-        dashboard.setActividadReciente(obtenerActividadReciente(usuarioActual, 10));
-        
-        // Riesgos críticos
-        dashboard.setRiesgosCriticos(obtenerRiesgosCriticos(usuarioActual));
-        
-        // Sistemas recientes
-        dashboard.setSistemasRecientes(obtenerSistemasRecientes(usuarioActual));
-        
+        dashboard.setEstadisticas(obtenerEstadisticasDesdeLista(sistemas));
+        dashboard.setActividadReciente(obtenerActividadReciente(desarrollador.getUsername(), 10));
+        dashboard.setRiesgosCriticos(obtenerRiesgosCriticos(desarrollador.getUsername()));
+        dashboard.setSistemasRecientes(sistemas.stream()
+                .limit(5)
+                .map(s -> new DashboardDesarrolloDTO.SistemaResumenDTO(
+                        parseId(s.getId()),
+                        s.getCodigo(),
+                        s.getNombre(),
+                        EstadoFlujoNormalizer.toBd(s.getEstado()),
+                        s.getRiesgo(),
+                        null
+                ))
+                .collect(Collectors.toList()));
         return dashboard;
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public DashboardDesarrolloDTO.EstadisticasDTO obtenerEstadisticas(String usuario) {
-        String usuarioActual = usuario != null ? usuario : obtenerUsuarioActual();
-        
-        List<SistemaEntity> sistemas = sistemaRepository
-                .findByResponsableTecnicoAndEliminadoFalse(usuarioActual);
-        
-        long total = sistemas.size();
-        long borrador = sistemas.stream().filter(s -> "BORRADOR".equals(s.getEstado())).count();
-        long enviados = sistemas.stream().filter(s -> "ENVIADO".equals(s.getEstado())).count();
-        long observados = sistemas.stream().filter(s -> "OBSERVADO".equals(s.getEstado())).count();
-        long validados = sistemas.stream().filter(s -> "VALIDADO".equals(s.getEstado())).count();
-        long legacy = sistemas.stream().filter(s -> Boolean.TRUE.equals(s.getEsLegacy())).count();
-        long criticos = sistemas.stream()
-                .filter(s -> "CRITICA".equals(s.getCriticidad()) || "ALTA".equals(s.getCriticidad()))
-                .count();
-        
-        // Evidencias cargadas
-        long evidencias = sistemas.stream()
-                .mapToLong(s -> s.getEvidencias() != null ? 
-                        s.getEvidencias().stream().filter(e -> !Boolean.TRUE.equals(e.getEliminado())).count() : 0)
-                .sum();
-        
-        return new DashboardDesarrolloDTO.EstadisticasDTO(
-                total, borrador, enviados, observados, validados, legacy, criticos, evidencias
-        );
+        Usuario desarrollador = usuarioResolver.requireActiveDeveloper(usuario);
+        List<SistemaFrontendDTO> sistemas = inventarioService.listarSistemasDelDesarrollador(
+                desarrollador.getUsername(), Map.of());
+        return obtenerEstadisticasDesdeLista(sistemas);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public List<DashboardDesarrolloDTO.ActividadDTO> obtenerActividadReciente(String usuario, int limite) {
-        String usuarioActual = usuario != null ? usuario : obtenerUsuarioActual();
-        
-        List<SistemaEntity> sistemas = sistemaRepository
-                .findByResponsableTecnicoAndEliminadoFalse(usuarioActual);
-        
+        Usuario desarrollador = usuarioResolver.requireActiveDeveloper(usuario);
+        List<SistemaEntity> sistemas = sistemaRepository.findActivosByResponsableTecnico(desarrollador.getIdUsuario());
+
         return sistemas.stream()
                 .sorted(Comparator.comparing(
                         s -> s.getFechaActualizacion() != null ? s.getFechaActualizacion() : LocalDateTime.MIN,
-                        Comparator.reverseOrder()
-                ))
+                        Comparator.reverseOrder()))
                 .limit(limite)
-                .map(s -> {
-                    String accion = determinarAccion(s);
-                    return new DashboardDesarrolloDTO.ActividadDTO(
-                            s.getId(),
-                            s.getNombre(),
-                            accion,
-                            s.getEstado(),
-                            s.getFechaActualizacion(),
-                            s.getUsuarioModificador() != null ? s.getUsuarioModificador() : s.getUsuarioCreador()
-                    );
-                })
+                .map(s -> new DashboardDesarrolloDTO.ActividadDTO(
+                        s.getIdSistema(),
+                        s.getNombre(),
+                        determinarAccion(s.getEstadoFlujo()),
+                        EstadoFlujoNormalizer.toBd(s.getEstadoFlujo()),
+                        s.getFechaActualizacion() != null ? s.getFechaActualizacion() : s.getFechaCreacion(),
+                        desarrollador.getUsername()
+                ))
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public List<DashboardDesarrolloDTO.RiesgoCriticoDTO> obtenerRiesgosCriticos(String usuario) {
-        String usuarioActual = usuario != null ? usuario : obtenerUsuarioActual();
-        
-        List<SistemaEntity> sistemas = sistemaRepository
-                .findByResponsableTecnicoAndEliminadoFalse(usuarioActual);
-        
+        Usuario desarrollador = usuarioResolver.requireActiveDeveloper(usuario);
+        List<SistemaEntity> sistemas = sistemaRepository.findActivosByResponsableTecnico(desarrollador.getIdUsuario());
+
         return sistemas.stream()
-                .filter(s -> s.getPuntajeRiesgo() != null && s.getPuntajeRiesgo() >= 60)
-                .sorted((s1, s2) -> {
-                    Integer p1 = s1.getPuntajeRiesgo() != null ? s1.getPuntajeRiesgo() : 0;
-                    Integer p2 = s2.getPuntajeRiesgo() != null ? s2.getPuntajeRiesgo() : 0;
-                    return p2.compareTo(p1);
-                })
+                .filter(s -> s.getNivelRiesgo() != null
+                        && ("ALTO".equalsIgnoreCase(s.getNivelRiesgo())
+                        || "CRITICO".equalsIgnoreCase(s.getNivelRiesgo())
+                        || "CRÍTICO".equalsIgnoreCase(s.getNivelRiesgo())))
                 .limit(5)
                 .map(s -> new DashboardDesarrolloDTO.RiesgoCriticoDTO(
-                        s.getId(),
-                        s.getCodigo(),
+                        s.getIdSistema(),
+                        s.getCodigoUnico(),
                         s.getNombre(),
                         s.getNivelRiesgo(),
-                        s.getPuntajeRiesgo(),
-                        s.getCriticidad(),
-                        s.getResponsableTecnico()
+                        null,
+                        null,
+                        (desarrollador.getNombres() + " " + desarrollador.getApellidos()).trim()
                 ))
                 .collect(Collectors.toList());
     }
-    
-    private List<DashboardDesarrolloDTO.SistemaResumenDTO> obtenerSistemasRecientes(String usuario) {
-        String usuarioActual = usuario != null ? usuario : obtenerUsuarioActual();
-        
-        List<SistemaEntity> sistemas = sistemaRepository
-                .findByResponsableTecnicoAndEliminadoFalse(usuarioActual);
-        
-        return sistemas.stream()
-                .sorted(Comparator.comparing(
-                        s -> s.getFechaActualizacion() != null ? s.getFechaActualizacion() : LocalDateTime.MIN,
-                        Comparator.reverseOrder()
-                ))
-                .limit(5)
-                .map(s -> new DashboardDesarrolloDTO.SistemaResumenDTO(
-                        s.getId(),
-                        s.getCodigo(),
-                        s.getNombre(),
-                        s.getEstado(),
-                        s.getNivelRiesgo(),
-                        s.getFechaActualizacion()
-                ))
-                .collect(Collectors.toList());
+
+    private DashboardDesarrolloDTO.EstadisticasDTO obtenerEstadisticasDesdeLista(List<SistemaFrontendDTO> sistemas) {
+        long total = sistemas.size();
+        long borrador = sistemas.stream().filter(s -> "Borrador".equalsIgnoreCase(s.getEstado())).count();
+        long enviados = sistemas.stream().filter(s -> "Enviado".equalsIgnoreCase(s.getEstado())).count();
+        long observados = sistemas.stream().filter(s -> "Observado".equalsIgnoreCase(s.getEstado())).count();
+        long validados = sistemas.stream().filter(s -> "Validado".equalsIgnoreCase(s.getEstado())).count();
+        long criticos = sistemas.stream()
+                .filter(s -> s.getRiesgo() != null
+                        && ("ALTO".equalsIgnoreCase(s.getRiesgo()) || "CRITICO".equalsIgnoreCase(s.getRiesgo())))
+                .count();
+
+        return new DashboardDesarrolloDTO.EstadisticasDTO(
+                total, borrador, enviados, observados, validados, 0L, criticos, 0L
+        );
     }
-    
-    private String determinarAccion(SistemaEntity sistema) {
-        if ("BORRADOR".equals(sistema.getEstado())) {
-            return "Creado";
-        } else if ("ENVIADO".equals(sistema.getEstado())) {
-            return "Enviado a validación";
-        } else if ("OBSERVADO".equals(sistema.getEstado())) {
-            return "Observado";
-        } else if ("SUBSANADO".equals(sistema.getEstado())) {
-            return "Subsanado";
-        } else if ("VALIDADO".equals(sistema.getEstado())) {
-            return "Validado";
-        } else {
-            return "Actualizado";
+
+    private String determinarAccion(String estado) {
+        return switch (EstadoFlujoNormalizer.toBd(estado)) {
+            case "BORRADOR" -> "Creado";
+            case "ENVIADO" -> "Enviado a validación";
+            case "OBSERVADO" -> "Observado";
+            case "SUBSANADO" -> "Subsanado";
+            case "VALIDADO" -> "Validado";
+            default -> "Actualizado";
+        };
+    }
+
+    private Long parseId(String id) {
+        try {
+            return id != null ? Long.parseLong(id) : null;
+        } catch (NumberFormatException ex) {
+            return null;
         }
-    }
-    
-    private String obtenerUsuarioActual() {
-        // TODO: Implementar obtención del usuario desde el contexto de seguridad
-        return "desarrollador1";
     }
 }

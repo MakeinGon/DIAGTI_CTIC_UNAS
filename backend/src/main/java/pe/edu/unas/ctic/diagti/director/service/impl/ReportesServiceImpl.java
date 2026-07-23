@@ -4,23 +4,27 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
-import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
 import pe.edu.unas.ctic.diagti.director.dto.ReporteInventarioDTO;
 import pe.edu.unas.ctic.diagti.director.dto.ReporteRiesgoDTO;
 import pe.edu.unas.ctic.diagti.director.dto.ReporteValidacionDTO;
 import pe.edu.unas.ctic.diagti.director.dto.RiesgoDTO;
+import pe.edu.unas.ctic.diagti.director.entity.ObservacionEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SeguridadEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.entity.ValidacionEntity;
 import pe.edu.unas.ctic.diagti.director.mapper.RiesgoMapper;
 import pe.edu.unas.ctic.diagti.director.repository.DirectorSeguridadRepository;
 import pe.edu.unas.ctic.diagti.director.repository.DirectorSistemaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.ObservacionRepository;
 import pe.edu.unas.ctic.diagti.director.repository.ValidacionRepository;
 import pe.edu.unas.ctic.diagti.director.service.ReportesService;
+import pe.edu.unas.ctic.diagti.director.support.DirectorCatalogHelper;
+import pe.edu.unas.ctic.diagti.director.support.DirectorEstados;
+import pe.edu.unas.ctic.diagti.director.support.DirectorTexto;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,58 +35,38 @@ public class ReportesServiceImpl implements ReportesService {
     private final DirectorSistemaRepository sistemaRepository;
     private final ValidacionRepository validacionRepository;
     private final DirectorSeguridadRepository seguridadRepository;
-    private final CatalogoRepository catalogoRepository;
+    private final ObservacionRepository observacionRepository;
+    private final DirectorCatalogHelper catalogHelper;
     private final RiesgoMapper riesgoMapper;
+
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-    private String getAreaNombre(SistemaEntity sistema) {
-        if (sistema == null || sistema.getIdAreaUsuario() == null) {
-            return "No especificada";
-        }
-        try {
-            return catalogoRepository.findById(sistema.getIdAreaUsuario())
-                    .map(CatalogoEntity::getValor)
-                    .orElse("No especificada");
-        } catch (Exception e) {
-            return "No especificada";
-        }
-    }
-
-    private String getCriticidadNombre(SistemaEntity sistema) {
-        if (sistema == null || sistema.getIdCriticidad() == null) {
-            return "No especificada";
-        }
-        try {
-            return catalogoRepository.findById(sistema.getIdCriticidad())
-                    .map(CatalogoEntity::getValor)
-                    .orElse("No especificada");
-        } catch (Exception e) {
-            return "No especificada";
-        }
-    }
+    private static final DateTimeFormatter ISO_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     @Transactional(readOnly = true)
     public List<ReporteInventarioDTO> obtenerInventario(String area, String criticidad) {
-        List<SistemaEntity> sistemas = sistemaRepository.findAll();
+        List<SistemaEntity> sistemas = sistemaRepository.findAllActivos();
+        if (sistemas == null) {
+            return List.of();
+        }
         sistemas.forEach(s -> {
             Hibernate.initialize(s.getValidaciones());
             Hibernate.initialize(s.getObservaciones());
         });
 
         return sistemas.stream()
-                .filter(s -> area == null || area.isEmpty() || "all".equals(area) || area.equalsIgnoreCase(getAreaNombre(s)))
-                .filter(s -> criticidad == null || criticidad.isEmpty() || "all".equals(criticidad) || criticidad.equalsIgnoreCase(getCriticidadNombre(s)))
+                .filter(s -> DirectorTexto.matchesFilter(area, catalogHelper.valorCatalogo(s.getIdAreaUsuario())))
+                .filter(s -> DirectorTexto.matchesFilter(criticidad, catalogHelper.valorCatalogo(s.getIdCriticidad())))
                 .map(s -> {
                     ReporteInventarioDTO dto = new ReporteInventarioDTO();
                     dto.setCodigo(s.getCodigoUnico());
                     dto.setNombre(s.getNombre());
-                    dto.setTipo("No especificado");
-                    dto.setCriticidad(getCriticidadNombre(s));
-                    dto.setEstadoValidacion(s.getEstadoValidacion());
-                    dto.setEstadoOperativo("Activo");
+                    dto.setTipo(catalogHelper.valorCatalogo(s.getIdTipoAplicativo()));
+                    dto.setCriticidad(catalogHelper.valorCatalogo(s.getIdCriticidad()));
+                    dto.setEstadoValidacion(DirectorEstados.normalizarEstadoSistema(s.getEstadoValidacion()));
+                    dto.setEstadoOperativo(DirectorEstados.normalizarEstadoSistema(s.getEstadoFlujo()));
                     dto.setIdAreaUsuario(s.getIdAreaUsuario());
-                    dto.setArea(getAreaNombre(s));
+                    dto.setArea(catalogHelper.valorCatalogo(s.getIdAreaUsuario()));
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -91,31 +75,43 @@ public class ReportesServiceImpl implements ReportesService {
     @Override
     @Transactional(readOnly = true)
     public List<ReporteValidacionDTO> obtenerValidacion(String area, String estado, String validationStatus) {
-        List<ValidacionEntity> validaciones = validacionRepository.findAll();
-        validaciones.forEach(v -> Hibernate.initialize(v.getSistema()));
+        List<SistemaEntity> sistemas = sistemaRepository.findAllActivos();
+        if (sistemas == null) {
+            return List.of();
+        }
+        sistemas.forEach(s -> Hibernate.initialize(s.getValidaciones()));
 
-        return validaciones.stream()
-                .filter(v -> {
-                    if (area == null || area.isEmpty() || "all".equals(area)) return true;
-                    SistemaEntity s = v.getSistema();
-                    return s != null && area.equalsIgnoreCase(getAreaNombre(s));
-                })
-                .filter(v -> {
-                    if (estado == null || estado.isEmpty() || "all".equals(estado)) return true;
-                    return estado.equalsIgnoreCase(v.getEstadoValidacion());
-                })
-                .filter(v -> {
-                    if (validationStatus == null || validationStatus.isEmpty() || "all".equals(validationStatus)) return true;
-                    return validationStatus.equalsIgnoreCase(v.getEstadoValidacion());
-                })
-                .map(v -> {
+        String filtroEstado = (estado != null && !estado.isBlank()) ? estado : validationStatus;
+
+        // Una fila por sistema (última validación), evita duplicados por historial.
+        return sistemas.stream()
+                .filter(s -> DirectorTexto.matchesFilter(area, catalogHelper.valorCatalogo(s.getIdAreaUsuario())))
+                .filter(s -> DirectorTexto.matchesFilter(filtroEstado, s.getEstadoValidacion()))
+                .map(s -> {
+                    ValidacionEntity ultima = (s.getValidaciones() == null ? List.<ValidacionEntity>of() : s.getValidaciones())
+                            .stream()
+                            .max(Comparator.comparing(v -> v.getFechaValidacion() != null
+                                    ? v.getFechaValidacion()
+                                    : (v.getFechaActualizacion() != null ? v.getFechaActualizacion() : v.getFechaCreacion()),
+                                    Comparator.nullsLast(Comparator.naturalOrder())))
+                            .orElse(null);
+
                     ReporteValidacionDTO dto = new ReporteValidacionDTO();
-                    SistemaEntity s = v.getSistema();
-                    dto.setCodigo(s != null ? s.getCodigoUnico() : "N/A");
-                    dto.setNombre(s != null ? s.getNombre() : "N/A");
-                    dto.setEstadoValidacion(v.getEstadoValidacion());
-                    dto.setFechaValidacion(v.getFechaValidacion() != null ? v.getFechaValidacion().format(DATE_FORMAT) : "No reportada");
-                    dto.setArea(s != null ? getAreaNombre(s) : "N/A");
+                    dto.setCodigo(s.getCodigoUnico());
+                    dto.setNombre(s.getNombre());
+                    dto.setEstadoValidacion(DirectorEstados.normalizarEstadoSistema(s.getEstadoValidacion()));
+                    dto.setArea(catalogHelper.valorCatalogo(s.getIdAreaUsuario()));
+                    dto.setCriticidad(catalogHelper.valorCatalogo(s.getIdCriticidad()));
+                    if (ultima != null && ultima.getFechaValidacion() != null) {
+                        dto.setFechaValidacion(ultima.getFechaValidacion().format(DATE_FORMAT));
+                        dto.setFechaValidacionIso(ultima.getFechaValidacion().format(ISO_DATE));
+                    } else if (s.getFechaActualizacion() != null) {
+                        dto.setFechaValidacion(s.getFechaActualizacion().format(DATE_FORMAT));
+                        dto.setFechaValidacionIso(s.getFechaActualizacion().format(ISO_DATE));
+                    } else {
+                        dto.setFechaValidacion("No reportada");
+                        dto.setFechaValidacionIso("");
+                    }
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -124,35 +120,54 @@ public class ReportesServiceImpl implements ReportesService {
     @Override
     @Transactional(readOnly = true)
     public List<ReporteRiesgoDTO> obtenerRiesgos(String area, String criticidad) {
-        List<SistemaEntity> sistemas = sistemaRepository.findAll();
-        List<ReporteRiesgoDTO> resultados = new ArrayList<>();
+        List<SistemaEntity> sistemas = sistemaRepository.findAllActivos();
+        if (sistemas == null || sistemas.isEmpty()) {
+            return List.of();
+        }
 
+        List<ReporteRiesgoDTO> resultados = new ArrayList<>();
         for (SistemaEntity sistema : sistemas) {
-            Hibernate.initialize(sistema.getValidaciones());
-            Hibernate.initialize(sistema.getObservaciones());
-            
+            if (!DirectorTexto.matchesFilter(area, catalogHelper.valorCatalogo(sistema.getIdAreaUsuario()))) {
+                continue;
+            }
+            String crit = catalogHelper.valorCatalogo(sistema.getIdCriticidad());
+            if (!DirectorTexto.matchesFilter(criticidad, crit)) {
+                continue;
+            }
+
             List<ValidacionEntity> validaciones = validacionRepository.findByIdSistema(sistema.getIdSistema());
             List<SeguridadEntity> seguridades = seguridadRepository.findByIdSistema(sistema.getIdSistema());
-
-            List<RiesgoDTO> riesgos = riesgoMapper.calcularRiesgos(sistema, validaciones, seguridades);
+            List<ObservacionEntity> observaciones = observacionRepository.findByIdSistema(sistema.getIdSistema());
+            List<RiesgoDTO> riesgos = riesgoMapper.calcularRiesgos(sistema, validaciones, seguridades, observaciones);
 
             for (RiesgoDTO riesgo : riesgos) {
+                // Solo reportar sistemas con riesgo no controlado, o todos si el frontend espera filas.
                 ReporteRiesgoDTO dto = new ReporteRiesgoDTO();
                 dto.setCodigoSistema(riesgo.getCodigo());
                 dto.setRiesgo(riesgo.getTitulo());
                 dto.setCategoria(riesgo.getCategoria());
-                dto.setEstado(riesgo.getEstado());
-                dto.setCriticidad(getCriticidadNombre(sistema));
-                dto.setArea(getAreaNombre(sistema));
-                dto.setFechaIso(riesgo.getDetectado());
-                dto.setRiesgoNivel(riesgo.getNivelTexto()); // Para el nivel de riesgo en la tabla
+                dto.setEstado(DirectorTexto.upper(riesgo.getEstado()));
+                dto.setCriticidad(crit);
+                dto.setArea(catalogHelper.valorCatalogo(sistema.getIdAreaUsuario()));
+                dto.setFechaIso(DirectorTexto.safe(riesgo.getDetectado()));
+                dto.setRiesgoNivel(toNivelReporte(riesgo.getNivel(), riesgo.getNivelTexto()));
                 resultados.add(dto);
             }
         }
+        return resultados;
+    }
 
-        return resultados.stream()
-                .filter(r -> area == null || area.isEmpty() || "all".equals(area) || area.equalsIgnoreCase(r.getArea()))
-                .filter(r -> criticidad == null || criticidad.isEmpty() || "all".equals(criticidad) || criticidad.equalsIgnoreCase(r.getCriticidad()))
-                .collect(Collectors.toList());
+    private static String toNivelReporte(String nivelBadge, String nivelTexto) {
+        String t = DirectorTexto.upper(nivelTexto);
+        if (!t.isEmpty() && (t.contains("CRIT") || t.equals("ALTO") || t.equals("MEDIO") || t.equals("BAJO"))) {
+            if (t.contains("CRIT")) return "CRITICO";
+            return t.replace("Á", "A").replace("Í", "I");
+        }
+        return switch (DirectorTexto.safe(nivelBadge).toLowerCase()) {
+            case "critico" -> "CRITICO";
+            case "advertencia", "alto" -> "MEDIO";
+            case "controlado" -> "BAJO";
+            default -> "MEDIO";
+        };
     }
 }

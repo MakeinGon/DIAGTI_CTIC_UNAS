@@ -10,7 +10,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/director/riesgos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class RiesgosController {
 
     private final RiesgosService riesgosService;
@@ -20,7 +19,7 @@ public class RiesgosController {
             @RequestParam(required = false) String area,
             @RequestParam(required = false) String nivel,
             @RequestParam(required = false) String estado,
-            @RequestParam(required = false) String categoria) {  // ← NUEVO parámetro
+            @RequestParam(required = false) String categoria) {
         return riesgosService.obtenerRiesgos(area, nivel, estado, categoria);
     }
 }

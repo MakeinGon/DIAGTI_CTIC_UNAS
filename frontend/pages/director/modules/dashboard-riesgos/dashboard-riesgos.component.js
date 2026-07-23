@@ -28,8 +28,12 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ---------- dashboard-riesgos.js ---------- */
 "use strict";
 
-const API_BASE = "http://localhost:8080/api/director/riesgos";
-const API_REPORTES = "http://localhost:8080/api/director/reportes";
+const API_BASE = (typeof DIAGTI_DIRECTOR_API !== "undefined")
+    ? DIAGTI_DIRECTOR_API.riesgos
+    : "/api/director/riesgos";
+const API_REPORTES = (typeof DIAGTI_DIRECTOR_API !== "undefined")
+    ? DIAGTI_DIRECTOR_API.reportes
+    : "/api/director/reportes";
 
 // Almacenar catálogos para los filtros
 let catalogos = {
@@ -460,11 +464,14 @@ function cache() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    cache(); 
+    cache();
     if (!el.content || !el.tableBody) {
         console.error("[DIAGTI] Faltan elementos del Riesgos.");
         return;
     }
-    bind(); 
+    if (typeof diagtiDirectorAplicarPerfil === "function") {
+        diagtiDirectorAplicarPerfil();
+    }
+    bind();
     loadData();
 });

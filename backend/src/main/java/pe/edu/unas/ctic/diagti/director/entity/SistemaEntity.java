@@ -112,24 +112,53 @@ public class SistemaEntity {
     // ... el resto de métodos existentes ...
     
     public String getEstadoValidacion() {
-        if (estadoFlujo != null && !estadoFlujo.isEmpty()) {
-            String[] estadosValidos = {"BORRADOR", "ENVIADO", "OBSERVADO", "SUBSANADO", 
-                                       "VALIDADO", "RECHAZADO", "CERRADO", "PENDIENTE"};
+        if (estadoFlujo != null && !estadoFlujo.isBlank()) {
+            String flujo = estadoFlujo.trim().toUpperCase()
+                    .replace(' ', '_')
+                    .replace('-', '_');
+            String[] estadosValidos = {
+                    "BORRADOR", "ENVIADO", "EN_VALIDACION", "OBSERVADO", "SUBSANADO",
+                    "VALIDADO", "RECHAZADO", "CERRADO", "PENDIENTE"
+            };
             for (String estado : estadosValidos) {
-                if (estado.equalsIgnoreCase(estadoFlujo)) {
-                    return estadoFlujo.toUpperCase();
+                if (estado.equals(flujo)) {
+                    return estado;
                 }
             }
         }
-        
+
         if (validaciones == null || validaciones.isEmpty()) {
             return "PENDIENTE";
         }
+
         ValidacionEntity ultima = validaciones.stream()
-                .max((v1, v2) -> v1.getFechaValidacion().compareTo(v2.getFechaValidacion()))
+                .max((v1, v2) -> {
+                    java.time.LocalDateTime f1 = v1.getFechaValidacion() != null
+                            ? v1.getFechaValidacion()
+                            : v1.getFechaActualizacion() != null
+                            ? v1.getFechaActualizacion()
+                            : v1.getFechaCreacion();
+                    java.time.LocalDateTime f2 = v2.getFechaValidacion() != null
+                            ? v2.getFechaValidacion()
+                            : v2.getFechaActualizacion() != null
+                            ? v2.getFechaActualizacion()
+                            : v2.getFechaCreacion();
+                    if (f1 == null && f2 == null) {
+                        return 0;
+                    }
+                    if (f1 == null) {
+                        return -1;
+                    }
+                    if (f2 == null) {
+                        return 1;
+                    }
+                    return f1.compareTo(f2);
+                })
                 .orElse(null);
-        if (ultima == null) return "PENDIENTE";
-        return ultima.getEstadoValidacion().toUpperCase();
+        if (ultima == null || ultima.getEstadoValidacion() == null || ultima.getEstadoValidacion().isBlank()) {
+            return "PENDIENTE";
+        }
+        return ultima.getEstadoValidacion().trim().toUpperCase();
     }
 
     public String getCriticidadNombre() {

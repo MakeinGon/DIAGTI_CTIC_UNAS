@@ -9,4 +9,6 @@ public interface DashboardService {
     List<ResumenValidacionDTO> obtenerResumenValidacion();
     List<CriticidadDTO> obtenerCriticidades();
     List<SistemaResumenDTO> obtenerSistemasFiltrados(String area, String criticidad, String validacion, String busqueda);
+    List<ActividadRecienteDTO> obtenerActividadReciente();
+    List<ObservacionConsolidadaDTO> obtenerObservacionesConsolidadas(String origen, String estado);
 }

@@ -1,46 +1,235 @@
-const rows=[...document.querySelectorAll('#tablaSistemas tbody tr')],message=document.getElementById('mensaje');let currentRow=null,subEvidence=[],editSub=-1;
-function addHistory(code,name,action,detail,state,section,after){let h=[];try{h=JSON.parse(localStorage.getItem('diagti-historial')||'[]')}catch{}h.unshift({id:`evt-${Date.now()}-${Math.random().toString(16).slice(2)}`,date:new Date().toISOString(),code,name,action,detail,user:'Carlos Rojas',state,section,after});localStorage.setItem('diagti-historial',JSON.stringify(h.slice(0,200)))}
-function openModal(id){document.getElementById(id).classList.add('show')}function closeModal(id){document.getElementById(id).classList.remove('show')}
-document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));document.querySelectorAll('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)closeModal(m.id)});
-function stateClass(s){return {Validado:'success',Observado:'observed',Borrador:'neutral',Corregido:'corrected',Enviado:'sent',Nuevo:'neutral'}[s]||'neutral'}
-function syncStates(){rows.forEach(r=>{const saved=localStorage.getItem(`diagti-estado-${r.dataset.code}`);const record=JSON.parse(localStorage.getItem(`diagti-registro-${r.dataset.code}`)||'null');if(saved)r.dataset.estado=saved;else if(record?.estado)r.dataset.estado=record.estado;const badge=r.querySelector('.estado-badge');badge.textContent=r.dataset.estado;badge.className=`badge ${stateClass(r.dataset.estado)} estado-badge`;renderActions(r)})}
-function renderActions(r){const c=r.querySelector('.actions-cell'),s=r.dataset.estado,code=r.dataset.code;let html='<button class="btn outline ver">Ver</button>';
-if(s==='Nuevo')html+=`<a class="btn primary" href="infraestructura.html?sistema=${code}">Registrar</a>`;
-if(s==='Borrador')html+=`<a class="btn secondary" href="infraestructura.html?sistema=${code}">Completar</a>`;
-if(s==='Observado')html+='<button class="btn warning-btn subsanar">Subsanar</button>';
-if(s==='Corregido')html+='<button class="btn secondary editar-correccion">Editar</button><button class="btn primary enviar">Enviar a validación</button>';
-c.innerHTML=html;bindRow(r)}
-function bindRow(r){r.querySelector('.ver')?.addEventListener('click',()=>showDetail(r));r.querySelector('.subsanar')?.addEventListener('click',()=>openCorrection(r,false));r.querySelector('.editar-correccion')?.addEventListener('click',()=>openCorrection(r,true));r.querySelector('.enviar')?.addEventListener('click',()=>send(r))}
-function showDetail(r){const corr=JSON.parse(localStorage.getItem(`subsanacion-${r.dataset.code}`)||'null');let extra='';if(corr){extra=`<h4>Corrección guardada</h4><p>${corr.descripcion}</p><h4>Evidencias</h4><ul>${corr.evidencias.map(e=>`<li><strong>${e.nombre}</strong> — ${e.archivo||e.url}</li>`).join('')}</ul>`}document.getElementById('detalleSistema').innerHTML=`<dl><dt>Código</dt><dd>${r.dataset.code}</dd><dt>Sistema</dt><dd>${r.dataset.name}</dd><dt>Plataforma</dt><dd>${r.cells[2].textContent}</dd><dt>Exposición</dt><dd>${r.cells[3].textContent}</dd><dt>Estado</dt><dd>${r.dataset.estado}</dd><dt>Riesgo</dt><dd>${r.dataset.riesgo}</dd></dl>${extra}`;openModal('modalVer')}
-function openCorrection(r,edit){currentRow=r;document.getElementById('codigoSubsanar').value=r.dataset.code;document.getElementById('tituloSubsanar').textContent=edit?'Editar corrección':'Subsanar observación';document.getElementById('textoObservacion').textContent=r.dataset.observation||'Revise y corrija la observación registrada por el Validador CTIC.';document.getElementById('fechaObservacion').textContent='Fecha: '+(r.dataset.observationDate||'Sin fecha');const saved=JSON.parse(localStorage.getItem(`subsanacion-${r.dataset.code}`)||'null');document.getElementById('descripcionCorreccion').value=saved?.descripcion||'';subEvidence=saved?.evidencias||[];renderSub();openModal('modalSubsanar')}
-function renderSub(){const body=document.getElementById('tablaSubEvidencias');document.getElementById('subContador').textContent=subEvidence.length;if(!subEvidence.length){body.innerHTML='<tr><td colspan="5" class="empty">No hay evidencias agregadas.</td></tr>';return}body.innerHTML=subEvidence.map((e,i)=>`<tr><td>${e.tipo}</td><td>${e.nombre}</td><td>${e.archivo||e.url}</td><td>${e.descripcion||'—'}</td><td><button type="button" class="mini edit-sub" data-i="${i}">Editar</button><button type="button" class="mini delete-sub" data-i="${i}">Eliminar</button></td></tr>`).join('');body.querySelectorAll('.edit-sub').forEach(b=>b.onclick=()=>editSubEvidence(+b.dataset.i));body.querySelectorAll('.delete-sub').forEach(b=>b.onclick=()=>{subEvidence.splice(+b.dataset.i,1);renderSub()})}
-function editSubEvidence(i){const e=subEvidence[i];document.getElementById('subTipo').value=e.tipo;document.getElementById('subNombre').value=e.nombre;document.getElementById('subUrl').value=e.url||'';document.getElementById('subDescripcion').value=e.descripcion||'';document.getElementById('subArchivo').value='';editSub=i;document.getElementById('btnAgregarSub').textContent='Actualizar evidencia'}
-function clearSub(){['subTipo','subNombre','subUrl','subDescripcion'].forEach(id=>document.getElementById(id).value='');document.getElementById('subArchivo').value='';editSub=-1;document.getElementById('btnAgregarSub').textContent='Agregar evidencia'}
-document.getElementById('btnAgregarSub').onclick=()=>{
- const tipo=document.getElementById('subTipo').value;
- const nombre=document.getElementById('subNombre').value.trim();
- const file=document.getElementById('subArchivo').files[0]?.name||'';
- const url=document.getElementById('subUrl').value.trim();
- const desc=document.getElementById('subDescripcion').value.trim();
- const err=document.getElementById('errorSubEvidencia');
- const old=editSub>=0?subEvidence[editSub]:{};
- const archivoFinal=file||old.archivo||'';
- const urlFinal=url||old.url||'';
- if(!tipo||!nombre||(!archivoFinal&&!urlFinal)){
-   err.textContent='Complete tipo, nombre y agregue archivo o URL.';
-   return;
- }
- const estabaEditando=editSub>=0;
- const item={tipo,nombre,archivo:archivoFinal,url:urlFinal,descripcion:desc};
- if(estabaEditando)subEvidence[editSub]=item;else subEvidence.push(item);
- err.textContent=estabaEditando?'Evidencia actualizada correctamente. Puede agregar otra evidencia.':'Evidencia agregada correctamente.';
- err.classList.add('success-inline');
- clearSub();
- renderSub();
- document.getElementById('subTipo').focus();
- setTimeout(()=>{err.textContent='';err.classList.remove('success-inline')},2500);
-};
-document.getElementById('formSubsanar').onsubmit=e=>{e.preventDefault();const desc=document.getElementById('descripcionCorreccion').value.trim(),err=document.getElementById('errorSubsanar');if(!desc||!subEvidence.length){err.textContent='Ingrese la descripción general y agregue al menos una evidencia.';return}localStorage.setItem(`subsanacion-${currentRow.dataset.code}`,JSON.stringify({descripcion:desc,evidencias:subEvidence,estado:'Corregido',fecha:new Date().toLocaleString('es-PE')}));localStorage.setItem(`diagti-estado-${currentRow.dataset.code}`,'Corregido');addHistory(currentRow.dataset.code,currentRow.dataset.name,'Subsanación','Se guardó la corrección y sus evidencias.','Corregido','Subsanación','Corregido');currentRow.dataset.estado='Corregido';err.textContent='';closeModal('modalSubsanar');renderActions(currentRow);const badge=currentRow.querySelector('.estado-badge');badge.textContent='Corregido';badge.className='badge corrected estado-badge';message.className='message success-text';message.textContent='Corrección guardada. Puede editarla antes de enviarla nuevamente.'};
-function send(r){if(!confirm('¿Desea enviar la corrección al Validador CTIC? Después no podrá editarla.'))return;localStorage.setItem(`diagti-estado-${r.dataset.code}`,'Enviado');addHistory(r.dataset.code,r.dataset.name,'Envío','La corrección fue reenviada al Validador CTIC.','Enviado','Flujo de validación','Enviado');r.dataset.estado='Enviado';const badge=r.querySelector('.estado-badge');badge.textContent='Enviado';badge.className='badge sent estado-badge';renderActions(r);message.className='message success-text';message.textContent='Sistema enviado correctamente al Validador CTIC.'}
-function filter(){const q=document.getElementById('buscar').value.toLowerCase(),st=document.getElementById('estado').value,ri=document.getElementById('riesgo').value;let n=0;rows.forEach(r=>{const ok=r.textContent.toLowerCase().includes(q)&&(!st||r.dataset.estado===st)&&(!ri||r.dataset.riesgo===ri);r.hidden=!ok;if(ok)n++});document.getElementById('sinResultados').classList.toggle('hidden',n>0)}
-document.getElementById('buscar').oninput=filter;document.getElementById('estado').onchange=filter;document.getElementById('riesgo').onchange=filter;syncStates();const queryParams=new URLSearchParams(location.search);const requestedState=queryParams.get('estado');if(requestedState){document.getElementById('estado').value=requestedState;filter()}const requested=queryParams.get('sistema');if(requested){const row=rows.find(r=>r.dataset.code===requested);if(row){row.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>showDetail(row),250)}}
+// DIAGTI · Mis Sistemas (Infraestructura) — API real
+
+let sistemasCache = [];
+let currentSistema = null;
+let subEvidence = [];
+let editSub = -1;
+
+const message = document.getElementById('mensaje');
+
+function esc(v = '') {
+    return String(v).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[c]));
+}
+
+function stateClass(s) {
+    return {
+        Validado: 'success', Observado: 'observed', Borrador: 'neutral',
+        Corregido: 'corrected', Enviado: 'sent', Nuevo: 'neutral', Subsanado: 'corrected'
+    }[s] || 'neutral';
+}
+
+function riskClass(r) {
+    return { Bajo: 'low', Medio: 'warning', Alto: 'danger', Crítico: 'danger' }[r] || 'warning';
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+document.querySelectorAll('[data-close]').forEach(b => {
+    b.onclick = () => closeModal(b.dataset.close);
+});
+document.querySelectorAll('.modal').forEach(m => {
+    m.onclick = e => { if (e.target === m) closeModal(m.id); };
+});
+
+async function cargarSistemas() {
+    const q = document.getElementById('buscar')?.value || '';
+    const estado = document.getElementById('estado')?.value || '';
+    const riesgo = document.getElementById('riesgo')?.value || '';
+    try {
+        sistemasCache = await diagtiInfraListarSistemas({ q, estado, riesgo });
+        renderTabla(sistemasCache);
+        if (message) {
+            message.className = 'message';
+            message.textContent = sistemasCache.length ? '' : 'No hay sistemas registrados.';
+        }
+    } catch (err) {
+        sistemasCache = [];
+        renderTabla([]);
+        if (message) {
+            message.className = 'message error-text';
+            message.textContent = err.message || 'Error al cargar sistemas';
+        }
+    }
+}
+
+function renderTabla(list) {
+    const tbody = document.querySelector('#tablaSistemas tbody');
+    const empty = document.getElementById('sinResultados');
+    if (!tbody) return;
+    if (!list.length) {
+        tbody.innerHTML = '';
+        if (empty) empty.classList.remove('hidden');
+        return;
+    }
+    if (empty) empty.classList.add('hidden');
+    tbody.innerHTML = list.map(s => `
+        <tr data-id="${s.sistemaId}" data-code="${esc(s.codigo)}" data-estado="${esc(s.estadoSistemaUi)}" data-name="${esc(s.nombre)}" data-riesgo="${esc(s.nivelRiesgo)}">
+            <td>${esc(s.codigo)}</td>
+            <td><strong>${esc(s.nombre)}</strong></td>
+            <td>${esc(s.plataforma || 'Sin registrar')}</td>
+            <td>${esc(s.exposicion || 'Sin registrar')}</td>
+            <td><span class="badge ${stateClass(s.estadoSistemaUi)} estado-badge">${esc(s.estadoSistemaUi)}</span></td>
+            <td><span class="badge ${riskClass(s.nivelRiesgo)}">${esc(s.nivelRiesgo || 'Medio')}</span></td>
+            <td class="actions-cell"></td>
+        </tr>
+    `).join('');
+    tbody.querySelectorAll('tr').forEach(r => renderActions(r));
+}
+
+function renderActions(r) {
+    const c = r.querySelector('.actions-cell');
+    const s = r.dataset.estado;
+    const id = r.dataset.id;
+    let html = '<button class="btn outline ver" type="button">Ver</button>';
+    if (s === 'Nuevo') html += `<a class="btn primary" href="infraestructura.html?sistemaId=${id}">Registrar</a>`;
+    if (s === 'Borrador') html += `<a class="btn secondary" href="infraestructura.html?sistemaId=${id}">Completar</a>`;
+    if (s === 'Observado') html += '<button class="btn warning-btn observar" type="button">Ver observaciones</button>';
+    if (s === 'Corregido' || s === 'Subsanado') {
+        html += '<button class="btn secondary revisar" type="button">Revisar subsanación</button>';
+    }
+    c.innerHTML = html;
+    c.querySelector('.ver')?.addEventListener('click', () => showDetail(id));
+    c.querySelector('.observar')?.addEventListener('click', () => openObservaciones(id));
+    c.querySelector('.revisar')?.addEventListener('click', () => openObservaciones(id, true));
+}
+
+async function showDetail(sistemaId) {
+    try {
+        const d = await diagtiInfraDetalle(sistemaId);
+        const obs = (d.observaciones || []).slice(0, 5).map(o =>
+            `<li><strong>${esc(o.estadoObservacion || o.estado)}</strong> — ${esc(o.descripcion || '')}</li>`
+        ).join('');
+        document.getElementById('detalleSistema').innerHTML = `
+            <dl>
+                <dt>Código</dt><dd>${esc(d.codigo)}</dd>
+                <dt>Sistema</dt><dd>${esc(d.nombre)}</dd>
+                <dt>Área</dt><dd>${esc(d.area || '—')}</dd>
+                <dt>Estado</dt><dd>${esc(d.estadoSistemaUi)}</dd>
+                <dt>Validación</dt><dd>${esc(d.estadoValidacion || '—')}</dd>
+                <dt>Riesgo</dt><dd>${esc(d.nivelRiesgo || '—')}</dd>
+                <dt>Plataforma</dt><dd>${esc(d.evaluacion?.datos?.plataforma || 'Sin registrar')}</dd>
+                <dt>Exposición</dt><dd>${esc(d.evaluacion?.datos?.exposicion || 'Sin registrar')}</dd>
+            </dl>
+            <h4>Observaciones</h4>
+            ${obs ? `<ul>${obs}</ul>` : '<p>Sin observaciones.</p>'}
+        `;
+        openModal('modalVer');
+    } catch (err) {
+        if (message) {
+            message.className = 'message error-text';
+            message.textContent = err.message;
+        }
+    }
+}
+
+async function openObservaciones(sistemaId, modoRevision = false) {
+    currentSistema = sistemaId;
+    try {
+        const detalle = await diagtiInfraDetalle(sistemaId);
+        const obs = (detalle.observaciones || []).filter(o => {
+            const area = (o.area || '').toUpperCase();
+            const desc = o.descripcion || '';
+            return area.includes('INFRA') || desc.includes('[INFRAESTRUCTURA]') || !modoRevision;
+        });
+        const pendientes = obs.filter(o => {
+            const e = (o.estadoObservacion || o.estado || '').toUpperCase();
+            return e === 'PENDIENTE' || e === 'EN_REVISION';
+        });
+        const first = pendientes[0] || obs[0];
+        document.getElementById('codigoSubsanar').value = detalle.codigo || '';
+        document.getElementById('tituloSubsanar').textContent = modoRevision
+            ? 'Revisar subsanación'
+            : 'Observaciones de infraestructura';
+        document.getElementById('textoObservacion').textContent = first
+            ? first.descripcion
+            : 'No hay observaciones registradas para este sistema.';
+        document.getElementById('fechaObservacion').textContent = first?.fechaObservacion
+            ? `Fecha: ${first.fechaObservacion}`
+            : '';
+
+        const form = document.getElementById('formSubsanar');
+        let actions = document.getElementById('infraObsActions');
+        if (!actions) {
+            actions = document.createElement('div');
+            actions.id = 'infraObsActions';
+            actions.className = 'modal-actions';
+            form.appendChild(actions);
+        }
+        if (modoRevision && first && (first.estadoObservacion || first.estado || '').toUpperCase() === 'EN_REVISION') {
+            actions.innerHTML = `
+                <button class="btn secondary" type="button" data-close="modalSubsanar">Cancelar</button>
+                <button class="btn warning-btn" type="button" id="btnRechazarObs">Rechazar</button>
+                <button class="btn primary" type="button" id="btnAprobarObs">Aprobar subsanación</button>
+            `;
+            document.getElementById('btnAprobarObs').onclick = async () => {
+                await diagtiInfraAprobarSubsanacion(first.idObservacion || first.id);
+                closeModal('modalSubsanar');
+                message.className = 'message success-text';
+                message.textContent = 'Subsanación aprobada.';
+                cargarSistemas();
+            };
+            document.getElementById('btnRechazarObs').onclick = async () => {
+                const c = prompt('Comentario de rechazo (opcional):') || '';
+                await diagtiInfraRechazarSubsanacion(first.idObservacion || first.id, c);
+                closeModal('modalSubsanar');
+                message.className = 'message success-text';
+                message.textContent = 'Subsanación rechazada.';
+                cargarSistemas();
+            };
+        } else {
+            actions.innerHTML = `
+                <button class="btn secondary" type="button" data-close="modalSubsanar">Cerrar</button>
+                <button class="btn primary" type="button" id="btnNuevaObs">Registrar observación</button>
+            `;
+            document.getElementById('btnNuevaObs').onclick = async () => {
+                const texto = document.getElementById('descripcionCorreccion').value.trim();
+                if (!texto) {
+                    document.getElementById('errorSubsanar').textContent = 'Ingrese la descripción de la observación.';
+                    return;
+                }
+                await diagtiInfraRegistrarObservacion(sistemaId, { descripcion: texto });
+                closeModal('modalSubsanar');
+                message.className = 'message success-text';
+                message.textContent = 'Observación registrada con prefijo [INFRAESTRUCTURA].';
+                cargarSistemas();
+            };
+        }
+        document.getElementById('descripcionCorreccion').value = '';
+        document.getElementById('errorSubsanar').textContent = '';
+        openModal('modalSubsanar');
+    } catch (err) {
+        if (message) {
+            message.className = 'message error-text';
+            message.textContent = err.message;
+        }
+    }
+}
+
+document.getElementById('formSubsanar')?.addEventListener('submit', e => e.preventDefault());
+
+['buscar', 'estado', 'riesgo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener(el.tagName === 'INPUT' ? 'input' : 'change', () => cargarSistemas());
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(location.search);
+    const requestedState = params.get('estado');
+    if (requestedState && document.getElementById('estado')) {
+        document.getElementById('estado').value = requestedState;
+    }
+    await cargarSistemas();
+    const sistemaId = params.get('sistemaId') || params.get('sistema');
+    if (sistemaId) {
+        const row = document.querySelector(`tr[data-id="${sistemaId}"]`)
+            || document.querySelector(`tr[data-code="${sistemaId}"]`);
+        if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => showDetail(row.dataset.id), 250);
+        }
+    }
+});

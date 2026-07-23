@@ -6,6 +6,7 @@ public class ValidadorDTO {
     private Long idValidacion;
     private Long idSistema;
     private String nombreSistema;
+    private String area;
     private Long idValidador;
     private String nombreValidador;
     private String estadoValidacion;
@@ -23,6 +24,8 @@ public class ValidadorDTO {
     public void setIdSistema(Long idSistema) { this.idSistema = idSistema; }
     public String getNombreSistema() { return nombreSistema; }
     public void setNombreSistema(String nombreSistema) { this.nombreSistema = nombreSistema; }
+    public String getArea() { return area; }
+    public void setArea(String area) { this.area = area; }
     public Long getIdValidador() { return idValidador; }
     public void setIdValidador(Long idValidador) { this.idValidador = idValidador; }
     public String getNombreValidador() { return nombreValidador; }

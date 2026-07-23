@@ -13,26 +13,11 @@ public interface ValidacionMapper {
 
     ValidacionMapper INSTANCE = Mappers.getMapper(ValidacionMapper.class);
 
-    // Mapear de Entity a DTO - SOLO LOS CAMPOS QUE EXISTEN EN EL DTO
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "fechaValidacion", target = "fechaValidacion")
-    @Mapping(source = "observacion", target = "observacion")
-    @Mapping(source = "comentarioSubsanacion", target = "comentarioSubsanacion")
-    @Mapping(source = "estadoValidacion", target = "estadoValidacion")
-    @Mapping(source = "validador", target = "validador")
-    @Mapping(source = "esUltima", target = "esUltima")
-    // El DTO no tiene sistemaId, así que lo ignoramos
+    @Mapping(source = "sistemaId", target = "sistemaId")
     ValidacionDTO toDTO(ValidacionEntity entity);
 
-    // Mapear de DTO a Entity - SOLO LOS CAMPOS QUE EXISTEN EN LA ENTITY
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "fechaValidacion", target = "fechaValidacion")
-    @Mapping(source = "observacion", target = "observacion")
-    @Mapping(source = "comentarioSubsanacion", target = "comentarioSubsanacion")
-    @Mapping(source = "estadoValidacion", target = "estadoValidacion")
-    @Mapping(source = "validador", target = "validador")
-    @Mapping(source = "esUltima", target = "esUltima")
-    // El DTO no tiene sistemaId, así que lo ignoramos
+    @Mapping(source = "sistemaId", target = "sistemaId")
+    @Mapping(target = "sistema", ignore = true)
     ValidacionEntity toEntity(ValidacionDTO dto);
 
     List<ValidacionDTO> toDTOList(List<ValidacionEntity> entities);

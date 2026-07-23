@@ -2,217 +2,221 @@ package pe.edu.unas.ctic.diagti.director.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
-import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
 import pe.edu.unas.ctic.diagti.director.dto.RiesgoDTO;
+import pe.edu.unas.ctic.diagti.director.entity.ObservacionEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SeguridadEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.entity.ValidacionEntity;
+import pe.edu.unas.ctic.diagti.director.support.DirectorCatalogHelper;
+import pe.edu.unas.ctic.diagti.director.support.DirectorEstados;
+import pe.edu.unas.ctic.diagti.director.support.DirectorTexto;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
+/**
+ * Regla de riesgo consolidado (un sistema = un riesgo):
+ * 1) Observaciones abiertas (PENDIENTE/EN_REVISION/RECHAZADA) elevan el nivel.
+ * 2) Estado OBSERVADO/RECHAZADO en flujo o validación.
+ * 3) Criticidad Alta + observaciones abiertas → crítico.
+ * 4) Seguridad sin SSL/TLS solo si existen registros de seguridad.
+ * 5) Contrato no vigente / legacy / borrador > 30 días como factores secundarios.
+ * Se conserva el factor de mayor severidad: critico > advertencia > controlado.
+ */
 @Component
 @RequiredArgsConstructor
 public class RiesgoMapper {
 
-    private final CatalogoRepository catalogoRepository;
+    private final DirectorCatalogHelper catalogHelper;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    /**
-     * Obtiene el nombre del área desde el catálogo usando el id_area_usuario
-     */
-    private String getAreaNombre(SistemaEntity sistema) {
-        if (sistema == null || sistema.getIdAreaUsuario() == null) {
-            return "No especificada";
+    public List<RiesgoDTO> calcularRiesgos(SistemaEntity sistema,
+                                           List<ValidacionEntity> validaciones,
+                                           List<SeguridadEntity> seguridades,
+                                           List<ObservacionEntity> observaciones) {
+        List<RiesgoDTO> factores = new ArrayList<>();
+        if (sistema == null || sistema.getIdSistema() == null) {
+            return List.of();
         }
-        try {
-            return catalogoRepository.findById(sistema.getIdAreaUsuario())
-                    .map(CatalogoEntity::getValor)
-                    .orElse("No especificada");
-        } catch (Exception e) {
-            return "No especificada";
+
+        String area = catalogHelper.valorCatalogo(sistema.getIdAreaUsuario());
+        String estadoSistema = DirectorEstados.normalizarEstadoSistema(sistema.getEstadoValidacion());
+        String criticidad = catalogHelper.valorCatalogo(sistema.getIdCriticidad());
+        long obsAbiertas = observaciones == null ? 0
+                : observaciones.stream().filter(o -> DirectorEstados.esObservacionAbierta(o.getEstadoObservacion())).count();
+
+        if (obsAbiertas > 0) {
+            int rank = DirectorTexto.normalize(criticidad).contains("alta")
+                    || DirectorTexto.normalize(criticidad).contains("critica") ? 3 : 2;
+            factores.add(factor(sistema, area, "Observaciones",
+                    rank == 3 ? "critico" : "advertencia",
+                    rank == 3 ? "Crítico" : "Medio",
+                    "Observaciones abiertas",
+                    obsAbiertas + " observación(es) pendiente(s) de atender.",
+                    true, false, fechaSistema(sistema)));
         }
+
+        boolean validacionObservada = (validaciones != null && validaciones.stream().anyMatch(v -> {
+            String e = DirectorTexto.upper(v.getEstadoValidacion());
+            return DirectorEstados.OBSERVADO.equals(e) || DirectorEstados.RECHAZADO.equals(e);
+        })) || DirectorEstados.OBSERVADO.equals(estadoSistema) || DirectorEstados.RECHAZADO.equals(estadoSistema);
+
+        if (validacionObservada) {
+            factores.add(factor(sistema, area, "Validación",
+                    mapNivelBadge(sistema.getNivelRiesgo(), "advertencia"),
+                    mapNivelTexto(sistema.getNivelRiesgo(), "Medio"),
+                    estadoSistema,
+                    "El sistema se encuentra observado o rechazado en validación.",
+                    false, false, fechaSistema(sistema)));
+        }
+
+        if (seguridades != null && !seguridades.isEmpty()) {
+            boolean tieneSsl = seguridades.stream()
+                    .anyMatch(s -> {
+                        String t = DirectorTexto.safe(s.getTipoControl()).toUpperCase();
+                        return t.contains("SSL") || t.contains("TLS");
+                    });
+            if (!tieneSsl) {
+                factores.add(factor(sistema, area, "Seguridad",
+                        "critico", "Crítico",
+                        "Revisión de seguridad",
+                        "Existen controles de seguridad sin SSL/TLS registrado.",
+                        true, false, fechaSistema(sistema)));
+            }
+        }
+
+        if (Boolean.FALSE.equals(sistema.getContratoVigente())
+                && !DirectorEstados.BORRADOR.equals(estadoSistema)) {
+            factores.add(factor(sistema, area, "Contractual",
+                    "advertencia", "Medio",
+                    "Gestión contractual",
+                    "Contrato sin vigencia o soporte no confirmado.",
+                    false, true, fechaSistema(sistema)));
+        }
+
+        if (Boolean.TRUE.equals(sistema.getEsLegacy())) {
+            factores.add(factor(sistema, area, "Obsolescencia",
+                    "critico", "Crítico",
+                    "Migración",
+                    "Sistema marcado como legacy.",
+                    true, false, fechaSistema(sistema)));
+        }
+
+        if (DirectorEstados.BORRADOR.equals(estadoSistema) && sistema.getFechaCreacion() != null
+                && sistema.getFechaCreacion().plusDays(30).isBefore(LocalDateTime.now())) {
+            factores.add(factor(sistema, area, "Proceso",
+                    "advertencia", "Medio",
+                    "Borrador",
+                    "Registro en borrador por más de 30 días.",
+                    false, true, fechaSistema(sistema)));
+        }
+
+        if (factores.isEmpty()) {
+            // Sistema sin factores de riesgo: aún se reporta como controlado una sola vez.
+            factores.add(factor(sistema, area, "General",
+                    "controlado", "Bajo",
+                    estadoSistema,
+                    "Sin factores de riesgo activos detectados.",
+                    false, false, fechaSistema(sistema)));
+        }
+
+        Optional<RiesgoDTO> principal = factores.stream()
+                .max(Comparator.comparingInt(r -> severidad(r.getNivel())));
+
+        if (principal.isEmpty()) {
+            return List.of();
+        }
+
+        RiesgoDTO consolidado = principal.get();
+        consolidado.setId("R-" + sistema.getIdSistema());
+        consolidado.setCodigo(sistema.getCodigoUnico());
+        consolidado.setTitulo(consolidado.getCategoria() + " · " + DirectorTexto.safe(sistema.getNombre()));
+        consolidado.setEstado(obsAbiertas > 0 || validacionObservada ? "abierto" : "controlado");
+        consolidado.setPeriod(periodoActual());
+        consolidado.setProbability(severidad(consolidado.getNivel()) >= 3 ? 3 : 2);
+        consolidado.setImpact(severidad(consolidado.getNivel()) >= 3 ? 3 : 2);
+        return List.of(consolidado);
     }
 
-    /**
-     * Obtiene el nivel de riesgo real desde el catálogo
-     */
-    private String getNivelRiesgoReal(SistemaEntity sistema) {
-        if (sistema == null || sistema.getNivelRiesgo() == null) {
-            return "medio";  // valor por defecto
-        }
-        // El nivel de riesgo ya está en la tabla sistemas como "BAJO", "MEDIO", "ALTO", "CRITICO"
-        // Lo devolvemos directamente
-        String nivel = sistema.getNivelRiesgo().toUpperCase();
-        // Mapear a los valores que espera el frontend para el badge
-        return switch (nivel) {
-            case "BAJO" -> "controlado";
-            case "MEDIO" -> "advertencia";
-            case "ALTO" -> "alto";
-            case "CRITICO" -> "critico";
-            default -> "advertencia";
+    /** Compatibilidad con llamadas anteriores sin observaciones. */
+    public List<RiesgoDTO> calcularRiesgos(SistemaEntity sistema,
+                                           List<ValidacionEntity> validaciones,
+                                           List<SeguridadEntity> seguridades) {
+        return calcularRiesgos(sistema, validaciones, seguridades, List.of());
+    }
+
+    private RiesgoDTO factor(SistemaEntity sistema, String area, String categoria,
+                             String nivel, String nivelTexto, String etapa,
+                             String recomendacion, boolean vulnerabilidad, boolean cuello,
+                             String detectado) {
+        RiesgoDTO riesgo = new RiesgoDTO();
+        riesgo.setId("R-" + sistema.getIdSistema());
+        riesgo.setCodigo(sistema.getCodigoUnico());
+        riesgo.setTitulo(categoria + " · " + DirectorTexto.safe(sistema.getNombre()));
+        riesgo.setArea(area);
+        riesgo.setCategoria(categoria);
+        riesgo.setNivel(nivel);
+        riesgo.setNivelTexto(nivelTexto);
+        riesgo.setEstado("abierto");
+        riesgo.setEtapa(etapa);
+        riesgo.setResponsable(catalogHelper.nombreUsuario(sistema.getIdResponsableTecnico()));
+        riesgo.setDetectado(detectado);
+        riesgo.setRecomendacion(recomendacion);
+        riesgo.setVulnerabilidad(vulnerabilidad);
+        riesgo.setCuelloBotella(cuello);
+        riesgo.setProbability(2);
+        riesgo.setImpact(2);
+        riesgo.setPeriod(periodoActual());
+        return riesgo;
+    }
+
+    private static int severidad(String nivel) {
+        return switch (DirectorTexto.safe(nivel).toLowerCase()) {
+            case "critico" -> 3;
+            case "alto", "advertencia" -> 2;
+            default -> 1;
         };
     }
 
-    /**
-     * Obtiene el nivel de riesgo en formato texto para mostrar en el frontend
-     */
-    private String getNivelRiesgoTexto(SistemaEntity sistema) {
-        if (sistema == null || sistema.getNivelRiesgo() == null) {
-            return "Medio";
-        }
-        String nivel = sistema.getNivelRiesgo().toUpperCase();
-        return switch (nivel) {
+    private static String mapNivelBadge(String nivelRiesgo, String def) {
+        String n = DirectorTexto.upper(nivelRiesgo);
+        return switch (n) {
+            case "BAJO" -> "controlado";
+            case "MEDIO" -> "advertencia";
+            case "ALTO" -> "advertencia";
+            case "CRITICO" -> "critico";
+            default -> def;
+        };
+    }
+
+    private static String mapNivelTexto(String nivelRiesgo, String def) {
+        String n = DirectorTexto.upper(nivelRiesgo);
+        return switch (n) {
             case "BAJO" -> "Bajo";
             case "MEDIO" -> "Medio";
             case "ALTO" -> "Alto";
             case "CRITICO" -> "Crítico";
-            default -> "No definido";
+            default -> def;
         };
     }
 
-    public List<RiesgoDTO> calcularRiesgos(SistemaEntity sistema, List<ValidacionEntity> validaciones, List<SeguridadEntity> seguridades) {
-        List<RiesgoDTO> riesgos = new ArrayList<>();
-        
-        String nombreArea = getAreaNombre(sistema);
-        String nivelRiesgoBadge = getNivelRiesgoReal(sistema);  // "critico", "advertencia", "controlado"
-        String nivelRiesgoTexto = getNivelRiesgoTexto(sistema);  // "Bajo", "Medio", "Alto", "Crítico"
-
-        // 1. Riesgo por validación observada o rechazada
-        if (validaciones != null) {
-            for (ValidacionEntity v : validaciones) {
-                if ("OBSERVADO".equalsIgnoreCase(v.getEstadoValidacion()) || "RECHAZADO".equalsIgnoreCase(v.getEstadoValidacion())) {
-                    RiesgoDTO riesgo = new RiesgoDTO();
-                    riesgo.setId("R-" + UUID.randomUUID().toString().substring(0, 8));
-                    riesgo.setCodigo(sistema.getCodigoUnico());
-                    riesgo.setTitulo("Validación " + v.getEstadoValidacion().toLowerCase() + " - " + sistema.getNombre());
-                    riesgo.setArea(nombreArea);
-                    riesgo.setCategoria("Validación");
-                    riesgo.setNivel(nivelRiesgoBadge);  // ← Usar el nivel de riesgo real
-                    riesgo.setEstado("abierto");
-                    riesgo.setEtapa(v.getEstadoValidacion());
-                    riesgo.setResponsable("Validador CTIC");
-                    if (v.getFechaValidacion() != null) {
-                        riesgo.setDetectado(v.getFechaValidacion().format(DATE_FORMAT));
-                    }
-                    riesgo.setRecomendacion("Revisar observaciones y subsanar.");
-                    riesgo.setVulnerabilidad(false);
-                    riesgo.setCuelloBotella(false);
-                    riesgo.setProbability(2);
-                    riesgo.setImpact(2);
-                    riesgo.setPeriod("2026-I");
-                    riesgo.setNivelTexto(nivelRiesgoTexto);  // ← Para mostrar en la tabla
-                    riesgos.add(riesgo);
-                }
-            }
+    private static String fechaSistema(SistemaEntity sistema) {
+        if (sistema.getFechaActualizacion() != null) {
+            return sistema.getFechaActualizacion().format(DATE_FORMAT);
         }
-
-        // 2. Riesgo por seguridad: si no tiene SSL/TLS
-        if (seguridades != null) {
-            boolean tieneSSL = seguridades.stream().anyMatch(s -> "SSL/TLS".equalsIgnoreCase(s.getTipoControl()));
-            if (!tieneSSL) {
-                RiesgoDTO riesgo = new RiesgoDTO();
-                riesgo.setId("R-" + UUID.randomUUID().toString().substring(0, 8));
-                riesgo.setCodigo(sistema.getCodigoUnico());
-                riesgo.setTitulo("Falta SSL/TLS - " + sistema.getNombre());
-                riesgo.setArea(nombreArea);
-                riesgo.setCategoria("Seguridad");
-                riesgo.setNivel("critico");  // ← Falta SSL es siempre crítico
-                riesgo.setEstado("abierto");
-                riesgo.setEtapa("Revisión de seguridad");
-                riesgo.setResponsable("Seguridad TI");
-                if (sistema.getFechaCreacion() != null) {
-                    riesgo.setDetectado(sistema.getFechaCreacion().format(DATE_FORMAT));
-                }
-                riesgo.setRecomendacion("Implementar certificado SSL/TLS.");
-                riesgo.setVulnerabilidad(true);
-                riesgo.setCuelloBotella(false);
-                riesgo.setProbability(3);
-                riesgo.setImpact(3);
-                riesgo.setPeriod("2026-I");
-                riesgo.setNivelTexto("Crítico");
-                riesgos.add(riesgo);
-            }
+        if (sistema.getFechaCreacion() != null) {
+            return sistema.getFechaCreacion().format(DATE_FORMAT);
         }
+        return LocalDateTime.now().format(DATE_FORMAT);
+    }
 
-        // 3. Riesgo por contrato vencido o sin soporte
-        if (sistema.getContratoVigente() == null || !sistema.getContratoVigente()) {
-            RiesgoDTO riesgo = new RiesgoDTO();
-            riesgo.setId("R-" + UUID.randomUUID().toString().substring(0, 8));
-            riesgo.setCodigo(sistema.getCodigoUnico());
-            riesgo.setTitulo("Contrato sin vigencia - " + sistema.getNombre());
-            riesgo.setArea(nombreArea);
-            riesgo.setCategoria("Contractual");
-            riesgo.setNivel("advertencia");
-            riesgo.setEstado("abierto");
-            riesgo.setEtapa("Gestión contractual");
-            riesgo.setResponsable("Administración");
-            if (sistema.getFechaCreacion() != null) {
-                riesgo.setDetectado(sistema.getFechaCreacion().format(DATE_FORMAT));
-            }
-            riesgo.setRecomendacion("Renovar contrato o gestionar nuevo soporte.");
-            riesgo.setVulnerabilidad(false);
-            riesgo.setCuelloBotella(true);
-            riesgo.setProbability(2);
-            riesgo.setImpact(2);
-            riesgo.setPeriod("2026-I");
-            riesgo.setNivelTexto("Medio");
-            riesgos.add(riesgo);
-        }
-
-        // 4. Riesgo por sistema legacy
-        if (sistema.getEsLegacy() != null && sistema.getEsLegacy()) {
-            RiesgoDTO riesgo = new RiesgoDTO();
-            riesgo.setId("R-" + UUID.randomUUID().toString().substring(0, 8));
-            riesgo.setCodigo(sistema.getCodigoUnico());
-            riesgo.setTitulo("Sistema legacy - " + sistema.getNombre());
-            riesgo.setArea(nombreArea);
-            riesgo.setCategoria("Obsolescencia");
-            riesgo.setNivel("critico");
-            riesgo.setEstado("abierto");
-            riesgo.setEtapa("Migración");
-            riesgo.setResponsable("Área de Desarrollo");
-            if (sistema.getFechaCreacion() != null) {
-                riesgo.setDetectado(sistema.getFechaCreacion().format(DATE_FORMAT));
-            }
-            riesgo.setRecomendacion("Planificar migración a tecnologías modernas.");
-            riesgo.setVulnerabilidad(true);
-            riesgo.setCuelloBotella(false);
-            riesgo.setProbability(3);
-            riesgo.setImpact(3);
-            riesgo.setPeriod("2026-I");
-            riesgo.setNivelTexto("Crítico");
-            riesgos.add(riesgo);
-        }
-
-        // 5. Riesgo por estado de flujo en "Borrador" por más de 30 días
-        if ("BORRADOR".equalsIgnoreCase(sistema.getEstadoFlujo()) && sistema.getFechaCreacion() != null) {
-            if (sistema.getFechaCreacion().plusDays(30).isBefore(java.time.LocalDateTime.now())) {
-                RiesgoDTO riesgo = new RiesgoDTO();
-                riesgo.setId("R-" + UUID.randomUUID().toString().substring(0, 8));
-                riesgo.setCodigo(sistema.getCodigoUnico());
-                riesgo.setTitulo("Registro en borrador prolongado - " + sistema.getNombre());
-                riesgo.setArea(nombreArea);
-                riesgo.setCategoria("Proceso");
-                riesgo.setNivel("advertencia");
-                riesgo.setEstado("abierto");
-                riesgo.setEtapa("Borrador");
-                riesgo.setResponsable("Área de Desarrollo");
-                riesgo.setDetectado(sistema.getFechaCreacion().format(DATE_FORMAT));
-                riesgo.setRecomendacion("Completar el registro y enviar a validación.");
-                riesgo.setVulnerabilidad(false);
-                riesgo.setCuelloBotella(true);
-                riesgo.setProbability(2);
-                riesgo.setImpact(2);
-                riesgo.setPeriod("2026-I");
-                riesgo.setNivelTexto("Medio");
-                riesgos.add(riesgo);
-            }
-        }
-
-        return riesgos;
+    private static String periodoActual() {
+        int year = LocalDateTime.now().getYear();
+        int month = LocalDateTime.now().getMonthValue();
+        return year + (month <= 6 ? "-I" : "-II");
     }
 }

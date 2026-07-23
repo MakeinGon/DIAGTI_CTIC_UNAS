@@ -1,11 +1,16 @@
 package pe.edu.unas.ctic.diagti.desarrollador.controller;
 
-import pe.edu.unas.ctic.diagti.desarrollador.dto.DashboardDesarrolloDTO;
-import pe.edu.unas.ctic.diagti.desarrollador.service.DashboardDesarrolloService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.unas.ctic.diagti.desarrollador.dto.DashboardDesarrolloDTO;
+import pe.edu.unas.ctic.diagti.desarrollador.dto.frontend.SistemaFrontendDTO;
+import pe.edu.unas.ctic.diagti.desarrollador.service.DashboardDesarrolloService;
+import pe.edu.unas.ctic.diagti.desarrollador.service.DesarrolladorInventarioService;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/desarrollador/dashboard")
@@ -14,18 +19,19 @@ import org.springframework.web.bind.annotation.*;
 public class DashboardDesarrolloController {
 
     private final DashboardDesarrolloService dashboardService;
+    private final DesarrolladorInventarioService inventarioService;
 
     @GetMapping
-    public ResponseEntity<DashboardDesarrolloDTO> obtenerDashboard(
-            @RequestParam(required = false) String usuario) {
-        log.info("📊 GET /api/desarrollador/dashboard - usuario: {}", usuario);
-        
-        // Si no se proporciona usuario, usar uno por defecto
-        if (usuario == null || usuario.isEmpty()) {
-            usuario = "Carlos Rojas";
-        }
-        
-        DashboardDesarrolloDTO dashboard = dashboardService.obtenerDashboard(usuario);
-        return ResponseEntity.ok(dashboard);
+    public ResponseEntity<DashboardDesarrolloDTO> obtenerDashboard(@RequestParam String username) {
+        log.info("GET /api/desarrollador/dashboard username={}", username);
+        return ResponseEntity.ok(dashboardService.obtenerDashboard(username));
+    }
+
+    /**
+     * Listado en formato frontend para que el dashboard Luis Lara consuma un único contrato.
+     */
+    @GetMapping("/sistemas")
+    public ResponseEntity<List<SistemaFrontendDTO>> listarSistemasDashboard(@RequestParam String username) {
+        return ResponseEntity.ok(inventarioService.listarSistemasDelDesarrollador(username, Map.of()));
     }
 }

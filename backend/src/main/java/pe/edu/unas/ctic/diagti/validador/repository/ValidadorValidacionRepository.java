@@ -10,20 +10,32 @@ import java.util.List;
 
 @Repository
 public interface ValidadorValidacionRepository extends JpaRepository<Validacion, Long> {
-    
-    // ✅ USANDO @Query EN VEZ DE DERIVED QUERY
-    @Query("SELECT v FROM Validacion v WHERE v.idSistema = :idSistema ORDER BY v.fechaCreacion DESC")
+
+    @Query("SELECT v FROM ValidadorValidacion v WHERE v.idSistema = :idSistema ORDER BY v.fechaCreacion DESC")
     List<Validacion> findBySistemaIdSistema(@Param("idSistema") Long idSistema);
-    
-    @Query("SELECT v FROM Validacion v WHERE v.estadoValidacion = 'PENDIENTE' ORDER BY v.fechaCreacion DESC")
+
+    @Query("""
+            SELECT v FROM ValidadorValidacion v
+            WHERE v.estadoValidacion IN ('PENDIENTE', 'SUBSANADO')
+            ORDER BY v.fechaCreacion DESC
+            """)
     List<Validacion> findPendientes();
-    
-    @Query("SELECT v FROM Validacion v WHERE v.estadoValidacion = 'OBSERVADO' ORDER BY v.fechaSubsanacion DESC")
+
+    @Query("SELECT v FROM ValidadorValidacion v WHERE v.estadoValidacion = 'OBSERVADO' ORDER BY v.fechaActualizacion DESC")
     List<Validacion> findEnSubsanacion();
-    
-    @Query("SELECT v FROM Validacion v WHERE v.estadoValidacion = 'VALIDADO' ORDER BY v.fechaValidacion DESC")
+
+    @Query("SELECT v FROM ValidadorValidacion v WHERE v.estadoValidacion = 'VALIDADO' ORDER BY v.fechaValidacion DESC")
     List<Validacion> findValidados();
-    
-    @Query("SELECT COUNT(v) FROM Validacion v WHERE v.estadoValidacion = :estado")
+
+    @Query("SELECT COUNT(v) FROM ValidadorValidacion v WHERE v.estadoValidacion = :estado")
     Long countByEstadoValidacion(@Param("estado") String estado);
+
+    @Query("""
+            SELECT v FROM ValidadorValidacion v
+            WHERE v.idSistema = :idSistema
+              AND v.estadoValidacion IN ('PENDIENTE', 'OBSERVADO', 'SUBSANADO')
+            ORDER BY v.fechaCreacion DESC
+            """)
+    List<Validacion> findActivasBySistema(@Param("idSistema") Long idSistema);
+
 }

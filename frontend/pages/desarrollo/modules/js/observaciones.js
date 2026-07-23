@@ -10,21 +10,23 @@ let evidenciasCorreccion = [];
 let urlsCorreccion = [];
 
 // ============================================================
-// OBTENER SISTEMAS DESDE localStorage
+// OBTENER SISTEMAS DESDE BACKEND OFICIAL
 // ============================================================
+let sistemasObsCache = [];
+
 function getSistemas() {
-    const stored = localStorage.getItem('diagti_sistemas');
-    if (stored) {
-        try {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                return parsed;
-            }
-        } catch (e) {
-            console.log('Error al parsear datos');
-        }
+    return Array.isArray(sistemasObsCache) ? sistemasObsCache : [];
+}
+
+async function cargarSistemasObservaciones() {
+    try {
+        sistemasObsCache = await diagtiFetchSistemas();
+    } catch (error) {
+        console.error('Error cargando observaciones/sistemas:', error);
+        sistemasObsCache = [];
+        alert('No se pudieron cargar las observaciones desde el servidor.');
     }
-    return [];
+    return sistemasObsCache;
 }
 
 // ============================================================
@@ -95,7 +97,7 @@ window.abrirModalCorreccion = function (id) {
     console.log('✅ abrirModalCorreccion ejecutada con id:', id);
 
     const sistemas = getSistemas();
-    const sistema = sistemas.find(s => s.id === id);
+    const sistema = sistemas.find(s => String(s.id) === String(id));
     if (!sistema) {
         alert('Sistema no encontrado');
         return;
@@ -144,7 +146,7 @@ window.cerrarModalCorreccion = function () {
 // ============================================================
 // GUARDAR CORRECCIÓN (DEFINIDA GLOBALMENTE)
 // ============================================================
-window.guardarCorreccion = function () {
+window.guardarCorreccion = async function () {
     console.log('💾 guardarCorreccion ejecutada');
 
     if (!sistemaCorrigiendo) {
@@ -152,48 +154,18 @@ window.guardarCorreccion = function () {
         return;
     }
 
-    const lenguaje = document.getElementById('corr-lenguaje')?.value?.trim() || '';
-    const version_lenguaje = document.getElementById('corr-version-lenguaje')?.value?.trim() || '';
-    const framework = document.getElementById('corr-framework')?.value?.trim() || '';
-    const version_framework = document.getElementById('corr-version-framework')?.value?.trim() || '';
-    const arquitectura = document.getElementById('corr-arquitectura')?.value?.trim() || '';
-    const patron = document.getElementById('corr-patron')?.value?.trim() || '';
-    const repositorio = document.getElementById('corr-repositorio')?.value?.trim() || '';
-
-    const motor_bd = document.getElementById('corr-motor-bd')?.value || '';
-    const version_bd = document.getElementById('corr-version-bd')?.value?.trim() || '';
-    const tipo_bd = document.getElementById('corr-tipo-bd')?.value || 'Relacional';
-
-    const seguridadCheckboxes = document.querySelectorAll('#corregir-seguridad input[type="checkbox"]');
-    const seguridad = [];
-    seguridadCheckboxes.forEach(cb => { if (cb.checked) seguridad.push(cb.value); });
-
-    sistemaCorrigiendo.lenguaje = lenguaje;
-    sistemaCorrigiendo.version_lenguaje = version_lenguaje;
-    sistemaCorrigiendo.framework = framework;
-    sistemaCorrigiendo.version_framework = version_framework;
-    sistemaCorrigiendo.arquitectura = arquitectura;
-    sistemaCorrigiendo.patron = patron;
-    sistemaCorrigiendo.repositorio = repositorio;
-    sistemaCorrigiendo.motor_bd = motor_bd;
-    sistemaCorrigiendo.version_bd = version_bd;
-    sistemaCorrigiendo.tipo_bd = tipo_bd;
-    sistemaCorrigiendo.seguridad = seguridad;
-    sistemaCorrigiendo.evidencias = evidenciasCorreccion;
-    sistemaCorrigiendo.urls = urlsCorreccion;
-    sistemaCorrigiendo.observaciones_validador = [];
-    sistemaCorrigiendo.estado = 'Subsanado';
-
-    const sistemas = getSistemas();
-    const index = sistemas.findIndex(s => s.id === sistemaCorrigiendo.id);
-    if (index !== -1) {
-        sistemas[index] = sistemaCorrigiendo;
-        localStorage.setItem('diagti_sistemas', JSON.stringify(sistemas));
+    try {
+        await diagtiSubsanarSistema(
+            sistemaCorrigiendo.id,
+            'Corrección aplicada desde módulo Observaciones (desarrollo)'
+        );
+        await cargarSistemasObservaciones();
         alert('✅ Correcciones guardadas. El sistema ha sido marcado como Subsanado.');
         window.cerrarModalCorreccion();
         renderizarObservaciones();
-    } else {
-        alert('❌ Error al guardar.');
+    } catch (error) {
+        console.error(error);
+        alert('❌ Error al guardar: ' + (error.message || error));
     }
 };
 
@@ -453,8 +425,9 @@ window.cambiarTabCorreccion = function (tabId) {
 // ============================================================
 // INICIALIZACIÓN
 // ============================================================
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     console.log('🚀 Página de Observaciones cargada');
+    await cargarSistemasObservaciones();
     renderizarObservaciones();
 
     document.querySelectorAll('.nav-item').forEach(item => {
@@ -462,47 +435,5 @@ document.addEventListener('DOMContentLoaded', function () {
             item.classList.add('active');
         }
     });
-    // ============================================================
-    // FUNCIÓN DE PRUEBA PARA VERIFICAR EL MODAL
-    // ============================================================
-    function probarModal() {
-        console.log('🧪 Probando modal...');
-        const modal = document.getElementById('modal-correccion');
-        if (modal) {
-            modal.classList.add('open');
-            document.getElementById('modal-correccion-titulo').textContent = '🧪 Prueba del Modal';
-            document.getElementById('modal-correccion-subtitulo').textContent = 'El modal funciona correctamente';
-            document.getElementById('modal-correccion-body').innerHTML = `
-            <div style="padding:20px;text-align:center;">
-                <h3>✅ El modal se está mostrando correctamente</h3>
-                <p style="color:var(--muted);">Si ves este mensaje, el modal funciona.</p>
-            </div>
-        `;
-            console.log('✅ Modal abierto correctamente');
-        } else {
-            console.error('❌ Modal no encontrado');
-        }
-    }
 
-    // Ejecutar prueba al cargar la página
-    document.addEventListener('DOMContentLoaded', function () {
-        console.log('🚀 Página de Observaciones cargada');
-        renderizarObservaciones();
-
-        // Agregar botón de prueba (opcional)
-        const topbar = document.querySelector('.topbar');
-        if (topbar) {
-            const testBtn = document.createElement('button');
-            testBtn.className = 'btn btn-ghost btn-sm';
-            testBtn.textContent = '🧪 Probar Modal';
-            testBtn.onclick = probarModal;
-            topbar.appendChild(testBtn);
-        }
-
-        document.querySelectorAll('.nav-item').forEach(item => {
-            if (item.getAttribute('href') === 'observaciones.html') {
-                item.classList.add('active');
-            }
-        });
-    });
 });

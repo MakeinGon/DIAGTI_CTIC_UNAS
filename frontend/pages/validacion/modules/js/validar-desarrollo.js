@@ -151,17 +151,17 @@ async function cargarSistema() {
 
         // ✅ USAR DATOS DE VALIDACIÓN DIRECTAMENTE (sin llamar a /api/sistemas)
         const sistema = {
-            idSistema: validacion.idSistema,
-            nombre: validacion.nombreSistema || 'Sistema #' + id,
-            estadoValidacion: validacion.estadoValidacion || 'Pendiente',
-            fechaCreacion: validacion.fechaCreacion,
+            idSistema: validacion.idSistema || validacion.id,
+            nombre: validacion.nombreSistema || validacion.nombre || 'Sistema #' + id,
+            estadoValidacion: validacion.estadoValidacion || validacion.estado || 'Pendiente',
+            fechaCreacion: validacion.fechaCreacion || validacion.fechaEnvio,
             observacionGeneral: validacion.observacionGeneral || 'Sin observaciones'
         };
 
         document.getElementById('titulo-sistema').textContent = `📋 ${sistema.nombre}`;
         document.getElementById('estado-actual').textContent = sistema.estadoValidacion;
         document.getElementById('fecha-envio').textContent = sistema.fechaCreacion ? new Date(sistema.fechaCreacion).toLocaleDateString() : '--';
-        document.getElementById('responsable').textContent = validacion.nombreValidador || 'No asignado';
+        document.getElementById('responsable').textContent = validacion.responsableTecnico || validacion.responsable || validacion.nombreValidador || 'No asignado';
 
         infoContainer.innerHTML = `
             <div class="info-row">
@@ -245,7 +245,7 @@ async function cargarSistema() {
 // 6. EJECUTAR VALIDACIÓN (SOLO APROBAR Y OBSERVAR)
 // ============================================
 
-function ejecutarValidacion(estado, comentarioForzado = null) {
+async function ejecutarValidacion(estado, comentarioForzado = null) {
     let comentario = comentarioForzado;
 
     if (!comentario) {
@@ -256,7 +256,6 @@ function ejecutarValidacion(estado, comentarioForzado = null) {
     const resumenDiv = document.getElementById('resumen-validacion');
     const botones = document.querySelectorAll('.form-actions .btn');
 
-    // ✅ Validar comentario solo para OBSERVAR
     if (estado === 'observado') {
         if (!comentario || comentario.length < 5) {
             const textarea = document.getElementById('comentario-validacion');
@@ -273,60 +272,78 @@ function ejecutarValidacion(estado, comentarioForzado = null) {
     const textarea = document.getElementById('comentario-validacion');
     if (textarea) textarea.classList.remove('error');
 
-    // Si es aprobado y no hay comentario, usar uno por defecto
     if (estado === 'aprobado' && !comentario) {
-        comentario = '✅ Validación de desarrollo aprobada correctamente.';
+        comentario = 'Validación de desarrollo aprobada correctamente.';
     }
 
     botones.forEach(b => b.disabled = true);
 
     const id = obtenerIdSistema();
-    const sistema = getSistema(id);
-    const nombreSistema = sistema.nombre || 'Sistema sin nombre';
+    let username = null;
+    try {
+        const session = JSON.parse(localStorage.getItem('diagti_session') || '{}');
+        username = session.username || null;
+    } catch (_) { /* ignore */ }
 
     const acciones = {
-        'aprobado': { texto: 'Aprobando', icono: '✅', estadoFinal: 'Aprobado', clase: 'success' },
-        'observado': { texto: 'Observando', icono: '⚠️', estadoFinal: 'Observado', clase: 'warning' }
+        'aprobado': { endpoint: '/api/validacion/validar', estadoFinal: 'Aprobado', clase: 'success', texto: 'Aprobando' },
+        'observado': { endpoint: '/api/validacion/observar', estadoFinal: 'Observado', clase: 'warning', texto: 'Observando' }
     };
-
     const accion = acciones[estado];
     mensajeDiv.textContent = `⏳ ${accion.texto} validación de desarrollo...`;
     mensajeDiv.className = 'form-message info';
 
-    setTimeout(() => {
+    try {
+        const response = await fetch(accion.endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                idSistema: Number(id),
+                sistemaId: Number(id),
+                comentario: comentario,
+                observacionGeneral: comentario,
+                username: username,
+                estado: estado
+            })
+        });
+        if (!response.ok) {
+            let msg = `Error ${response.status}`;
+            try {
+                const err = await response.json();
+                msg = err.message || err.mensaje || msg;
+            } catch (_) { /* ignore */ }
+            throw new Error(msg);
+        }
+
         mensajeDiv.textContent = `✅ Validación de desarrollo ${accion.estadoFinal.toLowerCase()} correctamente`;
         mensajeDiv.className = 'form-message success';
-
         document.getElementById('resumen-estado').textContent = accion.estadoFinal;
-        document.getElementById('resumen-validador').textContent = 'Validador CTIC';
+        document.getElementById('resumen-validador').textContent = username || 'Validador CTIC';
         document.getElementById('resumen-fecha').textContent = new Date().toLocaleString();
         resumenDiv.className = 'resumen-validacion show';
-
         document.getElementById('estado-actual').textContent = accion.estadoFinal;
-
         const badgeEstado = document.querySelector('.hero-card .badge');
         if (badgeEstado) {
             badgeEstado.textContent = accion.estadoFinal;
             badgeEstado.className = `badge ${accion.clase}`;
         }
 
-        // ✅ Si es observado, redirigir a registrar observación de desarrollo
         if (estado === 'observado') {
+            mostrarNotificacion('📝 Redirigiendo a registro de observaciones...', 'info');
             setTimeout(() => {
-                mostrarNotificacion('📝 Redirigiendo a registro de observaciones de desarrollo...', 'info');
-                setTimeout(() => {
-                    window.location.href = `registrar-observacion.html?id=${id}&area=desarrollo`;
-                }, 1000);
-            }, 500);
+                window.location.href = `registrar-observacion.html?id=${id}&area=desarrollo`;
+            }, 800);
         } else {
-            // ✅ Si es aprobado, mostrar botón "Siguiente"
             document.getElementById('btn-siguiente-container').style.display = 'block';
-            setTimeout(() => {
-                botones.forEach(b => b.disabled = false);
-                mostrarNotificacion(`✅ Validación de desarrollo aprobada correctamente`, 'success');
-            }, 1000);
+            botones.forEach(b => b.disabled = false);
+            mostrarNotificacion('✅ Validación de desarrollo aprobada correctamente', 'success');
         }
-    }, 1500);
+    } catch (error) {
+        console.error(error);
+        mensajeDiv.textContent = `❌ ${error.message || error}`;
+        mensajeDiv.className = 'form-message error';
+        botones.forEach(b => b.disabled = false);
+    }
 }
 
 // ============================================
