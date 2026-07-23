@@ -38,14 +38,10 @@ public class AuthServiceImpl implements AuthService {
             Usuario usuario = usuarioOpt.get();
             System.out.println("✅ Usuario encontrado: " + usuario.getUsername());
 
-            // ✅ COMPARACIÓN DIRECTA - Sin BCrypt
+            // Comparación directa (login temporal en texto plano; no registrar secretos)
             String passwordIngresada = loginRequest.getPassword();
             String passwordGuardada = usuario.getPasswordHash();
-            
-            System.out.println("📌 Password ingresada: " + passwordIngresada);
-            System.out.println("📌 Password guardada: " + passwordGuardada);
 
-            // Comparar directamente (sin encriptación)
             if (!passwordIngresada.equals(passwordGuardada)) {
                 System.out.println("❌ Contraseña incorrecta");
                 response.setSuccess(false);
@@ -83,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
             case "admin" -> "/pages/admin/modules/gestion-usuarios/gestion-usuarios.component.html";
             case "auditor" -> "/pages/auditor/modules/html/inventario.html";
             case "desarrollo" -> "/pages/desarrollo/modules/html/dashboard.html";
-            case "directivo" -> "/pages/directivo/modules/html/dashboard-riesgos.html";
+            case "directivo" -> "/pages/director/modules/dashboard-riesgos/dashboard-riesgos.component.html";
             case "funcional" -> "/pages/funcional/modules/gestion-catalogos/gestion-catalogos.component.html";
             case "infraestructura" -> "/pages/infraestructura/html/dashboard.html";
             case "validacion" -> "/pages/validacion/modules/html/dashboard.html";

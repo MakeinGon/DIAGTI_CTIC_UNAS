@@ -15,3 +15,6 @@ frontend/.angular/
 
 
 .env
+
+# Respaldos locales de PostgreSQL
+Backups/
