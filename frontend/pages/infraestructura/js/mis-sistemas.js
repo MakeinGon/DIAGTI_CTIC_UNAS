@@ -16,7 +16,8 @@ function esc(v = '') {
 function stateClass(s) {
     return {
         Validado: 'success', Observado: 'observed', Borrador: 'neutral',
-        Corregido: 'corrected', Enviado: 'sent', Nuevo: 'neutral', Subsanado: 'corrected'
+        Corregido: 'corrected', Enviado: 'sent', Nuevo: 'neutral',
+        'Pendiente de evaluación': 'neutral', Subsanado: 'corrected'
     }[s] || 'neutral';
 }
 
@@ -69,8 +70,8 @@ function renderTabla(list) {
         <tr data-id="${s.sistemaId}" data-code="${esc(s.codigo)}" data-estado="${esc(s.estadoSistemaUi)}" data-name="${esc(s.nombre)}" data-riesgo="${esc(s.nivelRiesgo)}">
             <td>${esc(s.codigo)}</td>
             <td><strong>${esc(s.nombre)}</strong></td>
-            <td>${esc(s.plataforma || 'Sin registrar')}</td>
-            <td>${esc(s.exposicion || 'Sin registrar')}</td>
+            <td>${esc(s.plataforma || 'Sin evaluar')}</td>
+            <td>${esc(s.exposicion || 'Sin evaluar')}</td>
             <td><span class="badge ${stateClass(s.estadoSistemaUi)} estado-badge">${esc(s.estadoSistemaUi)}</span></td>
             <td><span class="badge ${riskClass(s.nivelRiesgo)}">${esc(s.nivelRiesgo || 'Medio')}</span></td>
             <td class="actions-cell"></td>
@@ -84,7 +85,7 @@ function renderActions(r) {
     const s = r.dataset.estado;
     const id = r.dataset.id;
     let html = '<button class="btn outline ver" type="button">Ver</button>';
-    if (s === 'Nuevo') html += `<a class="btn primary" href="infraestructura.html?sistemaId=${id}">Registrar</a>`;
+    if (s === 'Nuevo' || s === 'Pendiente de evaluación') html += `<a class="btn primary" href="infraestructura.html?sistemaId=${id}">Registrar</a>`;
     if (s === 'Borrador') html += `<a class="btn secondary" href="infraestructura.html?sistemaId=${id}">Completar</a>`;
     if (s === 'Observado') html += '<button class="btn warning-btn observar" type="button">Ver observaciones</button>';
     if (s === 'Corregido' || s === 'Subsanado') {

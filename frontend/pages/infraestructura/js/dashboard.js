@@ -58,7 +58,7 @@ function actualizarDashboard(data) {
     const estados = data.estados || [];
     const maxState = Math.max(1, ...estados.map(e => e.cantidad || 0), 1);
     const stateContainer = document.getElementById('stateBars');
-    const stateOrder = ['Nuevo', 'Borrador', 'Enviado', 'Observado', 'Corregido', 'Validado'];
+    const stateOrder = ['Pendiente de evaluación', 'Nuevo', 'Borrador', 'Enviado', 'Observado', 'Corregido', 'Validado'];
     if (stateContainer) {
         stateContainer.innerHTML = stateOrder.map(nombre => {
             const encontrado = estados.find(e => e.nombre === nombre);

@@ -28,6 +28,10 @@ public class Usuario {
     
     @Column(name = "password_hash", length = 255)
     private String passwordHash;
+
+    /** Origen de cuenta: Local (contraseña local) o LDAP. */
+    @Column(name = "origen", length = 20)
+    private String origen;
     
     @Column(name = "estado")
     private Boolean estado = true;
@@ -61,6 +65,9 @@ public class Usuario {
     
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+    public String getOrigen() { return origen; }
+    public void setOrigen(String origen) { this.origen = origen; }
     
     public Boolean getEstado() { return estado; }
     public void setEstado(Boolean estado) { this.estado = estado; }

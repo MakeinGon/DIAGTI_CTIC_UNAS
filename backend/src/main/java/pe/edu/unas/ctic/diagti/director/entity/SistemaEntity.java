@@ -61,8 +61,20 @@ public class SistemaEntity {
     @Column(name = "estado_flujo", length = 50)
     private String estadoFlujo;
 
+    /** Debe coincidir con {@link #estadoFlujo} (columna legado {@code sistemas.estado}). */
+    @Column(name = "estado", length = 50)
+    private String estado;
+
+    @Column(name = "observaciones_desarrollo", columnDefinition = "TEXT")
+    private String observacionesDesarrollo;
+
     @Column(name = "nivel_riesgo", length = 20)
     private String nivelRiesgo;
+
+    public void setEstadoFlujoSincronizado(String nuevoEstado) {
+        this.estadoFlujo = nuevoEstado;
+        this.estado = nuevoEstado;
+    }
 
     @Column(name = "prioridad_migracion", length = 20)
     private String prioridadMigracion;

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Contrato JSON alineado al frontend Luis Lara (dashboard / mis-sistemas / observaciones).
+ * Contrato JSON alineado al frontend (dashboard / mis-sistemas / observaciones).
  */
 @Data
 @Builder
@@ -24,10 +24,13 @@ public class SistemaFrontendDTO {
     private String codigo;
     private String nombre;
     private String tipo;
+    private String tipoCodigo;
     private String estado;
     private String criticidad;
+    private String criticidadCodigo;
     private String fecha;
     private String area;
+    private String areaCodigo;
 
     @JsonProperty("responsable_tecnico")
     private String responsableTecnico;
@@ -49,14 +52,47 @@ public class SistemaFrontendDTO {
 
     private String observaciones;
     private String arquitectura;
+    private String lenguaje;
+
+    @JsonProperty("version_lenguaje")
+    private String versionLenguaje;
+
+    private String framework;
+
+    @JsonProperty("version_framework")
+    private String versionFramework;
+
+    private String patron;
+    private String repositorio;
+    private String tecnologias;
 
     @JsonProperty("motor_bd")
     private String motorBd;
+
+    @JsonProperty("version_bd")
+    private String versionBd;
+
+    @JsonProperty("tipo_bd")
+    private String tipoBd;
+
+    private String servidor;
+    private String esquema;
+    private String backup;
+    private String frecuencia;
+
+    @JsonProperty("cifrado")
+    private String cifrado;
+
+    @JsonProperty("responsable_bd")
+    private String responsableBd;
 
     @JsonProperty("tiene_integraciones")
     private Boolean tieneIntegraciones;
 
     private String riesgo;
+
+    @Builder.Default
+    private List<Object> integraciones = new ArrayList<>();
 
     @Builder.Default
     private List<Object> evidencias = new ArrayList<>();
@@ -67,6 +103,10 @@ public class SistemaFrontendDTO {
     @Builder.Default
     @JsonProperty("observaciones_validador")
     private List<ObservacionFrontendDTO> observacionesValidador = new ArrayList<>();
+
+    /** Metadato honesto: carga física de archivos aún no disponible. */
+    @JsonProperty("archivos_fisicos_soportados")
+    private Boolean archivosFisicosSoportados;
 
     @Data
     @NoArgsConstructor

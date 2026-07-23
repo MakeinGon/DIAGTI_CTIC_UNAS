@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gestión de Usuarios · Panel Administrador · DIAGTI – CTIC UNAS</title>
-    <link rel="stylesheet" href="gestion-usuarios.component.css">
+    <link rel="stylesheet" href="gestion-usuarios.component.css?v=20260723-8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -161,19 +161,76 @@
         <div class="grid g2">
           <div>
             <label>Origen de cuenta</label>
-            <select class="form" id="select-usuario-origen"><option>LDAP</option><option>Local</option></select>
+            <select class="form" id="select-usuario-origen" onchange="onCambioOrigenCuenta()">
+              <option value="LDAP">LDAP</option>
+              <option value="Local">Local</option>
+            </select>
           </div>
           <div>
             <label>Estado</label>
             <select class="form" id="select-usuario-estado"><option>Activo</option><option>Inactivo</option></select>
           </div>
         </div>
-        <p class="field-hint">La autenticación se valida contra LDAP/OpenLDAP institucional; este formulario solo gestiona autorización dentro de DIAGTI.</p>
-        <p class="form-error" id="usuario-form-error"></p>
+        <div id="bloque-password-local" class="password-local-block" hidden>
+          <label for="input-usuario-password">Contraseña inicial</label>
+          <div class="password-field">
+            <input type="password" id="input-usuario-password" autocomplete="new-password" maxlength="72"
+                   aria-label="Contraseña inicial" aria-describedby="error-usuario-password hint-origen-cuenta">
+            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('input-usuario-password', this)"
+                    aria-label="Mostrar u ocultar contraseña inicial">👁</button>
+          </div>
+          <p class="field-error" id="error-usuario-password" role="alert"></p>
+          <label for="input-usuario-confirm-password">Confirmar contraseña</label>
+          <div class="password-field">
+            <input type="password" id="input-usuario-confirm-password" autocomplete="new-password" maxlength="72"
+                   aria-label="Confirmar contraseña" aria-describedby="error-usuario-confirm-password">
+            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('input-usuario-confirm-password', this)"
+                    aria-label="Mostrar u ocultar confirmación de contraseña">👁</button>
+          </div>
+          <p class="field-error" id="error-usuario-confirm-password" role="alert"></p>
+        </div>
+        <p class="field-hint" id="hint-origen-cuenta">La autenticación se valida contra LDAP/OpenLDAP institucional.</p>
+        <button type="button" class="btn ghost sm" id="btn-restablecer-password" hidden
+                onclick="abrirRestablecerPassword()">Restablecer contraseña</button>
+        <p class="form-error" id="usuario-form-error" role="alert"></p>
       </div>
       <div class="modal-foot">
         <button class="btn secondary" onclick="cerrarModal('modal-usuario')">Cancelar</button>
         <button class="btn btn-verde" id="usuario-btn-guardar" onclick="guardarUsuario()">Guardar usuario</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: RESTABLECER CONTRASEÑA ===================== -->
+  <div class="modal-overlay" id="modal-restablecer-password">
+    <div class="modal" style="width:min(440px,100%)">
+      <div class="modal-head">
+        <h3>Restablecer contraseña</h3>
+        <button class="modal-close" onclick="cerrarModal('modal-restablecer-password')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="field-hint" id="reset-password-usuario-hint">Solo cuentas Local.</p>
+        <label for="input-reset-password">Nueva contraseña</label>
+        <div class="password-field">
+          <input type="password" id="input-reset-password" autocomplete="new-password" maxlength="72"
+                 aria-label="Nueva contraseña" aria-describedby="error-reset-password">
+          <button type="button" class="password-toggle" onclick="togglePasswordVisibility('input-reset-password', this)"
+                  aria-label="Mostrar u ocultar nueva contraseña">👁</button>
+        </div>
+        <p class="field-error" id="error-reset-password" role="alert"></p>
+        <label for="input-reset-confirm-password">Confirmar contraseña</label>
+        <div class="password-field">
+          <input type="password" id="input-reset-confirm-password" autocomplete="new-password" maxlength="72"
+                 aria-label="Confirmar nueva contraseña" aria-describedby="error-reset-confirm-password">
+          <button type="button" class="password-toggle" onclick="togglePasswordVisibility('input-reset-confirm-password', this)"
+                  aria-label="Mostrar u ocultar confirmación">👁</button>
+        </div>
+        <p class="field-error" id="error-reset-confirm-password" role="alert"></p>
+        <p class="form-error" id="reset-password-form-error" role="alert"></p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn secondary" onclick="cerrarModal('modal-restablecer-password')">Cancelar</button>
+        <button class="btn btn-verde" id="btn-guardar-reset-password" onclick="guardarRestablecerPassword()">Guardar contraseña</button>
       </div>
     </div>
   </div>
@@ -212,6 +269,6 @@
       </div>
     </div>
 
-  <script src="gestion-usuarios.component.js"></script>
+  <script src="gestion-usuarios.component.js?v=20260723-8"></script>
 </body>
 </html>

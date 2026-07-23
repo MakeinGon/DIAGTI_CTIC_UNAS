@@ -61,7 +61,7 @@ public class InfraestructuraModuloServiceImpl implements InfraestructuraModuloSe
 
     private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     private static final List<String> ESTADOS_UI = Arrays.asList(
-            "Nuevo", "Borrador", "Enviado", "Observado", "Corregido", "Validado");
+            InfraEstadoUi.PENDIENTE_EVALUACION, "Borrador", "Enviado", "Observado", "Corregido", "Validado");
     private static final List<String> RIESGOS_UI = Arrays.asList("Bajo", "Medio", "Alto", "Crítico");
 
     private final DirectorSistemaRepository sistemaRepository;
@@ -90,7 +90,10 @@ public class InfraestructuraModuloServiceImpl implements InfraestructuraModuloSe
                 .toList();
 
         int total = listados.size();
-        int nuevos = (int) listados.stream().filter(s -> "Nuevo".equals(s.getEstadoSistemaUi())).count();
+        int nuevos = (int) listados.stream()
+                .filter(s -> InfraEstadoUi.PENDIENTE_EVALUACION.equals(s.getEstadoSistemaUi())
+                        || "Nuevo".equals(s.getEstadoSistemaUi()))
+                .count();
         int borradores = (int) listados.stream().filter(s -> "Borrador".equals(s.getEstadoSistemaUi())).count();
         int observados = (int) listados.stream().filter(s -> "Observado".equals(s.getEstadoSistemaUi())).count();
         int validados = (int) listados.stream().filter(s -> "Validado".equals(s.getEstadoSistemaUi())).count();
@@ -99,7 +102,8 @@ public class InfraestructuraModuloServiceImpl implements InfraestructuraModuloSe
                 total, nuevos + borradores, nuevos, borradores, observados, validados);
 
         List<InfraDashboardDTO.Prioridad> prioridades = listados.stream()
-                .filter(s -> List.of("Nuevo", "Borrador", "Observado", "Corregido").contains(s.getEstadoSistemaUi()))
+                .filter(s -> List.of(InfraEstadoUi.PENDIENTE_EVALUACION, "Nuevo", "Borrador", "Observado", "Corregido")
+                        .contains(s.getEstadoSistemaUi()))
                 .sorted((a, b) -> Integer.compare(
                         prioridadRank(a.getEstadoSistemaUi()),
                         prioridadRank(b.getEstadoSistemaUi())))
@@ -271,7 +275,7 @@ public class InfraestructuraModuloServiceImpl implements InfraestructuraModuloSe
         if ("ENVIADO".equals(estadoRegistro)) {
             String actual = ValidacionEstados.normalizar(sistema.getEstadoFlujo());
             if (!"VALIDADO".equals(actual) && !"OBSERVADO".equals(actual) && !"SUBSANADO".equals(actual)) {
-                sistema.setEstadoFlujo(ValidacionEstados.SISTEMA_ENVIADO);
+                sistema.setEstadoFlujoSincronizado(ValidacionEstados.SISTEMA_ENVIADO);
                 sistema.setFechaActualizacion(LocalDateTime.now());
                 sistemaRepository.save(sistema);
             }
@@ -440,8 +444,12 @@ public class InfraestructuraModuloServiceImpl implements InfraestructuraModuloSe
                 .estadoEvaluacionInfra(payload != null && payload.getEstadoRegistro() != null
                         ? payload.getEstadoRegistro()
                         : (infra == null ? "SIN_REGISTRO" : "REGISTRADO"))
-                .plataforma(payload != null && payload.getPlataforma() != null ? payload.getPlataforma() : "Sin registrar")
-                .exposicion(payload != null && payload.getExposicion() != null ? payload.getExposicion() : "Sin registrar")
+                .plataforma(payload != null && payload.getPlataforma() != null && !payload.getPlataforma().isBlank()
+                        ? payload.getPlataforma()
+                        : (infra == null ? "Sin evaluar" : "Sin registrar"))
+                .exposicion(payload != null && payload.getExposicion() != null && !payload.getExposicion().isBlank()
+                        ? payload.getExposicion()
+                        : (infra == null ? "Sin evaluar" : "Sin registrar"))
                 .nivelRiesgo(InfraEstadoUi.riesgoUi(s.getNivelRiesgo()))
                 .cantidadObservaciones(obs.size())
                 .observacionesPendientes((int) pend)
@@ -469,7 +477,8 @@ public class InfraestructuraModuloServiceImpl implements InfraestructuraModuloSe
             return false;
         }
         if ("true".equalsIgnoreCase(pendientes)
-                && !List.of("Nuevo", "Borrador").contains(dto.getEstadoSistemaUi())) {
+                && !List.of(InfraEstadoUi.PENDIENTE_EVALUACION, "Nuevo", "Borrador")
+                .contains(dto.getEstadoSistemaUi())) {
             return false;
         }
         return true;
@@ -480,7 +489,7 @@ public class InfraestructuraModuloServiceImpl implements InfraestructuraModuloSe
         String detalle;
         String url;
         switch (s.getEstadoSistemaUi()) {
-            case "Nuevo" -> {
+            case InfraEstadoUi.PENDIENTE_EVALUACION, "Nuevo" -> {
                 accion = "Registrar";
                 detalle = "Aún no tiene registro técnico.";
                 url = "infraestructura.html?sistemaId=" + s.getSistemaId();
@@ -515,7 +524,7 @@ public class InfraestructuraModuloServiceImpl implements InfraestructuraModuloSe
             case "Observado" -> 0;
             case "Corregido" -> 1;
             case "Borrador" -> 2;
-            case "Nuevo" -> 3;
+            case InfraEstadoUi.PENDIENTE_EVALUACION, "Nuevo" -> 3;
             default -> 9;
         };
     }

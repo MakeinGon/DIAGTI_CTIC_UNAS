@@ -29,8 +29,29 @@ public class ArquitecturaEntity {
     @Column(columnDefinition = "TEXT")
     private String observaciones;
 
+    @Column(name = "lenguaje_programacion", length = 255)
+    private String lenguajeProgramacion;
+
+    @Column(name = "version_lenguaje", length = 100)
+    private String versionLenguaje;
+
+    @Column(length = 255)
+    private String framework;
+
+    @Column(name = "version_framework", length = 100)
+    private String versionFramework;
+
+    @Column(length = 500)
+    private String repositorio;
+
+    @Column(name = "tecnologias_complementarias", columnDefinition = "TEXT")
+    private String tecnologiasComplementarias;
+
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
+
+    @Column(name = "fecha_actualizacion")
+    private LocalDateTime fechaActualizacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sistema", insertable = false, updatable = false)

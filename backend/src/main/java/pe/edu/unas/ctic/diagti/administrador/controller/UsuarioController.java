@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.unas.ctic.diagti.administrador.dto.RestablecerPasswordRequestDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.UsuarioDTO;
 import pe.edu.unas.ctic.diagti.administrador.service.UsuarioService;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +34,14 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> crear(@RequestBody UsuarioDTO dto,
-                                            @RequestParam Long rolId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.crear(dto, rolId));
+    public ResponseEntity<Map<String, Object>> crear(@RequestBody UsuarioDTO dto,
+                                                     @RequestParam Long rolId) {
+        UsuarioDTO creado = service.crear(dto, rolId);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("success", true);
+        body.put("message", "Usuario creado correctamente");
+        body.put("usuario", creado);
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @PutMapping("/{dni}")
@@ -42,6 +49,18 @@ public class UsuarioController {
                                                  @RequestBody UsuarioDTO dto,
                                                  @RequestParam(required = false) Long rolId) {
         return ResponseEntity.ok(service.actualizar(dni, dto, rolId));
+    }
+
+    @PostMapping("/{dni}/password")
+    public ResponseEntity<Map<String, Object>> restablecerPassword(
+            @PathVariable String dni,
+            @RequestBody RestablecerPasswordRequestDTO request) {
+        UsuarioDTO actualizado = service.restablecerPassword(dni, request);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("success", true);
+        body.put("message", "Contraseña restablecida correctamente");
+        body.put("usuario", actualizado);
+        return ResponseEntity.ok(body);
     }
 
     @PatchMapping("/{dni}/estado")

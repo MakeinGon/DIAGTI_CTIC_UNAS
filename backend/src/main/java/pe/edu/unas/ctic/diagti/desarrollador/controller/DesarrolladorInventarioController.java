@@ -1,8 +1,12 @@
 package pe.edu.unas.ctic.diagti.desarrollador.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.unas.ctic.diagti.desarrollador.dto.RegistrarSistemaOficialRequestDTO;
+import pe.edu.unas.ctic.diagti.desarrollador.dto.RegistrarSistemaOficialResponseDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.dto.frontend.SistemaFrontendDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.service.DesarrolladorInventarioService;
 
@@ -11,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Endpoints alineados al frontend actual de desarrollo (Luis Lara).
+ * Endpoints alineados al frontend actual de desarrollo.
  * Usa tablas oficiales: sistemas, observaciones, validaciones.
  */
 @RestController
@@ -36,6 +40,15 @@ public class DesarrolladorInventarioController {
         if (soloObservados != null) filtros.put("soloObservados", soloObservados);
 
         return ResponseEntity.ok(inventarioService.listarSistemasDelDesarrollador(username, filtros));
+    }
+
+    @PostMapping("/inventario")
+    public ResponseEntity<RegistrarSistemaOficialResponseDTO> registrarSistema(
+            @RequestParam String username,
+            @Valid @RequestBody RegistrarSistemaOficialRequestDTO request) {
+        RegistrarSistemaOficialResponseDTO response =
+                inventarioService.registrarSistemaOficial(username, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/inventario/{id}")

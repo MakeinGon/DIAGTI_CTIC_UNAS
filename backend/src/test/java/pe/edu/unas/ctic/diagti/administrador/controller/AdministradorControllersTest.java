@@ -138,7 +138,11 @@ class AdministradorControllersTest {
                                  "correo":"nuevo@unas.edu.pe","origen":"Local","estado":"Activo"}
                                 """))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.dni").value("89999999"));
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Usuario creado correctamente"))
+                .andExpect(jsonPath("$.usuario.dni").value("89999999"))
+                .andExpect(jsonPath("$.usuario.password").doesNotExist())
+                .andExpect(jsonPath("$.usuario.passwordHash").doesNotExist());
     }
 
     @Test

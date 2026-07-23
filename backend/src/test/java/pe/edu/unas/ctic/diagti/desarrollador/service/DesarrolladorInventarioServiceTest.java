@@ -18,6 +18,10 @@ import pe.edu.unas.ctic.diagti.desarrollador.support.DesarrolladorUsuarioResolve
 import pe.edu.unas.ctic.diagti.director.entity.ObservacionEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.entity.ValidacionEntity;
+import pe.edu.unas.ctic.diagti.director.repository.BaseDatosSistemaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorArquitecturaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorEvidenciaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorIntegracionRepository;
 import pe.edu.unas.ctic.diagti.director.repository.DirectorSistemaRepository;
 import pe.edu.unas.ctic.diagti.director.repository.ObservacionRepository;
 import pe.edu.unas.ctic.diagti.director.repository.ValidacionRepository;
@@ -31,6 +35,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class DesarrolladorInventarioServiceTest {
@@ -42,6 +47,10 @@ class DesarrolladorInventarioServiceTest {
     @Mock private CatalogoRepository catalogoRepository;
     @Mock private LoginUsuarioRepository loginUsuarioRepository;
     @Mock private AuditoriaRepository auditoriaRepository;
+    @Mock private DirectorArquitecturaRepository arquitecturaRepository;
+    @Mock private BaseDatosSistemaRepository baseDatosSistemaRepository;
+    @Mock private DirectorIntegracionRepository integracionRepository;
+    @Mock private DirectorEvidenciaRepository evidenciaRepository;
 
     @InjectMocks
     private DesarrolladorInventarioServiceImpl service;
@@ -59,6 +68,11 @@ class DesarrolladorInventarioServiceTest {
         Rol rol = new Rol();
         rol.setNombre("desarrollo");
         desarrollador.setRoles(new HashSet<>(Set.of(rol)));
+
+        lenient().when(arquitecturaRepository.findByIdSistema(anyLong())).thenReturn(List.of());
+        lenient().when(baseDatosSistemaRepository.findByIdSistema(anyLong())).thenReturn(Optional.empty());
+        lenient().when(integracionRepository.findByIdSistemaOrigen(anyLong())).thenReturn(List.of());
+        lenient().when(evidenciaRepository.findByIdSistema(anyLong())).thenReturn(List.of());
     }
 
     @Test

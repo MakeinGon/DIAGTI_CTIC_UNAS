@@ -1,5 +1,6 @@
 package pe.edu.unas.ctic.diagti.administrador.service;
 
+import pe.edu.unas.ctic.diagti.administrador.dto.RestablecerPasswordRequestDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.UsuarioDTO;
 import java.util.List;
 
@@ -8,6 +9,7 @@ public interface UsuarioService {
     UsuarioDTO obtenerPorDni(String dni);
     UsuarioDTO crear(UsuarioDTO dto, Long rolId);
     UsuarioDTO actualizar(String dni, UsuarioDTO dto, Long rolId);
+    UsuarioDTO restablecerPassword(String dni, RestablecerPasswordRequestDTO request);
     UsuarioDTO cambiarEstado(String dni, boolean estado);
     /** Soft-delete: desactiva el usuario (no elimina físicamente). */
     UsuarioDTO desactivar(String dni);

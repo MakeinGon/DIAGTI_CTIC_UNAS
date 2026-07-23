@@ -104,7 +104,7 @@ public class ValidadorServiceImpl implements ValidadorService {
         validacion.setFechaActualizacion(ahora);
         validacionRepository.save(validacion);
 
-        sistema.setEstadoFlujo(ValidacionEstados.SISTEMA_VALIDADO);
+        sistema.setEstadoFlujoSincronizado(ValidacionEstados.SISTEMA_VALIDADO);
         sistemaRepository.save(sistema);
 
         auditar(validacion.getIdValidador(), "Validación", "Sistema validado",
@@ -142,7 +142,7 @@ public class ValidadorServiceImpl implements ValidadorService {
         obs.setFechaObservacion(ahora);
         observacionRepository.save(obs);
 
-        sistema.setEstadoFlujo(ValidacionEstados.SISTEMA_OBSERVADO);
+        sistema.setEstadoFlujoSincronizado(ValidacionEstados.SISTEMA_OBSERVADO);
         sistemaRepository.save(sistema);
 
         auditar(validacion.getIdValidador(), "Validación", "Sistema observado",
@@ -166,7 +166,7 @@ public class ValidadorServiceImpl implements ValidadorService {
         validacion.setFechaActualizacion(ahora);
         validacionRepository.save(validacion);
 
-        sistema.setEstadoFlujo(ValidacionEstados.SISTEMA_RECHAZADO);
+        sistema.setEstadoFlujoSincronizado(ValidacionEstados.SISTEMA_RECHAZADO);
         sistemaRepository.save(sistema);
 
         auditar(validacion.getIdValidador(), "Validación", "Sistema rechazado",
@@ -201,7 +201,7 @@ public class ValidadorServiceImpl implements ValidadorService {
         validacion.setFechaActualizacion(ahora);
         validacionRepository.save(validacion);
 
-        sistema.setEstadoFlujo(ValidacionEstados.SISTEMA_OBSERVADO);
+        sistema.setEstadoFlujoSincronizado(ValidacionEstados.SISTEMA_OBSERVADO);
         sistemaRepository.save(sistema);
 
         auditar(obs.getIdUsuarioObserva(), "Validación", "Observación registrada",
@@ -263,7 +263,7 @@ public class ValidadorServiceImpl implements ValidadorService {
         observacionRepository.save(obs);
 
         SistemaEntity sistema = requireSistema(obs.getIdSistema());
-        sistema.setEstadoFlujo(ValidacionEstados.SISTEMA_OBSERVADO);
+        sistema.setEstadoFlujoSincronizado(ValidacionEstados.SISTEMA_OBSERVADO);
         sistemaRepository.save(sistema);
 
         Validacion validacion = requireActiva(obs.getIdSistema());
@@ -331,7 +331,7 @@ public class ValidadorServiceImpl implements ValidadorService {
         // Todas cerradas: deja en SUBSANADO a la espera de decisión final explícita de validar
         SistemaEntity sistema = requireSistema(idSistema);
         if (!ValidacionEstados.SISTEMA_VALIDADO.equalsIgnoreCase(sistema.getEstadoFlujo())) {
-            sistema.setEstadoFlujo(ValidacionEstados.SISTEMA_SUBSANADO);
+            sistema.setEstadoFlujoSincronizado(ValidacionEstados.SISTEMA_SUBSANADO);
             sistemaRepository.save(sistema);
         }
         Validacion validacion = obtenerActivaOUltima(idSistema);
@@ -421,6 +421,7 @@ public class ValidadorServiceImpl implements ValidadorService {
 
         sistemaRepository.findActivoById(validacion.getIdSistema()).ifPresent(s -> {
             dto.setNombreSistema(s.getNombre());
+            dto.setCodigo(s.getCodigoUnico());
             dto.setArea(catalogoValor(s.getIdAreaUsuario()));
         });
         if (validacion.getIdValidador() != null) {

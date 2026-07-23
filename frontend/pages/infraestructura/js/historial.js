@@ -23,7 +23,7 @@ function esc(v = '') {
 
 function badgeClass(s) {
     return ({
-        Nuevo: 'neutral', Borrador: 'neutral', Enviado: 'sent', Observado: 'warning',
+        Nuevo: 'neutral', 'Pendiente de evaluación': 'neutral', Borrador: 'neutral', Enviado: 'sent', Observado: 'warning',
         Corregido: 'corrected', Validado: 'success'
     }[s] || 'neutral');
 }

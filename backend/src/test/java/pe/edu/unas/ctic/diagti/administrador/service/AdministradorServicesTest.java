@@ -7,7 +7,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import pe.edu.unas.ctic.diagti.administrador.dto.CatalogoDTO;
+import pe.edu.unas.ctic.diagti.administrador.dto.RestablecerPasswordRequestDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.RolDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.SistemaResponsablesRequestDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.UsuarioDTO;
@@ -54,6 +57,7 @@ class AdministradorServicesTest {
     @Mock UsuarioMapper usuarioMapper;
     @Mock CatalogoMapper catalogoMapper;
     @Mock AdminAuditoriaWriter auditoriaWriter;
+    @Mock PasswordEncoder passwordEncoder;
 
     @InjectMocks UsuarioServiceImpl usuarioService;
     @InjectMocks RolServiceImpl rolService;
@@ -123,13 +127,17 @@ class AdministradorServicesTest {
         req.setDni("89999999");
         req.setNombreCompleto("Nuevo Usuario");
         req.setCorreo("nuevo.usuario@unas.edu.pe");
+        req.setArea("Área de Desarrollo");
         req.setOrigen("Local");
         req.setEstado("Activo");
+        req.setPassword("ClaveSegura123");
+        req.setConfirmPassword("ClaveSegura123");
 
         when(usuarioRepository.existsByDni("89999999")).thenReturn(false);
         when(usuarioRepository.existsByCorreo(anyString())).thenReturn(false);
         when(usuarioRepository.existsByUsername("89999999")).thenReturn(false);
         when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        when(passwordEncoder.encode("ClaveSegura123")).thenReturn("$2a$10$testhashlocalbcryptvalueXX");
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenAnswer(inv -> {
             UsuarioEntity e = inv.getArgument(0);
             e.setIdUsuario(99L);
@@ -142,6 +150,7 @@ class AdministradorServicesTest {
             d.setUsername(e.getUsername());
             d.setDni(e.getDni());
             d.setCorreo(e.getCorreo());
+            d.setOrigen(e.getOrigen());
             return d;
         });
 
@@ -151,8 +160,189 @@ class AdministradorServicesTest {
 
         ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
         verify(usuarioRepository).save(captor.capture());
-        assertEquals("admin123", captor.getValue().getPasswordHash());
-        assertNotNull(captor.getValue().getPasswordHash());
+        assertEquals("$2a$10$testhashlocalbcryptvalueXX", captor.getValue().getPasswordHash());
+        assertNotEquals("ClaveSegura123", captor.getValue().getPasswordHash());
+        assertNull(creado.getPassword());
+        assertNull(creado.getConfirmPassword());
+    }
+
+    @Test
+    void crearUsuario_ldap_sinPassword_hashNull() {
+        UsuarioDTO req = new UsuarioDTO();
+        req.setDni("89999998");
+        req.setNombreCompleto("Usuario Ldap");
+        req.setCorreo("usuario.ldap@unas.edu.pe");
+        req.setArea("Área de Desarrollo");
+        req.setOrigen("LDAP");
+        req.setEstado("Activo");
+        req.setPassword("NoDebeUsarse1");
+        req.setConfirmPassword("NoDebeUsarse1");
+
+        when(usuarioRepository.existsByDni("89999998")).thenReturn(false);
+        when(usuarioRepository.existsByCorreo(anyString())).thenReturn(false);
+        when(usuarioRepository.existsByUsername("89999998")).thenReturn(false);
+        when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        when(usuarioRepository.save(any(UsuarioEntity.class))).thenAnswer(inv -> {
+            UsuarioEntity e = inv.getArgument(0);
+            e.setIdUsuario(98L);
+            return e;
+        });
+        when(usuarioMapper.toDTO(any())).thenReturn(new UsuarioDTO());
+
+        usuarioService.crear(req, 1L);
+        ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
+        verify(usuarioRepository).save(captor.capture());
+        assertNull(captor.getValue().getPasswordHash());
+        assertEquals("LDAP", captor.getValue().getOrigen());
+        verify(passwordEncoder, never()).encode(anyString());
+    }
+
+    @Test
+    void crearUsuario_passwordNoCoincide() {
+        UsuarioDTO req = baseLocalReq();
+        req.setConfirmPassword("OtraClave123");
+        stubUniquenessOk(req.getDni(), req.getCorreo());
+        when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.crear(req, 1L));
+    }
+
+    @Test
+    void crearUsuario_passwordCorta() {
+        UsuarioDTO req = baseLocalReq();
+        req.setPassword("Ab1");
+        req.setConfirmPassword("Ab1");
+        stubUniquenessOk(req.getDni(), req.getCorreo());
+        when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.crear(req, 1L));
+    }
+
+    @Test
+    void crearUsuario_sinMayuscula() {
+        UsuarioDTO req = baseLocalReq();
+        req.setPassword("clavesegura123");
+        req.setConfirmPassword("clavesegura123");
+        stubUniquenessOk(req.getDni(), req.getCorreo());
+        when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.crear(req, 1L));
+    }
+
+    @Test
+    void crearUsuario_sinMinuscula() {
+        UsuarioDTO req = baseLocalReq();
+        req.setPassword("CLAVESEGURA123");
+        req.setConfirmPassword("CLAVESEGURA123");
+        stubUniquenessOk(req.getDni(), req.getCorreo());
+        when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.crear(req, 1L));
+    }
+
+    @Test
+    void crearUsuario_sinNumero() {
+        UsuarioDTO req = baseLocalReq();
+        req.setPassword("ClaveSegura");
+        req.setConfirmPassword("ClaveSegura");
+        stubUniquenessOk(req.getDni(), req.getCorreo());
+        when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.crear(req, 1L));
+    }
+
+    @Test
+    void crearUsuario_passwordIgualDni() {
+        UsuarioDTO req = baseLocalReq();
+        req.setPassword("89999999");
+        req.setConfirmPassword("89999999");
+        stubUniquenessOk(req.getDni(), req.getCorreo());
+        when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.crear(req, 1L));
+    }
+
+    @Test
+    void crearUsuario_bcryptMatches() {
+        PasswordEncoder real = new BCryptPasswordEncoder();
+        when(passwordEncoder.encode(anyString())).thenAnswer(inv -> real.encode(inv.getArgument(0)));
+
+        UsuarioDTO req = baseLocalReq();
+        stubUniquenessOk(req.getDni(), req.getCorreo());
+        when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        when(usuarioRepository.save(any(UsuarioEntity.class))).thenAnswer(inv -> {
+            UsuarioEntity e = inv.getArgument(0);
+            e.setIdUsuario(97L);
+            return e;
+        });
+        when(usuarioMapper.toDTO(any())).thenReturn(new UsuarioDTO());
+
+        usuarioService.crear(req, 1L);
+        ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
+        verify(usuarioRepository).save(captor.capture());
+        String hash = captor.getValue().getPasswordHash();
+        assertTrue(hash.startsWith("$2a$") || hash.startsWith("$2b$"));
+        assertTrue(real.matches("ClaveSegura123", hash));
+        assertFalse(hash.contains("ClaveSegura123"));
+    }
+
+    @Test
+    void actualizarUsuario_noCambiaPassword() {
+        usuarioActivo.setPasswordHash("admin123");
+        when(usuarioRepository.findByDni("76551691")).thenReturn(Optional.of(usuarioActivo));
+        when(rolRepository.findById(1L)).thenReturn(Optional.of(rolAdmin));
+        when(usuarioRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(usuarioMapper.toDTO(any())).thenReturn(new UsuarioDTO());
+
+        UsuarioDTO req = new UsuarioDTO();
+        req.setNombreCompleto("Johan Actualizado");
+        req.setCorreo("johan.vela@unas.edu.pe");
+        req.setEstado("Activo");
+        req.setPassword("NuevaClave123");
+        req.setConfirmPassword("NuevaClave123");
+        usuarioService.actualizar("76551691", req, 1L);
+        assertEquals("admin123", usuarioActivo.getPasswordHash());
+    }
+
+    @Test
+    void restablecerPassword_local() {
+        usuarioActivo.setOrigen("Local");
+        usuarioActivo.setPasswordHash("admin123");
+        when(usuarioRepository.findByDni("76551691")).thenReturn(Optional.of(usuarioActivo));
+        when(passwordEncoder.encode("NuevaClave123")).thenReturn("$2a$10$newhash");
+        when(usuarioRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(usuarioMapper.toDTO(any())).thenReturn(new UsuarioDTO());
+
+        RestablecerPasswordRequestDTO body = new RestablecerPasswordRequestDTO();
+        body.setPassword("NuevaClave123");
+        body.setConfirmPassword("NuevaClave123");
+        usuarioService.restablecerPassword("76551691", body);
+        assertEquals("$2a$10$newhash", usuarioActivo.getPasswordHash());
+        verify(auditoriaWriter).registrar(anyLong(), eq("contraseña restablecida"), anyString());
+    }
+
+    @Test
+    void restablecerPassword_ldap_rechazado() {
+        usuarioActivo.setOrigen("LDAP");
+        when(usuarioRepository.findByDni("76551691")).thenReturn(Optional.of(usuarioActivo));
+        RestablecerPasswordRequestDTO body = new RestablecerPasswordRequestDTO();
+        body.setPassword("NuevaClave123");
+        body.setConfirmPassword("NuevaClave123");
+        assertThrows(IllegalArgumentException.class,
+                () -> usuarioService.restablecerPassword("76551691", body));
+    }
+
+    private UsuarioDTO baseLocalReq() {
+        UsuarioDTO req = new UsuarioDTO();
+        req.setDni("89999999");
+        req.setNombreCompleto("Nuevo Usuario");
+        req.setCorreo("nuevo.usuario@unas.edu.pe");
+        req.setArea("Área de Desarrollo");
+        req.setOrigen("LOCAL");
+        req.setEstado("ACTIVO");
+        req.setPassword("ClaveSegura123");
+        req.setConfirmPassword("ClaveSegura123");
+        return req;
+    }
+
+    private void stubUniquenessOk(String dni, String correo) {
+        when(usuarioRepository.existsByDni(dni)).thenReturn(false);
+        when(usuarioRepository.existsByCorreo(correo)).thenReturn(false);
+        when(usuarioRepository.existsByUsername(dni)).thenReturn(false);
     }
 
     @Test

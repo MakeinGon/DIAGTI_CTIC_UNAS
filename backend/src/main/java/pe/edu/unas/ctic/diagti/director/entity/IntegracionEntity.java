@@ -35,6 +35,12 @@ public class IntegracionEntity {
     @Column(name = "responsable_nombre", length = 255)
     private String responsableNombre;
 
+    @Column(name = "sistema_destino", length = 255)
+    private String sistemaDestinoNombre;
+
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
+
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 

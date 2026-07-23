@@ -54,7 +54,8 @@ function fillForm(d = {}) {
 
 function updateStatus(estado) {
     const badge = document.getElementById('estadoRegistro');
-    const isDraft = !estado || estado === 'BORRADOR' || estado === 'SIN_REGISTRO' || estado === 'Nuevo';
+    const isDraft = !estado || estado === 'BORRADOR' || estado === 'SIN_REGISTRO'
+        || estado === 'Nuevo' || estado === 'Pendiente de evaluación';
     badge.textContent = isDraft ? 'Borrador' : (estado === 'ENVIADO' ? 'Enviado' : estado);
     badge.className = `status-badge ${isDraft ? 'draft' : 'new'}`;
     document.getElementById('selectorAyuda').textContent = isDraft
@@ -64,7 +65,8 @@ function updateStatus(estado) {
 
 async function populateSystems() {
     const todos = await diagtiInfraListarSistemas({});
-    sistemasElegibles = todos.filter(s => ['Nuevo', 'Borrador'].includes(s.estadoSistemaUi));
+    sistemasElegibles = todos.filter(s =>
+        ['Nuevo', 'Pendiente de evaluación', 'Borrador'].includes(s.estadoSistemaUi));
     systemSelect.innerHTML = '<option value="">Seleccione un sistema</option>';
     sistemasElegibles.forEach(s => {
         systemSelect.insertAdjacentHTML('beforeend',
@@ -112,9 +114,9 @@ async function loadSystem(id) {
         dirty = false;
         markCompleted();
         const ui = detalle.estadoSistemaUi;
-        if (!['Nuevo', 'Borrador'].includes(ui)) {
+        if (!['Nuevo', 'Pendiente de evaluación', 'Borrador'].includes(ui)) {
             message.className = 'message error';
-            message.textContent = 'Este sistema ya inició el flujo. Solo se permite editar sistemas Nuevos o en Borrador.';
+            message.textContent = 'Este sistema ya inició el flujo. Solo se permite editar sistemas pendientes de evaluación o en Borrador.';
             btnDraft.classList.add('hidden');
             btnSend.classList.add('hidden');
         }

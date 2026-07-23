@@ -7,21 +7,175 @@
 // ============================================================
 const SISTEMAS_KEY = 'diagti_sistemas';
 let sistemasCacheBackend = [];
+let catalogosCache = {
+    AREA_USUARIO: [],
+    TIPO_APLICATIVO: [],
+    CRITICIDAD: []
+};
+let guardandoSistema = false;
 
 function getSistemas() {
     return Array.isArray(sistemasCacheBackend) ? sistemasCacheBackend : [];
 }
 
-async function cargarSistemasDesdeBackend() {
-    try {
-        sistemasCacheBackend = await diagtiFetchSistemas();
-        localStorage.setItem(SISTEMAS_KEY, JSON.stringify(sistemasCacheBackend));
-    } catch (error) {
-        console.error('Error cargando sistemas:', error);
-        sistemasCacheBackend = [];
-        alert('No se pudieron cargar los sistemas desde el servidor.');
+function mostrarMensajeGlobal(texto, tipo) {
+    const el = document.getElementById('mensaje-global');
+    if (!el) return;
+    el.textContent = texto;
+    el.className = 'mensaje-global ' + (tipo === 'error' ? 'error' : 'ok');
+    el.style.display = 'block';
+    setTimeout(() => {
+        el.style.display = 'none';
+    }, 5000);
+}
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function valorVista(valor, soloLectura) {
+    if (valor !== null && valor !== undefined && String(valor).trim() !== '') {
+        return escapeHtml(String(valor));
     }
+    return soloLectura ? 'Sin registrar' : '';
+}
+
+function hayModalAbierto() {
+    return !!document.querySelector('.modal-overlay.open');
+}
+
+function sincronizarBodyModalOpen() {
+    if (hayModalAbierto()) {
+        document.body.classList.add('modal-open');
+    } else {
+        document.body.classList.remove('modal-open');
+    }
+}
+
+function configurarDatosUsuario(session) {
+    if (!session) return null;
+    const nombre = session.nombreCompleto || session.username;
+    const profileName = document.getElementById('profile-name');
+    const profileAvatar = document.getElementById('profile-avatar');
+    if (profileName) profileName.textContent = nombre;
+    if (profileAvatar) {
+        const parts = String(nombre).trim().split(/\s+/);
+        profileAvatar.textContent = ((parts[0] || 'D')[0] + (parts[1] || 'V')[0]).toUpperCase();
+    }
+    return session;
+}
+
+/** Compatibilidad */
+function configurarSesion() {
+    const session = obtenerSesionDesarrollo();
+    if (!session) {
+        window.location.href = '/pages/login/html/login.html';
+        return null;
+    }
+    return configurarDatosUsuario(session);
+}
+
+async function cargarCatalogos() {
+    try {
+        const [areas, tipos, criticidades] = await Promise.all([
+            diagtiFetchCatalogo('AREA_USUARIO'),
+            diagtiFetchCatalogo('TIPO_APLICATIVO'),
+            diagtiFetchCatalogo('CRITICIDAD')
+        ]);
+        catalogosCache.AREA_USUARIO = areas;
+        catalogosCache.TIPO_APLICATIVO = tipos;
+        catalogosCache.CRITICIDAD = criticidades;
+
+        const filterArea = document.getElementById('filter-area');
+        if (filterArea) {
+            const current = filterArea.value;
+            filterArea.innerHTML = '<option value="">Todas las áreas</option>' +
+                areas.map(a => `<option value="${a.nombre}">${a.nombre}</option>`).join('');
+            filterArea.value = current;
+        }
+        const filterTipo = document.getElementById('filter-tipo');
+        if (filterTipo) {
+            const current = filterTipo.value;
+            filterTipo.innerHTML = '<option value="">Todos los tipos</option>' +
+                tipos.map(t => `<option value="${t.nombre}">${t.nombre}</option>`).join('');
+            filterTipo.value = current;
+        }
+    } catch (error) {
+        console.error('Error cargando catálogos:', error);
+    }
+}
+
+function opcionesCatalogo(tipo, selectedCodigoOrNombre) {
+    const items = catalogosCache[tipo] || [];
+    return items.map(item => {
+        const selected = selectedCodigoOrNombre
+            && (item.codigo === selectedCodigoOrNombre || item.nombre === selectedCodigoOrNombre)
+            ? 'selected' : '';
+        return `<option value="${escapeHtml(item.codigo)}" ${selected}>${escapeHtml(item.nombre)}</option>`;
+    }).join('');
+}
+
+function mostrarCargando() {
+    const container = document.getElementById('tabla-sistemas');
+    if (container) {
+        container.innerHTML = '<div class="empty" style="text-align:center;padding:40px;color:var(--muted);">Cargando sistemas...</div>';
+    }
+}
+
+function mostrarErrorCarga(error) {
+    console.error('Error cargando sistemas:', error);
+    sistemasCacheBackend = [];
+    sistemas = [];
+    const container = document.getElementById('tabla-sistemas');
+    if (container) {
+        container.innerHTML = '<div class="empty" style="text-align:center;padding:40px;color:var(--muted);">No se pudieron cargar los sistemas</div>';
+    }
+    mostrarMensajeGlobal((error && error.message) || 'No se pudieron cargar los sistemas desde el servidor.', 'error');
+}
+
+function manejarErrorCarga(error) {
+    mostrarErrorCarga(error);
+}
+
+function manejarErrorCatalogos(error) {
+    console.error('Error cargando catálogos:', error);
+}
+
+async function cargarSistemasDesdeBackend() {
+    const session = obtenerSesionDesarrollo();
+    if (!session) {
+        window.location.href = '/pages/login/html/login.html';
+        return [];
+    }
+
+    mostrarCargando();
+    sistemasCacheBackend = await ApiDesarrollo.obtenerInventario(session.username);
+    localStorage.setItem(SISTEMAS_KEY, JSON.stringify(sistemasCacheBackend));
     return sistemasCacheBackend;
+}
+
+async function cargarSistemas() {
+    const session = obtenerSesionDesarrollo();
+    if (!session) {
+        window.location.href = '/pages/login/html/login.html';
+        return;
+    }
+
+    try {
+        mostrarCargando();
+        sistemasCacheBackend = await ApiDesarrollo.obtenerInventario(session.username);
+        localStorage.setItem(SISTEMAS_KEY, JSON.stringify(sistemasCacheBackend));
+        sistemas = getSistemas();
+        renderizarTabla();
+        poblarSelectResponsables();
+    } catch (error) {
+        mostrarErrorCarga(error);
+    }
 }
 
 /* MOCK LEGACY DESHABILITADO — se conserva bloque comentado para referencia
@@ -234,33 +388,35 @@ function renderizarTabla(lista) {
     `;
 
     data.forEach(s => {
-        const codigo = s.codigo || 'SIN-COD';
-        const nombre = s.nombre || 'Sin nombre';
-        const tipo = s.tipo || '-';
-        const estado = s.estado || 'Borrador';
-        const criticidad = s.criticidad || 'Baja';
-        const fecha = s.fecha || new Date().toLocaleDateString('es-PE');
+        const codigo = escapeHtml(s.codigo || 'SIN-COD');
+        const nombre = escapeHtml(s.nombre || 'Sin nombre');
+        const tipo = escapeHtml(s.tipo || '-');
+        const estado = escapeHtml(s.estado || 'Borrador');
+        const criticidad = escapeHtml(s.criticidad || 'Baja');
+        const fecha = escapeHtml(s.fecha || new Date().toLocaleDateString('es-PE'));
+        const estadoRaw = s.estado || 'Borrador';
 
-        const estadoClase = estado === 'Validado' ? 'status-success' :
-            estado === 'Observado' ? 'status-danger' :
-                estado === 'Enviado' ? 'status-info' : 'status-secondary';
+        const estadoClase = estadoRaw === 'Validado' ? 'status-success' :
+            estadoRaw === 'Observado' ? 'status-danger' :
+                estadoRaw === 'Enviado' ? 'status-info' : 'status-secondary';
 
-        const criticidadClase = criticidad === 'Crítica' ? 'status-danger' :
-            criticidad === 'Alta' ? 'status-warning' :
-                criticidad === 'Media' ? 'status-info' : 'status-success';
+        const criticidadRaw = s.criticidad || 'Baja';
+        const criticidadClase = criticidadRaw === 'Crítica' ? 'status-danger' :
+            criticidadRaw === 'Alta' ? 'status-warning' :
+                criticidadRaw === 'Media' ? 'status-info' : 'status-success';
 
-        // LÓGICA DINÁMICA DE BOTONES SEGÚN EL ESTADO
-        let botonesAccion = `<button class="btn btn-ghost btn-sm" onclick="verSistema('${s.id}')">👁️ Ver</button>`;
+        const sid = escapeHtml(String(s.id ?? ''));
+        // LÓGICA DINÁMICA DE BOTONES SEGÚN EL ESTADO (data-action + delegación)
+        let botonesAccion = `<button type="button" class="btn btn-ghost btn-sm btn-ver" data-action="ver" data-id="${sid}">👁️ Ver</button>`;
 
-        if (estado === 'Borrador') {
-            const porcentaje = calcularPorcentaje(s); // Calculamos si está al 100%
-            botonesAccion += `<button class="btn btn-ghost btn-sm" onclick="editarSistema('${s.id}')">✏️ Editar</button>`;
+        if (estadoRaw === 'Borrador') {
+            const porcentaje = calcularPorcentaje(s);
+            botonesAccion += `<button type="button" class="btn btn-ghost btn-sm" data-action="editar" data-id="${sid}">✏️ Editar</button>`;
 
-            // Si está completo, mostrar botón de enviar directo
             if (porcentaje === 100) {
-                botonesAccion += `<button class="btn btn-azul btn-sm" onclick="enviarAValidacionDirecto('${s.id}')" style="margin-left:4px;">🚀 Enviar a Validación</button>`;
+                botonesAccion += `<button type="button" class="btn btn-azul btn-sm" data-action="enviar" data-id="${sid}" style="margin-left:4px;">🚀 Enviar a Validación</button>`;
             }
-        } else if (estado === 'Observado') {
+        } else if (estadoRaw === 'Observado') {
             botonesAccion += `<a href="observaciones.html" class="btn btn-warning btn-sm">⚠️ Corregir</a>`;
         }
 
@@ -293,16 +449,26 @@ function renderizarTabla(lista) {
 // FILTRAR Y BUSCAR
 // ============================================================
 function filtrarSistemas() {
-    const search = document.getElementById('search-input').value.toLowerCase();
-    const estado = document.getElementById('filter-estado').value;
-    const area = document.getElementById('filter-area').value;
-    const tipo = document.getElementById('filter-tipo').value;
-    const criticidad = document.getElementById('filter-criticidad').value;
-    const responsable = document.getElementById('filter-responsable').value;
-    const riesgo = document.getElementById('filter-riesgo').value;
+    const searchEl = document.getElementById('search-input');
+    const estadoEl = document.getElementById('filter-estado');
+    const areaEl = document.getElementById('filter-area');
+    const tipoEl = document.getElementById('filter-tipo');
+    const criticidadEl = document.getElementById('filter-criticidad');
+    const responsableEl = document.getElementById('filter-responsable');
+    const riesgoEl = document.getElementById('filter-riesgo');
+
+    const search = (searchEl?.value || '').toLowerCase();
+    const estado = estadoEl?.value || '';
+    const area = areaEl?.value || '';
+    const tipo = tipoEl?.value || '';
+    const criticidad = criticidadEl?.value || '';
+    const responsable = responsableEl?.value || '';
+    const riesgo = riesgoEl?.value || '';
 
     let filtrados = sistemas.filter(s => {
-        const matchSearch = s.codigo.toLowerCase().includes(search) || s.nombre.toLowerCase().includes(search);
+        const codigo = String(s.codigo || '').toLowerCase();
+        const nombre = String(s.nombre || '').toLowerCase();
+        const matchSearch = !search || codigo.includes(search) || nombre.includes(search);
         if (!matchSearch) return false;
         if (estado && s.estado !== estado) return false;
         if (area && s.area !== area) return false;
@@ -322,34 +488,151 @@ function filtrarSistemas() {
 // ============================================================
 // ABRIR MODALES
 // ============================================================
-function abrirModalRegistro() {
+async function abrirModalRegistro() {
+    const modal = document.getElementById('modal-sistema');
+    if (!modal) {
+        console.error('No existe modal-sistema');
+        return;
+    }
+
+    try {
+        if (!catalogosCache.AREA_USUARIO.length
+            || !catalogosCache.TIPO_APLICATIVO.length
+            || !catalogosCache.CRITICIDAD.length) {
+            await cargarCatalogos();
+        }
+    } catch (error) {
+        console.error(error);
+        mostrarMensajeGlobal('No se pudieron cargar los catálogos. Intente nuevamente.', 'error');
+        return;
+    }
+
+    const session = obtenerSesionDesarrollo();
+    if (!session) {
+        window.location.href = '/pages/login/html/login.html';
+        return;
+    }
+
     modoModal = 'registrar';
     sistemaEnEdicion = null;
     tabActual = 0;
     evidenciasSubidas = [];
     urlsAgregadas = [];
-    document.getElementById('modal-titulo').textContent = 'Registrar Nuevo Sistema';
-    document.getElementById('modal-subtitulo').textContent = 'Complete toda la información del sistema';
-    document.getElementById('modal-sistema').classList.add('open');
-    renderizarModalContenido(null);
+
+    const titulo = document.getElementById('modal-titulo');
+    const subtitulo = document.getElementById('modal-subtitulo');
+    if (titulo) titulo.textContent = 'Registrar Nuevo Sistema';
+    if (subtitulo) {
+        subtitulo.textContent = 'Complete la información del sistema en las ocho secciones';
+    }
+
+    renderizarModalContenido({
+        responsable_tecnico: session.nombreCompleto || session.username,
+        estado: 'Borrador',
+        anio_desarrollo: String(new Date().getFullYear()),
+        empresa: 'CTIC UNAS',
+        contrato: 'No',
+        nivel_riesgo: 'MEDIO',
+        prioridad_migracion: 'CORTO PLAZO',
+        adquisicion: 'Desarrollo CTIC',
+        tiene_integraciones: false
+    }, false, false);
+
+    // Defaults adicionales tras render
+    const riesgo = document.getElementById('campo-nivel-riesgo');
+    if (riesgo) riesgo.value = 'MEDIO';
+    const prioridad = document.getElementById('campo-prioridad');
+    if (prioridad) prioridad.value = 'CORTO PLAZO';
+    const estadoFlujo = document.getElementById('campo-estado-flujo');
+    if (estadoFlujo) estadoFlujo.value = 'BORRADOR';
+    const adquisicion = document.getElementById('campo-adquisicion');
+    if (adquisicion && !adquisicion.value) adquisicion.value = 'Desarrollo CTIC';
+    const radioNo = document.querySelector('input[name="campo-contrato"][value="No"]');
+    if (radioNo) radioNo.checked = true;
+    const integNo = document.querySelector('input[name="tiene-integraciones"][value="false"]');
+    if (integNo) integNo.checked = true;
+
+    const btnGuardar = document.getElementById('btn-guardar-modal');
+    if (btnGuardar) {
+        btnGuardar.style.display = 'inline-flex';
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = '💾 Guardar Borrador';
+    }
+
+    const btnEnviar = document.getElementById('btn-enviar-validacion');
+    if (btnEnviar) btnEnviar.style.display = 'none';
+
+    const btnCancelar = document.getElementById('btnCancelarModal');
+    if (btnCancelar) btnCancelar.textContent = 'Cancelar';
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+
+    setTimeout(function () {
+        document.getElementById('campo-codigo')?.focus();
+    }, 50);
 }
 
-function verSistema(id) {
-    const sistema = sistemas.find(s => s.id === id);
-    if (!sistema) { alert('Sistema no encontrado'); return; }
-    modoModal = 'ver';
-    sistemaEnEdicion = JSON.parse(JSON.stringify(sistema));
-    tabActual = 0;
-    evidenciasSubidas = sistema.evidencias ? [...sistema.evidencias] : [];
-    urlsAgregadas = sistema.urls ? [...sistema.urls] : [];
-    document.getElementById('modal-titulo').textContent = '👁 Ver Sistema: ' + sistema.codigo;
-    document.getElementById('modal-subtitulo').textContent = 'Información de solo lectura';
-    document.getElementById('modal-sistema').classList.add('open');
-    renderizarModalContenido(sistemaEnEdicion, true);
+function encontrarSistemaPorId(id) {
+    const key = String(id);
+    return sistemas.find(s => String(s.id) === key)
+        || sistemasCacheBackend.find(s => String(s.id) === key)
+        || null;
+}
+
+function abrirDetalleSistema(id) {
+    verSistema(id);
+}
+
+async function verSistema(id) {
+    try {
+        const session = obtenerSesionDesarrollo();
+        if (!session) {
+            window.location.href = '/pages/login/html/login.html';
+            return;
+        }
+        modoModal = 'ver';
+        tabActual = 0;
+        evidenciasSubidas = [];
+        urlsAgregadas = [];
+        const titulo = document.getElementById('modal-titulo');
+        const subtitulo = document.getElementById('modal-subtitulo');
+        const modal = document.getElementById('modal-sistema');
+        if (!modal) {
+            console.error('No existe modal-sistema');
+            return;
+        }
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+        if (titulo) titulo.textContent = '👁 Ver Sistema';
+        if (subtitulo) subtitulo.textContent = 'Cargando detalle desde el servidor...';
+        const body = document.getElementById('modal-body-sistema');
+        if (body) body.innerHTML = '<div class="empty" style="padding:24px;text-align:center;">Cargando...</div>';
+
+        const sistema = await diagtiObtenerSistema(id);
+        sistemaEnEdicion = JSON.parse(JSON.stringify(sistema));
+        evidenciasSubidas = Array.isArray(sistema.evidencias) ? [...sistema.evidencias] : [];
+        urlsAgregadas = Array.isArray(sistema.urls) ? [...sistema.urls] : [];
+        if (titulo) titulo.textContent = '👁 Ver Sistema: ' + (sistema.codigo || '');
+        if (subtitulo) subtitulo.textContent = 'Información de solo lectura (PostgreSQL)';
+        renderizarModalContenido(sistemaEnEdicion, true);
+        const btnGuardar = document.getElementById('btn-guardar-modal');
+        if (btnGuardar) btnGuardar.style.display = 'none';
+        const btnEnviar = document.getElementById('btn-enviar-validacion');
+        if (btnEnviar) btnEnviar.style.display = 'none';
+        const btnCancelar = document.getElementById('btnCancelarModal');
+        if (btnCancelar) btnCancelar.textContent = 'Cerrar';
+    } catch (error) {
+        console.error('No se pudo abrir el detalle', error);
+        mostrarMensajeGlobal(error.message || 'No se pudo abrir el detalle del sistema', 'error');
+        cerrarModalSistema();
+    }
 }
 
 function editarSistema(id) {
-    const sistema = sistemas.find(s => s.id === id);
+    const sistema = encontrarSistemaPorId(id);
     if (!sistema) { alert('Sistema no encontrado'); return; }
     modoModal = 'editar';
     sistemaEnEdicion = JSON.parse(JSON.stringify(sistema));
@@ -363,7 +646,7 @@ function editarSistema(id) {
 }
 
 function corregirSistema(id) {
-    const sistema = sistemas.find(s => s.id === id);
+    const sistema = encontrarSistemaPorId(id);
     if (!sistema) { alert('Sistema no encontrado'); return; }
     modoModal = 'corregir';
     sistemaEnEdicion = JSON.parse(JSON.stringify(sistema));
@@ -377,10 +660,17 @@ function corregirSistema(id) {
 }
 
 function cerrarModalSistema() {
-    document.getElementById('modal-sistema').classList.remove('open');
+    const modal = document.getElementById('modal-sistema');
+    if (modal) {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+    }
     sistemaEnEdicion = null;
     evidenciasSubidas = [];
     urlsAgregadas = [];
+    tabActual = 0;
+    modoModal = 'ver';
+    sincronizarBodyModalOpen();
 }
 
 // ============================================================
@@ -724,16 +1014,17 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
     const isNew = !sistema;
     const data = sistema || {};
 
-    if (!isNew && !data.id) {
+    // Al registrar no hay id todavía: no cerrar el modal
+    if (modoModal !== 'registrar' && !isNew && (data.id === undefined || data.id === null || data.id === '')) {
         cerrarModalSistema();
         return;
     }
 
-    const codigo = data.codigo || 'SIS' + String(sistemas.length + 1).padStart(3, '0');
-    const estado = data.estado || 'Borrador';
-    const estadoClase = estado === 'Validado' ? 'validado' :
-        estado === 'Observado' ? 'observado' :
-            estado === 'Enviado' ? 'enviado' : 'borrador';
+    const codigo = escapeHtml(data.codigo || 'SIS' + String(sistemas.length + 1).padStart(3, '0'));
+    const estado = escapeHtml(data.estado || 'Borrador');
+    const estadoClase = (data.estado || 'Borrador') === 'Validado' ? 'validado' :
+        (data.estado || 'Borrador') === 'Observado' ? 'observado' :
+            (data.estado || 'Borrador') === 'Enviado' ? 'enviado' : 'borrador';
 
     const camposObservados = {};
     if (modoCorregir && data.observaciones_validador) {
@@ -759,76 +1050,98 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
     html += `
         <div class="tab-content ${tabActual === 0 ? 'active' : ''}" id="tab-general">
             <div class="form-group" data-campo="codigo">
-                <label>Código <span class="required">*</span></label>
-                <input type="text" value="${codigo}" disabled style="background:#f2f4f7;color:#64757a;">
-                <div class="field-hint">El código se genera automáticamente</div>
+                <label>Código único <span class="required">*</span></label>
+                <input type="text" id="campo-codigo" value="${modoModal === 'registrar' ? '' : codigo}"
+                    ${soloLectura || modoModal !== 'registrar' ? 'disabled' : ''}
+                    placeholder="Ej. SYS-010" style="${modoModal !== 'registrar' ? 'background:#f2f4f7;color:#64757a;' : ''}"
+                    oninput="this.value=this.value.toUpperCase()">
+                <div class="field-error" id="error-codigo">El código es obligatorio</div>
+                <div class="field-hint">${modoModal === 'registrar' ? 'Se convertirá a mayúsculas. Debe ser único.' : 'El código no se puede modificar'}</div>
             </div>
             <div class="form-group" data-campo="nombre">
                 <label>Nombre del sistema <span class="required">*</span></label>
-                <input type="text" id="campo-nombre" value="${data.nombre || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Ingrese el nombre del sistema" oninput="actualizarResumen()">
+                <input type="text" id="campo-nombre" value="${escapeHtml(data.nombre || '')}" ${soloLectura ? 'disabled' : ''} placeholder="Ingrese el nombre del sistema" oninput="actualizarResumen()">
                 <div class="field-error" id="error-nombre">Este campo es obligatorio</div>
-                ${camposObservados['nombre'] ? `<div class="observacion-validador">🔴 ${camposObservados['nombre']}</div>` : ''}
+                ${camposObservados['nombre'] ? `<div class="observacion-validador">🔴 ${escapeHtml(camposObservados['nombre'])}</div>` : ''}
             </div>
             <div class="form-group">
-                <label>Descripción</label>
-                <textarea id="campo-descripcion" ${soloLectura ? 'disabled' : ''} placeholder="Descripción del sistema" oninput="actualizarResumen()">${data.descripcion || ''}</textarea>
+                <label>Descripción <span class="required">*</span></label>
+                <textarea id="campo-descripcion" ${soloLectura ? 'disabled' : ''} placeholder="Descripción del sistema" oninput="actualizarResumen()">${escapeHtml(data.descripcion || '')}</textarea>
+                <div class="field-error" id="error-descripcion">La descripción es obligatoria</div>
             </div>
             <div class="form-row">
                 <div class="form-group" data-campo="area">
                     <label>Área usuaria <span class="required">*</span></label>
                     <select id="campo-area" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
                         <option value="">Seleccionar</option>
-                        <option value="Académico" ${data.area === 'Académico' ? 'selected' : ''}>Académico</option>
-                        <option value="Biblioteca" ${data.area === 'Biblioteca' ? 'selected' : ''}>Biblioteca</option>
-                        <option value="Finanzas" ${data.area === 'Finanzas' ? 'selected' : ''}>Finanzas</option>
-                        <option value="Recursos Humanos" ${data.area === 'Recursos Humanos' ? 'selected' : ''}>Recursos Humanos</option>
-                        <option value="Investigación" ${data.area === 'Investigación' ? 'selected' : ''}>Investigación</option>
-                        <option value="Logística" ${data.area === 'Logística' ? 'selected' : ''}>Logística</option>
-                        <option value="Tesorería" ${data.area === 'Tesorería' ? 'selected' : ''}>Tesorería</option>
+                        ${opcionesCatalogo('AREA_USUARIO', data.areaCodigo || data.area)}
                     </select>
                     <div class="field-error" id="error-area">Este campo es obligatorio</div>
-                    ${camposObservados['area'] ? `<div class="observacion-validador">🔴 ${camposObservados['area']}</div>` : ''}
+                    ${camposObservados['area'] ? `<div class="observacion-validador">🔴 ${escapeHtml(camposObservados['area'])}</div>` : ''}
                 </div>
                 <div class="form-group" data-campo="responsable_tecnico">
                     <label>Responsable técnico <span class="required">*</span></label>
-                    <input type="text" id="campo-responsable-tecnico" value="${data.responsable_tecnico || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Nombre del responsable técnico" oninput="actualizarResumen()">
-                    <div class="field-error" id="error-responsable">Este campo es obligatorio</div>
-                    ${camposObservados['responsable_tecnico'] ? `<div class="observacion-validador">🔴 ${camposObservados['responsable_tecnico']}</div>` : ''}
+                    <input type="text" id="campo-responsable-tecnico" value="${escapeHtml(data.responsable_tecnico || '')}" disabled
+                        style="background:#f2f4f7;color:#64757a;" placeholder="Usuario autenticado">
+                    <div class="field-hint">Se asigna automáticamente desde la sesión</div>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Responsable funcional</label>
-                    <input type="text" id="campo-responsable-funcional" value="${data.responsable_funcional || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Nombre del responsable funcional" oninput="actualizarResumen()">
+                    <input type="text" id="campo-responsable-funcional" value="" disabled
+                        style="background:#f2f4f7;color:#64757a;" placeholder="Fuera de alcance (NULL)">
+                    <div class="field-hint">Módulo Funcional fuera de alcance</div>
                 </div>
                 <div class="form-group">
-                    <label>Estado</label>
-                    <div class="estado-automatico ${estadoClase}">${estado}</div>
-                    <div class="field-hint">El estado se actualiza automáticamente</div>
+                    <label>Estado de flujo</label>
+                    <select id="campo-estado-flujo" ${soloLectura || modoModal !== 'registrar' ? 'disabled' : ''}>
+                        <option value="BORRADOR" ${(data.estado === 'Borrador' || data.estado === 'BORRADOR' || !data.estado) ? 'selected' : ''}>Borrador</option>
+                        <option value="ENVIADO" ${(data.estado === 'Enviado' || data.estado === 'ENVIADO') ? 'selected' : ''}>Enviado</option>
+                    </select>
                 </div>
             </div>
-            <div class="form-group" data-campo="criticidad">
-                <label>Criticidad <span class="required">*</span></label>
-                <select id="campo-criticidad" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
-                    <option value="">Seleccionar</option>
-                    <option value="Baja" ${data.criticidad === 'Baja' ? 'selected' : ''}>Baja</option>
-                    <option value="Media" ${data.criticidad === 'Media' ? 'selected' : ''}>Media</option>
-                    <option value="Alta" ${data.criticidad === 'Alta' ? 'selected' : ''}>Alta</option>
-                    <option value="Crítica" ${data.criticidad === 'Crítica' ? 'selected' : ''}>Crítica / Misión Crítica</option>
-                </select>
-                <div class="field-error" id="error-criticidad">Este campo es obligatorio</div>
-                ${camposObservados['criticidad'] ? `<div class="observacion-validador">🔴 ${camposObservados['criticidad']}</div>` : ''}
+            <div class="form-row">
+                <div class="form-group" data-campo="criticidad">
+                    <label>Criticidad <span class="required">*</span></label>
+                    <select id="campo-criticidad" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
+                        <option value="">Seleccionar</option>
+                        ${opcionesCatalogo('CRITICIDAD', data.criticidadCodigo || data.criticidad)}
+                    </select>
+                    <div class="field-error" id="error-criticidad">Este campo es obligatorio</div>
+                    ${camposObservados['criticidad'] ? `<div class="observacion-validador">🔴 ${camposObservados['criticidad']}</div>` : ''}
+                </div>
+                <div class="form-group">
+                    <label>Nivel de riesgo <span class="required">*</span></label>
+                    <select id="campo-nivel-riesgo" ${soloLectura ? 'disabled' : ''}>
+                        <option value="BAJO">Bajo</option>
+                        <option value="MEDIO" selected>Medio</option>
+                        <option value="ALTO">Alto</option>
+                        <option value="CRITICO">Crítico</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Estado operativo</label>
-                <select id="campo-estado-operativo" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
-                    <option value="">Seleccionar</option>
-                    <option value="En Desarrollo" ${data.estado_operativo === 'En Desarrollo' ? 'selected' : ''}>En Desarrollo</option>
-                    <option value="Activo / En Producción" ${data.estado_operativo === 'Activo / En Producción' ? 'selected' : ''}>Activo / En Producción</option>
-                    <option value="Inactivo" ${data.estado_operativo === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
-                    <option value="Obsoleto" ${data.estado_operativo === 'Obsoleto' ? 'selected' : ''}>Obsoleto</option>
-                    <option value="Retirado" ${data.estado_operativo === 'Retirado' ? 'selected' : ''}>Retirado</option>
-                </select>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Prioridad de migración <span class="required">*</span></label>
+                    <select id="campo-prioridad" ${soloLectura ? 'disabled' : ''}>
+                        <option value="INMEDIATA">Inmediata</option>
+                        <option value="CORTO PLAZO" selected>Corto plazo</option>
+                        <option value="MEDIANO PLAZO">Mediano plazo</option>
+                        <option value="MONITOREO">Monitoreo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estado operativo</label>
+                    <select id="campo-estado-operativo" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
+                        <option value="">Seleccionar</option>
+                        <option value="En Desarrollo" ${data.estado_operativo === 'En Desarrollo' ? 'selected' : ''}>En Desarrollo</option>
+                        <option value="Activo / En Producción" ${data.estado_operativo === 'Activo / En Producción' ? 'selected' : ''}>Activo / En Producción</option>
+                        <option value="Inactivo" ${data.estado_operativo === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
+                        <option value="Obsoleto" ${data.estado_operativo === 'Obsoleto' ? 'selected' : ''}>Obsoleto</option>
+                        <option value="Retirado" ${data.estado_operativo === 'Retirado' ? 'selected' : ''}>Retirado</option>
+                    </select>
+                </div>
             </div>
         </div>
     `;
@@ -836,19 +1149,15 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
     // ===== PESTAÑA 2: TIPO =====
     html += `
         <div class="tab-content ${tabActual === 1 ? 'active' : ''}" id="tab-tipo">
-            <div class="checkbox-group">
-                ${['Web', 'Desktop', 'API', 'Mobile', 'Legacy', 'Batch', 'IoT', 'Otro'].map(t => `
+            <div class="checkbox-group" id="grupo-tipo-aplicativo">
+                ${(catalogosCache.TIPO_APLICATIVO || []).map(t => `
                     <label>
-                        <input type="radio" name="tipo-sistema" value="${t}" ${data.tipo === t ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
-                        ${t}
+                        <input type="radio" name="tipo-sistema" value="${t.codigo}" ${data.tipoCodigo === t.codigo || data.tipo === t.nombre || data.tipo === t.codigo ? 'checked' : ''} ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
+                        ${t.nombre}
                     </label>
-                `).join('')}
+                `).join('') || '<p style="color:var(--muted)">No hay tipos de catálogo cargados.</p>'}
             </div>
-            <div class="form-group" style="margin-top:12px;">
-                <label>Especificar (si seleccionó Otro)</label>
-                <input type="text" id="campo-tipo-otro" value="${data.tipo_otro || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Especificar tipo" oninput="actualizarResumen()">
-            </div>
-            <div class="field-error" id="error-tipo">Debe seleccionar un tipo de sistema</div>
+            <div class="field-error" id="error-tipo" ${soloLectura ? 'style="display:none"' : ''}>Debe seleccionar un tipo de aplicativo</div>
         </div>
     `;
 
@@ -857,18 +1166,22 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
         <div class="tab-content ${tabActual === 2 ? 'active' : ''}" id="tab-desarrollo">
             <div class="form-row">
                 <div class="form-group">
-                    <label>Año de desarrollo</label>
-                    <input type="number" id="campo-anio" value="${data.anio_desarrollo || ''}" ${soloLectura ? 'disabled' : ''} placeholder="2024" oninput="actualizarResumen()">
+                    <label>Año de adquisición <span class="required">*</span></label>
+                    <input type="number" id="campo-anio" value="${data.anio_desarrollo || new Date().getFullYear()}" ${soloLectura ? 'disabled' : ''} placeholder="2024" oninput="actualizarResumen()">
+                    <div class="field-error" id="error-anio">Año inválido</div>
                 </div>
                 <div class="form-group">
-                    <label>Forma de adquisición</label>
+                    <label>Forma de adquisición <span class="required">*</span></label>
                     <select id="campo-adquisicion" ${soloLectura ? 'disabled' : ''} onchange="actualizarResumen()">
                         <option value="">Seleccionar</option>
+                        <option value="Desarrollo CTIC" ${data.adquisicion === 'Desarrollo CTIC' ? 'selected' : ''}>Desarrollo CTIC</option>
                         <option value="Desarrollo interno CTIC" ${data.adquisicion === 'Desarrollo interno CTIC' ? 'selected' : ''}>Desarrollo interno CTIC</option>
                         <option value="Proveedor externo" ${data.adquisicion === 'Proveedor externo' ? 'selected' : ''}>Proveedor externo</option>
                         <option value="Convenio" ${data.adquisicion === 'Convenio' ? 'selected' : ''}>Convenio</option>
+                        <option value="Compra" ${data.adquisicion === 'Compra' ? 'selected' : ''}>Compra</option>
                         <option value="Compra directa" ${data.adquisicion === 'Compra directa' ? 'selected' : ''}>Compra directa</option>
                     </select>
+                    <div class="field-error" id="error-adquisicion">Este campo es obligatorio</div>
                 </div>
             </div>
             <div class="form-row">
@@ -907,43 +1220,43 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
             <div class="form-row">
                 <div class="form-group" data-campo="lenguaje">
                     <label>Lenguaje</label>
-                    <input type="text" id="campo-lenguaje" value="${data.lenguaje || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. PHP, Java, Python" oninput="actualizarResumen()">
+                    <input type="text" id="campo-lenguaje" value="${valorVista(data.lenguaje, soloLectura)}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. PHP, Java, Python" oninput="actualizarResumen()">
                 </div>
                 <div class="form-group">
                     <label>Versión lenguaje</label>
-                    <input type="text" id="campo-version-lenguaje" value="${data.version_lenguaje || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. 8.2" oninput="actualizarResumen()">
+                    <input type="text" id="campo-version-lenguaje" value="${valorVista(data.version_lenguaje, soloLectura)}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. 8.2" oninput="actualizarResumen()">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Framework</label>
-                    <input type="text" id="campo-framework" value="${data.framework || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. Laravel, Spring Boot" oninput="actualizarResumen()">
+                    <input type="text" id="campo-framework" value="${valorVista(data.framework, soloLectura)}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. Laravel, Spring Boot" oninput="actualizarResumen()">
                 </div>
                 <div class="form-group">
                     <label>Versión framework</label>
-                    <input type="text" id="campo-version-framework" value="${data.version_framework || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. 10.0" oninput="actualizarResumen()">
+                    <input type="text" id="campo-version-framework" value="${valorVista(data.version_framework, soloLectura)}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. 10.0" oninput="actualizarResumen()">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group" data-campo="arquitectura">
                     <label>Arquitectura <span class="required">*</span></label>
-                    <input type="text" id="campo-arquitectura" value="${data.arquitectura || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. MVC, Hexagonal" oninput="actualizarResumen()">
-                    <div class="field-error" id="error-arquitectura">Este campo es obligatorio</div>
+                    <input type="text" id="campo-arquitectura" value="${valorVista(data.arquitectura, soloLectura)}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. MVC, Hexagonal" oninput="actualizarResumen()">
+                    <div class="field-error" id="error-arquitectura" ${soloLectura ? 'style="display:none"' : ''}>Este campo es obligatorio</div>
                     ${camposObservados['arquitectura'] ? `<div class="observacion-validador">⚠️ ${camposObservados['arquitectura']}</div>` : ''}
                 </div>
                 <div class="form-group">
                     <label>Patrón</label>
-                    <input type="text" id="campo-patron" value="${data.patron || ''}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. Repository, Factory" oninput="actualizarResumen()">
+                    <input type="text" id="campo-patron" value="${valorVista(data.patron, soloLectura)}" ${soloLectura ? 'disabled' : ''} placeholder="Ej. Repository, Factory" oninput="actualizarResumen()">
                 </div>
             </div>
             <div class="form-group" data-campo="repositorio">
                 <label>Repositorio Git</label>
-                <input type="text" id="campo-repositorio" value="${data.repositorio || ''}" ${soloLectura ? 'disabled' : ''} placeholder="URL del repositorio Git" oninput="actualizarResumen()">
+                <input type="text" id="campo-repositorio" value="${valorVista(data.repositorio, soloLectura)}" ${soloLectura ? 'disabled' : ''} placeholder="URL del repositorio Git" oninput="actualizarResumen()">
                 ${camposObservados['repositorio'] ? `<div class="observacion-validador">⚠️ ${camposObservados['repositorio']}</div>` : ''}
             </div>
             <div class="form-group">
                 <label>Tecnologías complementarias</label>
-                <textarea id="campo-tecnologias" ${soloLectura ? 'disabled' : ''} placeholder="Ej. Redis, Elasticsearch, Kafka" oninput="actualizarResumen()">${data.tecnologias || ''}</textarea>
+                <textarea id="campo-tecnologias" ${soloLectura ? 'disabled' : ''} placeholder="Ej. Redis, Elasticsearch, Kafka" oninput="actualizarResumen()">${valorVista(data.tecnologias, soloLectura)}</textarea>
             </div>
         </div>
     `;
@@ -1037,6 +1350,9 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
 
     html += `
         <div class="tab-content ${tabActual === 5 ? 'active' : ''}" id="tab-integraciones">
+            <div class="mensaje-global" style="display:block;margin-bottom:14px;" role="status">
+                El registro de integraciones está temporalmente deshabilitado hasta consolidar el esquema de base de datos.
+            </div>
             <div class="form-group" data-campo="tiene_integraciones">
                 <label>¿Tiene integraciones? <span class="required">*</span></label>
                 <div class="radio-group" style="display:flex;gap:20px;margin-top:6px;">
@@ -1168,8 +1484,11 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
     // ===== PESTAÑA 7: EVIDENCIAS =====
     html += `
         <div class="tab-content ${tabActual === 6 ? 'active' : ''}" id="tab-evidencias">
+            <div class="mensaje-global" style="display:block;margin-bottom:14px;" role="status">
+                Las evidencias se pueden preparar visualmente, pero todavía no se subirán al servidor en este registro.
+            </div>
             <div class="form-group" data-campo="evidencias">
-                <label>Evidencias <span class="required">*</span></label>
+                <label>Evidencias</label>
                 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:12px;">
                     ${['Manual', 'Documento técnico', 'Contrato', 'Capturas', 'Certificados'].map(t => `
                         <div style="border:1px dashed var(--border);border-radius:10px;padding:12px;text-align:center;">
@@ -1264,6 +1583,12 @@ function renderizarModalContenido(sistema, soloLectura = false, modoCorregir = f
         // Deshabilitar inputs, selects y textareas
         container.querySelectorAll('input, select, textarea').forEach(el => {
             el.disabled = true;
+        });
+
+        // Ocultar mensajes de validación en modo solo lectura
+        container.querySelectorAll('.field-error').forEach(el => {
+            el.classList.remove('visible');
+            el.style.display = 'none';
         });
 
         // Deshabilitar botones de acciones (agregar integración, agregar URL, etc.)
@@ -1386,111 +1711,210 @@ function actualizarResumen() {
 }
 
 // ============================================================
-// GUARDAR SISTEMA MODAL (SIN VALIDACIONES)
+// GUARDAR SISTEMA MODAL
 // ============================================================
-function guardarSistemaModal(esEnvioFinal = false) { // <--- AÑADIR PARÁMETRO
+function limpiarErroresFormulario() {
+    document.querySelectorAll('.field-error.visible').forEach(el => el.classList.remove('visible'));
+}
+
+function marcarErrorCampo(idError) {
+    const el = document.getElementById(idError);
+    if (el) el.classList.add('visible');
+}
+
+async function guardarSistemaModal(esEnvioFinal = false) {
     if (modoModal === 'ver') {
         cerrarModalSistema();
         return;
     }
 
-    // --- Recoger datos del formulario (sin validar nada) ---
-    const container = document.getElementById('modal-body-sistema');
+    if (guardandoSistema) return;
 
+    if (modoModal === 'registrar') {
+        limpiarErroresFormulario();
+        const session = obtenerSesionDesarrollo();
+        if (!session) {
+            window.location.href = '/pages/login/html/login.html';
+            return;
+        }
+
+        const codigoUnico = (document.getElementById('campo-codigo')?.value || '').trim().toUpperCase();
+        const nombre = (document.getElementById('campo-nombre')?.value || '').trim();
+        const descripcion = (document.getElementById('campo-descripcion')?.value || '').trim();
+        const areaCodigo = document.getElementById('campo-area')?.value || '';
+        const criticidadCodigo = document.getElementById('campo-criticidad')?.value || '';
+        const tipoRadio = document.querySelector('input[name="tipo-sistema"]:checked');
+        const tipoCodigo = tipoRadio ? tipoRadio.value : '';
+        const formaAdquisicion = document.getElementById('campo-adquisicion')?.value || '';
+        const anoRaw = document.getElementById('campo-anio')?.value || '';
+        const anoAdquisicion = parseInt(anoRaw, 10);
+        // Guardar Borrador siempre BORRADOR; Enviar fuerza ENVIADO.
+        const estadoFlujo = esEnvioFinal ? 'ENVIADO' : 'BORRADOR';
+        const nivelRiesgo = document.getElementById('campo-nivel-riesgo')?.value || 'MEDIO';
+        const prioridadMigracion = document.getElementById('campo-prioridad')?.value || 'CORTO PLAZO';
+        const desarrolladorNombre = (document.getElementById('campo-empresa')?.value || '').trim() || 'CTIC UNAS';
+        const contrato = document.querySelector('input[name="campo-contrato"]:checked')?.value || 'No';
+        const fechaSoporte = document.getElementById('campo-soporte')?.value || '';
+
+        const codigoEl = document.getElementById('campo-codigo');
+        if (codigoEl) codigoEl.value = codigoUnico;
+        const estadoEl = document.getElementById('campo-estado-flujo');
+        if (estadoEl) estadoEl.value = estadoFlujo;
+
+        let primeraPestanaError = null;
+        const marcar = function (idError, pestana) {
+            marcarErrorCampo(idError);
+            if (primeraPestanaError === null) primeraPestanaError = pestana;
+        };
+
+        if (!codigoUnico) marcar('error-codigo', 0);
+        if (!nombre) marcar('error-nombre', 0);
+        if (!descripcion) marcar('error-descripcion', 0);
+        if (!areaCodigo) marcar('error-area', 0);
+        if (!criticidadCodigo) marcar('error-criticidad', 0);
+        if (!tipoCodigo) marcar('error-tipo', 1);
+        if (!formaAdquisicion) marcar('error-adquisicion', 2);
+        if (!anoRaw || Number.isNaN(anoAdquisicion) || anoAdquisicion < 1990 || anoAdquisicion > new Date().getFullYear() + 1) {
+            marcar('error-anio', 2);
+        }
+        if (!estadoFlujo) marcar('error-codigo', 0); // fallback visual
+        if (!nivelRiesgo || !prioridadMigracion) {
+            mostrarMensajeGlobal('Complete riesgo y prioridad de migración.', 'error');
+            if (primeraPestanaError === null) primeraPestanaError = 0;
+        }
+
+        if (primeraPestanaError !== null) {
+            cambiarTab(primeraPestanaError);
+            mostrarMensajeGlobal('Complete los campos obligatorios del formulario.', 'error');
+            const firstInvalid = document.querySelector('.field-error.visible');
+            const group = firstInvalid ? firstInvalid.closest('.form-group') : null;
+            const input = group ? group.querySelector('input, select, textarea') : null;
+            if (input) setTimeout(function () { input.focus(); }, 80);
+            return;
+        }
+
+        const payload = {
+            codigoUnico,
+            nombre,
+            descripcion,
+            areaCodigo,
+            tipoCodigo,
+            criticidadCodigo,
+            formaAdquisicion,
+            anoAdquisicion,
+            estadoFlujo,
+            nivelRiesgo,
+            prioridadMigracion,
+            desarrolladorNombre,
+            contratoVigente: contrato === 'Si' || contrato === 'true',
+            fechaVencimientoSoporte: fechaSoporte || null,
+            esLegacy: false,
+            observacionesDesarrollo: (document.getElementById('campo-obs-desarrollo')?.value || '').trim() || null,
+            arquitectura: {
+                lenguaje: (document.getElementById('campo-lenguaje')?.value || '').trim() || null,
+                versionLenguaje: (document.getElementById('campo-version-lenguaje')?.value || '').trim() || null,
+                framework: (document.getElementById('campo-framework')?.value || '').trim() || null,
+                versionFramework: (document.getElementById('campo-version-framework')?.value || '').trim() || null,
+                tipoArquitectura: (document.getElementById('campo-arquitectura')?.value || '').trim() || null,
+                patron: (document.getElementById('campo-patron')?.value || '').trim() || null,
+                repositorioGit: (document.getElementById('campo-repositorio')?.value || '').trim() || null,
+                tecnologiasComplementarias: (document.getElementById('campo-tecnologias')?.value || '').trim() || null
+            },
+            baseDatos: {
+                motor: document.getElementById('campo-motor-bd')?.value || null,
+                version: (document.getElementById('campo-version-bd')?.value || '').trim() || null,
+                tipo: document.getElementById('campo-tipo-bd')?.value || null,
+                servidor: (document.getElementById('campo-servidor')?.value || '').trim() || null,
+                esquema: (document.getElementById('campo-esquema')?.value || '').trim() || null,
+                tieneBackup: (document.querySelector('input[name="campo-backup"]:checked')?.value || '') === 'Si',
+                frecuenciaBackup: document.getElementById('campo-frecuencia')?.value || null,
+                cifrado: (document.querySelector('input[name="campo-cifrado"]:checked')?.value || '') === 'Si',
+                responsable: (document.getElementById('campo-responsable-bd')?.value || '').trim() || null
+            },
+            integraciones: {
+                tieneIntegraciones: document.querySelector('input[name="tiene-integraciones"]:checked')?.value === 'true',
+                items: (sistemaEnEdicion?.integraciones || []).map(function (i) {
+                    return {
+                        destino: i.destino,
+                        protocolo: i.protocolo,
+                        metodo: i.metodo,
+                        frecuencia: i.frecuencia,
+                        estado: i.estado,
+                        responsable: i.responsable,
+                        descripcion: i.descripcion || null
+                    };
+                })
+            },
+            evidencias: {
+                urls: (urlsAgregadas || []).map(function (u) {
+                    return { url: u.url, descripcion: u.descripcion || null, tipo: 'URL' };
+                }),
+                archivos: []
+            }
+        };
+
+        // Limpiar secciones vacías para no forzar validaciones de ficha parcial
+        const arq = payload.arquitectura;
+        if (!arq.lenguaje && !arq.framework && !arq.tipoArquitectura && !arq.patron && !arq.repositorioGit && !arq.tecnologiasComplementarias) {
+            payload.arquitectura = null;
+        }
+        const bd = payload.baseDatos;
+        if (!bd.motor && !bd.version && !bd.servidor && !bd.esquema && !bd.responsable) {
+            payload.baseDatos = null;
+        }
+        if (!payload.integraciones.tieneIntegraciones) {
+            payload.integraciones = { tieneIntegraciones: false, items: [] };
+        }
+        if (!payload.evidencias.urls.length) {
+            payload.evidencias = { urls: [], archivos: [] };
+        }
+
+        const btnGuardar = document.getElementById('btn-guardar-modal');
+        guardandoSistema = true;
+        if (btnGuardar) {
+            btnGuardar.disabled = true;
+            btnGuardar.textContent = 'Guardando...';
+        }
+
+        try {
+            const result = await diagtiRegistrarSistema(payload);
+            cerrarModalSistema();
+            mostrarMensajeGlobal(result?.message || 'Sistema registrado correctamente', 'ok');
+            await cargarSistemas();
+            filtrarSistemas();
+        } catch (error) {
+            console.error(error);
+            mostrarMensajeGlobal(error.message || 'No se pudo registrar el sistema', 'error');
+        } finally {
+            guardandoSistema = false;
+            if (btnGuardar) {
+                btnGuardar.disabled = false;
+                btnGuardar.textContent = '💾 Guardar Borrador';
+            }
+        }
+        return;
+    }
+
+    // Edición / corrección local (flujo existente no oficial de alta)
+    const container = document.getElementById('modal-body-sistema');
     const nombre = document.getElementById('campo-nombre')?.value?.trim() || 'Sistema sin nombre';
     const descripcion = document.getElementById('campo-descripcion')?.value?.trim() || '';
     const area = document.getElementById('campo-area')?.value || '';
     const responsable_tecnico = document.getElementById('campo-responsable-tecnico')?.value?.trim() || '';
-    const responsable_funcional = document.getElementById('campo-responsable-funcional')?.value?.trim() || '';
     const criticidad = document.getElementById('campo-criticidad')?.value || '';
     const estado_operativo = document.getElementById('campo-estado-operativo')?.value || 'En Desarrollo';
-
     const tipoRadio = container.querySelector('input[name="tipo-sistema"]:checked');
     const tipo = tipoRadio ? tipoRadio.value : '';
-    const tipo_otro = document.getElementById('campo-tipo-otro')?.value?.trim() || '';
-
     const anio_desarrollo = document.getElementById('campo-anio')?.value || '';
     const adquisicion = document.getElementById('campo-adquisicion')?.value || '';
     const empresa = document.getElementById('campo-empresa')?.value?.trim() || '';
     const contrato = document.querySelector('input[name="campo-contrato"]:checked')?.value || '';
     const fecha_soporte = document.getElementById('campo-soporte')?.value || '';
     const observaciones = document.getElementById('campo-obs-desarrollo')?.value?.trim() || '';
-
-    const lenguaje = document.getElementById('campo-lenguaje')?.value?.trim() || '';
-    const version_lenguaje = document.getElementById('campo-version-lenguaje')?.value?.trim() || '';
-    const framework = document.getElementById('campo-framework')?.value?.trim() || '';
-    const version_framework = document.getElementById('campo-version-framework')?.value?.trim() || '';
-    const arquitectura = document.getElementById('campo-arquitectura')?.value?.trim() || '';
-    const patron = document.getElementById('campo-patron')?.value?.trim() || '';
-    const repositorio = document.getElementById('campo-repositorio')?.value?.trim() || '';
-    const tecnologias = document.getElementById('campo-tecnologias')?.value?.trim() || '';
-
-    const motor_bd = document.getElementById('campo-motor-bd')?.value || '';
-    const version_bd = document.getElementById('campo-version-bd')?.value?.trim() || '';
-    const tipo_bd = document.getElementById('campo-tipo-bd')?.value || 'Relacional';
-    const servidor = document.getElementById('campo-servidor')?.value?.trim() || '';
-    const esquema = document.getElementById('campo-esquema')?.value?.trim() || '';
-    const backup = document.querySelector('input[name="campo-backup"]:checked')?.value || '';
-    const frecuencia_backup = document.getElementById('campo-frecuencia')?.value || '';
-    const cifrado = document.querySelector('input[name="campo-cifrado"]:checked')?.value || '';
-    const responsable_bd = document.getElementById('campo-responsable-bd')?.value?.trim() || '';
-
-    const tieneIntegracionesRadio = document.querySelector('input[name="tiene-integraciones"]:checked');
-    const tiene_integraciones = tieneIntegracionesRadio ? tieneIntegracionesRadio.value === 'true' : false;
-
     const fecha = new Date().toLocaleDateString('es-PE');
-
-    // --- Guardar ---
     const estadoGuardar = esEnvioFinal ? 'Enviado' : 'Borrador';
-    if (modoModal === 'registrar') {
-        const nuevoId = 'SIS' + String(sistemas.length + 1).padStart(3, '0');
-        const nuevoSistema = {
-            id: nuevoId,
-            codigo: nuevoId,
-            nombre,
-            descripcion,
-            area,
-            responsable_tecnico,
-            responsable_funcional,
-            estado: estadoGuardar,
-            criticidad,
-            fecha,
-            tipo,
-            tipo_otro,
-            anio_desarrollo,
-            adquisicion,
-            empresa,
-            contrato,
-            fecha_soporte,
-            observaciones,
-            lenguaje,
-            version_lenguaje,
-            framework,
-            version_framework,
-            arquitectura,
-            patron,
-            repositorio,
-            tecnologias,
-            motor_bd,
-            version_bd,
-            tipo_bd,
-            servidor,
-            esquema,
-            backup,
-            frecuencia_backup,
-            cifrado,
-            responsable_bd,
-            integraciones: sistemaEnEdicion?.integraciones || [],
-            evidencias: evidenciasSubidas,
-            urls: urlsAgregadas,
-            tiene_integraciones: tiene_integraciones,
-            observaciones_validador: [],
-            estado_operativo
-        };
-        sistemas.push(nuevoSistema);
-        guardarSistemas(sistemas);
-        alert(esEnvioFinal ? '✅ El sistema ha sido enviado a revisión técnica correctamente.' : '✅ Sistema registrado correctamente como BORRADOR.');
-    } else if (modoModal === 'editar' || modoModal === 'corregir') {
+
+    if (modoModal === 'editar' || modoModal === 'corregir') {
         const index = sistemas.findIndex(s => s.id === sistemaEnEdicion.id);
         if (index !== -1) {
             sistemas[index] = {
@@ -1499,55 +1923,26 @@ function guardarSistemaModal(esEnvioFinal = false) { // <--- AÑADIR PARÁMETRO
                 descripcion,
                 area,
                 responsable_tecnico,
-                responsable_funcional,
                 criticidad,
+                estado: estadoGuardar,
                 tipo,
-                tipo_otro,
                 anio_desarrollo,
                 adquisicion,
                 empresa,
                 contrato,
                 fecha_soporte,
                 observaciones,
-                lenguaje,
-                version_lenguaje,
-                framework,
-                version_framework,
-                arquitectura,
-                patron,
-                repositorio,
-                tecnologias,
-                motor_bd,
-                version_bd,
-                tipo_bd,
-                servidor,
-                esquema,
-                backup,
-                frecuencia_backup,
-                cifrado,
-                responsable_bd,
-                integraciones: sistemaEnEdicion?.integraciones || [],
-                tiene_integraciones: tiene_integraciones,
                 evidencias: evidenciasSubidas,
                 urls: urlsAgregadas,
-                estado_operativo
+                estado_operativo,
+                fecha
             };
-            if (esEnvioFinal) {
-                sistemas[index].estado = 'Enviado';
-            } else if (modoModal === 'corregir') {
-                sistemas[index].estado = 'Subsanado';
-                sistemas[index].observaciones_validador = [];
-            }
             guardarSistemas(sistemas);
-            alert('✅ Cambios guardados correctamente.');
+            alert(esEnvioFinal ? '✅ El sistema ha sido enviado a revisión técnica correctamente.' : '✅ Sistema actualizado.');
         }
-    }
-    if (esEnvioFinal && modoModal !== 'registrar') {
-        alert('✅ El sistema ha sido enviado a revisión técnica correctamente.');
     }
 
     cerrarModalSistema();
-    sistemas = getSistemas();
     renderizarTabla();
 }
 
@@ -1673,68 +2068,151 @@ function poblarSelectResponsables() {
 }
 
 // ============================================================
-// INICIALIZACIÓN
+// INICIALIZACION
 // ============================================================
-document.addEventListener('DOMContentLoaded', async function () {
-    await cargarSistemasDesdeBackend();
-    sistemas = getSistemas();
-    renderizarTabla();
+function configurarBotonRegistrar() {
+    const boton = document.getElementById('btnRegistrarSistema');
+    if (!boton) {
+        console.error('No existe btnRegistrarSistema');
+        return;
+    }
 
-    document.querySelectorAll('.nav-item').forEach(item => {
-        if (item.getAttribute('href') === 'mis-sistemas.html') {
-            item.classList.add('active');
+    boton.addEventListener('click', function (event) {
+        event.preventDefault();
+        abrirModalRegistro();
+    });
+}
+
+function configurarModalSistema() {
+    const btnCerrarDetalle = document.getElementById('btnCerrarModalSistema');
+    const btnCancelarDetalle = document.getElementById('btnCancelarModal');
+    if (btnCerrarDetalle) btnCerrarDetalle.addEventListener('click', cerrarModalSistema);
+    if (btnCancelarDetalle) btnCancelarDetalle.addEventListener('click', cerrarModalSistema);
+
+    const modalDetalle = document.getElementById('modal-sistema');
+    if (modalDetalle) {
+        modalDetalle.addEventListener('click', function (e) {
+            if (e.target === modalDetalle) cerrarModalSistema();
+        });
+    }
+
+    const btnGuardar = document.getElementById('btn-guardar-modal');
+    if (btnGuardar) {
+        btnGuardar.addEventListener('click', function (e) {
+            e.preventDefault();
+            guardarSistemaModal(false);
+        });
+    }
+
+    const btnEnviar = document.getElementById('btn-enviar-validacion');
+    if (btnEnviar) {
+        btnEnviar.addEventListener('click', function (e) {
+            e.preventDefault();
+            validateFinalSubmit();
+        });
+    }
+}
+
+function configurarAccionesTabla() {
+    const tabla = document.getElementById('tabla-sistemas');
+    if (!tabla) {
+        console.error('No existe tabla-sistemas');
+        return;
+    }
+
+    tabla.addEventListener('click', function (event) {
+        const boton = event.target.closest('[data-action]');
+        if (!boton) return;
+
+        const action = boton.getAttribute('data-action');
+        const id = boton.getAttribute('data-id');
+        if (!id) return;
+
+        event.preventDefault();
+
+        if (action === 'ver') {
+            abrirDetalleSistema(id);
+        } else if (action === 'editar') {
+            editarSistema(id);
+        } else if (action === 'enviar') {
+            if (typeof window.enviarAValidacionDirecto === 'function') {
+                window.enviarAValidacionDirecto(id);
+            }
         }
     });
+}
 
-    document.getElementById('search-input').addEventListener('input', filtrarSistemas);
-    document.getElementById('filter-estado').addEventListener('change', filtrarSistemas);
-    document.getElementById('filter-area').addEventListener('change', filtrarSistemas);
-    document.getElementById('filter-tipo').addEventListener('change', filtrarSistemas);
-    document.getElementById('filter-criticidad').addEventListener('change', filtrarSistemas);
-    document.getElementById('filter-responsable').addEventListener('change', filtrarSistemas);
-    document.getElementById('filter-riesgo').addEventListener('change', filtrarSistemas);
+function configurarFiltros() {
+    ['search-input', 'filter-estado', 'filter-area', 'filter-tipo', 'filter-criticidad', 'filter-responsable', 'filter-riesgo']
+        .forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener(id === 'search-input' ? 'input' : 'change', filtrarSistemas);
+        });
+}
+
+function mostrarErrorCatalogos(error) {
+    manejarErrorCatalogos(error);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const session = obtenerSesionDesarrollo();
+
+    if (!session) {
+        window.location.href = '/pages/login/html/login.html';
+        return;
+    }
+
+    try { configurarDatosUsuario(session); } catch (e) { console.error(e); }
+    try { configurarBotonRegistrar(); } catch (e) { console.error(e); }
+    try { configurarModalSistema(); } catch (e) { console.error(e); }
+    try { configurarAccionesTabla(); } catch (e) { console.error(e); }
+    try { configurarFiltros(); } catch (e) { console.error(e); }
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             cerrarModalSistema();
+            if (typeof cerrarModalConfirmacion === 'function') cerrarModalConfirmacion();
         }
     });
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const action = urlParams.get('action');
-    const id = urlParams.get('id');
-
-    if (action && id) {
-        const sistema = sistemas.find(s => String(s.id) === String(id));
-        if (sistema) {
-            if (action === 'editar') {
-                editarSistema(id);
-            } else if (action === 'enviar') {
-                editarSistema(id);
-                setTimeout(function () {
-                    cambiarTab(7);
-                }, 150);
-            } else if (action === 'corregir') {
-                corregirSistema(id);
+    cargarCatalogos().catch(mostrarErrorCatalogos);
+    cargarSistemas().catch(manejarErrorCarga).then(function () {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            const id = urlParams.get('id');
+            if (action && id) {
+                const sistema = encontrarSistemaPorId(id);
+                if (sistema) {
+                    if (action === 'editar' || action === 'enviar') {
+                        editarSistema(id);
+                        if (action === 'enviar') {
+                            setTimeout(function () { cambiarTab(7); }, 150);
+                        }
+                    } else if (action === 'corregir') {
+                        corregirSistema(id);
+                    } else if (action === 'ver') {
+                        abrirDetalleSistema(id);
+                    }
+                }
             }
+        } catch (e) {
+            console.error(e);
         }
-    }
-
-    poblarSelectResponsables();
+    });
 
     window.enviarAValidacionDirecto = async function (id) {
-        if (!confirm('¿Estás seguro de que deseas enviar este sistema a validación técnica? Ya no podrás editarlo.')) {
+        if (!confirm('Seguro de enviar este sistema a validacion tecnica?')) {
             return;
         }
         try {
             await diagtiEnviarValidacion(id);
-            await cargarSistemasDesdeBackend();
-            sistemas = getSistemas();
-            alert('✅ El sistema ha sido enviado a revisión técnica correctamente.');
-            renderizarTabla();
+            await cargarSistemas();
+            alert('Sistema enviado a revision tecnica correctamente.');
         } catch (error) {
             console.error(error);
-            alert('❌ No se pudo enviar a validación: ' + (error.message || error));
+            alert('No se pudo enviar a validacion: ' + (error.message || error));
         }
     };
 });

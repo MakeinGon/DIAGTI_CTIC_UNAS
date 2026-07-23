@@ -11,14 +11,17 @@ public final class InfraEstadoUi {
     private InfraEstadoUi() {
     }
 
+    public static final String PENDIENTE_EVALUACION = "Pendiente de evaluación";
+
     public static String fromSistemaYEval(String estadoFlujo, boolean tieneInfra, String estadoRegistroEval) {
         String bd = ValidacionEstados.normalizar(estadoFlujo);
         String eval = ValidacionEstados.normalizar(estadoRegistroEval);
 
-        if (!tieneInfra && (bd.isBlank() || "BORRADOR".equals(bd))) {
-            return "Nuevo";
+        // Sin fila en infraestructura: visible como pendiente (LEFT JOIN semántico).
+        if (!tieneInfra) {
+            return PENDIENTE_EVALUACION;
         }
-        if ("BORRADOR".equals(eval) || (!tieneInfra && "BORRADOR".equals(bd))) {
+        if ("BORRADOR".equals(eval) || "SIN_REGISTRO".equals(eval)) {
             return "Borrador";
         }
         if ("SUBSANADO".equals(bd)) {

@@ -11,21 +11,37 @@ import pe.edu.unas.ctic.diagti.administrador.entity.AuditoriaEntity;
 import pe.edu.unas.ctic.diagti.administrador.entity.CatalogoEntity;
 import pe.edu.unas.ctic.diagti.administrador.repository.AuditoriaRepository;
 import pe.edu.unas.ctic.diagti.administrador.repository.CatalogoRepository;
+import pe.edu.unas.ctic.diagti.common.exception.ConflictException;
+import pe.edu.unas.ctic.diagti.common.exception.ResourceNotFoundException;
+import pe.edu.unas.ctic.diagti.desarrollador.dto.RegistrarSistemaOficialRequestDTO;
+import pe.edu.unas.ctic.diagti.desarrollador.dto.RegistrarSistemaOficialResponseDTO;
 import pe.edu.unas.ctic.diagti.desarrollador.dto.frontend.SistemaFrontendDTO;
+import pe.edu.unas.ctic.diagti.desarrollador.repository.SistemaOficialInsertRepository;
 import pe.edu.unas.ctic.diagti.desarrollador.service.DesarrolladorInventarioService;
 import pe.edu.unas.ctic.diagti.desarrollador.support.DesarrolladorUsuarioResolver;
 import pe.edu.unas.ctic.diagti.desarrollador.support.EstadoFlujoNormalizer;
+import pe.edu.unas.ctic.diagti.director.entity.ArquitecturaEntity;
+import pe.edu.unas.ctic.diagti.director.entity.BaseDatosSistemaEntity;
+import pe.edu.unas.ctic.diagti.director.entity.EvidenciaEntity;
+import pe.edu.unas.ctic.diagti.director.entity.IntegracionEntity;
 import pe.edu.unas.ctic.diagti.director.entity.ObservacionEntity;
 import pe.edu.unas.ctic.diagti.director.entity.SistemaEntity;
 import pe.edu.unas.ctic.diagti.director.entity.ValidacionEntity;
+import pe.edu.unas.ctic.diagti.director.repository.BaseDatosSistemaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorArquitecturaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorEvidenciaRepository;
+import pe.edu.unas.ctic.diagti.director.repository.DirectorIntegracionRepository;
 import pe.edu.unas.ctic.diagti.director.repository.DirectorSistemaRepository;
 import pe.edu.unas.ctic.diagti.director.repository.ObservacionRepository;
 import pe.edu.unas.ctic.diagti.director.repository.ValidacionRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -45,6 +61,11 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
     private final CatalogoRepository catalogoRepository;
     private final LoginUsuarioRepository loginUsuarioRepository;
     private final AuditoriaRepository auditoriaRepository;
+    private final SistemaOficialInsertRepository sistemaOficialInsertRepository;
+    private final DirectorArquitecturaRepository arquitecturaRepository;
+    private final BaseDatosSistemaRepository baseDatosSistemaRepository;
+    private final DirectorIntegracionRepository integracionRepository;
+    private final DirectorEvidenciaRepository evidenciaRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -90,13 +111,14 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
                     "Ya existe una validación activa para este sistema");
         }
 
-        sistema.setEstadoFlujo("ENVIADO");
+        sistema.setEstadoFlujoSincronizado("ENVIADO");
         sistemaRepository.save(sistema);
 
         ValidacionEntity validacion = existentes.stream()
                 .filter(v -> {
                     String e = v.getEstadoValidacion() == null ? "" : v.getEstadoValidacion().toUpperCase();
-                    return "SUBSANADO".equals(e) || "OBSERVADO".equals(e) || "PENDIENTE".equals(e);
+                    return "SUBSANADO".equals(e) || "OBSERVADO".equals(e) || "PENDIENTE".equals(e)
+                            || "BORRADOR".equals(e);
                 })
                 .findFirst()
                 .orElseGet(ValidacionEntity::new);
@@ -146,7 +168,7 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
         }
         observacionRepository.saveAll(observaciones);
 
-        sistema.setEstadoFlujo("SUBSANADO");
+        sistema.setEstadoFlujoSincronizado("SUBSANADO");
         sistemaRepository.save(sistema);
 
         List<ValidacionEntity> validaciones = validacionRepository.findByIdSistema(sistema.getIdSistema());
@@ -258,9 +280,12 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
 
     private SistemaFrontendDTO toFrontend(SistemaEntity sistema, Usuario desarrollador,
                                           List<ObservacionEntity> observaciones) {
-        String tipo = catalogoValor(sistema.getIdTipoAplicativo());
-        String area = catalogoValor(sistema.getIdAreaUsuario());
-        String criticidad = catalogoValor(sistema.getIdCriticidad());
+        CatalogoEntity tipoCat = catalogoEntity(sistema.getIdTipoAplicativo());
+        CatalogoEntity areaCat = catalogoEntity(sistema.getIdAreaUsuario());
+        CatalogoEntity criticidadCat = catalogoEntity(sistema.getIdCriticidad());
+        String tipo = tipoCat != null ? tipoCat.getValor() : null;
+        String area = areaCat != null ? areaCat.getValor() : null;
+        String criticidad = criticidadCat != null ? criticidadCat.getValor() : null;
 
         String responsableFuncional = null;
         if (sistema.getIdResponsableFuncional() != null) {
@@ -271,7 +296,6 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
 
         List<SistemaFrontendDTO.ObservacionFrontendDTO> obsUi = new ArrayList<>();
         for (ObservacionEntity obs : observaciones) {
-            // El desarrollador solo ve observaciones aún no respondidas
             if (obs.getEstadoObservacion() != null
                     && !"PENDIENTE".equalsIgnoreCase(obs.getEstadoObservacion())
                     && !"RECHAZADA".equalsIgnoreCase(obs.getEstadoObservacion())) {
@@ -293,15 +317,55 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
                 ? sistema.getFechaActualizacion()
                 : sistema.getFechaCreacion();
 
+        ArquitecturaEntity arq = arquitecturaRepository.findByIdSistema(sistema.getIdSistema()).stream()
+                .findFirst().orElse(null);
+        BaseDatosSistemaEntity bd = baseDatosSistemaRepository.findByIdSistema(sistema.getIdSistema()).orElse(null);
+        List<IntegracionEntity> integs = integracionRepository.findByIdSistemaOrigen(sistema.getIdSistema());
+        List<EvidenciaEntity> evids = evidenciaRepository.findByIdSistema(sistema.getIdSistema());
+
+        List<Object> integracionesUi = new ArrayList<>();
+        for (IntegracionEntity i : integs) {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("destino", i.getSistemaDestinoNombre() != null ? i.getSistemaDestinoNombre() : "");
+            m.put("protocolo", i.getProtocolo());
+            m.put("metodo", i.getMetodoIntercambio());
+            m.put("frecuencia", i.getFrecuencia());
+            m.put("estado", i.getEstado());
+            m.put("responsable", i.getResponsableNombre());
+            m.put("descripcion", i.getDescripcion());
+            integracionesUi.add(m);
+        }
+
+        List<Object> urlsUi = new ArrayList<>();
+        List<Object> evidenciasUi = new ArrayList<>();
+        for (EvidenciaEntity e : evids) {
+            if (e.getUrlEvidencia() != null && !e.getUrlEvidencia().isBlank()) {
+                Map<String, Object> u = new LinkedHashMap<>();
+                u.put("url", e.getUrlEvidencia());
+                u.put("descripcion", e.getDescripcion());
+                u.put("tipo", e.getTipoEvidencia());
+                urlsUi.add(u);
+            } else if (e.getNombreArchivo() != null) {
+                Map<String, Object> a = new LinkedHashMap<>();
+                a.put("tipo", e.getTipoEvidencia());
+                a.put("nombre", e.getNombreArchivo());
+                a.put("size", e.getTamanoArchivo());
+                evidenciasUi.add(a);
+            }
+        }
+
         return SistemaFrontendDTO.builder()
                 .id(String.valueOf(sistema.getIdSistema()))
                 .codigo(sistema.getCodigoUnico())
                 .nombre(sistema.getNombre())
                 .tipo(tipo != null ? tipo : "")
+                .tipoCodigo(tipoCat != null ? tipoCat.getCodigo() : null)
                 .estado(EstadoFlujoNormalizer.toUi(sistema.getEstadoFlujo()))
                 .criticidad(criticidad != null ? criticidad : "")
+                .criticidadCodigo(criticidadCat != null ? criticidadCat.getCodigo() : null)
                 .fecha(formatFecha(fechaRef))
                 .area(area != null ? area : "")
+                .areaCodigo(areaCat != null ? areaCat.getCodigo() : null)
                 .responsableTecnico(nombreResponsable)
                 .responsableFuncional(responsableFuncional)
                 .descripcion(sistema.getDescripcion())
@@ -312,22 +376,48 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
                 .fechaSoporte(sistema.getFechaVencimientoSoporte() != null
                         ? sistema.getFechaVencimientoSoporte().toString()
                         : null)
-                .observaciones("")
-                .arquitectura("")
-                .motorBd("")
-                .tieneIntegraciones(false)
+                .observaciones(blankToNull(sistema.getObservacionesDesarrollo()) != null
+                        ? sistema.getObservacionesDesarrollo() : "")
+                .lenguaje(arq != null ? arq.getLenguajeProgramacion() : null)
+                .versionLenguaje(arq != null ? arq.getVersionLenguaje() : null)
+                .framework(arq != null ? arq.getFramework() : null)
+                .versionFramework(arq != null ? arq.getVersionFramework() : null)
+                .arquitectura(arq != null ? arq.getTipoArquitectura() : null)
+                .patron(arq != null ? arq.getPatronArquitectonico() : null)
+                .repositorio(arq != null ? arq.getRepositorio() : null)
+                .tecnologias(arq != null ? arq.getTecnologiasComplementarias() : null)
+                .motorBd(bd != null ? bd.getMotor() : null)
+                .versionBd(bd != null ? bd.getVersionBd() : null)
+                .tipoBd(bd != null ? bd.getTipoBd() : null)
+                .servidor(bd != null ? bd.getServidor() : null)
+                .esquema(bd != null ? bd.getEsquema() : null)
+                .backup(bd == null || bd.getBackupActivo() == null ? null
+                        : (Boolean.TRUE.equals(bd.getBackupActivo()) ? "Si" : "No"))
+                .frecuencia(bd != null ? bd.getFrecuenciaBackup() : null)
+                .cifrado(bd == null || bd.getCifrado() == null ? null
+                        : (Boolean.TRUE.equals(bd.getCifrado()) ? "Si" : "No"))
+                .responsableBd(bd != null ? bd.getResponsable() : null)
+                .tieneIntegraciones(!integs.isEmpty() ? Boolean.TRUE
+                        : (integs.isEmpty() ? Boolean.FALSE : Boolean.FALSE))
                 .riesgo(sistema.getNivelRiesgo())
-                .evidencias(new ArrayList<>())
-                .urls(new ArrayList<>())
+                .integraciones(integracionesUi)
+                .evidencias(evidenciasUi)
+                .urls(urlsUi)
                 .observacionesValidador(obsUi)
+                .archivosFisicosSoportados(Boolean.FALSE)
                 .build();
     }
 
-    private String catalogoValor(Long idCatalogo) {
+    private CatalogoEntity catalogoEntity(Long idCatalogo) {
         if (idCatalogo == null) {
             return null;
         }
-        return catalogoRepository.findById(idCatalogo).map(CatalogoEntity::getValor).orElse(null);
+        return catalogoRepository.findById(idCatalogo).orElse(null);
+    }
+
+    private String catalogoValor(Long idCatalogo) {
+        CatalogoEntity c = catalogoEntity(idCatalogo);
+        return c != null ? c.getValor() : null;
     }
 
     private String formatFecha(LocalDateTime fecha) {
@@ -335,6 +425,320 @@ public class DesarrolladorInventarioServiceImpl implements DesarrolladorInventar
             return null;
         }
         return fecha.format(FECHA_UI);
+    }
+
+    private String blankToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String t = value.trim();
+        return t.isEmpty() ? null : t;
+    }
+
+    @Override
+    @Transactional
+    public RegistrarSistemaOficialResponseDTO registrarSistemaOficial(
+            String username, RegistrarSistemaOficialRequestDTO request) {
+
+        Usuario desarrollador = usuarioResolver.requireActiveDeveloper(username);
+
+        String codigo = request.getCodigoUnico() == null ? "" : request.getCodigoUnico().trim().toUpperCase();
+        String nombre = request.getNombre() == null ? "" : request.getNombre().trim();
+        String descripcion = request.getDescripcion() == null ? "" : request.getDescripcion().trim();
+
+        if (codigo.isBlank()) {
+            throw new IllegalArgumentException("El código único es obligatorio");
+        }
+        if (nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        }
+        if (descripcion.isBlank()) {
+            throw new IllegalArgumentException("La descripción es obligatoria");
+        }
+        if (request.getAnoAdquisicion() == null
+                || request.getAnoAdquisicion() < 1990
+                || request.getAnoAdquisicion() > LocalDate.now().getYear() + 1) {
+            throw new IllegalArgumentException("El año de adquisición no es válido");
+        }
+        if (request.getFormaAdquisicion() == null || request.getFormaAdquisicion().isBlank()) {
+            throw new IllegalArgumentException("La forma de adquisición es obligatoria");
+        }
+        if (request.getNivelRiesgo() == null || request.getNivelRiesgo().isBlank()) {
+            throw new IllegalArgumentException("El nivel de riesgo es obligatorio");
+        }
+        if (request.getPrioridadMigracion() == null || request.getPrioridadMigracion().isBlank()) {
+            throw new IllegalArgumentException("La prioridad de migración es obligatoria");
+        }
+
+        if (sistemaRepository.findByCodigoUnicoAndFechaEliminacionIsNull(codigo).isPresent()) {
+            throw new ConflictException("Ya existe un sistema con el código " + codigo);
+        }
+
+        CatalogoEntity area = requireCatalogoActivo("AREA_USUARIO", request.getAreaCodigo());
+        CatalogoEntity tipo = requireCatalogoActivo("TIPO_APLICATIVO", request.getTipoCodigo());
+        CatalogoEntity criticidad = requireCatalogoActivo("CRITICIDAD", request.getCriticidadCodigo());
+
+        String estadoFlujo = EstadoFlujoNormalizer.toBd(request.getEstadoFlujo());
+        if (estadoFlujo == null || estadoFlujo.isBlank()) {
+            estadoFlujo = "BORRADOR";
+        }
+        if (!"BORRADOR".equals(estadoFlujo) && !"ENVIADO".equals(estadoFlujo)) {
+            throw new IllegalArgumentException("estadoFlujo debe ser BORRADOR o ENVIADO");
+        }
+
+        LocalDate fechaSoporte = null;
+        if (request.getFechaVencimientoSoporte() != null && !request.getFechaVencimientoSoporte().isBlank()) {
+            try {
+                fechaSoporte = LocalDate.parse(request.getFechaVencimientoSoporte().trim());
+            } catch (DateTimeParseException ex) {
+                throw new IllegalArgumentException("La fecha de vencimiento de soporte no es válida (yyyy-MM-dd)");
+            }
+        }
+
+        Long nuevoId = sistemaOficialInsertRepository.insertar(
+                codigo,
+                nombre,
+                descripcion,
+                area.getIdCatalogo(),
+                tipo.getIdCatalogo(),
+                criticidad.getIdCatalogo(),
+                area.getValor(),
+                tipo.getValor(),
+                request.getFormaAdquisicion().trim(),
+                desarrollador.getIdUsuario(),
+                request.getAnoAdquisicion(),
+                request.getDesarrolladorNombre() != null ? request.getDesarrolladorNombre().trim() : null,
+                request.getContratoVigente(),
+                fechaSoporte,
+                request.getEsLegacy(),
+                estadoFlujo,
+                request.getNivelRiesgo().trim().toUpperCase(Locale.ROOT),
+                request.getPrioridadMigracion().trim().toUpperCase(Locale.ROOT)
+        );
+
+        SistemaEntity guardado = sistemaRepository.findActivoById(nuevoId)
+                .orElseThrow(() -> new ResourceNotFoundException("No se pudo recuperar el sistema registrado"));
+
+        if (guardado.getIdResponsableFuncional() != null) {
+            throw new IllegalStateException("El responsable funcional debe permanecer NULL");
+        }
+
+        if (request.getObservacionesDesarrollo() != null && !request.getObservacionesDesarrollo().isBlank()) {
+            guardado.setObservacionesDesarrollo(request.getObservacionesDesarrollo().trim());
+            sistemaRepository.save(guardado);
+        }
+
+        persistirArquitectura(nuevoId, request.getArquitectura());
+        persistirBaseDatos(nuevoId, request.getBaseDatos());
+        persistirIntegraciones(nuevoId, request.getIntegraciones());
+        persistirEvidenciasUrl(nuevoId, desarrollador.getIdUsuario(), request.getEvidencias());
+
+        asegurarValidacionInicial(nuevoId, estadoFlujo);
+
+        registrarAuditoria(
+                desarrollador.getIdUsuario(),
+                "Desarrollo",
+                "Registro",
+                "Sistema registrado: " + codigo
+        );
+
+        SistemaFrontendDTO dto = toFrontend(guardado, desarrollador, List.of());
+        return RegistrarSistemaOficialResponseDTO.builder()
+                .success(true)
+                .message("Sistema registrado correctamente")
+                .sistema(dto)
+                .build();
+    }
+
+    private void persistirArquitectura(Long idSistema, RegistrarSistemaOficialRequestDTO.ArquitecturaSeccionDTO arq) {
+        if (arq == null) {
+            return;
+        }
+        String tipo = blankToNull(arq.getTipoArquitectura());
+        String lenguaje = blankToNull(arq.getLenguaje());
+        String framework = blankToNull(arq.getFramework());
+        String patron = blankToNull(arq.getPatron());
+        String repo = blankToNull(arq.getRepositorioGit());
+        String tech = blankToNull(arq.getTecnologiasComplementarias());
+        String verLeng = blankToNull(arq.getVersionLenguaje());
+        String verFw = blankToNull(arq.getVersionFramework());
+        if (tipo == null && lenguaje == null && framework == null && patron == null
+                && repo == null && tech == null) {
+            return;
+        }
+        if (tipo == null) {
+            throw new IllegalArgumentException("El tipo de arquitectura es obligatorio cuando se registra ficha técnica");
+        }
+
+        if (repo != null && !(repo.startsWith("http://") || repo.startsWith("https://") || repo.startsWith("git@"))) {
+            throw new IllegalArgumentException("La URL del repositorio Git no es válida");
+        }
+
+        ArquitecturaEntity entity = arquitecturaRepository.findByIdSistema(idSistema).stream()
+                .findFirst().orElseGet(ArquitecturaEntity::new);
+        if (entity.getIdArquitectura() == null) {
+            entity.setIdSistema(idSistema);
+            entity.setFechaCreacion(LocalDateTime.now());
+        }
+        entity.setTipoArquitectura(tipo);
+        entity.setPatronArquitectonico(patron);
+        entity.setLenguajeProgramacion(lenguaje);
+        entity.setVersionLenguaje(verLeng);
+        entity.setFramework(framework);
+        entity.setVersionFramework(verFw);
+        entity.setRepositorio(repo);
+        entity.setTecnologiasComplementarias(tech);
+        entity.setObservaciones(blankToNull(arq.getObservaciones()));
+        entity.setFechaActualizacion(LocalDateTime.now());
+        arquitecturaRepository.save(entity);
+    }
+
+    private void persistirBaseDatos(Long idSistema, RegistrarSistemaOficialRequestDTO.BaseDatosSeccionDTO bd) {
+        if (bd == null) {
+            return;
+        }
+        String motor = blankToNull(bd.getMotor());
+        if (motor == null
+                && blankToNull(bd.getVersion()) == null
+                && blankToNull(bd.getServidor()) == null
+                && blankToNull(bd.getEsquema()) == null
+                && blankToNull(bd.getResponsable()) == null
+                && bd.getTieneBackup() == null
+                && bd.getCifrado() == null) {
+            return;
+        }
+        if (motor == null) {
+            throw new IllegalArgumentException("El motor de base de datos es obligatorio cuando se registra BD");
+        }
+
+        BaseDatosSistemaEntity entity = baseDatosSistemaRepository.findByIdSistema(idSistema)
+                .orElseGet(BaseDatosSistemaEntity::new);
+        if (entity.getIdBaseDatos() == null) {
+            entity.setIdSistema(idSistema);
+            entity.setFechaCreacion(LocalDateTime.now());
+        }
+        entity.setMotor(motor);
+        entity.setVersionBd(blankToNull(bd.getVersion()));
+        entity.setTipoBd(blankToNull(bd.getTipo()));
+        entity.setServidor(blankToNull(bd.getServidor()));
+        entity.setEsquema(blankToNull(bd.getEsquema()));
+        entity.setBackupActivo(bd.getTieneBackup());
+        entity.setFrecuenciaBackup(blankToNull(bd.getFrecuenciaBackup()));
+        entity.setCifrado(bd.getCifrado());
+        entity.setResponsable(blankToNull(bd.getResponsable()));
+        entity.setFechaActualizacion(LocalDateTime.now());
+        baseDatosSistemaRepository.save(entity);
+    }
+
+    private void persistirIntegraciones(Long idSistema,
+                                        RegistrarSistemaOficialRequestDTO.IntegracionesSeccionDTO seccion) {
+        if (seccion == null) {
+            return;
+        }
+        if (Boolean.FALSE.equals(seccion.getTieneIntegraciones())) {
+            return;
+        }
+        if (seccion.getItems() == null || seccion.getItems().isEmpty()) {
+            return;
+        }
+        for (RegistrarSistemaOficialRequestDTO.IntegracionItemDTO item : seccion.getItems()) {
+            String destino = blankToNull(item.getDestino());
+            if (destino == null) {
+                destino = blankToNull(item.getSistemaExterno());
+            }
+            if (destino == null) {
+                throw new IllegalArgumentException("Cada integración requiere sistema destino/externo");
+            }
+            IntegracionEntity e = new IntegracionEntity();
+            e.setIdSistemaOrigen(idSistema);
+            e.setIdSistemaDestino(idSistema);
+            e.setSistemaDestinoNombre(destino);
+            e.setProtocolo(blankToNull(item.getProtocolo()) != null ? item.getProtocolo()
+                    : blankToNull(item.getTecnologia()));
+            e.setMetodoIntercambio(blankToNull(item.getMetodo()));
+            e.setFrecuencia(blankToNull(item.getFrecuencia()));
+            e.setEstado(blankToNull(item.getEstado()) != null ? item.getEstado() : "Activo");
+            e.setResponsableNombre(blankToNull(item.getResponsable()));
+            e.setDescripcion(blankToNull(item.getDescripcion()));
+            e.setFechaCreacion(LocalDateTime.now());
+            integracionRepository.save(e);
+        }
+    }
+
+    private void persistirEvidenciasUrl(Long idSistema, Long idUsuario,
+                                        RegistrarSistemaOficialRequestDTO.EvidenciasSeccionDTO seccion) {
+        if (seccion == null) {
+            return;
+        }
+        if (seccion.getArchivos() != null && !seccion.getArchivos().isEmpty()) {
+            // Almacenamiento físico aún no implementado: no bloquear registro, no persistir metadatos falsos.
+        }
+        if (seccion.getUrls() == null) {
+            return;
+        }
+        for (RegistrarSistemaOficialRequestDTO.EvidenciaUrlDTO urlDto : seccion.getUrls()) {
+            String url = blankToNull(urlDto.getUrl());
+            if (url == null) {
+                continue;
+            }
+            if (!(url.startsWith("http://") || url.startsWith("https://"))) {
+                throw new IllegalArgumentException("URL de evidencia inválida: " + url);
+            }
+            EvidenciaEntity e = new EvidenciaEntity();
+            e.setIdSistema(idSistema);
+            e.setTipoEvidencia(blankToNull(urlDto.getTipo()) != null ? urlDto.getTipo() : "URL");
+            e.setUrlEvidencia(url);
+            e.setDescripcion(blankToNull(urlDto.getDescripcion()));
+            e.setEstadoEvidencia("ACTIVA");
+            e.setFechaCarga(LocalDateTime.now());
+            e.setIdUsuarioCarga(idUsuario);
+            evidenciaRepository.save(e);
+        }
+    }
+
+    /**
+     * Crea como máximo una validación inicial por sistema (idempotente).
+     */
+    private void asegurarValidacionInicial(Long idSistema, String estadoFlujo) {
+        List<ValidacionEntity> existentes = validacionRepository.findByIdSistema(idSistema);
+        boolean hayInicial = existentes.stream().anyMatch(v -> {
+            String e = v.getEstadoValidacion() == null ? "" : v.getEstadoValidacion().toUpperCase(Locale.ROOT);
+            return "PENDIENTE".equals(e) || "OBSERVADO".equals(e) || "SUBSANADO".equals(e)
+                    || "BORRADOR".equals(e) || "VALIDADO".equals(e) || "RECHAZADO".equals(e);
+        });
+        if (hayInicial) {
+            return;
+        }
+
+        ValidacionEntity v = new ValidacionEntity();
+        v.setIdSistema(idSistema);
+        v.setIdValidador(null);
+        if ("ENVIADO".equals(estadoFlujo)) {
+            v.setEstadoValidacion("PENDIENTE");
+            v.setResultado("PENDIENTE");
+            v.setObservacionGeneral("Sistema enviado a validación tras el registro.");
+        } else {
+            v.setEstadoValidacion("BORRADOR");
+            v.setResultado("PENDIENTE");
+            v.setObservacionGeneral(null);
+        }
+        v.setFechaCreacion(LocalDateTime.now());
+        v.setFechaActualizacion(LocalDateTime.now());
+        validacionRepository.save(v);
+    }
+
+    private CatalogoEntity requireCatalogoActivo(String tipo, String codigo) {
+        if (codigo == null || codigo.isBlank()) {
+            throw new IllegalArgumentException("Código de catálogo obligatorio para " + tipo);
+        }
+        String codigoNorm = codigo.trim().toUpperCase(Locale.ROOT);
+        CatalogoEntity catalogo = catalogoRepository.findByTipoCatalogoAndCodigo(tipo, codigoNorm)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Catálogo inexistente: " + tipo + "/" + codigoNorm));
+        if (!Boolean.TRUE.equals(catalogo.getEstado())) {
+            throw new ResourceNotFoundException("Catálogo inactivo: " + tipo + "/" + codigoNorm);
+        }
+        return catalogo;
     }
 
     private void registrarAuditoria(Long idUsuario, String modulo, String accion, String descripcion) {

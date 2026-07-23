@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Sistemas · Área de Desarrollo · DIAGTI – CTIC UNAS</title>
-    <link rel="stylesheet" href="../css/mis-sistemas.css">
+    <link rel="stylesheet" href="../css/mis-sistemas.css?v=20260723-6">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
@@ -24,9 +24,9 @@
         </div>
 
         <div class="sidebar-profile">
-            <div class="profile-avatar">DV</div>
+            <div class="profile-avatar" id="profile-avatar">DV</div>
             <div class="profile-info">
-                <div class="profile-name">Desarrollador Demo</div>
+                <div class="profile-name" id="profile-name">Desarrollador</div>
                 <div class="profile-role">Área de Desarrollo</div>
             </div>
         </div>
@@ -46,7 +46,7 @@
         </nav>
 
         <div class="sidebar-logout">
-            <button class="btn-logout" onclick="cerrarSesion()">
+            <button class="btn-logout" type="button" onclick="cerrarSesion()">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -67,11 +67,12 @@
                 <h2>Mis Sistemas</h2>
                 <div class="hint">Administrar todos los sistemas creados</div>
             </div>
-            <button class="btn btn-verde" onclick="abrirModalRegistro()">➕ Registrar Nuevo Sistema</button>
+            <button type="button" id="btnRegistrarSistema" class="btn btn-verde">➕ Registrar Nuevo Sistema</button>
         </div>
 
+        <div id="mensaje-global" class="mensaje-global" style="display:none;" role="status"></div>
+
         <div class="card">
-            <!-- Buscador y Filtros -->
             <div class="toolbar">
                 <div class="search">
                     <input type="text" id="search-input" placeholder="Buscar por código o nombre...">
@@ -85,93 +86,72 @@
                 </select>
                 <select id="filter-area">
                     <option value="">Todas las áreas</option>
-                    <option value="Académico">Académico</option>
-                    <option value="Biblioteca">Biblioteca</option>
-                    <option value="Finanzas">Finanzas</option>
-                    <option value="Recursos Humanos">Recursos Humanos</option>
-                    <option value="Investigación">Investigación</option>
-                    <option value="Logística">Logística</option>
-                    <option value="Tesorería">Tesorería</option>
                 </select>
                 <select id="filter-tipo">
                     <option value="">Todos los tipos</option>
-                    <option value="Web">Web</option>
-                    <option value="Desktop">Desktop</option>
-                    <option value="API">API</option>
-                    <option value="Mobile">Mobile</option>
-                    <option value="Legacy">Legacy</option>
-                    <option value="Batch">Batch</option>
-                    <option value="IoT">IoT</option>
-                    <option value="Otro">Otro</option>
                 </select>
                 <select id="filter-criticidad">
                     <option value="">Todas las criticidades</option>
                     <option value="Baja">Baja</option>
                     <option value="Media">Media</option>
                     <option value="Alta">Alta</option>
-                    <option value="Crítica">Crítica / Misión Crítica</option>
                 </select>
                 <select id="filter-responsable">
                     <option value="">Todos los responsables</option>
-                    <!-- Opciones dinámicas desde los datos -->
                 </select>
                 <select id="filter-riesgo">
                     <option value="">Todos los riesgos</option>
-                    <option value="Bajo">Bajo</option>
-                    <option value="Medio">Medio</option>
-                    <option value="Alto">Alto</option>
-                    <option value="Crítico">Crítico</option>
+                    <option value="BAJO">Bajo</option>
+                    <option value="MEDIO">Medio</option>
+                    <option value="ALTO">Alto</option>
+                    <option value="CRITICO">Crítico</option>
                 </select>
             </div>
 
-            <!-- Tabla -->
             <div class="table-wrap" id="tabla-sistemas"></div>
         </div>
     </main>
 
-    <!-- ===== MODAL: Registrar/Editar/Ver/Corregir Sistema ===== -->
-    <div class="modal-overlay" id="modal-sistema">
+    <!-- MODAL: Registrar / Ver / Editar Sistema (8 pestañas) -->
+    <div class="modal-overlay" id="modal-sistema" aria-hidden="true">
         <div class="modal">
             <div class="modal-head">
                 <div>
-                    <h3 id="modal-titulo">Registrar Nuevo Sistema</h3>
-                    <span class="modal-subtitle" id="modal-subtitulo">Complete toda la información del sistema</span>
+                    <h3 id="modal-titulo">Detalle del sistema</h3>
+                    <span class="modal-subtitle" id="modal-subtitulo">Información de solo lectura</span>
                 </div>
-                <button class="modal-close" onclick="cerrarModalSistema()">✕</button>
+                <button type="button" class="modal-close" id="btnCerrarModalSistema">✕</button>
             </div>
-            <div class="modal-body" id="modal-body-sistema">
-                <!-- Las pestañas y contenido se generan dinámicamente desde JS -->
-            </div>
+            <div class="modal-body" id="modal-body-sistema"></div>
             <div class="modal-foot" id="modal-footer-fijo">
-                <button class="btn btn-secondary" onclick="cerrarModalSistema()">Cancelar</button>
-                <button class="btn btn-verde" id="btn-guardar-modal" onclick="guardarSistemaModal()">💾 Guardar
-                    Borrador</button>
-                <button class="btn-enviar-validacion" id="btn-enviar-validacion" onclick="validateFinalSubmit()"
-                    style="display:none;">
+                <button type="button" class="btn btn-secondary" id="btnCancelarModal">Cerrar</button>
+                <button type="button" class="btn btn-verde" id="btn-guardar-modal" style="display:none;">💾 Guardar Borrador</button>
+                <button type="button" class="btn-enviar-validacion" id="btn-enviar-validacion" style="display:none;">
                     🚀 Enviar a Validación
                 </button>
             </div>
         </div>
+    </div>
 
-        <!-- ===== MODAL: Confirmación ===== -->
-        <div class="modal-overlay" id="modal-confirmacion">
-            <div class="modal" style="width:min(450px,100%);">
-                <div class="modal-head">
-                    <h3>Confirmar acción</h3>
-                    <button class="modal-close" onclick="cerrarModalConfirmacion()">✕</button>
-                </div>
-                <div class="modal-body" id="modal-confirmacion-body">
-                    <p id="confirmacion-mensaje">¿Estás seguro de realizar esta acción?</p>
-                </div>
-                <div class="modal-foot">
-                    <button class="btn btn-secondary" onclick="cerrarModalConfirmacion()">Cancelar</button>
-                    <button class="btn btn-verde" id="btn-confirmar" onclick="confirmarAccion()">Confirmar</button>
-                </div>
+    <!-- MODAL: Confirmación -->
+    <div class="modal-overlay" id="modal-confirmacion">
+        <div class="modal" style="width:min(450px,100%);">
+            <div class="modal-head">
+                <h3>Confirmar acción</h3>
+                <button type="button" class="modal-close" onclick="cerrarModalConfirmacion()">✕</button>
+            </div>
+            <div class="modal-body" id="modal-confirmacion-body">
+                <p id="confirmacion-mensaje">¿Estás seguro de realizar esta acción?</p>
+            </div>
+            <div class="modal-foot">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalConfirmacion()">Cancelar</button>
+                <button type="button" class="btn btn-verde" id="btn-confirmar" onclick="confirmarAccion()">Confirmar</button>
             </div>
         </div>
+    </div>
 
-        <script src="../js/api-desarrollo.js"></script>
-        <script src="../js/mis-sistemas.js"></script>
+    <script src="../js/api-desarrollo.js?v=20260723-6"></script>
+    <script src="../js/mis-sistemas.js?v=20260723-6"></script>
 </body>
 
 </html>

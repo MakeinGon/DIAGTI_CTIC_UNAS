@@ -256,7 +256,10 @@ function renderizarTabla(datos) {
 
     tbody.innerHTML = datos.map(item => `
         <tr>
-            <td><strong>${item.nombre}</strong></td>
+            <td>
+                <strong>${item.nombre}</strong>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">${item.codigo || '--'} · ${item.estadoValidacion || 'PENDIENTE'}</div>
+            </td>
             <td>${item.area}</td>
             <td>${item.fecha}</td>
             <td>
@@ -305,8 +308,10 @@ async function cargarPendientes() {
                 // Convertir datos de la API al formato de la tabla
                 const datosTabla = data.map(item => ({
                     id: item.idSistema || item.id,
+                    codigo: item.codigo || '--',
                     nombre: item.nombreSistema || 'Sistema sin nombre',
                     area: item.area || '--',
+                    estadoValidacion: item.estadoValidacion || 'PENDIENTE',
                     fecha: item.fechaCreacion ? new Date(item.fechaCreacion).toISOString().split('T')[0] : '--'
                 }));
                 renderizarTabla(datosTabla);

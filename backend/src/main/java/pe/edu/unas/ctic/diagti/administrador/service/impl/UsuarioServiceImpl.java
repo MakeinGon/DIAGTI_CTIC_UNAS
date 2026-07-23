@@ -2,8 +2,10 @@ package pe.edu.unas.ctic.diagti.administrador.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.unas.ctic.diagti.administrador.dto.RestablecerPasswordRequestDTO;
 import pe.edu.unas.ctic.diagti.administrador.dto.UsuarioDTO;
 import pe.edu.unas.ctic.diagti.administrador.entity.RolEntity;
 import pe.edu.unas.ctic.diagti.administrador.entity.UsuarioEntity;
@@ -12,6 +14,7 @@ import pe.edu.unas.ctic.diagti.administrador.repository.RolRepository;
 import pe.edu.unas.ctic.diagti.administrador.repository.UsuarioRepository;
 import pe.edu.unas.ctic.diagti.administrador.service.UsuarioService;
 import pe.edu.unas.ctic.diagti.administrador.support.AdminAuditoriaWriter;
+import pe.edu.unas.ctic.diagti.administrador.support.PasswordPolicyValidator;
 import pe.edu.unas.ctic.diagti.common.exception.ConflictException;
 import pe.edu.unas.ctic.diagti.common.exception.ResourceNotFoundException;
 
@@ -22,16 +25,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService {
 
-    /**
-     * Compatibilidad con login local actual (comparación en texto plano).
-     * No se inventa cifrado nuevo; el riesgo queda documentado.
-     */
-    private static final String PASSWORD_LOCAL_COMPATIBLE = "admin123";
-
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
     private final UsuarioMapper mapper;
     private final AdminAuditoriaWriter auditoriaWriter;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional(readOnly = true)
@@ -87,6 +85,9 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new ConflictException("Username ya registrado");
         }
 
+        String origen = normalizarOrigen(dto.getOrigen());
+        validarArea(dto.getArea());
+
         RolEntity rol = rolRepository.findById(rolId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado"));
 
@@ -95,15 +96,22 @@ public class UsuarioServiceImpl implements UsuarioService {
         aplicarNombre(entity, dto);
         entity.setCorreo(dto.getCorreo().trim());
         entity.setUsername(username);
-        entity.setArea(dto.getArea());
-        String origen = dto.getOrigen() != null ? dto.getOrigen() : "Local";
+        entity.setArea(dto.getArea() != null ? dto.getArea().trim() : null);
         entity.setOrigen(origen);
-        entity.setEstado(dto.getEstado() == null || "Activo".equalsIgnoreCase(dto.getEstado()));
-        // Solo Local recibe password compatible con AuthServiceImpl (texto plano).
-        // LDAP no requiere password_hash local. Nunca se expone en DTO.
-        if ("Local".equalsIgnoreCase(origen)) {
-            entity.setPasswordHash(PASSWORD_LOCAL_COMPATIBLE);
+        entity.setEstado(dto.getEstado() == null || "Activo".equalsIgnoreCase(dto.getEstado())
+                || "ACTIVO".equalsIgnoreCase(dto.getEstado()));
+
+        if ("Local".equals(origen)) {
+            String errorPwd = PasswordPolicyValidator.validar(dto.getPassword(), dto.getConfirmPassword(), dto.getDni());
+            if (errorPwd != null) {
+                throw new IllegalArgumentException(errorPwd);
+            }
+            entity.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
+        } else {
+            // LDAP: no se almacena contraseña local (ni vacía ni enviada por error).
+            entity.setPasswordHash(null);
         }
+
         entity.getRoles().add(rol);
 
         entity = usuarioRepository.save(entity);
@@ -123,15 +131,21 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new ConflictException("Correo ya registrado por otro usuario");
         }
 
+        String passwordHashPrevio = entity.getPasswordHash();
+
         aplicarNombre(entity, dto);
         entity.setCorreo(dto.getCorreo().trim());
-        entity.setArea(dto.getArea());
-        if (dto.getOrigen() != null) {
-            entity.setOrigen(dto.getOrigen());
+        entity.setArea(dto.getArea() != null ? dto.getArea().trim() : entity.getArea());
+        if (dto.getOrigen() != null && !dto.getOrigen().isBlank()) {
+            entity.setOrigen(normalizarOrigen(dto.getOrigen()));
         }
         if (dto.getEstado() != null) {
-            entity.setEstado("Activo".equalsIgnoreCase(dto.getEstado()));
+            entity.setEstado("Activo".equalsIgnoreCase(dto.getEstado())
+                    || "ACTIVO".equalsIgnoreCase(dto.getEstado()));
         }
+
+        // Edición NUNCA cambia la contraseña (aunque el cliente envíe password vacía).
+        entity.setPasswordHash(passwordHashPrevio);
 
         if (rolId != null) {
             RolEntity rol = rolRepository.findById(rolId)
@@ -143,6 +157,28 @@ public class UsuarioServiceImpl implements UsuarioService {
         entity = usuarioRepository.save(entity);
         auditoriaWriter.registrar(entity.getIdUsuario(), "usuario actualizado",
                 "Usuario actualizado: " + entity.getUsername());
+        return mapper.toDTO(entity);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioDTO restablecerPassword(String dni, RestablecerPasswordRequestDTO request) {
+        UsuarioEntity entity = buscarPorDni(dni);
+        if (!esOrigenLocal(entity.getOrigen())) {
+            throw new IllegalArgumentException(
+                    "Solo las cuentas Local pueden restablecer contraseña local");
+        }
+        String errorPwd = PasswordPolicyValidator.validar(
+                request != null ? request.getPassword() : null,
+                request != null ? request.getConfirmPassword() : null,
+                entity.getDni());
+        if (errorPwd != null) {
+            throw new IllegalArgumentException(errorPwd);
+        }
+        entity.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        entity = usuarioRepository.save(entity);
+        auditoriaWriter.registrar(entity.getIdUsuario(), "contraseña restablecida",
+                "Contraseña local restablecida para usuario " + entity.getUsername());
         return mapper.toDTO(entity);
     }
 
@@ -221,6 +257,34 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (!dto.getCorreo().contains("@")) {
             throw new IllegalArgumentException("El correo no es válido");
         }
+    }
+
+    private void validarArea(String area) {
+        if (area == null || area.isBlank()) {
+            throw new IllegalArgumentException("El área es obligatoria");
+        }
+    }
+
+    /**
+     * Normaliza a valores canónicos del sistema: Local | LDAP.
+     * Acepta alias LOCAL / local / ldap.
+     */
+    private String normalizarOrigen(String origen) {
+        if (origen == null || origen.isBlank()) {
+            throw new IllegalArgumentException("El origen de cuenta es obligatorio");
+        }
+        String o = origen.trim();
+        if ("LOCAL".equalsIgnoreCase(o) || "Local".equalsIgnoreCase(o)) {
+            return "Local";
+        }
+        if ("LDAP".equalsIgnoreCase(o)) {
+            return "LDAP";
+        }
+        throw new IllegalArgumentException("Origen inválido. Use LOCAL o LDAP");
+    }
+
+    private boolean esOrigenLocal(String origen) {
+        return origen != null && "Local".equalsIgnoreCase(origen.trim());
     }
 
     private void aplicarNombre(UsuarioEntity entity, UsuarioDTO dto) {

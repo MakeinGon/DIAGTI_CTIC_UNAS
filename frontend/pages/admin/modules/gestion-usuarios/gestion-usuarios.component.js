@@ -274,6 +274,92 @@ function filtrarUsuarios() {
 // ALTA / EDICIÓN DE USUARIOS
 // ============================================================
 let usuarioEditando = null; // <tr> que se está editando, o null si es nuevo
+let dniRestablecerPassword = null;
+let guardandoResetPassword = false;
+
+function limpiarErroresPassword() {
+    const ids = [
+        'error-usuario-password',
+        'error-usuario-confirm-password',
+        'usuario-form-error'
+    ];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = ''; el.style.display = id === 'usuario-form-error' ? 'none' : ''; }
+    });
+}
+
+function limpiarCamposPassword() {
+    const pwd = document.getElementById('input-usuario-password');
+    const conf = document.getElementById('input-usuario-confirm-password');
+    if (pwd) { pwd.value = ''; pwd.type = 'password'; }
+    if (conf) { conf.value = ''; conf.type = 'password'; }
+    limpiarErroresPassword();
+}
+
+function esOrigenLocal(origen) {
+    return String(origen || '').trim().toLowerCase() === 'local';
+}
+
+function onCambioOrigenCuenta() {
+    const origen = document.getElementById('select-usuario-origen').value;
+    const bloque = document.getElementById('bloque-password-local');
+    const hint = document.getElementById('hint-origen-cuenta');
+    const pwd = document.getElementById('input-usuario-password');
+    const conf = document.getElementById('input-usuario-confirm-password');
+    const esNuevo = !usuarioEditando;
+    const local = esOrigenLocal(origen);
+
+    if (local && esNuevo) {
+        if (bloque) bloque.hidden = false;
+        if (pwd) { pwd.disabled = false; pwd.required = true; }
+        if (conf) { conf.disabled = false; conf.required = true; }
+        if (hint) hint.textContent = 'El usuario iniciará sesión con su DNI y esta contraseña.';
+    } else {
+        if (bloque) bloque.hidden = true;
+        if (pwd) { pwd.disabled = true; pwd.required = false; pwd.value = ''; pwd.type = 'password'; }
+        if (conf) { conf.disabled = true; conf.required = false; conf.value = ''; conf.type = 'password'; }
+        limpiarErroresPassword();
+        if (hint) {
+            hint.textContent = local
+                ? 'Para cambiar la contraseña use «Restablecer contraseña».'
+                : 'La autenticación se valida contra LDAP/OpenLDAP institucional.';
+        }
+    }
+
+    const btnReset = document.getElementById('btn-restablecer-password');
+    if (btnReset) {
+        btnReset.hidden = !(usuarioEditando && local);
+    }
+}
+
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const mostrar = input.type === 'password';
+    input.type = mostrar ? 'text' : 'password';
+    if (btn) btn.setAttribute('aria-pressed', mostrar ? 'true' : 'false');
+}
+
+function validarPoliticaPassword(password, confirmPassword, dni) {
+    if (!password) return { campo: 'password', mensaje: 'La contraseña inicial es obligatoria.' };
+    if (!confirmPassword) return { campo: 'confirm', mensaje: 'La confirmación de contraseña es obligatoria.' };
+    if (password !== confirmPassword) return { campo: 'confirm', mensaje: 'Las contraseñas no coinciden.' };
+    if (password !== password.trim()) return { campo: 'password', mensaje: 'La contraseña no debe tener espacios al inicio o al final.' };
+    if (password.length < 8) return { campo: 'password', mensaje: 'La contraseña debe tener al menos 8 caracteres.' };
+    if (password.length > 72) return { campo: 'password', mensaje: 'La contraseña no debe superar 72 caracteres.' };
+    if (!/[A-ZÁÉÍÓÚÜÑ]/.test(password)) return { campo: 'password', mensaje: 'Debe incluir al menos una letra mayúscula.' };
+    if (!/[a-záéíóúüñ]/.test(password)) return { campo: 'password', mensaje: 'Debe incluir al menos una letra minúscula.' };
+    if (!/[0-9]/.test(password)) return { campo: 'password', mensaje: 'Debe incluir al menos un número.' };
+    if (dni && password === dni) return { campo: 'password', mensaje: 'La contraseña no puede ser igual al DNI.' };
+    return null;
+}
+
+function mostrarErrorPasswordCampo(campo, mensaje) {
+    const id = campo === 'confirm' ? 'error-usuario-confirm-password' : 'error-usuario-password';
+    const el = document.getElementById(id);
+    if (el) el.textContent = mensaje || '';
+}
 
 function limpiarFormularioUsuario() {
     document.getElementById('input-usuario-dni').value = '';
@@ -284,7 +370,9 @@ function limpiarFormularioUsuario() {
     document.getElementById('select-usuario-rol').selectedIndex = 0;
     document.getElementById('select-usuario-origen').selectedIndex = 0;
     document.getElementById('select-usuario-estado').selectedIndex = 0;
+    limpiarCamposPassword();
     ocultarErrorFormulario('usuario-form-error');
+    onCambioOrigenCuenta();
 }
 
 function abrirNuevoUsuario() {
@@ -300,6 +388,7 @@ function editarUsuario(fila) {
     document.getElementById('usuario-modal-titulo').textContent = 'Editar usuario';
     document.getElementById('usuario-btn-guardar').textContent = 'Guardar cambios';
     ocultarErrorFormulario('usuario-form-error');
+    limpiarCamposPassword();
 
     document.getElementById('input-usuario-dni').value = fila.children[1].textContent.trim();
     // El DNI identifica al usuario en el backend: no se reasigna desde aquí.
@@ -312,7 +401,63 @@ function editarUsuario(fila) {
     const activo = fila.querySelector('.toggle').classList.contains('on');
     document.getElementById('select-usuario-estado').value = activo ? 'Activo' : 'Inactivo';
 
+    onCambioOrigenCuenta();
     abrirModal('modal-usuario');
+}
+
+function abrirRestablecerPassword() {
+    if (!usuarioEditando) return;
+    const origen = document.getElementById('select-usuario-origen').value;
+    if (!esOrigenLocal(origen)) return;
+    dniRestablecerPassword = usuarioEditando.getAttribute('data-dni');
+    document.getElementById('input-reset-password').value = '';
+    document.getElementById('input-reset-confirm-password').value = '';
+    document.getElementById('error-reset-password').textContent = '';
+    document.getElementById('error-reset-confirm-password').textContent = '';
+    ocultarErrorFormulario('reset-password-form-error');
+    document.getElementById('reset-password-usuario-hint').textContent =
+        'Usuario ' + dniRestablecerPassword + ': se generará un nuevo hash BCrypt. No se muestra el hash.';
+    abrirModal('modal-restablecer-password');
+}
+
+function guardarRestablecerPassword() {
+    if (guardandoResetPassword || !dniRestablecerPassword) return;
+    const password = document.getElementById('input-reset-password').value;
+    const confirmPassword = document.getElementById('input-reset-confirm-password').value;
+    document.getElementById('error-reset-password').textContent = '';
+    document.getElementById('error-reset-confirm-password').textContent = '';
+    ocultarErrorFormulario('reset-password-form-error');
+
+    const err = validarPoliticaPassword(password, confirmPassword, dniRestablecerPassword);
+    if (err) {
+        const id = err.campo === 'confirm' ? 'error-reset-confirm-password' : 'error-reset-password';
+        document.getElementById(id).textContent = err.mensaje;
+        return;
+    }
+
+    guardandoResetPassword = true;
+    const btn = document.getElementById('btn-guardar-reset-password');
+    if (btn) btn.disabled = true;
+
+    fetch(`${API_BASE}/usuarios/${dniRestablecerPassword}/password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, confirmPassword })
+    })
+    .then(res => manejarError(res))
+    .then(() => {
+        cerrarModal('modal-restablecer-password');
+        document.getElementById('input-reset-password').value = '';
+        document.getElementById('input-reset-confirm-password').value = '';
+        alert('Contraseña restablecida correctamente');
+    })
+    .catch(e => {
+        mostrarErrorFormulario('reset-password-form-error', e.message || 'No se pudo restablecer la contraseña.');
+    })
+    .finally(() => {
+        guardandoResetPassword = false;
+        if (btn) btn.disabled = false;
+    });
 }
 
 // ============================================================
@@ -334,6 +479,10 @@ function guardarUsuario() {
     const rolId = document.getElementById('select-usuario-rol').value;
     const origen = document.getElementById('select-usuario-origen').value;
     const estado = document.getElementById('select-usuario-estado').value;
+    const password = document.getElementById('input-usuario-password').value;
+    const confirmPassword = document.getElementById('input-usuario-confirm-password').value;
+
+    limpiarErroresPassword();
 
     if (!dni || !nombreCompleto || !correo) {
         mostrarErrorFormulario('usuario-form-error', 'Completa DNI, nombre completo y correo institucional.');
@@ -356,10 +505,24 @@ function guardarUsuario() {
         return;
     }
 
+    const esEdicion = !!usuarioEditando;
+    if (!esEdicion && esOrigenLocal(origen)) {
+        const errPwd = validarPoliticaPassword(password, confirmPassword, dni);
+        if (errPwd) {
+            mostrarErrorPasswordCampo(errPwd.campo, errPwd.mensaje);
+            return;
+        }
+    }
+
     ocultarErrorFormulario('usuario-form-error');
 
     const payload = { dni, nombreCompleto, correo, area, origen, estado };
-    const esEdicion = !!usuarioEditando;
+    if (!esEdicion && esOrigenLocal(origen)) {
+        payload.password = password;
+        payload.confirmPassword = confirmPassword;
+    }
+    // LDAP / edición: no enviar password ni cadenas vacías.
+
     const dniOriginal = esEdicion ? usuarioEditando.getAttribute('data-dni') : null;
 
     const url = esEdicion
@@ -379,8 +542,12 @@ function guardarUsuario() {
     .then(res => manejarError(res))
     .then(() => {
         cerrarModal('modal-usuario');
+        limpiarFormularioUsuario();
         resetearFiltrosUsuarios();
         cargarUsuarios();
+        if (!esEdicion) {
+            alert('Usuario creado correctamente');
+        }
     })
     .catch(err => {
         mostrarErrorFormulario('usuario-form-error', err.message || 'Error al guardar el usuario.');

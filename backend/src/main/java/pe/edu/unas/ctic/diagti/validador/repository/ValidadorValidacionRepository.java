@@ -16,7 +16,7 @@ public interface ValidadorValidacionRepository extends JpaRepository<Validacion,
 
     @Query("""
             SELECT v FROM ValidadorValidacion v
-            WHERE v.estadoValidacion IN ('PENDIENTE', 'SUBSANADO')
+            WHERE v.estadoValidacion IN ('PENDIENTE', 'SUBSANADO', 'BORRADOR')
             ORDER BY v.fechaCreacion DESC
             """)
     List<Validacion> findPendientes();

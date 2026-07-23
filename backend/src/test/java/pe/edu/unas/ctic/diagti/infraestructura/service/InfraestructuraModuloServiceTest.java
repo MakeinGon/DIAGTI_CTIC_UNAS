@@ -79,7 +79,7 @@ class InfraestructuraModuloServiceTest {
     }
 
     @Test
-    void listarSistemas_sinInfra_esNuevo() {
+    void listarSistemas_sinInfra_pendienteEvaluacion() {
         when(sistemaRepository.findAll()).thenReturn(List.of(sistema));
         when(infraRepository.findByIdSistema(5L)).thenReturn(List.of());
         when(observacionRepository.findByIdSistemaIn(anyCollection())).thenReturn(List.of());
@@ -88,8 +88,9 @@ class InfraestructuraModuloServiceTest {
         List<InfraSistemaListDTO> list = service.listarSistemas(Map.of());
         assertEquals(1, list.size());
         assertEquals(5L, list.get(0).getSistemaId());
-        assertEquals("Nuevo", list.get(0).getEstadoSistemaUi());
+        assertEquals("Pendiente de evaluación", list.get(0).getEstadoSistemaUi());
         assertEquals("SIN_REGISTRO", list.get(0).getEstadoEvaluacionInfra());
+        assertEquals("Sin evaluar", list.get(0).getPlataforma());
     }
 
     @Test
