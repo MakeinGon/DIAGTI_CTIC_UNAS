@@ -10,10 +10,11 @@ public class CatalogoMapper {
     public CatalogoDTO toDTO(CatalogoEntity entity) {
         if (entity == null) return null;
         CatalogoDTO dto = new CatalogoDTO();
+        dto.setTipo(entity.getTipoCatalogo());
         dto.setCodigo(entity.getCodigo());
         dto.setNombre(entity.getValor());
         dto.setDescripcion(entity.getDescripcion());
-        dto.setEstado(entity.getEstado() ? "Activo" : "Inactivo");
+        dto.setEstado(Boolean.TRUE.equals(entity.getEstado()) ? "Activo" : "Inactivo");
         dto.setOrden(entity.getOrden());
         return dto;
     }

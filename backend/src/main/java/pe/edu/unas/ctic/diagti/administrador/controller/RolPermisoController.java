@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class RolPermisoController {
 
     private final RolService rolService;
@@ -23,6 +22,11 @@ public class RolPermisoController {
     @GetMapping("/roles")
     public ResponseEntity<List<RolDTO>> listarRoles() {
         return ResponseEntity.ok(rolService.listar());
+    }
+
+    @GetMapping("/roles/{id}")
+    public ResponseEntity<RolDTO> obtenerRol(@PathVariable Long id) {
+        return ResponseEntity.ok(rolService.obtenerPorId(id));
     }
 
     @PostMapping("/roles")
@@ -35,8 +39,9 @@ public class RolPermisoController {
         return ResponseEntity.ok(rolService.actualizar(id, dto));
     }
 
+    /** Soft-delete: desactiva el rol sin borrarlo físicamente. */
     @DeleteMapping("/roles/{id}")
-    public ResponseEntity<Void> eliminarRol(@PathVariable Long id) {
+    public ResponseEntity<Void> desactivarRol(@PathVariable Long id) {
         rolService.eliminar(id);
         return ResponseEntity.noContent().build();
     }

@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(cuerpo(ex.getMessage()));
     }
 
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Map<String, String>> manejarConflicto(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(cuerpo(ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> manejarValidacion(MethodArgumentNotValidException ex) {
         Map<String, String> errores = new LinkedHashMap<>();
@@ -37,14 +42,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(cuerpo(ex.getMessage()));
     }
 
-    // RolServiceImpl / PermisoServiceImpl lanzan RuntimeException para reglas
-    // de negocio (nombre duplicado, rol no encontrado, etc). Se traducen a 400/409
-    // con el mensaje real en vez de dejar pasar el error 500 generico de Spring.
+    // Servicios de negocio que aún lanzan RuntimeException genérica.
+    // Duplicados → 409; no encontrado → 404; resto → 400 (evita HTTP 500).
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> manejarNegocio(RuntimeException ex) {
-        HttpStatus status = ex.getMessage() != null && ex.getMessage().toLowerCase().contains("no encontrad")
-                ? HttpStatus.NOT_FOUND
-                : HttpStatus.BAD_REQUEST;
+        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+        HttpStatus status;
+        if (msg.contains("no encontrad") || msg.contains("inexistent")) {
+            status = HttpStatus.NOT_FOUND;
+        } else if (msg.contains("ya registrad") || msg.contains("ya existe") || msg.contains("duplicad")) {
+            status = HttpStatus.CONFLICT;
+        } else {
+            status = HttpStatus.BAD_REQUEST;
+        }
         return ResponseEntity.status(status).body(cuerpo(ex.getMessage()));
     }
 

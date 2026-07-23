@@ -1,7 +1,7 @@
 // ============================================================
 // CONFIGURACIÓN API
 // ============================================================
-const API_BASE = 'http://localhost:8080/api/admin';
+const API_BASE = '/api/admin';
 
 // Lista de módulos que aparecerán en la matriz (debe coincidir con backend)
 const MODULOS = [
@@ -183,7 +183,7 @@ function generarVistaRol(rolId, permisos) {
             <div class="role-actions">
                 <button class="btn ghost sm" onclick="editarRol()">Editar rol</button>
                 <button class="btn btn-verde sm" onclick="guardarPermisos()">Guardar cambios</button>
-                <button class="btn danger sm" onclick="eliminarRol()">Eliminar rol</button>
+                <button class="btn danger sm" onclick="eliminarRol()">Desactivar rol</button>
             </div>
         </div>
         <div class="matrix-wrap">
@@ -393,24 +393,23 @@ function eliminarRol() {
     const nombre = item ? item.querySelector('.n')?.textContent : 'este rol';
 
     pedirConfirmacion(
-        `¿Eliminar el rol "${nombre}"? Los usuarios con este rol quedarán sin asignación.`,
+        `¿Desactivar el rol "${nombre}"? El rol se conserva y las asignaciones no se borran.`,
         function() {
             fetch(`${API_BASE}/roles/${rolActualId}`, { method: 'DELETE' })
                 .then(res => {
                     if (!res.ok) {
                         return res.json()
-                            .then(err => { throw new Error(err.message || 'Error al eliminar rol'); })
-                            .catch(() => { throw new Error('Error al eliminar rol'); });
+                            .then(err => { throw new Error(err.message || 'Error al desactivar rol'); })
+                            .catch(() => { throw new Error('Error al desactivar rol'); });
                     }
-                    // Recargar lista
                     cargarRoles();
                     actualizarStatUsuariosConRol();
-                    // Limpiar panel
                     document.getElementById('panel-roles').innerHTML = '<p class="empty">Selecciona un rol para ver sus permisos.</p>';
                     rolActualId = null;
                 })
-                .catch(err => alert('Error al eliminar: ' + err.message));
-        }
+                .catch(err => alert('Error al desactivar: ' + err.message));
+        },
+        'Desactivar'
     );
 }
 

@@ -1,7 +1,7 @@
 // ============================================================
 // CONFIGURACIÓN API
 // ============================================================
-const API_BASE = 'http://localhost:8080/api/admin';
+const API_BASE = '/api/admin';
 
 // Colores de badge por nombre de rol (roles conocidos de fábrica).
 // Si el admin crea un rol nuevo desde "Roles y permisos", se usa 'gray'.
@@ -172,7 +172,7 @@ function pintarUsuarios(usuarios) {
             <td><span class="badge ${badgeOrigen}">${u.origen || ''}</span></td>
             <td>${u.ultimoAcceso || 'Sin accesos registrados'}</td>
             <td><button class="toggle${activo ? ' on' : ''}" title="${activo ? 'Activo' : 'Inactivo'}"></button></td>
-            <td><div class="row-actions"><button class="btn ghost sm" onclick="editarUsuario(this.closest('tr'))">Editar</button><button class="btn danger sm" onclick="eliminarUsuario(this.closest('tr'))">Eliminar</button></div></td>
+            <td><div class="row-actions"><button class="btn ghost sm" onclick="editarUsuario(this.closest('tr'))">Editar</button><button class="btn danger sm" onclick="eliminarUsuario(this.closest('tr'))">Desactivar</button></div></td>
         `;
         tbody.appendChild(tr);
     });
@@ -322,7 +322,11 @@ const RE_DNI = /^\d{8}$/;
 const RE_NOMBRE = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?:\s[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)+$/;
 const RE_CORREO_INSTITUCIONAL = /^[A-Za-z0-9._%+-]+@unas\.edu\.pe$/i;
 
+let guardandoUsuario = false;
+
 function guardarUsuario() {
+    if (guardandoUsuario) return;
+
     const dni = document.getElementById('input-usuario-dni').value.trim();
     const nombreCompleto = document.getElementById('input-usuario-nombre').value.trim().replace(/\s+/g, ' ');
     const correo = document.getElementById('input-usuario-correo').value.trim();
@@ -363,6 +367,10 @@ function guardarUsuario() {
         : `${API_BASE}/usuarios?rolId=${rolId}`;
     const method = esEdicion ? 'PUT' : 'POST';
 
+    guardandoUsuario = true;
+    const btnGuardar = document.getElementById('usuario-btn-guardar');
+    if (btnGuardar) btnGuardar.disabled = true;
+
     fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -376,6 +384,10 @@ function guardarUsuario() {
     })
     .catch(err => {
         mostrarErrorFormulario('usuario-form-error', err.message || 'Error al guardar el usuario.');
+    })
+    .finally(() => {
+        guardandoUsuario = false;
+        if (btnGuardar) btnGuardar.disabled = false;
     });
 }
 
@@ -384,19 +396,14 @@ function eliminarUsuario(fila) {
     const dni = fila.getAttribute('data-dni');
 
     pedirConfirmacion(
-        `¿Eliminar al usuario "${nombre}"? Esta acción no se puede deshacer.`,
+        `¿Desactivar al usuario "${nombre}"? El registro se conserva (soft-delete).`,
         function() {
             fetch(`${API_BASE}/usuarios/${dni}`, { method: 'DELETE' })
-                .then(res => {
-                    if (!res.ok) {
-                        return res.json()
-                            .then(err => { throw new Error(err.message || 'Error al eliminar usuario'); })
-                            .catch(() => { throw new Error('Error al eliminar usuario'); });
-                    }
-                    cargarUsuarios();
-                })
-                .catch(err => alert('Error al eliminar: ' + err.message));
-        }
+                .then(res => manejarError(res))
+                .then(() => cargarUsuarios())
+                .catch(err => alert('Error al desactivar: ' + err.message));
+        },
+        'Desactivar'
     );
 }
 

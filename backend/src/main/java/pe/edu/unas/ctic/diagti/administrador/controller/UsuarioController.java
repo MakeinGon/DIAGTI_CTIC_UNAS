@@ -13,7 +13,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/admin/usuarios")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     private final UsuarioService service;
@@ -27,6 +26,11 @@ public class UsuarioController {
         return ResponseEntity.ok(service.listar(search, rol, estado, origen));
     }
 
+    @GetMapping("/{dni}")
+    public ResponseEntity<UsuarioDTO> obtener(@PathVariable String dni) {
+        return ResponseEntity.ok(service.obtenerPorDni(dni));
+    }
+
     @PostMapping
     public ResponseEntity<UsuarioDTO> crear(@RequestBody UsuarioDTO dto,
                                             @RequestParam Long rolId) {
@@ -36,14 +40,10 @@ public class UsuarioController {
     @PutMapping("/{dni}")
     public ResponseEntity<UsuarioDTO> actualizar(@PathVariable String dni,
                                                  @RequestBody UsuarioDTO dto,
-                                                 @RequestParam Long rolId) {
+                                                 @RequestParam(required = false) Long rolId) {
         return ResponseEntity.ok(service.actualizar(dni, dto, rolId));
     }
 
-    /**
-     * Toggle activo/inactivo (boton .toggle de la tabla). No requiere rolId
-     * ni el resto del formulario, solo el nuevo estado.
-     */
     @PatchMapping("/{dni}/estado")
     public ResponseEntity<UsuarioDTO> cambiarEstado(@PathVariable String dni,
                                                      @RequestBody Map<String, Boolean> body) {
@@ -54,9 +54,22 @@ public class UsuarioController {
         return ResponseEntity.ok(service.cambiarEstado(dni, estado));
     }
 
+    /**
+     * Soft-delete: desactiva el usuario. Conserva el verbo DELETE del contrato UI,
+     * pero no elimina físicamente el registro.
+     */
     @DeleteMapping("/{dni}")
-    public ResponseEntity<Void> eliminar(@PathVariable String dni) {
-        service.eliminar(dni);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<UsuarioDTO> desactivar(@PathVariable String dni) {
+        return ResponseEntity.ok(service.desactivar(dni));
+    }
+
+    @PostMapping("/{dni}/roles/{rolId}")
+    public ResponseEntity<UsuarioDTO> asignarRol(@PathVariable String dni, @PathVariable Long rolId) {
+        return ResponseEntity.ok(service.asignarRol(dni, rolId));
+    }
+
+    @DeleteMapping("/{dni}/roles/{rolId}")
+    public ResponseEntity<UsuarioDTO> retirarRol(@PathVariable String dni, @PathVariable Long rolId) {
+        return ResponseEntity.ok(service.retirarRol(dni, rolId));
     }
 }

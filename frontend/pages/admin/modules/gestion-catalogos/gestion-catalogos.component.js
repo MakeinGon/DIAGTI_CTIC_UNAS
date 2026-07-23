@@ -1,10 +1,11 @@
 // ============================================================
 // CONFIGURACIÓN API
 // ============================================================
-const API_BASE = 'http://localhost:8080/api/admin/catalogos';
+const API_BASE = '/api/admin/catalogos';
 
+// Tipos alineados a DataBase/init.sql y módulos oficiales (AREA_USUARIO, no AREA_USUARIA).
 const MAPA_TIPOS = {
-    areas: 'AREA_USUARIA',
+    areas: 'AREA_USUARIO',
     tipos: 'TIPO_APLICATIVO',
     estados: 'ESTADO_LEVANTAMIENTO',
     criticidad: 'CRITICIDAD',
@@ -114,7 +115,7 @@ function cargarCatalogo(tipoFront) {
                     <td>
                         <div class="row-actions">
                             <button class="btn ghost sm" onclick="editarItem(this.closest('tr'))">Editar</button>
-                            <button class="btn danger sm" onclick="eliminarItem(this.closest('tr'))">Eliminar</button>
+                            <button class="btn danger sm" onclick="eliminarItem(this.closest('tr'))">Desactivar</button>
                         </div>
                     </td>
                 `;
@@ -291,16 +292,17 @@ function eliminarItem(fila) {
     const tipoBD = MAPA_TIPOS[tipoFront];
 
     pedirConfirmacion(
-        '¿Eliminar el ítem "' + codigo + '" de este catálogo? Esta acción no se puede deshacer.',
+        '¿Desactivar el ítem "' + codigo + '" de este catálogo? El valor se conserva (soft-delete).',
         function() {
             fetch(`${API_BASE}/${tipoBD}/${codigo}`, { method: 'DELETE' })
                 .then(res => {
-                    if (!res.ok) throw new Error('Error al eliminar');
-                    fila.remove();
+                    if (!res.ok) throw new Error('Error al desactivar');
+                    cargarCatalogo(tipoFront);
                     actualizarContadorCatalogo(catViewId);
                 })
                 .catch(err => console.error(err));
-        }
+        },
+        'Desactivar'
     );
 }
 

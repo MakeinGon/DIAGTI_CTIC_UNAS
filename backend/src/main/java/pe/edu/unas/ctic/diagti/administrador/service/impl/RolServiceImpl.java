@@ -7,6 +7,9 @@ import pe.edu.unas.ctic.diagti.administrador.dto.RolDTO;
 import pe.edu.unas.ctic.diagti.administrador.entity.RolEntity;
 import pe.edu.unas.ctic.diagti.administrador.repository.RolRepository;
 import pe.edu.unas.ctic.diagti.administrador.service.RolService;
+import pe.edu.unas.ctic.diagti.administrador.support.AdminAuditoriaWriter;
+import pe.edu.unas.ctic.diagti.common.exception.ConflictException;
+import pe.edu.unas.ctic.diagti.common.exception.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 public class RolServiceImpl implements RolService {
 
     private final RolRepository repository;
+    private final AdminAuditoriaWriter auditoriaWriter;
 
     @Override
     @Transactional(readOnly = true)
@@ -26,14 +30,18 @@ public class RolServiceImpl implements RolService {
     @Override
     @Transactional
     public RolDTO crear(RolDTO dto) {
-        if (repository.existsByNombre(dto.getNombre())) {
-            throw new RuntimeException("Ya existe un rol con ese nombre");
+        if (dto.getNombre() == null || dto.getNombre().isBlank()) {
+            throw new IllegalArgumentException("El nombre del rol es obligatorio");
+        }
+        if (repository.existsByNombre(dto.getNombre().trim())) {
+            throw new ConflictException("Ya existe un rol con ese nombre");
         }
         RolEntity entity = new RolEntity();
-        entity.setNombre(dto.getNombre());
+        entity.setNombre(dto.getNombre().trim());
         entity.setDescripcion(dto.getDescripcion());
-        entity.setEstado("Activo".equals(dto.getEstado()));
+        entity.setEstado(dto.getEstado() == null || "Activo".equalsIgnoreCase(dto.getEstado()));
         entity = repository.save(entity);
+        auditoriaWriter.registrar("rol creado", "Rol creado: " + entity.getNombre());
         return toDTO(entity);
     }
 
@@ -41,45 +49,48 @@ public class RolServiceImpl implements RolService {
     @Transactional
     public RolDTO actualizar(Long id, RolDTO dto) {
         RolEntity entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-        entity.setNombre(dto.getNombre());
+                .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado"));
+        if (dto.getNombre() != null && !dto.getNombre().isBlank()) {
+            String nuevoNombre = dto.getNombre().trim();
+            if (!nuevoNombre.equalsIgnoreCase(entity.getNombre()) && repository.existsByNombre(nuevoNombre)) {
+                throw new ConflictException("Ya existe un rol con ese nombre");
+            }
+            entity.setNombre(nuevoNombre);
+        }
         entity.setDescripcion(dto.getDescripcion());
-        entity.setEstado("Activo".equals(dto.getEstado()));
+        if (dto.getEstado() != null) {
+            entity.setEstado("Activo".equalsIgnoreCase(dto.getEstado()));
+        }
         entity = repository.save(entity);
+        auditoriaWriter.registrar("rol actualizado", "Rol actualizado: " + entity.getNombre());
         return toDTO(entity);
     }
 
     @Override
     @Transactional
     public void eliminar(Long id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Rol no encontrado");
-        }
-        // Quita el rol de cualquier usuario que lo tenga asignado (tal como
-        // avisa el modal de confirmacion del frontend) y recien despues borra
-        // el rol. Ya no se bloquea la eliminacion por tener usuarios asignados.
-        repository.desasignarUsuariosDelRol(id);
-        repository.deleteById(id);
+        RolEntity entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado"));
+        // Soft-delete: desactiva sin borrar asignaciones ni el rol.
+        entity.setEstado(false);
+        repository.save(entity);
+        auditoriaWriter.registrar("rol desactivado", "Rol desactivado: " + entity.getNombre());
     }
 
     @Override
     @Transactional(readOnly = true)
     public RolDTO obtenerPorId(Long id) {
-        return repository.findById(id).map(this::toDTO).orElse(null);
+        return repository.findById(id)
+                .map(this::toDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado"));
     }
 
-    /**
-     * Convierte la entidad a DTO sin tocar la coleccion lazy
-     * RolEntity.usuarios: el conteo se obtiene con una query directa
-     * (RolRepository.contarUsuariosPorRol), evitando
-     * LazyInitializationException fuera de una transaccion.
-     */
     private RolDTO toDTO(RolEntity entity) {
         RolDTO dto = new RolDTO();
         dto.setId(entity.getIdRol());
         dto.setNombre(entity.getNombre());
         dto.setDescripcion(entity.getDescripcion());
-        dto.setEstado(entity.getEstado() ? "Activo" : "Inactivo");
+        dto.setEstado(Boolean.TRUE.equals(entity.getEstado()) ? "Activo" : "Inactivo");
         dto.setCantidadUsuarios((int) repository.contarUsuariosPorRol(entity.getIdRol()));
         return dto;
     }

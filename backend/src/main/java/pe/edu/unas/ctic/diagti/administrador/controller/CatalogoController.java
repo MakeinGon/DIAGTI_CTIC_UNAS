@@ -12,10 +12,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/catalogos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class CatalogoController {
 
     private final CatalogoService service;
+
+    /** Listado global: evita el 500 de recurso estático inexistente en la ruta base. */
+    @GetMapping
+    public ResponseEntity<List<CatalogoDTO>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
+    }
 
     @GetMapping("/{tipo}")
     public ResponseEntity<List<CatalogoDTO>> listar(@PathVariable String tipo) {
@@ -34,8 +39,9 @@ public class CatalogoController {
         return ResponseEntity.ok(service.actualizar(tipo, codigo, dto));
     }
 
+    /** Soft-delete: desactiva el ítem sin borrarlo físicamente. */
     @DeleteMapping("/{tipo}/{codigo}")
-    public ResponseEntity<Void> eliminar(@PathVariable String tipo, @PathVariable String codigo) {
+    public ResponseEntity<Void> desactivar(@PathVariable String tipo, @PathVariable String codigo) {
         service.eliminar(tipo, codigo);
         return ResponseEntity.noContent().build();
     }

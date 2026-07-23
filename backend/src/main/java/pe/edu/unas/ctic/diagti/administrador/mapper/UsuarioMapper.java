@@ -16,8 +16,14 @@ public class UsuarioMapper {
     public UsuarioDTO toDTO(UsuarioEntity entity) {
         if (entity == null) return null;
         UsuarioDTO dto = new UsuarioDTO();
+        dto.setUsuarioId(entity.getIdUsuario());
+        dto.setUsername(entity.getUsername());
+        dto.setNombres(entity.getNombres());
+        dto.setApellidos(entity.getApellidos());
         dto.setDni(entity.getDni());
-        dto.setNombreCompleto(entity.getNombres() + " " + entity.getApellidos());
+        String nombres = entity.getNombres() != null ? entity.getNombres() : "";
+        String apellidos = entity.getApellidos() != null ? entity.getApellidos() : "";
+        dto.setNombreCompleto((nombres + " " + apellidos).trim());
         dto.setCorreo(entity.getCorreo());
         dto.setArea(entity.getArea());
         if (entity.getRoles() != null && !entity.getRoles().isEmpty()) {
@@ -27,9 +33,12 @@ public class UsuarioMapper {
             dto.setRoles(entity.getRoles().stream().map(RolEntity::getNombre).collect(Collectors.toList()));
         }
         dto.setOrigen(entity.getOrigen());
-        dto.setEstado(entity.getEstado() ? "Activo" : "Inactivo");
+        dto.setEstado(Boolean.TRUE.equals(entity.getEstado()) ? "Activo" : "Inactivo");
         if (entity.getUltimoAcceso() != null) {
             dto.setUltimoAcceso(entity.getUltimoAcceso().format(DATE_FORMAT));
+        }
+        if (entity.getFechaCreacion() != null) {
+            dto.setFechaCreacion(entity.getFechaCreacion().format(DATE_FORMAT));
         }
         return dto;
     }

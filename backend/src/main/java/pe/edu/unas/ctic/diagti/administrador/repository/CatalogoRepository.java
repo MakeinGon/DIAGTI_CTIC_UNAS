@@ -7,6 +7,9 @@ import java.util.Optional;
 
 public interface CatalogoRepository extends JpaRepository<CatalogoEntity, Long> {
 
+    /** Listado global ordenado por tipo y orden de visualización. */
+    List<CatalogoEntity> findAllByOrderByTipoCatalogoAscOrdenAsc();
+
     // Trae TODOS los ítems del tipo (activos e inactivos), para que el admin
     // pueda ver y reactivar los inactivos en vez de que "desaparezcan".
     List<CatalogoEntity> findByTipoCatalogoOrderByOrdenAsc(String tipoCatalogo);

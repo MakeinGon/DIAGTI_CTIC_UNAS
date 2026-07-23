@@ -7,6 +7,7 @@ import pe.edu.unas.ctic.diagti.administrador.dto.PermisoDTO;
 import pe.edu.unas.ctic.diagti.administrador.entity.PermisoEntity;
 import pe.edu.unas.ctic.diagti.administrador.repository.PermisoRepository;
 import pe.edu.unas.ctic.diagti.administrador.service.PermisoService;
+import pe.edu.unas.ctic.diagti.administrador.support.AdminAuditoriaWriter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,8 +17,10 @@ import java.util.stream.Collectors;
 public class PermisoServiceImpl implements PermisoService {
 
     private final PermisoRepository repository;
+    private final AdminAuditoriaWriter auditoriaWriter;
 
     @Override
+    @Transactional(readOnly = true)
     public List<PermisoDTO> obtenerPorRol(Long rolId) {
         return repository.findByIdRol(rolId).stream()
                 .map(this::toDTO)
@@ -27,9 +30,7 @@ public class PermisoServiceImpl implements PermisoService {
     @Override
     @Transactional
     public void actualizarPermisos(Long rolId, List<PermisoDTO> permisos) {
-        // Eliminar permisos existentes
         repository.deleteByIdRol(rolId);
-        // Crear nuevos
         for (PermisoDTO dto : permisos) {
             PermisoEntity entity = new PermisoEntity();
             entity.setIdRol(rolId);
@@ -42,6 +43,8 @@ public class PermisoServiceImpl implements PermisoService {
             entity.setExportar(dto.getExportar());
             repository.save(entity);
         }
+        auditoriaWriter.registrar("permisos actualizados",
+                "Permisos actualizados para rol id=" + rolId);
     }
 
     private PermisoDTO toDTO(PermisoEntity entity) {

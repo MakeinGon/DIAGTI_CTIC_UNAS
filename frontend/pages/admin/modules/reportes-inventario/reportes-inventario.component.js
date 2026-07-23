@@ -1,8 +1,8 @@
 // ============================================================
 // CONFIGURACIÓN API
 // ============================================================
-const API_BASE = 'http://localhost:8080/api/admin';
-const API_REPORTES = 'http://localhost:8080/api/director/reportes';
+const API_BASE = '/api/admin';
+const API_REPORTES = '/api/director/reportes';
 
 // ============================================================
 // DATOS - SISTEMAS (CONECTADO AL BACKEND)

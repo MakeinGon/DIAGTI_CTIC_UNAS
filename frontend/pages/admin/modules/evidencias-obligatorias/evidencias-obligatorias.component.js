@@ -5,8 +5,8 @@
 // ============================================================
 // CONFIGURACIÓN
 // ============================================================
-const API_BASE = "http://localhost:8080/api/admin/evidencias";
-const API_SISTEMAS = "http://localhost:8080/api/admin/sistemas";
+const API_BASE = "/api/admin/evidencias";
+const API_SISTEMAS = "/api/admin/sistemas";
 
 // ============================================================
 // STATE
