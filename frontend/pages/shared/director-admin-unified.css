@@ -1,0 +1,1096 @@
+/* ==========================================================================
+   DIAGTI · CTIC UNAS
+   Tema visual compartido para el módulo Directivo
+
+   Referencia: interfaz del módulo Administrador (rama Vela).
+   Este archivo unifica las tres pantallas de Directivo sin modificar su
+   estructura, sus identificadores ni su lógica JavaScript.
+   ========================================================================== */
+
+:root {
+    --ctic-blue: #0f75bc;
+    --ctic-blue-dark: #0b5c94;
+    --ctic-blue-soft: #e6f0fa;
+    --ctic-green: #1abb9c;
+    --ctic-green-dark: #149174;
+    --ctic-green-soft: #e6f9f5;
+    --ctic-background: #f3f6f6;
+    --ctic-surface: #ffffff;
+    --ctic-border: #dfe6e5;
+    --ctic-text: #1f2a2e;
+    --ctic-muted: #64757a;
+    --ctic-danger: #991b1b;
+    --ctic-danger-soft: #fee2e2;
+    --ctic-warning: #92400e;
+    --ctic-warning-soft: #fff3cd;
+    --ctic-info: #1e40af;
+    --ctic-info-soft: #dbeafe;
+    --ctic-success: #166534;
+    --ctic-success-soft: #dcfce7;
+    --ctic-radius: 14px;
+    --ctic-radius-small: 9px;
+    --ctic-shadow: 0 8px 24px rgba(15, 117, 188, 0.08);
+    --ctic-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --ctic-sidebar-width: 250px;
+}
+
+/* Base ------------------------------------------------------------------- */
+
+.director-theme,
+.director-theme * {
+    box-sizing: border-box;
+}
+
+body.director-theme {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--ctic-background);
+    color: var(--ctic-text);
+    font-family: var(--ctic-font);
+    font-size: 14.5px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+.director-theme a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.director-theme button,
+.director-theme input,
+.director-theme select,
+.director-theme textarea {
+    font-family: inherit;
+}
+
+.director-theme button {
+    cursor: pointer;
+}
+
+.director-theme .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Sidebar: mismas medidas y tratamiento del módulo Administrador -------- */
+
+.director-theme .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    width: var(--ctic-sidebar-width);
+    min-height: 100vh;
+    height: 100vh;
+    padding: 20px;
+    overflow-y: auto;
+    background: var(--ctic-blue);
+    color: #ffffff;
+}
+
+.director-theme .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px;
+    padding: 0 4px;
+}
+
+.director-theme .brand .logo {
+    display: grid;
+    flex: 0 0 54px;
+    width: 54px;
+    height: 54px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.director-theme .brand .logo img {
+    width: 54px;
+    height: 54px;
+    padding: 4px;
+    object-fit: contain;
+}
+
+.director-theme .brand h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 16.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.2px;
+}
+
+.director-theme .brand small {
+    display: block;
+    margin-top: 2px;
+    color: #cfe4f2;
+    font-size: 11.5px;
+    line-height: 1.35;
+}
+
+.director-theme .sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 14px 4px 22px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--ctic-radius-small);
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.director-theme .profile-avatar {
+    display: grid;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ctic-green);
+    color: #06231d;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.director-theme .profile-info {
+    min-width: 0;
+}
+
+.director-theme .profile-name {
+    overflow: hidden;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+}
+
+.director-theme .profile-role {
+    margin-top: 1px;
+    color: #bcdcf0;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.director-theme .nav-label {
+    margin: 6px 8px 10px;
+    color: #bcdcf0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.director-theme .nav {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+}
+
+.director-theme .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #e7f1f8;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.director-theme .nav-item .lbl {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.director-theme .nav-item .sub {
+    display: block;
+    color: #bcdcf0;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.35;
+}
+
+.director-theme .nav-item:hover,
+.director-theme .nav-item:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+}
+
+.director-theme .nav-item.active {
+    background: var(--ctic-green);
+    color: #06231d;
+}
+
+.director-theme .nav-item.active .sub {
+    color: rgba(6, 35, 29, 0.65);
+}
+
+.director-theme .sidebar-logout {
+    flex: 0 0 auto;
+    margin-top: auto;
+    padding: 12px 0 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.director-theme .btn-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 40px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e7f1f8;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.director-theme .btn-logout:hover,
+.director-theme .btn-logout:focus-visible {
+    border-color: rgba(220, 53, 69, 0.40);
+    background: rgba(220, 53, 69, 0.25);
+    color: #ffffff;
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.director-theme .btn-logout svg {
+    flex: 0 0 20px;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+}
+
+.director-theme .btn-logout:hover svg,
+.director-theme .btn-logout:focus-visible svg {
+    transform: translateX(3px);
+}
+
+.director-theme .sidebar-footer {
+    flex: 0 0 auto;
+    margin: 0;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    color: #bcdcf0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* Contenido principal ---------------------------------------------------- */
+
+.director-theme .main-content {
+    width: calc(100% - var(--ctic-sidebar-width));
+    max-width: calc(100% - var(--ctic-sidebar-width));
+    min-height: 100vh;
+    min-width: 0;
+    margin-left: var(--ctic-sidebar-width);
+    padding: 26px 32px 60px;
+    background: var(--ctic-background);
+    color: var(--ctic-text);
+}
+
+.director-theme .main-content > * {
+    width: 100%;
+    max-width: none;
+}
+
+.director-theme .page-header,
+.director-theme .executive-header-compact {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 0 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.director-theme .page-header__content {
+    min-width: 0;
+}
+
+.director-theme .page-header h1,
+.director-theme .executive-header-compact h1 {
+    margin: 0 0 4px;
+    color: var(--ctic-text);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.director-theme .page-header__description,
+.director-theme .executive-header-compact p {
+    max-width: 850px;
+    margin: 3px 0 0;
+    color: var(--ctic-muted);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.director-theme .section-label {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--ctic-green-dark);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.director-theme .page-header__status {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    color: var(--ctic-muted);
+    font-size: 12.5px;
+}
+
+/* Superficies: tarjetas, filtros y secciones ---------------------------- */
+
+.director-theme :is(
+    .executive-kpi-card,
+    .executive-panel,
+    .executive-table-section,
+    .analytics-filter-panel,
+    .analytics-panel,
+    .report-controls,
+    .data-section
+) {
+    border: 1px solid var(--ctic-border);
+    border-radius: var(--ctic-radius);
+    background: var(--ctic-surface);
+    box-shadow: var(--ctic-shadow);
+}
+
+.director-theme :is(
+    .executive-panel,
+    .executive-table-section,
+    .analytics-filter-panel,
+    .analytics-panel,
+    .report-controls,
+    .data-section
+) {
+    padding: 18px 20px;
+}
+
+.director-theme :is(
+    .analytics-section-heading,
+    .analytics-panel__header,
+    .executive-panel__header,
+    .executive-table-header,
+    .section-heading,
+    .section-header
+) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 14px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.director-theme :is(
+    .analytics-section-heading,
+    .analytics-panel__header,
+    .executive-panel__header,
+    .executive-table-header,
+    .section-heading,
+    .section-header
+) h2 {
+    margin: 0;
+    color: var(--ctic-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.director-theme :is(.section-description, .analytics-panel__header p) {
+    margin: 3px 0 0;
+    color: var(--ctic-muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+/* KPI del resumen ejecutivo --------------------------------------------- */
+
+.director-theme .executive-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 0 0 16px;
+}
+
+.director-theme .executive-kpi-card {
+    min-height: 138px;
+    padding: 18px 20px;
+    overflow: hidden;
+    border-top: 1px solid var(--ctic-border);
+    text-align: left;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.director-theme .executive-kpi-card:hover {
+    box-shadow: 0 12px 28px rgba(15, 117, 188, 0.12);
+    transform: translateY(-2px);
+}
+
+.director-theme .executive-kpi-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.director-theme .executive-kpi-card__label {
+    color: var(--ctic-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.director-theme .executive-kpi-card__icon {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ctic-green-soft);
+    color: var(--ctic-green-dark);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.director-theme .executive-kpi-card__value {
+    display: block;
+    margin: 6px 0 4px;
+    color: var(--ctic-text);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.director-theme :is(.executive-kpi-card__context, .executive-kpi-card__percentage) {
+    margin: 0;
+    color: var(--ctic-muted);
+    font-size: 12.5px;
+}
+
+.director-theme .executive-kpi-card--validated .executive-kpi-card__value {
+    color: var(--ctic-green-dark);
+}
+
+.director-theme .executive-kpi-card--observed .executive-kpi-card__value {
+    color: var(--ctic-warning);
+}
+
+.director-theme .executive-kpi-card--pending .executive-kpi-card__value {
+    color: var(--ctic-blue);
+}
+
+/* Formularios y filtros -------------------------------------------------- */
+
+.director-theme :is(
+    .analytics-filter-grid,
+    .filter-form,
+    .executive-filter-form
+) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    align-items: end;
+    gap: 10px;
+    margin: 0;
+}
+
+.director-theme :is(.analytics-date-range, .report-date-range, .executive-date-range) {
+    min-width: 260px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.director-theme :is(
+    .analytics-date-range__fields,
+    .report-date-range__fields,
+    .executive-date-range__fields
+) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.director-theme :is(
+    .analytics-filter-grid,
+    .filter-form,
+    .executive-filter-form
+) label,
+.director-theme :is(.analytics-date-range, .report-date-range, .executive-date-range) legend {
+    display: block;
+    margin: 0 0 5px;
+    color: #3a4649;
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.director-theme :is(
+    .analytics-filter-grid,
+    .filter-form,
+    .executive-filter-form
+) :is(input, select) {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 10px 12px;
+    border: 1px solid var(--ctic-border);
+    border-radius: 10px;
+    outline: none;
+    background: var(--ctic-surface);
+    color: var(--ctic-text);
+    font-size: 13.5px;
+    box-shadow: none;
+}
+
+.director-theme :is(
+    .analytics-filter-grid,
+    .filter-form,
+    .executive-filter-form
+) :is(input, select):focus {
+    border-color: var(--ctic-green);
+    box-shadow: 0 0 0 3px rgba(26, 185, 156, 0.15);
+}
+
+.director-theme .analytics-filter-search {
+    min-width: 200px;
+}
+
+.director-theme .executive-search-control {
+    position: relative;
+}
+
+.director-theme :is(.filter-actions, .executive-filter-actions, .report-actions) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.director-theme .analytics-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+/* Botones --------------------------------------------------------------- */
+
+.director-theme :is(
+    .analytics-button,
+    .executive-button,
+    .button
+) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 10px 16px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: filter 0.12s ease, transform 0.05s ease, background 0.15s ease;
+}
+
+.director-theme :is(
+    .analytics-button,
+    .executive-button,
+    .button
+):active {
+    transform: translateY(1px);
+}
+
+.director-theme :is(
+    .analytics-button,
+    .executive-button,
+    .button
+):disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.director-theme :is(
+    .analytics-button--primary,
+    .button--primary
+) {
+    border-color: var(--ctic-green);
+    background: var(--ctic-green);
+    color: #ffffff;
+}
+
+.director-theme :is(
+    .analytics-button--secondary,
+    .executive-button--secondary,
+    .button--secondary
+) {
+    border-color: var(--ctic-border);
+    background: #eef2f2;
+    color: #344054;
+}
+
+.director-theme :is(
+    .analytics-button,
+    .executive-button,
+    .button
+):hover:not(:disabled) {
+    filter: brightness(0.98);
+}
+
+.director-theme .executive-button--small {
+    min-height: 34px;
+    padding: 7px 11px;
+    font-size: 12.5px;
+}
+
+/* Tablas ---------------------------------------------------------------- */
+
+.director-theme :is(
+    .analytics-table-wrap,
+    .executive-table-responsive,
+    .table-responsive
+) {
+    width: 100%;
+    overflow-x: auto;
+    border: 0;
+    border-radius: 0;
+}
+
+.director-theme :is(
+    .analytics-table,
+    .executive-table,
+    .data-table
+) {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    color: var(--ctic-text);
+    font-size: 13.5px;
+}
+
+.director-theme :is(
+    .analytics-table,
+    .executive-table,
+    .data-table
+) thead th {
+    padding: 11px 12px;
+    border: 0;
+    border-bottom: 1px solid var(--ctic-border);
+    background: #f8fafa;
+    color: var(--ctic-muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.director-theme :is(
+    .analytics-table,
+    .executive-table,
+    .data-table
+) tbody td {
+    padding: 12px;
+    border: 0;
+    border-bottom: 1px solid #eef2f2;
+    background: transparent;
+    color: var(--ctic-text);
+    vertical-align: middle;
+}
+
+.director-theme :is(
+    .analytics-table,
+    .executive-table,
+    .data-table
+) tbody tr:hover {
+    background: #fafcfc;
+}
+
+.director-theme :is(
+    .analytics-table,
+    .executive-table,
+    .data-table
+) tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.director-theme :is(.analytics-pagination, .executive-pagination) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+    color: var(--ctic-muted);
+    font-size: 12.5px;
+}
+
+.director-theme :is(.analytics-pagination, .executive-pagination) > div,
+.director-theme .executive-pagination__controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Badges y estados ------------------------------------------------------- */
+
+.director-theme .badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+}
+
+.director-theme .badge-warning {
+    background: var(--ctic-warning-soft);
+    color: var(--ctic-warning);
+}
+
+.director-theme .analytics-state,
+.director-theme .dashboard-state,
+.director-theme .empty-state {
+    padding: 40px 20px;
+    border: 1px dashed var(--ctic-border);
+    border-radius: var(--ctic-radius);
+    background: var(--ctic-surface);
+    color: var(--ctic-muted);
+    text-align: center;
+}
+
+.director-theme :is(.analytics-state, .dashboard-state, .empty-state) h2,
+.director-theme :is(.analytics-state, .dashboard-state, .empty-state) h3 {
+    margin: 0 0 6px;
+    color: var(--ctic-text);
+    font-size: 16px;
+}
+
+.director-theme :is(.analytics-state, .dashboard-state, .empty-state) p {
+    margin: 0 0 16px;
+    color: var(--ctic-muted);
+}
+
+/* Separación vertical uniforme ------------------------------------------ */
+
+.director-theme .analytics-filter-panel,
+.director-theme .report-controls,
+.director-theme .executive-filter-panel {
+    margin-bottom: 16px;
+}
+
+.director-theme .dashboard-content,
+.director-theme .report-section + .report-section {
+    margin-top: 16px;
+}
+
+.director-theme .executive-panel + .executive-panel,
+.director-theme .executive-table-section {
+    margin-top: 16px;
+}
+
+.director-theme .data-section {
+    margin-top: 16px;
+}
+
+/* Diálogos y cierre de sesión ------------------------------------------- */
+
+.director-theme :is(.analytics-dialog, .executive-dialog) {
+    width: min(620px, calc(100% - 32px));
+    max-height: 88vh;
+    padding: 0;
+    overflow: auto;
+    border: 0;
+    border-radius: 16px;
+    background: transparent;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.director-theme :is(.analytics-dialog, .executive-dialog)::backdrop {
+    background: rgba(15, 60, 90, 0.45);
+}
+
+.director-theme :is(.analytics-dialog__surface, .executive-dialog__surface) {
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+    background: var(--ctic-surface);
+}
+
+.director-theme .analytics-dialog__surface header,
+.director-theme .executive-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--ctic-border);
+}
+
+.director-theme .executive-dialog__content,
+.director-theme .analytics-dialog__content {
+    padding: 18px 22px;
+}
+
+.director-theme .logout-confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 60, 90, 0.45);
+}
+
+.director-theme .logout-confirm-overlay.open {
+    display: flex;
+}
+
+.director-theme .logout-confirm-box {
+    width: min(420px, 100%);
+    overflow: hidden;
+    border-radius: var(--ctic-radius);
+    background: var(--ctic-surface);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.director-theme .logout-confirm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--ctic-border);
+}
+
+.director-theme .logout-confirm-header h3 {
+    margin: 0;
+    color: var(--ctic-text);
+    font-size: 16px;
+}
+
+.director-theme .logout-confirm-close {
+    padding: 4px;
+    border: 0;
+    background: transparent;
+    color: var(--ctic-muted);
+    font-size: 18px;
+}
+
+.director-theme .logout-confirm-body {
+    padding: 18px 22px 4px;
+}
+
+.director-theme .logout-confirm-body p {
+    margin: 0 0 8px;
+    color: var(--ctic-text);
+    font-size: 14px;
+}
+
+.director-theme .logout-confirm-hint {
+    color: var(--ctic-muted);
+    font-size: 12px;
+}
+
+.director-theme .logout-confirm-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--ctic-border);
+}
+
+.director-theme :is(.logout-confirm-btn-cancel, .logout-confirm-btn-accept) {
+    min-height: 40px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 4px;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.director-theme .logout-confirm-btn-cancel {
+    background: #eef2f2;
+    color: #344054;
+}
+
+.director-theme .logout-confirm-btn-accept {
+    background: var(--ctic-danger-soft);
+    color: var(--ctic-danger);
+}
+
+/* Adaptación ------------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+    .director-theme .executive-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1050px) {
+    body.director-theme {
+        display: block;
+    }
+
+    .director-theme .sidebar {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+    }
+
+    .director-theme .nav {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .director-theme .sidebar-logout {
+        margin-top: 16px;
+    }
+
+    .director-theme .main-content {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+        padding: 24px;
+    }
+}
+
+@media (max-width: 700px) {
+    .director-theme .sidebar {
+        padding: 18px;
+    }
+
+    .director-theme .nav {
+        grid-template-columns: 1fr;
+    }
+
+    .director-theme .main-content {
+        padding: 18px;
+    }
+
+    .director-theme .page-header,
+    .director-theme .executive-header-compact,
+    .director-theme :is(
+        .analytics-section-heading,
+        .analytics-panel__header,
+        .executive-panel__header,
+        .executive-table-header,
+        .section-heading,
+        .section-header
+    ) {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .director-theme .page-header__status {
+        align-items: flex-start;
+    }
+
+    .director-theme .executive-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .director-theme :is(
+        .analytics-filter-grid,
+        .filter-form,
+        .executive-filter-form
+    ) {
+        grid-template-columns: 1fr;
+    }
+
+    .director-theme :is(.analytics-date-range, .report-date-range, .executive-date-range) {
+        min-width: 0;
+    }
+
+    .director-theme :is(.filter-actions, .executive-filter-actions, .report-actions) {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .director-theme :is(
+        .analytics-button,
+        .executive-button,
+        .button
+    ) {
+        width: 100%;
+    }
+
+    .director-theme :is(.analytics-pagination, .executive-pagination) {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 460px) {
+    .director-theme .analytics-date-range__fields,
+    .director-theme .report-date-range__fields,
+    .director-theme .executive-date-range__fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    .director-theme .sidebar,
+    .director-theme .report-controls,
+    .director-theme .report-actions,
+    .director-theme .btn-logout {
+        display: none !important;
+    }
+
+    .director-theme .main-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+    }
+
+    .director-theme :is(.data-section, .executive-panel, .executive-table-section) {
+        box-shadow: none !important;
+    }
+}

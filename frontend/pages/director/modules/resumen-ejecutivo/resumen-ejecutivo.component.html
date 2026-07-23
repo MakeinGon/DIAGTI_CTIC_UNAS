@@ -7,8 +7,10 @@
 <meta content="Dashboard ejecutivo del inventario y diagnóstico TI del CTIC UNAS." name="description"/>
 <title>Dashboard Ejecutivo | DIAGTI CTIC UNAS</title>
 <link href="resumen-ejecutivo.component.css?v=3" rel="stylesheet"/>
+<link href="../../../shared/director-admin-unified.css?v=1" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 </head>
-<body>
+<body class="director-theme">
 <!-- ===================== SIDEBAR ===================== -->
 <aside class="sidebar">
     <div class="brand">
@@ -34,7 +36,7 @@
     <nav class="nav">
         <a class="nav-item active" href="resumen-ejecutivo.component.html">
             <span>
-                <span class="lbl">Dashboard Ejecutivo</span>
+                <span class="lbl">Resumen Ejecutivo</span>
                 <span class="sub">Resumen estratégico</span>
             </span>
         </a>
@@ -76,8 +78,8 @@
     <!-- HEADER -->
     <header class="executive-header-compact">
         <span class="section-label">Módulo Directivo</span>
-        <h1>Dashboard Ejecutivo</h1>
-        <p>Resumen estratégico de la salud tecnológica institucional, el cumplimiento del diagnóstico y el avance de los proyectos de modernización.</p>
+        <h1>Resumen Ejecutivo</h1>
+        
     </header>
 
     <!-- =================================================
@@ -190,7 +192,7 @@
         </section>
 
         <!-- GRÁFICO DE CRITICIDAD -->
-        <section aria-labelledby="criticality-chart-title" class="executive-panel executive-panel--criticality">
+        <section aria-labelledby="criticality-chart-title" class="executive-panel executive-panel--criticality" hidden>
             <div class="executive-panel__header executive-panel__header--criticality">
                 <div>
                     <span class="section-label">Análisis estadístico</span>

@@ -1072,3 +1072,10 @@ body {
     white-space: nowrap !important;
     border: 0 !important;
 }
+/* Encabezado vertical exclusivo de Resumen Ejecutivo */
+.director-theme .executive-header-compact {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 4px;
+}
