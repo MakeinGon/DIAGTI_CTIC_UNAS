@@ -1,0 +1,12 @@
+CREATE TABLE permisos (
+    id_permiso SERIAL PRIMARY KEY,
+    id_rol INTEGER NOT NULL REFERENCES roles(id_rol) ON DELETE CASCADE,
+    modulo VARCHAR(50) NOT NULL,
+    ver BOOLEAN DEFAULT FALSE,
+    crear BOOLEAN DEFAULT FALSE,
+    editar BOOLEAN DEFAULT FALSE,
+    eliminar BOOLEAN DEFAULT FALSE,
+    validar BOOLEAN DEFAULT FALSE,
+    exportar BOOLEAN DEFAULT FALSE,
+    UNIQUE(id_rol, modulo)
+);

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/pages/infraestructura/assets/logo-unas.png?v=13">
+    <title>Registrar Sistema · Área de Desarrollo · DIAGTI – CTIC UNAS</title>
+    <link rel="stylesheet" href="../css/registrar-sistema.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo"><img src="../assets/logo-unas.png" alt="UNAS"></div>
+            <div>
+                <h1>UNAS</h1><small>Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">DV</div>
+            <div class="profile-info">
+                <div class="profile-name">Desarrollador Demo</div>
+                <div class="profile-role">Área de Desarrollo</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Desarrollo</div>
+
+        <nav class="nav">
+            <a class="nav-item" href="dashboard.html">
+                <span><span class="lbl">Dashboard</span><span class="sub">Resumen de trabajo</span></span>
+            </a>
+            <a class="nav-item active" href="mis-sistemas.html">
+                <span><span class="lbl">Mis Sistemas</span><span class="sub">Administrar sistemas</span></span>
+            </a>
+            <a class="nav-item" href="subsanar-observaciones.html">
+                <span><span class="lbl">Observaciones</span><span class="sub">Correcciones pendientes</span></span>
+            </a>
+        </nav>
+
+        <div class="sidebar-logout">
+            <button class="btn-logout" onclick="cerrarSesion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">DIAGTI v2.0 · CTIC UNAS<br>Módulo de desarrollo</div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h2>Registrar Sistema</h2>
+                <div class="hint">Complete toda la información del sistema</div>
+            </div>
+            <span class="badge status-info">Estado: Borrador</span>
+        </div>
+
+        <div class="card">
+            <!-- Pestañas -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="tab-general" onclick="cambiarTab('tab-general')">1.
+                    General</button>
+                <button class="tab-btn" data-tab="tab-tipo" onclick="cambiarTab('tab-tipo')">2. Tipo</button>
+                <button class="tab-btn" data-tab="tab-desarrollo" onclick="cambiarTab('tab-desarrollo')">3.
+                    Desarrollo</button>
+                <button class="tab-btn" data-tab="tab-arquitectura" onclick="cambiarTab('tab-arquitectura')">4.
+                    Arquitectura</button>
+                <button class="tab-btn" data-tab="tab-bd" onclick="cambiarTab('tab-bd')">5. Base Datos</button>
+                <button class="tab-btn" data-tab="tab-integraciones" onclick="cambiarTab('tab-integraciones')">6.
+                    Integraciones</button>
+                <button class="tab-btn" data-tab="tab-evidencias" onclick="cambiarTab('tab-evidencias')">7.
+                    Evidencias</button>
+                <button class="tab-btn" data-tab="tab-resumen" onclick="cambiarTab('tab-resumen')">8. Resumen</button>
+            </div>
+
+            <!-- Pestaña 1: Información General -->
+            <div class="tab-content active" id="tab-general">
+                <h3 style="margin-bottom:16px;">Información General</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Código *</label>
+                        <input type="text" placeholder="Ej. SIS006">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" placeholder="Nombre del sistema">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea placeholder="Descripción del sistema"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Área usuaria *</label>
+                        <select>
+                            <option value="">Seleccionar</option>
+                            <option>Dirección Académica</option>
+                            <option>Secretaría General</option>
+                            <option>Recursos Humanos</option>
+                            <option>Economía y Finanzas</option>
+                            <option>Biblioteca</option>
+                            <option>Investigación</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Responsable funcional</label>
+                        <input type="text" placeholder="Nombre del responsable funcional">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Responsable técnico *</label>
+                        <input type="text" placeholder="Nombre del responsable técnico">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select>
+                            <option>Borrador</option>
+                            <option>Enviado</option>
+                            <option>Observado</option>
+                            <option>Validado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Criticidad</label>
+                    <select>
+                        <option value="">Seleccionar</option>
+                        <option>Académico</option>
+                        <option>Financiero</option>
+                        <option>RRHH</option>
+                    </select>
+                </div>
+                <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+            </div>
+
+            <!-- Pestaña 2: Tipo de Aplicativo -->
+            <div class="tab-content" id="tab-tipo">
+                <h3 style="margin-bottom:16px;">Tipo de Aplicativo</h3>
+                <div class="checkbox-group">
+                    <label><input type="radio" name="tipo" value="Web"> Web</label>
+                    <label><input type="radio" name="tipo" value="Desktop"> Desktop</label>
+                    <label><input type="radio" name="tipo" value="API"> API</label>
+                    <label><input type="radio" name="tipo" value="Mobile"> Mobile</label>
+                    <label><input type="radio" name="tipo" value="Legacy"> Legacy</label>
+                    <label><input type="radio" name="tipo" value="Batch"> Batch</label>
+                    <label><input type="radio" name="tipo" value="IoT"> IoT</label>
+                    <label><input type="radio" name="tipo" value="Otro"> Otro</label>
+                </div>
+                <div class="form-group" style="margin-top:12px;">
+                    <label>Especificar (si seleccionó Otro)</label>
+                    <input type="text" placeholder="Especificar tipo">
+                </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- Pestaña 3: Información del Desarrollo -->
+            <div class="tab-content" id="tab-desarrollo">
+                <h3 style="margin-bottom:16px;">Información del Desarrollo</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Año de desarrollo</label>
+                        <input type="number" placeholder="2024">
+                    </div>
+                    <div class="form-group">
+                        <label>Forma de adquisición</label>
+                        <select>
+                            <option value="">Seleccionar</option>
+                            <option>Desarrollo interno CTIC</option>
+                            <option>Proveedor externo</option>
+                            <option>Convenio</option>
+                            <option>Compra directa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Empresa desarrolladora</label>
+                        <input type="text" placeholder="Nombre de la empresa">
+                    </div>
+                    <div class="form-group">
+                        <label>Contrato vigente</label>
+                        <select>
+                            <option>Si</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de soporte</label>
+                        <input type="date">
+                    </div>
+                    <div class="form-group">
+                        <label>Observaciones</label>
+                        <textarea placeholder="Observaciones adicionales"></textarea>
+                    </div>
+                </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- Pestaña 4: Arquitectura Software -->
+            <div class="tab-content" id="tab-arquitectura">
+                <h3 style="margin-bottom:16px;">Arquitectura Software</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lenguaje *</label>
+                        <input type="text" placeholder="Ej. PHP, Java, Python">
+                    </div>
+                    <div class="form-group">
+                        <label>Versión lenguaje</label>
+                        <input type="text" placeholder="Ej. 8.2">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Framework</label>
+                        <input type="text" placeholder="Ej. Laravel, Spring Boot">
+                    </div>
+                    <div class="form-group">
+                        <label>Versión framework</label>
+                        <input type="text" placeholder="Ej. 10.0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Arquitectura</label>
+                        <input type="text" placeholder="Ej. MVC, Hexagonal">
+                    </div>
+                    <div class="form-group">
+                        <label>Patrón</label>
+                        <input type="text" placeholder="Ej. Repository, Factory">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Repositorio Git</label>
+                    <input type="text" placeholder="URL del repositorio">
+                </div>
+                <div class="form-group">
+                    <label>Tecnologías complementarias</label>
+                    <textarea placeholder="Ej. Redis, Elasticsearch, Kafka"></textarea>
+                </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
+
+            </div>
+
+            <!-- Pestaña 5: Base de Datos -->
+            <div class="tab-content" id="tab-bd">
+                <h3 style="margin-bottom:16px;">Base de Datos</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Motor *</label>
+                        <select>
+                            <option value="">Seleccionar</option>
+                            <option>PostgreSQL</option>
+                            <option>MySQL</option>
+                            <option>SQL Server</option>
+                            <option>Oracle</option>
+                            <option>Access</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Versión</label>
+                        <input type="text" placeholder="Ej. 15.0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de BD</label>
+                        <select>
+                            <option>Relacional</option>
+                            <option>NoSQL</option>
+                            <option>Documental</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Servidor</label>
+                        <input type="text" placeholder="IP o nombre del servidor">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Esquema</label>
+                        <input type="text" placeholder="Nombre del esquema">
+                    </div>
+                    <div class="form-group">
+                        <label>Backup</label>
+                        <select>
+                            <option>Si</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Frecuencia Backup</label>
+                        <select>
+                            <option>Diario</option>
+                            <option>Semanal</option>
+                            <option>Quincenal</option>
+                            <option>Mensual</option>
+                            <option>No aplica</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cifrado</label>
+                        <select>
+                            <option>Si</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Responsable BD</label>
+                    <input type="text" placeholder="Nombre del responsable">
+                </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- Pestaña 6: Integraciones. Seguridad pertenece a Infraestructura. -->
+            <div class="tab-content" id="tab-integraciones">
+                <h3 style="margin-bottom:16px;">Integraciones</h3>
+                <div class="form-row" style="margin-bottom:12px;">
+                    <div class="form-group">
+                        <label>Sistema destino</label>
+                        <input type="text" id="integracion-destino" placeholder="Nombre del sistema destino">
+                    </div>
+                    <div class="form-group">
+                        <label>Protocolo</label>
+                        <select id="integracion-protocolo">
+                            <option>HTTP/REST</option>
+                            <option>HTTPS/REST</option>
+                            <option>SOAP</option>
+                            <option>GraphQL</option>
+                            <option>WebSocket</option>
+                            <option>FTP</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row" style="margin-bottom:12px;">
+                    <div class="form-group">
+                        <label>Método</label>
+                        <input type="text" id="integracion-metodo" placeholder="Ej. POST, GET, Sync">
+                    </div>
+                    <div class="form-group">
+                        <label>Responsable</label>
+                        <input type="text" id="integracion-responsable" placeholder="Nombre del responsable">
+                    </div>
+                </div>
+                <button class="btn btn-verde" onclick="agregarIntegracion()">➕ Agregar integración</button>
+
+                <div style="margin-top:16px;">
+                    <h4 style="margin-bottom:8px;">Integraciones registradas</h4>
+                    <div class="table-wrap">
+                        <table id="tabla-integraciones">
+                            <thead>
+                                <tr>
+                                    <th>Sistema destino</th>
+                                    <th>Protocolo</th>
+                                    <th>Método</th>
+                                    <th>Responsable</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- Pestaña 8: Evidencias -->
+            <div class="tab-content" id="tab-evidencias">
+                <h3 style="margin-bottom:16px;">Evidencias</h3>
+
+                <div
+                    style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px;">
+                    <div style="border:1px dashed var(--border);border-radius:10px;padding:12px;text-align:center;">
+                        <label style="display:block;font-weight:600;font-size:13px;">Manual</label>
+                        <input type="file" id="evidencia-manual" style="margin-top:8px;font-size:12px;"
+                            onchange="subirEvidencia('manual')">
+                    </div>
+                    <div style="border:1px dashed var(--border);border-radius:10px;padding:12px;text-align:center;">
+                        <label style="display:block;font-weight:600;font-size:13px;">Documento técnico</label>
+                        <input type="file" id="evidencia-documento" style="margin-top:8px;font-size:12px;"
+                            onchange="subirEvidencia('documento')">
+                    </div>
+                    <div style="border:1px dashed var(--border);border-radius:10px;padding:12px;text-align:center;">
+                        <label style="display:block;font-weight:600;font-size:13px;">Contrato</label>
+                        <input type="file" id="evidencia-contrato" style="margin-top:8px;font-size:12px;"
+                            onchange="subirEvidencia('contrato')">
+                    </div>
+                    <div style="border:1px dashed var(--border);border-radius:10px;padding:12px;text-align:center;">
+                        <label style="display:block;font-weight:600;font-size:13px;">Capturas</label>
+                        <input type="file" id="evidencia-capturas" style="margin-top:8px;font-size:12px;"
+                            onchange="subirEvidencia('capturas')">
+                    </div>
+                    <div style="border:1px dashed var(--border);border-radius:10px;padding:12px;text-align:center;">
+                        <label style="display:block;font-weight:600;font-size:13px;">Certificados</label>
+                        <input type="file" id="evidencia-certificados" style="margin-top:8px;font-size:12px;"
+                            onchange="subirEvidencia('certificados')">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <h4 style="margin-bottom:8px;">Archivos subidos</h4>
+                    <div id="lista-evidencias"></div>
+                </div>
+
+                <hr style="margin:16px 0;border-color:var(--border);">
+
+                <div style="margin-bottom:16px;">
+                    <h4 style="margin-bottom:8px;">Agregar URL</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>URL</label>
+                            <input type="text" id="evidencia-url" placeholder="https://ejemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <input type="text" id="evidencia-url-desc" placeholder="Descripción de la URL">
+                        </div>
+                    </div>
+                    <button class="btn btn-verde" onclick="agregarUrlEvidencia()">➕ Agregar URL</button>
+                </div>
+
+                <div>
+                    <h4 style="margin-bottom:8px;">URLs agregadas</h4>
+                    <div id="lista-urls"></div>
+                </div>
+
+                <div class="form-group" style="margin-top:16px;">
+                    <label>Repositorio Git</label>
+                    <input type="text" placeholder="URL del repositorio Git">
+                </div>
+                <div 
+                    class="form-actions-navegacion" style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn-atras" onclick="anteriorPantalla()">Atrás</button>
+                    <button type="button" class="btn-siguiente" onclick="siguientePantalla()">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- Pestaña 9: Resumen -->
+            <div class="tab-content" id="tab-resumen">
+                <h3 style="margin-bottom:16px;">Resumen del Sistema</h3>
+                <div style="background:var(--color-verde-light);padding:16px;border-radius:10px;margin-bottom:16px;">
+                    <p style="font-weight:600;color:var(--color-verde-dark);">✅ Todos los campos requeridos están
+                        completos</p>
+                    <p style="font-size:13px;color:var(--color-verde-dark);">Puedes guardar como borrador o enviar a
+                        validación</p>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px;">
+                    <div><strong>Código:</strong> SIS006</div>
+                    <div><strong>Nombre:</strong> [Nombre del sistema]</div>
+                    <div><strong>Área usuaria:</strong> [Área seleccionada]</div>
+                    <div><strong>Responsable técnico:</strong> [Nombre]</div>
+                    <div><strong>Tipo:</strong> [Tipo seleccionado]</div>
+                    <div><strong>Estado:</strong> Borrador</div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="cancelarRegistro()">Cancelar</button>
+                    <button class="btn btn-verde" onclick="guardarBorrador()">💾 Guardar Borrador</button>
+                    <button class="btn btn-azul" onclick="enviarValidacion()">📤 Enviar Validación</button>
+                </div>
+                <button type="button" class="btn-atras" onclick="anteriorPantalla()" style="margin-bottom: 16px;">Atrás</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../../shared/js/flujo-validacion.js?v=15"></script>
+    <script src="../js/registrar-sistema.js?v=8"></script>
+</body>
+
+</html>

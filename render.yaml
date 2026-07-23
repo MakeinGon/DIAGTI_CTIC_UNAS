@@ -1,0 +1,57 @@
+services:
+  - type: web
+    name: diagti-ctic-unas
+    runtime: docker
+    branch: deploy-presentacion
+    plan: free
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    healthCheckPath: /auth/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: BACKEND_PORT
+        value: "8080"
+
+      - key: DATABASE_URL
+        fromDatabase:
+          name: diagti-postgres
+          property: connectionString
+
+      - key: DB_NAME
+        fromDatabase:
+          name: diagti-postgres
+          property: database
+
+      - key: DB_USER
+        fromDatabase:
+          name: diagti-postgres
+          property: user
+
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: diagti-postgres
+          property: password
+
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+
+      - key: SPRING_JPA_SHOW_SQL
+        value: "false"
+
+      - key: DB_POOL_MAX_SIZE
+        value: "5"
+
+      - key: DB_POOL_MIN_IDLE
+        value: "1"
+
+      - key: APP_UPLOADS_PATH
+        value: /tmp/diagti-uploads/evidencias
+
+      - key: JAVA_TOOL_OPTIONS
+        value: -XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=65 -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError
+
+databases:
+  - name: diagti-postgres
+    plan: free
+    databaseName: diagti_db
+    user: diagti_user

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/pages/infraestructura/assets/logo-unas.png?v=13" />
+    <title>Login · DIAGTI CTIC UNAS</title>
+    <link rel="stylesheet" href="/pages/login/css/login.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-logo">
+                <img src="/pages/admin/modules/assets/logo-unas.png" alt="UNAS">
+            </div>
+            <h1>CTIC</h1>
+            <p>Sistema de Inventario y Diagnóstico TI</p>
+            <span class="login-subtitle">CTIC · Universidad Agraria de la Selva</span>
+        </div>
+
+        <form class="login-form" id="loginForm" autocomplete="off">
+            <div class="login-error" id="loginError" style="display:none;">
+                <span id="errorMessage">Credenciales incorrectas</span>
+            </div>
+
+            <div class="form-group">
+                <label for="codigoUniversitario">DNI (Usuario)</label>
+                <input type="text" id="codigoUniversitario" class="form-control"
+                    placeholder="Ej: 76551691 o 74331380" required autofocus />
+                <small class="form-hint">Ingresa tu DNI sin espacios</small>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" class="form-control" placeholder="Ingresa tu contraseña"
+                        required />
+                    <button type="button" class="toggle-password" id="togglePassword" title="Mostrar/Ocultar contraseña">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+                <small class="form-hint">Mínimo 6 caracteres</small>
+            </div>
+
+            <div class="form-group">
+                <label for="captchaInput">Verificación de seguridad</label>
+                <div class="captcha-wrapper">
+                    <div class="captcha-box" id="captchaBox">
+                        <span id="captchaText" class="captcha-text">A7X2</span>
+                    </div>
+                    <button type="button" class="btn-refresh-captcha" id="refreshCaptcha" title="Actualizar captcha">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 4v6h-6" />
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                        </svg>
+                    </button>
+                </div>
+                <input type="text" id="captchaInput" class="form-control" placeholder="Ingresa el código de la imagen"
+                    required maxlength="4" />
+                <small class="form-hint">Ingresa el código mostrado en la imagen (mayúsculas)</small>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">
+                <span class="btn-text">Ingresar al Sistema</span>
+                <span class="btn-spinner" id="btnSpinner" style="display:none;">⏳</span>
+            </button>
+
+            <div class="login-links">
+                <a href="#" class="link-forgot" id="linkForgot">¿Olvidaste tu contraseña?</a>
+                <span class="link-divider">|</span>
+                <a href="#" class="link-support" id="linkSupport">Soporte técnico</a>
+            </div>
+        </form>
+
+        <div class="login-footer">
+            <p>&copy; 2026 CTIC · DIAGTI v2.0</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalSupport" style="display:none;">
+        <div class="modal-support">
+            <div class="modal-support-header">
+                <h3>Contacto Soporte Técnico</h3>
+                <button class="modal-close-btn" id="closeModalSupport">✕</button>
+            </div>
+            <div class="modal-support-body">
+                <div class="support-icon">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#1abb9c" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                </div>
+                <p class="support-title">¿Necesitas ayuda con tu acceso?</p>
+                <p class="support-description">
+                    Comunícate con nuestro equipo de soporte técnico para resolver cualquier incidencia con tu cuenta.
+                </p>
+                <div class="support-phone">
+                    <span class="phone-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#149174" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                    </span>
+                    <span class="phone-number">+51 922 256 688</span>
+                </div>
+                <div class="support-hours">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <span>Lunes a Viernes · 8:00 am - 5:00 pm</span>
+                </div>
+                <div class="support-email">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    <span>soporte@ctic-unas.edu.pe</span>
+                </div>
+                <button class="btn-support-close" id="btnSupportClose">Entendido, gracias</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/pages/login/js/login.js?v=9"></script>
+</body>
+
+</html>

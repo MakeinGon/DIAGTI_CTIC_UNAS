@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/pages/infraestructura/assets/logo-unas.png?v=13" />
+    <title>Reportes de Inventario · DIAGTI CTIC</title>
+
+    <!-- Estilos propios del módulo -->
+    <link rel="stylesheet" href="reportes-inventario.component.css" />
+
+    <!-- Librería para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <img src="../assets/logo-unas.png" alt="Universidad Agraria de la Selva - UNAS">
+            </div>
+            <div>
+                <h1>UNAS</h1>
+                <small>Tingo María</small>
+            </div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-avatar">JV</div>
+            <div class="profile-info">
+                <div class="profile-name">Johan Alberto Vela Arevalo</div>
+                <div class="profile-role">Administrador</div>
+            </div>
+        </div>
+
+        <div class="nav-label">Administración</div>
+
+        <nav class="nav">
+            <a class="nav-item" href="../gestion-usuarios/gestion-usuarios.component.html">
+                <span>
+                    <span class="lbl">Gestión de Usuarios</span>
+                    <span class="sub">Cuentas y accesos</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../roles-permisos/roles-permisos.component.html">
+                <span>
+                    <span class="lbl">Roles y Permisos</span>
+                    <span class="sub">Perfiles de acceso</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../gestion-catalogos/gestion-catalogos.component.html">
+                <span>
+                    <span class="lbl">Gestión de Catálogos</span>
+                    <span class="sub">Listas maestras</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../evidencias-obligatorias/evidencias-obligatorias.component.html">
+                <span>
+                    <span class="lbl">Evidencias Obligatorias</span>
+                    <span class="sub">Documentación técnica</span>
+                </span>
+            </a>
+            <a class="nav-item active" href="reportes-inventario.component.html">
+                <span>
+                    <span class="lbl">Reportes de Inventario</span>
+                    <span class="sub">Estadísticas y análisis</span>
+                </span>
+            </a>
+            <a class="nav-item" href="../auditoria-trazabilidad/auditoria-trazabilidad.component.html">
+                <span>
+                    <span class="lbl">Auditoría y Trazabilidad</span>
+                    <span class="sub">Historial y seguimiento</span>
+                </span>
+            </a>
+        </nav>
+
+        <!-- ===== BOTÓN CERRAR SESIÓN ===== -->
+        <div class="sidebar-logout">
+            <button class="btn-logout" id="btnCerrarSesion">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            DIAGTI v2.0 · CTIC UNAS<br>
+            Módulo de administración interna
+        </div>
+    </aside>
+
+    <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- HEADER -->
+            <div class="header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <h1>📊 Reportes de <span>Inventario TI</span></h1>
+                        <p>Consulta, análisis y reportes del inventario institucional de sistemas</p>
+                    </div>
+                    <div class="header-right">
+                        <span class="badge-live">
+                            <span class="pulse-dot"></span>
+                            En Vivo
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARDS DE ESTADÍSTICAS (INDICADORES GENERALES) -->
+            <div class="cards-grid" id="statsReportes">
+                <!-- Renderizado dinámico desde JS -->
+            </div>
+
+            <!-- FILTROS AVANZADOS -->
+            <div class="filtros">
+                <div class="filter-group">
+                    <label class="filter-label">Buscar</label>
+                    <input type="text" placeholder="Nombre, código o responsable..." id="buscarReporte" />
+                </div>
+                    <div class="filter-group">
+                    <label class="filter-label">Área</label>
+                    <select id="filtroArea">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Responsable</label>
+                    <select id="filtroResponsable">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select id="filtroEstado">
+                        <option value="">Todos</option>
+                        <option value="Validado">Validado</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Observado">Observado</option>
+
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Criticidad</label>
+                    <select id="filtroCriticidad">
+                        <option value="">Todas</option>
+                        <option value="Baja">Baja</option>
+                        <option value="Media">Media</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Crítica / Misión Crítica">Crítica / Misión Crítica</option>
+                    </select>
+                </div>
+            
+                <div class="filter-group">
+                    <label class="filter-label">Desde</label>
+                    <input type="date" id="filtroFechaDesde" />
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Hasta</label>
+                    <input type="date" id="filtroFechaHasta" />
+                </div>
+                <div class="filter-actions">
+                    <button class="btn-verde" id="btnFiltrar">Filtrar</button>
+                    <button class="btn-outline" id="btnLimpiarFiltros">Limpiar</button>
+                    <button class="btn-azul" id="btnExportarCSV">📊 Exportar CSV</button>
+                    <button class="btn-azul" id="btnExportarPDF">📄 Exportar PDF</button>
+                </div>
+            </div>
+
+            <!-- TABLA DE SISTEMAS -->
+            <div class="table-wrapper">
+                <div class="table-header">
+                    <div class="table-header-left">
+                        <h3>📋 Inventario de Sistemas</h3>
+                        <span class="event-count" id="sistemaCount">Total: 0</span>
+                    </div>
+                    <div class="table-header-right">
+                        <button class="btn-refresh" id="btnRefrescar">🔄</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Área</th>
+                                <th>Responsable</th>
+                                <th>Estado</th>
+                                <th>Criticidad</th>
+                                <th>Últ. Actualización</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaSistemas">
+                            <!-- Renderizado dinámico desde JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PAGINACIÓN -->
+            <div class="pagination-wrapper">
+                <div style="display:flex; justify-content:center; align-items:center; gap:1rem; padding:1rem; background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow-sm);">
+                    <button id="btnAnterior" class="pagination-btn">◀ Anterior</button>
+                    <span id="paginaInfo" style="color:var(--muted); font-size:0.9rem;">Página 1 de 1</span>
+                    <button id="btnSiguiente" class="pagination-btn">Siguiente ▶</button>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer>
+                <div class="footer-content">
+                    <p>&copy; 2026 CTIC · DIAGTI v2.0 · Sistema de Inventario y Diagnóstico TI</p>
+                    <div class="footer-right">
+                        <span class="footer-badge">Reportes en tiempo real</span>
+                        <span class="footer-badge">v2.0</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <!-- ===================== MODAL: DETALLE DE SISTEMA ===================== -->
+    <div class="modal" id="modalDetalle" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalDetalleTitulo">📄 Detalle del Sistema</h3>
+                <button class="modal-close" id="btnCerrarDetalle">✖</button>
+            </div>
+            <div class="modal-body" id="detalleBody">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" id="btnCerrarDetalleFooter">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: CONFIRMAR CIERRE DE SESIÓN ===================== -->
+    <div class="logout-confirm-overlay" id="logout-confirm-overlay">
+        <div class="logout-confirm-box">
+            <div class="logout-confirm-header">
+                <h3>Cerrar sesión</h3>
+                <button class="logout-confirm-close" id="btnCancelarCerrarSesion1">✕</button>
+            </div>
+            <div class="logout-confirm-body">
+                <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+                <p class="logout-confirm-hint">Tendrás que volver a autenticarte para ingresar de nuevo al sistema.</p>
+            </div>
+            <div class="logout-confirm-footer">
+                <button class="logout-confirm-btn-cancel" id="btnCancelarCerrarSesion2">Cancelar</button>
+                <button class="logout-confirm-btn-accept" id="btnConfirmarCerrarSesion">Sí, cerrar sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="reportes-inventario.component.js"></script>
+</body>
+</html>
