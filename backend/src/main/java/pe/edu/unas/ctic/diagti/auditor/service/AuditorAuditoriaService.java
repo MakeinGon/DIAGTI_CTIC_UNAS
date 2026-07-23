@@ -8,6 +8,6 @@ import java.util.Map;
 
 public interface AuditorAuditoriaService {
     List<AuditorAuditoriaResponseDTO> getAuditoria(AuditorAuditoriaRequestDTO request);
+
     Map<String, Long> getKPIs();
-    void registrarEvento(Long idUsuario, String modulo, String accion, String descripcion, String ip, String userAgent);
 }

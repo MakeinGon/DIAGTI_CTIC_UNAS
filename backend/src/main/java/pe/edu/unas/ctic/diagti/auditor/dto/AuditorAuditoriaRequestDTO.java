@@ -6,12 +6,14 @@ public class AuditorAuditoriaRequestDTO {
     private String searchText;
     private String modulo;
     private String accion;
+    private String usuario;
+    private Long sistemaId;
+    private String ipOrigen;
     private LocalDate fechaDesde;
     private LocalDate fechaHasta;
     private int page = 1;
     private int size = 10;
 
-    // Getters y Setters
     public String getSearchText() { return searchText; }
     public void setSearchText(String searchText) { this.searchText = searchText; }
 
@@ -20,6 +22,15 @@ public class AuditorAuditoriaRequestDTO {
 
     public String getAccion() { return accion; }
     public void setAccion(String accion) { this.accion = accion; }
+
+    public String getUsuario() { return usuario; }
+    public void setUsuario(String usuario) { this.usuario = usuario; }
+
+    public Long getSistemaId() { return sistemaId; }
+    public void setSistemaId(Long sistemaId) { this.sistemaId = sistemaId; }
+
+    public String getIpOrigen() { return ipOrigen; }
+    public void setIpOrigen(String ipOrigen) { this.ipOrigen = ipOrigen; }
 
     public LocalDate getFechaDesde() { return fechaDesde; }
     public void setFechaDesde(LocalDate fechaDesde) { this.fechaDesde = fechaDesde; }

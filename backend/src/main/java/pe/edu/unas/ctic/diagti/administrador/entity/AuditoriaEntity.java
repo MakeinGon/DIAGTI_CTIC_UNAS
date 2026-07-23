@@ -32,8 +32,16 @@ public class AuditoriaEntity {
     @Column(name = "direccion_ip", length = 50)
     private String direccionIp;
 
+    @Column(name = "user_agent", length = 255)
+    private String userAgent;
+
+    @Column(name = "sesion_id", length = 100)
+    private String sesionId;
+
     @PrePersist
     protected void onCreate() {
-        fechaEvento = LocalDateTime.now();
+        if (fechaEvento == null) {
+            fechaEvento = LocalDateTime.now();
+        }
     }
 }

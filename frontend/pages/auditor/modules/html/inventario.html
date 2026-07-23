@@ -103,9 +103,9 @@
             </div>
 
             <div class="card kpi-card">
-                <div class="stat-label">Sistemas legacy</div>
+                <div class="stat-label">Sistemas pendientes</div>
                 <div class="stat-num accent" id="kpi-legacy">0</div>
-                <span class="badge status-warning">Obsolescencia</span>
+                <span class="badge status-warning">En flujo</span>
             </div>
 
             <div class="card kpi-card">
@@ -146,12 +146,11 @@
                 <select id="filter-estado">
                     <option value="">Todos los estados</option>
                     <option value="BORRADOR">Borrador</option>
-                    <option value="ENVIADO">Enviado</option>
+                    <option value="PENDIENTE">Pendiente</option>
+                    <option value="EN_VALIDACION">En validación</option>
                     <option value="OBSERVADO">Observado</option>
                     <option value="SUBSANADO">Subsanado</option>
                     <option value="VALIDADO">Validado</option>
-                    <option value="RECHAZADO">Rechazado</option>
-                    <option value="CERRADO">Cerrado</option>
                 </select>
 
                 <select id="filter-riesgo">
@@ -163,7 +162,7 @@
                 </select>
 
                 <select id="filter-legacy">
-                    <option value="">Legacy: Todos</option>
+                    <option value="">Pendiente: Todos</option>
                     <option value="true">Sí</option>
                     <option value="false">No</option>
                 </select>
@@ -177,11 +176,11 @@
                             <th>ID</th>
                             <th>Código único</th>
                             <th>Sistema</th>
-                            <th>ID área</th>
-                            <th>ID tipo</th>
-                            <th>Estado flujo</th>
-                            <th>Nivel riesgo</th>
-                            <th>Legacy</th>
+                            <th>Área</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Riesgo</th>
+                            <th>Pendiente</th>
                             <th>Última actualización</th>
                             <th>Consulta</th>
                         </tr>
@@ -236,17 +235,17 @@
                         </div>
 
                         <div class="detail-row">
-                            <span>ID área usuaria</span>
+                            <span>Área usuaria</span>
                             <b id="modal-area">-</b>
                         </div>
 
                         <div class="detail-row">
-                            <span>ID tipo aplicativo</span>
+                            <span>Tipo aplicativo</span>
                             <b id="modal-tipo">-</b>
                         </div>
 
                         <div class="detail-row">
-                            <span>ID criticidad</span>
+                            <span>Criticidad</span>
                             <b id="modal-criticidad">-</b>
                         </div>
                     </div>
@@ -255,12 +254,12 @@
                         <h4>Responsables</h4>
 
                         <div class="detail-row">
-                            <span>ID responsable funcional</span>
+                            <span>Responsable funcional</span>
                             <b id="modal-responsable-funcional">-</b>
                         </div>
 
                         <div class="detail-row">
-                            <span>ID responsable técnico</span>
+                            <span>Responsable técnico</span>
                             <b id="modal-responsable-tecnico">-</b>
                         </div>
 
@@ -313,7 +312,7 @@
                         </div>
 
                         <div class="detail-row">
-                            <span>Es legacy</span>
+                            <span>Sistema pendiente</span>
                             <b id="modal-legacy">-</b>
                         </div>
                     </div>
